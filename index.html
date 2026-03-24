@@ -3,212 +3,142 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pelem 5 Smart Presensi v5.5</title>
+    <title>Pelem 5 Dashboard</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap');
-        body { background: radial-gradient(circle at top right, #1e293b, #0f172a); color: #f8fafc; font-family: 'Plus Jakarta Sans', sans-serif; min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px; }
-        .glass-card { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(16px); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 28px; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5); width: 100%; max-width: 420px; }
-        .btn-primary { background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%); transition: 0.3s; }
-        .avatar-gradient { background: linear-gradient(135deg, #60a5fa 0%, #2563eb 100%); border: 2px solid rgba(255,255,255,0.2); }
-        .hidden { display: none !important; }
-        input { background: rgba(15, 23, 42, 0.5); border: 1px solid rgba(255,255,255,0.1); color: white; outline: none; transition: 0.3s; }
-        input:focus { border-color: #3b82f6; box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2); }
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;700;800&display=swap');
+        body { background: #0f172a; color: white; font-family: 'Plus Jakarta Sans', sans-serif; min-height: 100vh; display: flex; justify-content: center; align-items: center; padding: 20px; }
+        .glass { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.1); border-radius: 24px; }
+        .btn-grad { background: linear-gradient(135deg, #3b82f6, #1d4ed8); transition: 0.2s; }
+        .btn-grad:active { transform: scale(0.95); }
     </style>
 </head>
 <body>
 
-    <div id="login-page" class="glass-card p-10">
-        <div class="text-center mb-10">
-            <div class="inline-flex items-center justify-center w-20 h-20 avatar-gradient rounded-3xl mb-4 shadow-xl">
-                <i class="fas fa-fingerprint text-4xl text-white"></i>
-            </div>
-            <h1 class="text-3xl font-extrabold tracking-tighter">PELEM 5</h1>
-            <p class="text-slate-400 text-[10px] uppercase tracking-[0.3em] font-bold">Secure Access System</p>
+    <div id="login-page" class="glass p-10 w-full max-w-sm text-center">
+        <div class="w-20 h-20 bg-blue-600 rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-xl shadow-blue-500/20">
+            <i class="fas fa-fingerprint text-4xl"></i>
         </div>
-        <div class="space-y-5">
-            <input type="text" id="user-id" placeholder="ID Karyawan" class="w-full px-5 py-4 rounded-2xl text-base font-semibold">
-            <input type="password" id="user-pin" placeholder="PIN 6 Digit" class="w-full px-5 py-4 rounded-2xl text-base font-semibold">
-            <button onclick="handleLogin()" id="btn-login" class="btn-primary w-full py-5 rounded-2xl font-black text-white text-lg shadow-lg shadow-blue-600/30 uppercase tracking-widest">Login</button>
+        <h1 class="text-2xl font-extrabold mb-8 uppercase tracking-tighter">Pelem 5 Login</h1>
+        <div class="space-y-4">
+            <input type="text" id="user-id" placeholder="ID Karyawan" class="w-full bg-slate-900/50 border border-white/10 p-4 rounded-xl outline-none focus:border-blue-500">
+            <input type="password" id="user-pin" placeholder="PIN Keamanan" class="w-full bg-slate-900/50 border border-white/10 p-4 rounded-xl outline-none focus:border-blue-500">
+            <button onclick="handleLogin()" id="btn-login" class="btn-grad w-full py-4 rounded-xl font-bold uppercase tracking-widest">Masuk</button>
         </div>
     </div>
 
-    <div id="main-page" class="hidden w-full max-w-[440px] space-y-4">
-        
-        <div class="glass-card p-6 border-l-8 border-blue-500 flex items-center gap-4 relative overflow-hidden">
-            <div id="avatar-container" class="w-16 h-16 rounded-full avatar-gradient flex items-center justify-center text-2xl font-black text-white flex-shrink-0">--</div>
-            <div class="z-10 flex-grow">
-                <p class="text-blue-400 text-[9px] font-bold uppercase tracking-widest mb-1">Karyawan Terverifikasi</p>
-                <h2 id="display-name" class="text-xl font-extrabold text-white tracking-tight">Memuat...</h2>
-                <div class="flex justify-between items-center mt-2 pt-2 border-t border-white/5">
-                    <span id="display-divisi" class="text-[11px] text-slate-400 uppercase">Divisi ...</span>
-                    <span class="px-2 py-0.5 bg-blue-500/10 text-blue-400 text-[9px] font-bold rounded italic border border-blue-500/20">SHIFT 08:00</span>
-                </div>
+    <div id="main-page" class="hidden w-full max-w-md space-y-4">
+        <div class="glass p-6 flex items-center gap-4 border-l-8 border-blue-500">
+            <div id="avatar" class="w-16 h-16 rounded-full bg-blue-600 flex items-center justify-center text-2xl font-black overflow-hidden border-2 border-white/20"></div>
+            <div>
+                <p class="text-[10px] text-blue-400 font-bold uppercase">Karyawan Aktif</p>
+                <h2 id="display-name" class="text-xl font-bold">...</h2>
+                <p id="display-divisi" class="text-xs text-slate-400">...</p>
             </div>
         </div>
 
-        <div class="glass-card p-6 text-center bg-slate-900/40 relative">
-            <div class="absolute top-3 right-4 flex items-center gap-2 px-3 py-1 bg-slate-800 rounded-full border border-white/5 shadow-inner">
-                <span id="gps-dot" class="w-2 h-2 bg-red-500 rounded-full animate-pulse"></span>
-                <span id="gps-text" class="text-[9px] text-red-500 font-bold uppercase tracking-wider">GPS MATI</span>
-            </div>
-            <p id="display-date" class="text-slate-500 text-[10px] uppercase font-bold mb-1 tracking-[0.2em]">...</p>
-            <div id="clock" class="text-5xl font-black tracking-tighter text-white py-1">00:00:00</div>
-            <div id="dist-info" class="text-[10px] text-slate-400 font-bold mt-2">Menghitung jarak ke Jl. Langkat...</div>
+        <div class="glass p-6 text-center">
+            <div id="clock" class="text-5xl font-black tracking-tighter mb-1">00:00:00</div>
+            <div id="dist-info" class="text-[10px] font-bold uppercase">Mencari Lokasi...</div>
         </div>
 
-        <div class="glass-card p-5 grid grid-cols-3 gap-3 text-center bg-slate-900/20 border border-white/5">
-            <div class="bg-slate-800/50 p-2 rounded-xl">
-                <p class="text-[9px] text-slate-500 uppercase font-bold mb-1">Hadir</p>
-                <p id="rekap-hadir" class="text-xl font-black text-emerald-400">--</p>
+        <div class="grid grid-cols-3 gap-3">
+            <div class="glass p-4 text-center">
+                <p class="text-[9px] text-slate-500 font-bold">HADIR</p>
+                <p id="rekap-hadir" class="text-xl font-black text-emerald-400">0</p>
             </div>
-            <div class="bg-slate-800/50 p-2 rounded-xl">
-                <p class="text-[9px] text-slate-500 uppercase font-bold mb-1">Telat</p>
-                <p id="rekap-telat" class="text-xl font-black text-yellow-500">--</p>
+            <div class="glass p-4 text-center">
+                <p class="text-[9px] text-slate-500 font-bold">TELAT</p>
+                <p id="rekap-telat" class="text-xl font-black text-yellow-500">0</p>
             </div>
-            <div class="bg-slate-800/50 p-2 rounded-xl">
-                <p class="text-[9px] text-slate-500 uppercase font-bold mb-1">Jam Kerja</p>
-                <p id="rekap-durasi" class="text-xl font-black text-white">--</p>
+            <div class="glass p-4 text-center">
+                <p class="text-[9px] text-slate-500 font-bold">JAM KERJA</p>
+                <p id="rekap-durasi" class="text-xl font-black text-white">0h</p>
             </div>
         </div>
 
-        <div id="feedback-panel" class="hidden glass-card p-5 border-l-4 border-yellow-500 bg-yellow-500/5 transition-all">
-            <div class="flex items-center gap-4">
-                <div id="icon-status" class="w-12 h-12 rounded-2xl bg-yellow-500/20 text-yellow-500 flex items-center justify-center text-2xl border border-yellow-500/10">
-                    <i class="fas fa-info-circle"></i>
-                </div>
-                <div>
-                    <p class="text-[10px] text-slate-400 uppercase font-bold tracking-wider">Status Terakhir:</p>
-                    <h4 id="atensi-result" class="text-sm font-bold text-white uppercase tracking-tight">...</h4>
-                    <p id="durasi-result" class="text-[10px] text-emerald-400 font-bold mt-0.5"></p>
-                </div>
-            </div>
+        <div id="feedback" class="hidden glass p-4 border-l-4 border-emerald-500">
+            <p id="fb-msg" class="text-sm font-bold"></p>
+            <p id="fb-dur" class="text-[10px] text-slate-400"></p>
         </div>
 
         <div class="grid grid-cols-2 gap-4">
-            <button onclick="takeAbsen('DATANG')" id="btn-datang" class="p-6 bg-emerald-600 hover:bg-emerald-500 rounded-[24px] shadow-lg shadow-emerald-900/20 flex flex-col items-center gap-2 transition-all active:scale-95 border border-white/10">
-                <i class="fas fa-sign-in-alt text-2xl text-white"></i>
-                <span class="font-black text-xs text-white uppercase tracking-tighter">Masuk Datang</span>
+            <button onclick="takeAbsen('DATANG')" id="btn-in" class="bg-emerald-600 p-6 rounded-3xl font-bold flex flex-col items-center gap-2 transition-all active:scale-95 shadow-lg shadow-emerald-900/20">
+                <i class="fas fa-sign-in-alt text-xl"></i><span>DATANG</span>
             </button>
-            <button onclick="takeAbsen('PULANG')" id="btn-pulang" class="p-6 bg-orange-600 hover:bg-orange-500 rounded-[24px] shadow-lg shadow-orange-900/20 flex flex-col items-center gap-2 transition-all active:scale-95 border border-white/10">
-                <i class="fas fa-sign-out-alt text-2xl text-white"></i>
-                <span class="font-black text-xs text-white uppercase tracking-tighter">Absen Pulang</span>
+            <button onclick="takeAbsen('PULANG')" id="btn-out" class="bg-orange-600 p-6 rounded-3xl font-bold flex flex-col items-center gap-2 transition-all active:scale-95 shadow-lg shadow-orange-900/20">
+                <i class="fas fa-sign-out-alt text-xl"></i><span>PULANG</span>
             </button>
         </div>
-
-        <button onclick="location.reload()" class="w-full py-4 text-slate-600 hover:text-red-400 text-[10px] font-black uppercase tracking-[0.4em] transition-all">
-            Logout System
-        </button>
+        <button onclick="location.reload()" class="w-full text-[10px] text-slate-600 font-bold uppercase py-4">Keluar Sistem</button>
     </div>
 
     <script>
-        const API_URL = "https://script.google.com/macros/s/AKfycbxiMbItXgcuH026ZAdbTtz7I1i1WzMihGLcwTl3cxw6kgyLiNv8vzCecGvpRHYe5rr10w/exec";
-        const KANTOR_COORDS = { lat: -7.749941, lng: 112.174396 };
-        let currentUser = null;
+        const API_URL = "https://script.google.com/macros/s/AKfycbzlWKh-cyPQ_XL-3aiiJkFfh_-aCe0aHGpgcHd3csB5x8R6fmbYXQH3-8bh6OVi3twVyw/exec";
+        let user = null;
 
-        // Clock & GPS Monitoring
         setInterval(() => {
-            const now = new Date();
-            document.getElementById('clock').innerText = now.toLocaleTimeString('id-ID', { hour12: false });
-            document.getElementById('display-date').innerText = now.toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
-            
-            // Auto Update GPS Status
-            navigator.geolocation.getCurrentPosition(pos => {
-                updateGpsUi(true, pos.coords);
-            }, () => {
-                updateGpsUi(false);
+            document.getElementById('clock').innerText = new Date().toLocaleTimeString('id-ID', {hour12:false});
+            navigator.geolocation.getCurrentPosition(p => {
+                const d = calculateDistance(p.coords.latitude, p.coords.longitude, -7.749941, 112.174396);
+                const info = document.getElementById('dist-info');
+                info.innerText = `Jarak: ${Math.round(d)}m dari kantor`;
+                info.className = d > 100 ? "text-[10px] text-red-500 font-bold uppercase" : "text-[10px] text-emerald-500 font-bold uppercase";
             });
         }, 1000);
-
-        function updateGpsUi(active, coords = null) {
-            const dot = document.getElementById('gps-dot');
-            const txt = document.getElementById('gps-text');
-            const distInfo = document.getElementById('dist-info');
-
-            if (active) {
-                dot.className = "w-2 h-2 bg-emerald-500 rounded-full animate-pulse";
-                txt.className = "text-[9px] text-emerald-500 font-bold uppercase tracking-wider";
-                txt.innerText = "GPS AKTIF";
-                
-                if(coords) {
-                    const dist = calculateDistance(coords.latitude, coords.longitude, KANTOR_COORDS.lat, KANTOR_COORDS.lng);
-                    distInfo.innerText = `Jarak Anda: ${Math.round(dist)}m dari Jl. Langkat`;
-                    distInfo.className = dist > 100 ? "text-[10px] text-red-400 font-bold mt-2" : "text-[10px] text-emerald-400 font-bold mt-2";
-                }
-            } else {
-                dot.className = "w-2 h-2 bg-red-500 rounded-full";
-                txt.className = "text-[9px] text-red-500 font-bold uppercase tracking-wider";
-                txt.innerText = "GPS MATI";
-                distInfo.innerText = "⚠️ AKTIFKAN GPS UNTUK ABSEN";
-                distInfo.className = "text-[10px] text-red-400 font-bold mt-2";
-            }
-        }
 
         function calculateDistance(lat1, lon1, lat2, lon2) {
             const R = 6371e3;
             const dLat = (lat2-lat1) * Math.PI/180;
             const dLon = (lon2-lon1) * Math.PI/180;
-            const a = Math.sin(dLat/2) * Math.sin(dLat/2) + Math.cos(lat1*Math.PI/180) * Math.cos(lat2*Math.PI/180) * Math.sin(dLon/2) * Math.sin(dLon/2);
+            const a = Math.sin(dLat/2)**2 + Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dLon/2)**2;
             return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
         }
 
         async function handleLogin() {
-            const id = document.getElementById('user-id').value.trim();
-            const pin = document.getElementById('user-pin').value.trim();
+            const id = document.getElementById('user-id').value;
+            const pin = document.getElementById('user-pin').value;
             const btn = document.getElementById('btn-login');
             btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
-            btn.disabled = true;
-
             try {
-                const response = await fetch(API_URL, {
-                    method: 'POST',
-                    body: JSON.stringify({ action: "login", id: id, pin: pin })
-                });
-                const data = await response.json();
-                if (data.result === 'success') {
-                    currentUser = data.user;
+                const r = await fetch(API_URL, { method: 'POST', body: JSON.stringify({ action: "login", id, pin }) });
+                const d = await r.json();
+                if (d.result === 'success') {
+                    user = d.user;
                     document.getElementById('login-page').classList.add('hidden');
                     document.getElementById('main-page').classList.remove('hidden');
-                    document.getElementById('display-name').innerText = currentUser.nama;
-                    document.getElementById('display-divisi').innerText = "DIVISI: " + currentUser.divisi;
+                    document.getElementById('display-name').innerText = user.nama;
+                    document.getElementById('display-divisi').innerText = user.divisi;
                     
-                    // Initial Avatar
-                    const initials = currentUser.nama.split(' ').map(n => n[0]).join('').toUpperCase().substring(0, 2);
-                    document.getElementById('avatar-container').innerText = initials;
+                    const av = document.getElementById('avatar');
+                    if(user.foto) av.innerHTML = `<img src="${user.foto}" class="w-full h-full object-cover">`;
+                    else av.innerText = user.nama.split(' ').map(n=>n[0]).join('').substring(0,2).toUpperCase();
                     
-                    // Mock Rekap (Nanti bisa lu sambungin ke tab rekap di Sheets)
-                    document.getElementById('rekap-hadir').innerText = "20";
-                    document.getElementById('rekap-telat').innerText = "2";
-                    document.getElementById('rekap-durasi').innerText = "160h";
-                } else { alert("LOGIN GAGAL: " + data.message); }
-            } catch (err) { alert("ERROR SERVER"); }
-            finally { btn.innerHTML = 'Login'; btn.disabled = false; }
+                    document.getElementById('rekap-hadir').innerText = d.rekap.hadir;
+                    document.getElementById('rekap-telat').innerText = d.rekap.telat;
+                    document.getElementById('rekap-durasi').innerText = d.rekap.jam + "h";
+                } else alert(d.message);
+            } catch(e) { alert("Error Server"); }
+            finally { btn.innerText = "Masuk"; }
         }
 
         async function takeAbsen(tipe) {
-            if (!currentUser) return;
-            const btn = tipe === 'DATANG' ? document.getElementById('btn-datang') : document.getElementById('btn-pulang');
-            const oldHtml = btn.innerHTML;
+            const btn = tipe === 'DATANG' ? document.getElementById('btn-in') : document.getElementById('btn-out');
             btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
-            btn.disabled = true;
-
-            navigator.geolocation.getCurrentPosition(async (pos) => {
+            navigator.geolocation.getCurrentPosition(async p => {
                 try {
-                    const response = await fetch(API_URL, {
-                        method: 'POST',
-                        body: JSON.stringify({ action: tipe, id: currentUser.id, nama: currentUser.nama, lat: pos.coords.latitude, lng: pos.coords.longitude })
-                    });
-                    const res = await response.json();
-                    
-                    document.getElementById('feedback-panel').classList.remove('hidden');
-                    document.getElementById('atensi-result').innerText = res.message;
-                    if(tipe === 'PULANG') document.getElementById('durasi-result').innerText = "DURASI: " + res.durasi;
-                    
-                    alert("SISTEM: " + res.message);
-                } catch (e) { alert("GAGAL KIRIM DATA"); }
-                finally { btn.innerHTML = oldHtml; btn.disabled = false; }
-            }, () => { alert("GPS WAJIB AKTIF!"); btn.innerHTML = oldHtml; btn.disabled = false; });
+                    const r = await fetch(API_URL, { method: 'POST', body: JSON.stringify({ action: tipe, id: user.id, nama: user.nama, lat: p.coords.latitude, lng: p.coords.longitude }) });
+                    const d = await r.json();
+                    const fb = document.getElementById('feedback');
+                    fb.classList.remove('hidden');
+                    fb.style.borderColor = d.result === 'success' ? '#10b981' : '#ef4444';
+                    document.getElementById('fb-msg').innerText = d.message;
+                    if(tipe === 'PULANG' && d.durasi) document.getElementById('fb-dur').innerText = "Total: " + d.durasi;
+                    alert(d.message);
+                } catch(e) { alert("Gagal kirim"); }
+                finally { btn.innerHTML = tipe; }
+            });
         }
     </script>
 </body>
