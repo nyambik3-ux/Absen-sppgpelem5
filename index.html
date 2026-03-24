@@ -1,62 +1,205 @@
-<div id="main-page" class="hidden w-full max-w-[450px] space-y-4">
-    
-    <div class="glass-card p-5 border-l-4 border-blue-500">
-        <h2 id="display-name" class="text-xl font-extrabold">...</h2>
-        <div class="flex justify-between items-center mt-2">
-            <span id="display-divisi" class="text-xs text-slate-400">Divisi ...</span>
-            <span class="px-2 py-1 bg-blue-500/20 text-blue-400 text-[10px] font-bold rounded italic">SHIFT: 08:00 - 16:00</span>
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portal Absensi Pelem 5</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap');
+        body { background: radial-gradient(circle at top right, #1e293b, #0f172a); color: #f8fafc; font-family: 'Plus Jakarta Sans', sans-serif; min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px; }
+        .glass-card { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(16px); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 24px; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5); width: 100%; max-width: 400px; }
+        .btn-primary { background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%); transition: 0.3s; }
+        .btn-primary:active { transform: scale(0.95); }
+        .hidden { display: none !important; }
+        input { background: rgba(15, 23, 42, 0.5); border: 1px solid rgba(255,255,255,0.1); outline: none; transition: 0.3s; }
+        input:focus { border-color: #3b82f6; box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2); }
+    </style>
+</head>
+<body>
+
+    <div id="login-page" class="glass-card p-8">
+        <div class="text-center mb-8">
+            <div class="w-16 h-16 bg-blue-600 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg shadow-blue-500/20">
+                <i class="fas fa-fingerprint text-3xl text-white"></i>
+            </div>
+            <h1 class="text-2xl font-extrabold tracking-tight">PELEM 5 LOGIN</h1>
+            <p class="text-slate-400 text-xs mt-1 uppercase tracking-widest">Sistem Presensi Karyawan</p>
+        </div>
+
+        <div class="space-y-4">
+            <div class="relative">
+                <i class="fas fa-id-badge absolute left-4 top-4 text-slate-500"></i>
+                <input type="text" id="user-id" placeholder="ID Karyawan" class="w-full pl-12 pr-4 py-4 rounded-xl text-sm">
+            </div>
+            <div class="relative">
+                <i class="fas fa-key absolute left-4 top-4 text-slate-500"></i>
+                <input type="password" id="user-pin" placeholder="PIN Keamanan" class="w-full pl-12 pr-4 py-4 rounded-xl text-sm">
+            </div>
+            <button onclick="handleLogin()" id="btn-login" class="btn-primary w-full py-4 rounded-xl font-bold text-white shadow-xl shadow-blue-600/20">MASUK SISTEM</button>
         </div>
     </div>
 
-    <div class="glass-card p-6 text-center">
-        <div id="clock" class="text-5xl font-black tracking-tight mb-1">00:00:00</div>
-        <p class="text-[10px] text-slate-500 uppercase tracking-widest">Waktu Presensi Pelem 5</p>
-    </div>
+    <div id="main-page" class="hidden w-full max-w-[420px] space-y-4">
+        
+        <div class="glass-card p-6 border-l-4 border-blue-500 relative overflow-hidden">
+            <div class="relative z-10">
+                <p class="text-blue-400 text-[10px] font-bold uppercase tracking-widest mb-1">Status Karyawan Aktif</p>
+                <h2 id="display-name" class="text-xl font-extrabold">Nama Karyawan</h2>
+                <div class="flex justify-between items-center mt-3 pt-3 border-t border-white/5">
+                    <span id="display-divisi" class="text-xs text-slate-400">Divisi ...</span>
+                    <span class="px-2 py-1 bg-blue-500/10 text-blue-400 text-[10px] font-bold rounded border border-blue-500/20 italic">SHIFT: 08:00 - 16:00</span>
+                </div>
+            </div>
+        </div>
 
-    <div id="feedback-panel" class="hidden glass-card p-4 border border-yellow-500/50 bg-yellow-500/5 animate-pulse">
-        <p class="text-xs text-slate-400 uppercase font-bold">Laporan Terakhir:</p>
-        <div id="atensi-result" class="text-lg font-bold mt-1 text-yellow-500">...</div>
-        <div id="durasi-result" class="text-xs text-emerald-400 mt-1"></div>
-    </div>
+        <div class="glass-card p-6 text-center bg-slate-900/40">
+            <p id="display-date" class="text-slate-500 text-[10px] uppercase font-bold mb-1">Selasa, 24 Maret 2026</p>
+            <div id="clock" class="text-5xl font-black tracking-tighter text-white py-2">00:00:00</div>
+            <div class="inline-flex items-center gap-2 px-3 py-1 bg-emerald-500/10 rounded-full">
+                <span class="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse"></span>
+                <span class="text-[9px] text-emerald-500 font-bold uppercase tracking-widest">Waktu Presensi Akurat</span>
+            </div>
+        </div>
 
-    <div class="grid grid-cols-2 gap-4">
-        <button onclick="takeAbsen('DATANG')" class="bg-emerald-600 p-5 rounded-2xl font-bold hover:bg-emerald-500 active:scale-95 transition-all">
-            <i class="fas fa-sign-in-alt mb-2 text-xl"></i><br>DATANG
+        <div id="feedback-panel" class="hidden glass-card p-4 border border-yellow-500/30 bg-yellow-500/5">
+            <div class="flex items-center gap-3">
+                <div id="icon-status" class="w-10 h-10 rounded-full bg-yellow-500/20 text-yellow-500 flex items-center justify-center">
+                    <i class="fas fa-info-circle"></i>
+                </div>
+                <div>
+                    <p class="text-[10px] text-slate-400 uppercase font-bold">Laporan Presensi Terakhir:</p>
+                    <h4 id="atensi-result" class="text-sm font-bold text-yellow-500 uppercase">...</h4>
+                    <p id="durasi-result" class="text-[10px] text-emerald-400 font-bold"></p>
+                </div>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-4">
+            <button onclick="takeAbsen('DATANG')" id="btn-datang" class="p-6 bg-emerald-600 hover:bg-emerald-500 rounded-3xl shadow-lg shadow-emerald-900/20 flex flex-col items-center gap-2 transition-all active:scale-95">
+                <i class="fas fa-sign-in-alt text-2xl mb-1"></i>
+                <span class="font-extrabold text-sm">DATANG</span>
+            </button>
+            <button onclick="takeAbsen('PULANG')" id="btn-pulang" class="p-6 bg-orange-600 hover:bg-orange-500 rounded-3xl shadow-lg shadow-orange-900/20 flex flex-col items-center gap-2 transition-all active:scale-95">
+                <i class="fas fa-sign-out-alt text-2xl mb-1"></i>
+                <span class="font-extrabold text-sm">PULANG</span>
+            </button>
+        </div>
+
+        <button onclick="location.reload()" class="w-full py-4 text-slate-500 hover:text-white text-[10px] font-bold uppercase tracking-[0.2em] transition-all">
+            <i class="fas fa-power-off mr-2"></i> Logout System
         </button>
-        <button onclick="takeAbsen('PULANG')" class="bg-orange-600 p-5 rounded-2xl font-bold hover:bg-orange-500 active:scale-95 transition-all">
-            <i class="fas fa-sign-out-alt mb-2 text-xl"></i><br>PULANG
-        </button>
     </div>
-</div>
 
-<script>
-// Logic JavaScript takeAbsen yang diperbarui untuk koordinat & atensi
-async function takeAbsen(tipe) {
-    if(!navigator.geolocation) return alert("GPS tidak didukung!");
-    
-    navigator.geolocation.getCurrentPosition(async (pos) => {
-        const payload = {
-            action: tipe,
-            id: currentUser.id,
-            nama: currentUser.nama,
-            lat: pos.coords.latitude,
-            lng: pos.coords.longitude
-        };
+    <script>
+        // --- GANTI URL INI ---
+        const API_URL = "ISI_URL_EXEC_LU_DI_SINI";
+        let currentUser = null;
 
-        try {
-            const res = await fetch(API_URL, {
-                method: 'POST',
-                body: JSON.stringify(payload)
+        // Clock & Date System
+        setInterval(() => {
+            const now = new Date();
+            document.getElementById('clock').innerText = now.toLocaleTimeString('id-ID', { hour12: false });
+            const options = { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' };
+            document.getElementById('display-date').innerText = now.toLocaleDateString('id-ID', options);
+        }, 1000);
+
+        // Login Handler
+        async function handleLogin() {
+            const id = document.getElementById('user-id').value.trim();
+            const pin = document.getElementById('user-pin').value.trim();
+            if (!id || !pin) return alert("ID & PIN wajib diisi!");
+
+            const btn = document.getElementById('btn-login');
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Memproses...';
+            btn.disabled = true;
+
+            try {
+                const response = await fetch(API_URL, {
+                    method: 'POST',
+                    redirect: 'follow',
+                    body: JSON.stringify({ action: "login", id: id, pin: pin }),
+                    headers: { 'Content-Type': 'text/plain;charset=utf-8' }
+                });
+                const data = await response.json();
+                if (data.result === 'success') {
+                    currentUser = data.user;
+                    document.getElementById('login-page').classList.add('hidden');
+                    document.getElementById('main-page').classList.remove('hidden');
+                    document.getElementById('display-name').innerText = currentUser.nama;
+                    document.getElementById('display-divisi').innerText = "Divisi: " + currentUser.divisi;
+                } else {
+                    alert("❌ " + data.message);
+                }
+            } catch (err) {
+                alert("Gagal koneksi server!");
+            } finally {
+                btn.innerHTML = 'MASUK SISTEM';
+                btn.disabled = false;
+            }
+        }
+
+        // Absen Handler (GPS + Atensi)
+        async function takeAbsen(tipe) {
+            if (!currentUser) return;
+            if (!confirm(`Konfirmasi Absen ${tipe}?`)) return;
+
+            const btn = tipe === 'DATANG' ? document.getElementById('btn-datang') : document.getElementById('btn-pulang');
+            const oldHtml = btn.innerHTML;
+            btn.innerHTML = '<i class="fas fa-circle-notch fa-spin text-2xl"></i>';
+            btn.disabled = true;
+
+            navigator.geolocation.getCurrentPosition(async (pos) => {
+                const payload = {
+                    action: tipe,
+                    id: currentUser.id,
+                    nama: currentUser.nama,
+                    lat: pos.coords.latitude,
+                    lng: pos.coords.longitude
+                };
+
+                try {
+                    const response = await fetch(API_URL, {
+                        method: 'POST',
+                        redirect: 'follow',
+                        body: JSON.stringify(payload),
+                        headers: { 'Content-Type': 'text/plain;charset=utf-8' }
+                    });
+                    const res = await response.json();
+
+                    // Update UI Atensi
+                    document.getElementById('feedback-panel').classList.remove('hidden');
+                    document.getElementById('atensi-result').innerText = res.message;
+                    
+                    const iconBox = document.getElementById('icon-status');
+                    if(res.message.includes("TELAT")) {
+                        iconBox.className = "w-10 h-10 rounded-full bg-red-500/20 text-red-500 flex items-center justify-center";
+                        document.getElementById('atensi-result').className = "text-sm font-bold text-red-500 uppercase";
+                    } else {
+                        iconBox.className = "w-10 h-10 rounded-full bg-emerald-500/20 text-emerald-500 flex items-center justify-center";
+                        document.getElementById('atensi-result').className = "text-sm font-bold text-emerald-400 uppercase";
+                    }
+
+                    if(tipe === 'PULANG') {
+                        document.getElementById('durasi-result').innerText = "⏱️ Total Kerja: " + res.durasi;
+                    } else {
+                        document.getElementById('durasi-result').innerText = "";
+                    }
+
+                    alert("SISTEM: " + res.message);
+                } catch (e) {
+                    alert("Koneksi Error!");
+                } finally {
+                    btn.innerHTML = oldHtml;
+                    btn.disabled = false;
+                }
+            }, (err) => {
+                alert("GPS WAJIB AKTIF!");
+                btn.innerHTML = oldHtml;
+                btn.disabled = false;
             });
-            const out = await res.json();
-            
-            // Tampilkan ke UI
-            document.getElementById('feedback-panel').classList.remove('hidden');
-            document.getElementById('atensi-result').innerText = out.message;
-            if(tipe === 'PULANG') document.getElementById('durasi-result').innerText = "Total Kerja: " + out.durasi;
-            
-            alert("Sistem: " + out.message);
-        } catch (e) { alert("Gagal kirim data!"); }
-    });
-}
-</script>
+        }
+    </script>
+</body>
+</html>
