@@ -1,115 +1,62 @@
-<!DOCTYPE html>
-<html lang="id">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistem Absensi Pelem 5</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        body { background: #0f172a; color: white; font-family: sans-serif; min-height: 100vh; display: flex; justify-content: center; align-items: center; padding: 20px; }
-        .glass { background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 20px; width: 100%; max-width: 400px; padding: 30px; }
-        .hidden { display: none !important; }
-        input { width: 100%; padding: 12px; background: #1e293b; border: 1px solid #334155; border-radius: 10px; margin-bottom: 15px; color: white; outline: none; }
-        button { width: 100%; padding: 15px; border-radius: 12px; font-weight: bold; transition: 0.2s; }
-        button:active { transform: scale(0.95); }
-    </style>
-</head>
-<body>
-
-    <div id="login-page" class="glass shadow-2xl">
-        <h1 class="text-2xl font-bold text-center mb-6 text-blue-400">PELEM 5 LOGIN</h1>
-        <input type="text" id="user-id" placeholder="ID Karyawan">
-        <input type="password" id="user-pin" placeholder="PIN">
-        <button onclick="handleLogin()" id="btn-login" class="bg-blue-600 hover:bg-blue-500">MASUK SISTEM</button>
+<div id="main-page" class="hidden w-full max-w-[450px] space-y-4">
+    
+    <div class="glass-card p-5 border-l-4 border-blue-500">
+        <h2 id="display-name" class="text-xl font-extrabold">...</h2>
+        <div class="flex justify-between items-center mt-2">
+            <span id="display-divisi" class="text-xs text-slate-400">Divisi ...</span>
+            <span class="px-2 py-1 bg-blue-500/20 text-blue-400 text-[10px] font-bold rounded italic">SHIFT: 08:00 - 16:00</span>
+        </div>
     </div>
 
-    <div id="main-page" class="glass hidden">
-        <div class="mb-6 border-b border-slate-700 pb-4 text-center">
-            <h2 id="display-name" class="text-xl font-bold">...</h2>
-            <p id="display-divisi" class="text-sm text-blue-400 italic">...</p>
-        </div>
-        
-        <div class="bg-slate-800 rounded-xl p-4 text-center mb-6">
-            <p id="clock" class="text-3xl font-mono font-bold tracking-widest">00:00:00</p>
-        </div>
-
-        <button onclick="takeAbsen('DATANG')" id="btn-datang" class="bg-emerald-600 hover:bg-emerald-500 mb-4">ABSEN DATANG</button>
-        <button onclick="takeAbsen('PULANG')" id="btn-pulang" class="bg-orange-600 hover:bg-orange-500">ABSEN PULANG</button>
-        
-        <button onclick="location.reload()" class="mt-8 text-xs text-gray-500 underline uppercase">Keluar / Logout</button>
+    <div class="glass-card p-6 text-center">
+        <div id="clock" class="text-5xl font-black tracking-tight mb-1">00:00:00</div>
+        <p class="text-[10px] text-slate-500 uppercase tracking-widest">Waktu Presensi Pelem 5</p>
     </div>
 
-    <script>
-        // GANTI LINK DI BAWAH INI DENGAN LINK /exec BARU LU
-        const API_URL = "https://script.google.com/macros/s/AKfycbwLaAMdE8t2UmA607eLb5zMy4W4l0g2o_sqwrNJf237dkFoXfv6Pl1tauVqdtYKfHHlKg/exec";
-        let currentUser = null;
+    <div id="feedback-panel" class="hidden glass-card p-4 border border-yellow-500/50 bg-yellow-500/5 animate-pulse">
+        <p class="text-xs text-slate-400 uppercase font-bold">Laporan Terakhir:</p>
+        <div id="atensi-result" class="text-lg font-bold mt-1 text-yellow-500">...</div>
+        <div id="durasi-result" class="text-xs text-emerald-400 mt-1"></div>
+    </div>
 
-        // Jam Digital
-        setInterval(() => {
-            document.getElementById('clock').innerText = new Date().toLocaleTimeString('id-ID');
-        }, 1000);
+    <div class="grid grid-cols-2 gap-4">
+        <button onclick="takeAbsen('DATANG')" class="bg-emerald-600 p-5 rounded-2xl font-bold hover:bg-emerald-500 active:scale-95 transition-all">
+            <i class="fas fa-sign-in-alt mb-2 text-xl"></i><br>DATANG
+        </button>
+        <button onclick="takeAbsen('PULANG')" class="bg-orange-600 p-5 rounded-2xl font-bold hover:bg-orange-500 active:scale-95 transition-all">
+            <i class="fas fa-sign-out-alt mb-2 text-xl"></i><br>PULANG
+        </button>
+    </div>
+</div>
 
-        async function handleLogin() {
-            const id = document.getElementById('user-id').value.trim();
-            const pin = document.getElementById('user-pin').value.trim();
-            if (!id || !pin) return alert("Isi ID dan PIN!");
+<script>
+// Logic JavaScript takeAbsen yang diperbarui untuk koordinat & atensi
+async function takeAbsen(tipe) {
+    if(!navigator.geolocation) return alert("GPS tidak didukung!");
+    
+    navigator.geolocation.getCurrentPosition(async (pos) => {
+        const payload = {
+            action: tipe,
+            id: currentUser.id,
+            nama: currentUser.nama,
+            lat: pos.coords.latitude,
+            lng: pos.coords.longitude
+        };
 
-            const btn = document.getElementById('btn-login');
-            btn.innerText = "SEDANG VERIFIKASI...";
-            btn.disabled = true;
-
-            try {
-                const response = await fetch(API_URL, {
-                    method: 'POST',
-                    redirect: 'follow',
-                    body: JSON.stringify({ action: "login", id: id, pin: pin }),
-                    headers: { 'Content-Type': 'text/plain;charset=utf-8' }
-                });
-
-                const data = await response.json();
-                if (data.result === 'success') {
-                    currentUser = data.user;
-                    document.getElementById('login-page').classList.add('hidden');
-                    document.getElementById('main-page').classList.remove('hidden');
-                    document.getElementById('display-name').innerText = currentUser.nama;
-                    document.getElementById('display-divisi').innerText = currentUser.divisi;
-                } else {
-                    alert("❌ GAGAL: " + data.message);
-                }
-            } catch (err) {
-                alert("Koneksi Error. Pastikan URL API benar.");
-            } finally {
-                btn.innerText = "MASUK SISTEM";
-                btn.disabled = false;
-            }
-        }
-
-        async function takeAbsen(tipe) {
-            if (!currentUser) return;
-            if (!confirm("Konfirmasi Absen " + tipe + "?")) return;
-
-            const btn = tipe === 'DATANG' ? document.getElementById('btn-datang') : document.getElementById('btn-pulang');
-            const oldText = btn.innerText;
-            btn.innerText = "MENGIRIM...";
-            btn.disabled = true;
-
-            try {
-                const response = await fetch(API_URL, {
-                    method: 'POST',
-                    redirect: 'follow',
-                    body: JSON.stringify({ action: tipe, id: currentUser.id, nama: currentUser.nama }),
-                    headers: { 'Content-Type': 'text/plain;charset=utf-8' }
-                });
-
-                const res = await response.json();
-                alert(res.result === 'success' ? "✅ " + res.message : "⚠️ " + res.message);
-            } catch (err) {
-                alert("Gagal kirim data absen!");
-            } finally {
-                btn.innerText = oldText;
-                btn.disabled = false;
-            }
-        }
-    </script>
-</body>
-</html>
+        try {
+            const res = await fetch(API_URL, {
+                method: 'POST',
+                body: JSON.stringify(payload)
+            });
+            const out = await res.json();
+            
+            // Tampilkan ke UI
+            document.getElementById('feedback-panel').classList.remove('hidden');
+            document.getElementById('atensi-result').innerText = out.message;
+            if(tipe === 'PULANG') document.getElementById('durasi-result').innerText = "Total Kerja: " + out.durasi;
+            
+            alert("Sistem: " + out.message);
+        } catch (e) { alert("Gagal kirim data!"); }
+    });
+}
+</script>
