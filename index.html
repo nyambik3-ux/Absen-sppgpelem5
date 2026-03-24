@@ -12,6 +12,7 @@
         .glass { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.1); border-radius: 28px; }
         .btn-grad { background: linear-gradient(135deg, #3b82f6, #1d4ed8); transition: 0.2s; }
         .btn-grad:active { transform: scale(0.95); }
+        #avatar-container { background-position: center; background-size: cover; }
     </style>
 </head>
 <body>
@@ -22,8 +23,8 @@
         </div>
         <h1 class="text-2xl font-black mb-8">PELEM 5 LOGIN</h1>
         <div class="space-y-4">
-            <input type="text" id="user-id" placeholder="ID Karyawan" class="w-full bg-slate-900/50 p-4 rounded-xl outline-none border border-white/10 focus:border-blue-500">
-            <input type="password" id="user-pin" placeholder="PIN" class="w-full bg-slate-900/50 p-4 rounded-xl outline-none border border-white/10 focus:border-blue-500">
+            <input type="text" id="user-id" placeholder="ID Karyawan" class="w-full bg-slate-900/50 p-4 rounded-xl outline-none border border-white/10 focus:border-blue-500 text-white">
+            <input type="password" id="user-pin" placeholder="PIN" class="w-full bg-slate-900/50 p-4 rounded-xl outline-none border border-white/10 focus:border-blue-500 text-white">
             <button onclick="handleLogin()" id="btn-login" class="btn-grad w-full py-4 rounded-xl font-bold uppercase tracking-widest">Masuk</button>
         </div>
     </div>
@@ -33,8 +34,8 @@
             <div id="avatar-container" class="relative group w-16 h-16 rounded-full bg-blue-600 flex items-center justify-center text-2xl font-black overflow-hidden border-2 border-white/20 shadow-xl">
                 <span id="avatar-txt">--</span>
                 <label class="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 flex items-center justify-center cursor-pointer transition-all">
-                    <i class="fas fa-camera text-xs"></i>
-                    <input type="file" class="hidden" accept="image/*" onchange="uploadFoto(this)">
+                    <i class="fas fa-camera text-xs text-white"></i>
+                    <input type="file" id="input-foto" class="hidden" accept="image/*" onchange="uploadFoto(this)">
                 </label>
             </div>
             <div>
@@ -76,10 +77,12 @@
     </div>
 
     <script>
+        // KONFIGURASI (PASTIKAN URL EXEC BENAR)
         const API_URL = "https://script.google.com/macros/s/AKfycbzlWKh-cyPQ_XL-3aiiJkFfh_-aCe0aHGpgcHd3csB5x8R6fmbYXQH3-8bh6OVi3twVyw/exec";
         const IMGBB_KEY = "db424c7743b9662f9bbbe42979c8e23a";
         let user = null;
 
+        // CLOCK & GEOLOCATION JAM
         setInterval(() => {
             document.getElementById('clock').innerText = new Date().toLocaleTimeString('id-ID', {hour12:false});
             navigator.geolocation.getCurrentPosition(p => {
@@ -87,7 +90,7 @@
                 const info = document.getElementById('dist-info');
                 info.innerText = `Jarak: ${Math.round(d)}m dari Jl. Langkat`;
                 info.className = d > 100 ? "text-[10px] text-red-500 font-bold uppercase" : "text-[10px] text-emerald-500 font-bold uppercase";
-            });
+            }, null, { enableHighAccuracy: true });
         }, 1000);
 
         function calculateDistance(lat1, lon1, lat2, lon2) {
@@ -97,71 +100,124 @@
             return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
         }
 
+        // FUNGSI LOGIN
         async function handleLogin() {
             const id = document.getElementById('user-id').value;
             const pin = document.getElementById('user-pin').value;
             const btn = document.getElementById('btn-login');
+
             if(!id || !pin) return alert("Isi ID & PIN!");
             btn.innerText = "Verifikasi...";
-            
+            btn.disabled = true;
+
             try {
-                const r = await fetch(_URL, { method: 'POST', body: JSON.stringify({ action: "login", id, pin }) });
+                // Perbaikan TYPO: Menggunakan API_URL bukan _URL
+                const r = await fetch(API_URL, { 
+                    method: 'POST', 
+                    body: JSON.stringify({ action: "login", id: id, pin: pin }) 
+                });
                 const d = await r.json();
+
                 if (d.result === 'success') {
                     user = d.user;
                     document.getElementById('login-page').classList.add('hidden');
                     document.getElementById('main-page').classList.remove('hidden');
                     document.getElementById('display-name').innerText = user.nama;
-                    document.getElementById('display-divisi').innerText = user.divisi + " | " + user.ket;
+                    document.getElementById('display-divisi').innerText = user.divisi + " | " + (user.ket || "Staff");
                     document.getElementById('shift-info').innerText = "SHIFT: " + user.shift;
                     
                     updateAvatarUi(user.foto, user.nama);
                     document.getElementById('rekap-hadir').innerText = d.rekap.hadir;
                     document.getElementById('rekap-telat').innerText = d.rekap.telat;
                     document.getElementById('rekap-durasi').innerText = d.rekap.jam + "h";
-                } else alert(d.message);
-            } catch(e) { alert("Server Sibuk/Error"); }
-            finally { btn.innerText = "Masuk"; }
-        }
-
-        function updateAvatarUi(url, nama) {
-            const box = document.getElementById('avatar-container');
-            const txt = document.getElementById('avatar-txt');
-            if(url) {
-                box.style.backgroundImage = `url('${url}')`;
-                box.style.backgroundSize = "cover";
-                txt.innerText = "";
-            } else {
-                box.style.backgroundImage = "none";
-                txt.innerText = nama.split(' ').map(n=>n[0]).join('').toUpperCase().substring(0,2);
+                } else {
+                    alert(d.message);
+                }
+            } catch(e) { 
+                console.error(e);
+                alert("Server Sibuk/Error: Periksa URL Apps Script!"); 
+            } finally { 
+                btn.innerText = "Masuk"; 
+                btn.disabled = false;
             }
         }
 
-        async function uploadFoto(input) {
-            if (!input.files[0]) return;
+        // FUNGSI UPDATE UI FOTO
+        function updateAvatarUi(url, nama) {
+            const box = document.getElementById('avatar-container');
             const txt = document.getElementById('avatar-txt');
-            txt.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+            if(url && url !== "") {
+                box.style.backgroundImage = `url('${url}')`;
+                txt.innerText = "";
+            } else {
+                box.style.backgroundImage = "none";
+                txt.innerText = nama ? nama.split(' ').map(n=>n[0]).join('').toUpperCase().substring(0,2) : "--";
+            }
+        }
+
+        // FUNGSI UPLOAD FOTO
+        async function uploadFoto(input) {
+            if (!input.files[0] || !user) return;
+            const txt = document.getElementById('avatar-txt');
+            const originalContent = txt.innerHTML;
+            txt.innerHTML = '<i class="fas fa-spinner fa-spin text-sm"></i>';
+
             const form = new FormData();
             form.append("image", input.files[0]);
 
             try {
-                const r = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_KEY}`, { method: 'POST', body: form });
-                const d = await r.json();
-                const fotoUrl = d.data.url;
-                await fetch(API_URL, { method: 'POST', body: JSON.stringify({ action: "update_foto", id: user.id, fotoUrl }) });
-                updateAvatarUi(fotoUrl, user.nama);
-                alert("Foto Berhasil Diganti!");
-            } catch(e) { alert("Gagal Upload"); }
-            finally { txt.innerHTML = ""; }
+                // 1. UPLOAD KE IMGBB
+                const rImg = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_KEY}`, { method: 'POST', body: form });
+                const dImg = await rImg.json();
+                if(!dImg.success) throw new Error("ImgBB Upload Gagal");
+                
+                const fotoUrl = dImg.data.url;
+
+                // 2. SIMPAN URL KE GOOGLE SHEETS
+                const rGas = await fetch(API_URL, { 
+                    method: 'POST', 
+                    body: JSON.stringify({ action: "update_foto", id: user.id, fotoUrl: fotoUrl }) 
+                });
+                const dGas = await rGas.json();
+
+                if(dGas.result === 'success') {
+                    updateAvatarUi(fotoUrl, user.nama);
+                    alert("Foto Profil Berhasil Diperbarui!");
+                } else {
+                    alert("Gagal Simpan ke Sheets: " + dGas.message);
+                }
+            } catch(e) { 
+                console.error(e);
+                alert("Kesalahan: " + e.message); 
+            } finally { 
+                txt.innerHTML = originalContent; 
+            }
         }
 
+        // FUNGSI ABSENSI
         async function takeAbsen(tipe) {
+            const btnIn = document.getElementById('btn-in');
+            const btnOut = document.getElementById('btn-out');
+            
             navigator.geolocation.getCurrentPosition(async p => {
-                const r = await fetch(API_URL, { method: 'POST', body: JSON.stringify({ action: tipe, id: user.id, nama: user.nama, lat: p.coords.latitude, lng: p.coords.longitude }) });
-                const d = await r.json();
-                alert(d.message);
-                if(d.result === 'success') location.reload();
-            }, () => alert("GPS Wajib Aktif!"));
+                try {
+                    const r = await fetch(API_URL, { 
+                        method: 'POST', 
+                        body: JSON.stringify({ 
+                            action: tipe, 
+                            id: user.id, 
+                            nama: user.nama, 
+                            lat: p.coords.latitude, 
+                            lng: p.coords.longitude 
+                        }) 
+                    });
+                    const d = await r.json();
+                    alert(d.message);
+                    if(d.result === 'success') location.reload();
+                } catch(e) {
+                    alert("Gagal kirim data absen!");
+                }
+            }, () => alert("GPS Wajib Aktif untuk Absen!"));
         }
     </script>
 </body>
