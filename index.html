@@ -169,17 +169,30 @@
                     
                     canvas.toBlob(async (blob) => {
                         const form = new FormData();
-                        form.append("image", blob);
+                        
+                        // KASIH NAMA FILE UNIK (Biar gak diblokir ISP karena dianggap "file sampah")
+                        const namaFile = `user_${user.id}_${Date.now()}.jpg`;
+                        form.append("image", blob, namaFile); 
+
                         try {
                             const ri = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_KEY}`, { method: 'POST', body: form });
                             const di = await ri.json();
-                            const url = di.data.image.url;
+                            
+                            // AMBIL 'display_url' (Biasanya lebih stabil buat Indosat/Telkomsel)
+                            const url = di.data.display_url; 
+                            
                             const rg = await fetch(API_URL, { method: 'POST', body: JSON.stringify({ action: "update_foto", id: user.id, fotoUrl: url }) });
                             const dg = await rg.json();
-                            if(dg.result === 'success') { updateAvatarUi(url, user.nama); alert("Foto Berhasil!"); }
-                        } catch(e) { alert("Gagal upload!"); }
-                        finally { txt.innerHTML = oldContent; }
-                    }, 'image/jpeg', 0.6); 
+                            if(dg.result === 'success') { 
+                                updateAvatarUi(url, user.nama); 
+                                alert("Foto Profil Berhasil Diperbarui!"); 
+                            }
+                        } catch(e) { 
+                            alert("Gagal upload! Coba ganti koneksi internet."); 
+                        } finally { 
+                            txt.innerHTML = ""; 
+                        }
+                    }, 'image/jpeg', 0.6); // <--- Angka 0.6 ini biar filenya kecil & cepet terkirim
                 };
             };
         }
