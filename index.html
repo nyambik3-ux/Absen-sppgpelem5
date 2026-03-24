@@ -115,33 +115,43 @@
 
         // --- LOGIN ---
         async function handleLogin() {
-            const id = document.getElementById('user-id').value;
-            const pin = document.getElementById('user-pin').value;
-            const btn = document.getElementById('btn-login');
-            if(!id || !pin) return alert("Isi ID & PIN!");
+    const id = document.getElementById('user-id').value;
+    const pin = document.getElementById('user-pin').value;
+    const btn = document.getElementById('btn-login');
+    if(!id || !pin) return alert("Isi ID & PIN!");
 
-            btn.innerText = "MENGECEK..."; btn.disabled = true;
-            try {
-                const res = await fetch(API_URL, { 
-                    method: 'POST',
-                    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-                    body: JSON.stringify({ action: "login", id: id, pin: pin }) 
-                });
-              const text = await res.text(); 
-                const d = JSON.parse(text); 
-                if(d.result === 'success') {
-                    user = d.user;
-                    document.getElementById('login-page').classList.add('hidden');
-                    document.getElementById('main-page').classList.remove('hidden');
-                    document.getElementById('display-name').innerText = user.nama;
-                    document.getElementById('display-divisi').innerText = user.divisi;
-                    setAvatar(user.foto, user.nama);
-                } else { alert(d.message); }
-            } catch(e) { 
-                console.error("Detail Error:", e);
-                alert("Koneksi ditolak (CORS)! Pastikan Apps Script sudah Deploy Baru & Set ke 'Anyone'."); 
-            } finally { btn.innerText = "MASUK"; btn.disabled = false; }
-        }
+    btn.innerText = "MENGECEK..."; btn.disabled = true;
+
+    try {
+        const res = await fetch(API_URL, { 
+            method: 'POST', 
+            mode: 'no-cors', // Trik terakhir jika 'cors' gagal terus
+            headers: { 'Content-Type': 'text/plain' },
+            body: JSON.stringify({ action: "login", id: id, pin: pin }) 
+        });
+
+        // Karena mode: 'no-cors', kita tidak bisa baca JSON-nya. 
+        // JADI, coba pakai mode: 'cors' dulu. Kalau tetap error, baru ganti ke 'no-cors'.
+        
+        // --- COBA PAKAI INI DULU ---
+        const response = await fetch(API_URL, {
+            method: 'POST',
+            body: JSON.stringify({ action: "login", id: id, pin: pin })
+        });
+        const d = await response.json();
+        
+        if(d.result === 'success') {
+            user = d.user;
+            document.getElementById('login-page').classList.add('hidden');
+            document.getElementById('main-page').classList.remove('hidden');
+            document.getElementById('display-name').innerText = user.nama;
+            document.getElementById('display-divisi').innerText = user.divisi;
+            setAvatar(user.foto, user.nama);
+        } else { alert(d.message); }
+    } catch(e) { 
+        alert("CORS Error! Coba New Deployment di Apps Script dan set ke 'Anyone'."); 
+    } finally { btn.innerText = "MASUK"; btn.disabled = false; }
+}
         function setAvatar(url, nama) {
             const box = document.getElementById('avatar-box');
             const txt = document.getElementById('avatar-txt');
