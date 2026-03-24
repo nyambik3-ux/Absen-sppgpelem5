@@ -21,11 +21,11 @@
         <div class="w-16 h-16 bg-blue-600 rounded-2xl flex items-center justify-center mx-auto mb-6">
             <i class="fas fa-fingerprint text-3xl"></i>
         </div>
-        <h1 class="text-2xl font-black mb-8">PELEM 5 LOGIN</h1>
+        <h1 class="text-2xl font-black mb-8 text-white">PELEM 5 LOGIN</h1>
         <div class="space-y-4">
             <input type="text" id="user-id" placeholder="ID Karyawan" class="w-full bg-slate-900/50 p-4 rounded-xl outline-none border border-white/10 focus:border-blue-500 text-white">
             <input type="password" id="user-pin" placeholder="PIN" class="w-full bg-slate-900/50 p-4 rounded-xl outline-none border border-white/10 focus:border-blue-500 text-white">
-            <button onclick="handleLogin()" id="btn-login" class="btn-grad w-full py-4 rounded-xl font-bold uppercase tracking-widest">Masuk</button>
+            <button onclick="handleLogin()" id="btn-login" class="btn-grad w-full py-4 rounded-xl font-bold uppercase tracking-widest text-white shadow-lg">Masuk</button>
         </div>
     </div>
 
@@ -39,14 +39,14 @@
                 </label>
             </div>
             <div>
-                <h2 id="display-name" class="text-xl font-bold tracking-tight">...</h2>
+                <h2 id="display-name" class="text-xl font-bold tracking-tight text-white">...</h2>
                 <p id="display-divisi" class="text-xs text-slate-400 font-medium tracking-wide">...</p>
                 <span id="shift-info" class="mt-1 inline-block px-2 py-0.5 bg-blue-500/20 text-blue-400 text-[9px] font-bold rounded uppercase border border-blue-500/20 italic">SHIFT: --:--</span>
             </div>
         </div>
 
         <div class="glass p-6 text-center">
-            <div id="clock" class="text-5xl font-black tracking-tighter mb-1">00:00:00</div>
+            <div id="clock" class="text-5xl font-black tracking-tighter mb-1 text-white">00:00:00</div>
             <div id="dist-info" class="text-[10px] font-bold uppercase tracking-widest text-slate-500 animate-pulse">Mencari Lokasi...</div>
         </div>
 
@@ -66,10 +66,10 @@
         </div>
 
         <div class="grid grid-cols-2 gap-4">
-            <button onclick="takeAbsen('DATANG')" id="btn-in" class="bg-emerald-600 p-6 rounded-[28px] font-bold flex flex-col items-center gap-2 active:scale-95 transition-all shadow-lg shadow-emerald-900/20">
+            <button onclick="takeAbsen('DATANG')" id="btn-in" class="bg-emerald-600 p-6 rounded-[28px] font-bold flex flex-col items-center gap-2 active:scale-95 transition-all shadow-lg text-white">
                 <i class="fas fa-sign-in-alt text-xl"></i><span>MASUK</span>
             </button>
-            <button onclick="takeAbsen('PULANG')" id="btn-out" class="bg-orange-600 p-6 rounded-[28px] font-bold flex flex-col items-center gap-2 active:scale-95 transition-all shadow-lg shadow-orange-900/20">
+            <button onclick="takeAbsen('PULANG')" id="btn-out" class="bg-orange-600 p-6 rounded-[28px] font-bold flex flex-col items-center gap-2 active:scale-95 transition-all shadow-lg text-white">
                 <i class="fas fa-sign-out-alt text-xl"></i><span>PULANG</span>
             </button>
         </div>
@@ -77,12 +77,12 @@
     </div>
 
     <script>
-        // KONFIGURASI (PASTIKAN URL EXEC BENAR)
-        const API_URL = "https://script.google.com/macros/s/AKfycbwhr2y8BT5CdMZ0hDQqAVDMcbNYplaE1DixqX6FaBxBWq2Eq4Xgt_rWp1Ae1txMb_23rw/exec";
+        // URL SCRIPT LU YANG BARU
+        const API_URL = "https://script.google.com/macros/s/AKfycbyqHpwpLLp93_sxcwvWuwksNmlWSlTBZqmMxFJalBQqkJ1ggaKJGxl6WDhSvuBIXSSG2g/exec";
         const IMGBB_KEY = "db424c7743b9662f9bbbe42979c8e23a";
         let user = null;
 
-        // CLOCK & GEOLOCATION JAM
+        // CLOCK & DISTANCE
         setInterval(() => {
             document.getElementById('clock').innerText = new Date().toLocaleTimeString('id-ID', {hour12:false});
             navigator.geolocation.getCurrentPosition(p => {
@@ -100,7 +100,7 @@
             return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
         }
 
-        // FUNGSI LOGIN
+        // LOGIN (ANTY-CORS VERSION)
         async function handleLogin() {
             const id = document.getElementById('user-id').value;
             const pin = document.getElementById('user-pin').value;
@@ -111,7 +111,7 @@
             btn.disabled = true;
 
             try {
-                // Perbaikan TYPO: Menggunakan API_URL bukan _URL
+                // Gunakan mode polos tanpa header manual untuk menghindari CORS pre-flight
                 const r = await fetch(API_URL, { 
                     method: 'POST', 
                     body: JSON.stringify({ action: "login", id: id, pin: pin }) 
@@ -134,15 +134,13 @@
                     alert(d.message);
                 }
             } catch(e) { 
-                console.error(e);
-                alert("Server Sibuk/Error: Periksa URL Apps Script!"); 
+                alert("Gagal koneksi ke server. Pastikan Script sudah di-Deploy 'Anyone'!"); 
             } finally { 
                 btn.innerText = "Masuk"; 
                 btn.disabled = false;
             }
         }
 
-        // FUNGSI UPDATE UI FOTO
         function updateAvatarUi(url, nama) {
             const box = document.getElementById('avatar-container');
             const txt = document.getElementById('avatar-txt');
@@ -155,7 +153,6 @@
             }
         }
 
-        // FUNGSI UPLOAD FOTO
         async function uploadFoto(input) {
             if (!input.files[0] || !user) return;
             const txt = document.getElementById('avatar-txt');
@@ -166,14 +163,12 @@
             form.append("image", input.files[0]);
 
             try {
-                // 1. UPLOAD KE IMGBB
                 const rImg = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_KEY}`, { method: 'POST', body: form });
                 const dImg = await rImg.json();
-                if(!dImg.success) throw new Error("ImgBB Upload Gagal");
+                if(!dImg.success) throw new Error("ImgBB Gagal");
                 
                 const fotoUrl = dImg.data.url;
 
-                // 2. SIMPAN URL KE GOOGLE SHEETS
                 const rGas = await fetch(API_URL, { 
                     method: 'POST', 
                     body: JSON.stringify({ action: "update_foto", id: user.id, fotoUrl: fotoUrl }) 
@@ -184,21 +179,16 @@
                     updateAvatarUi(fotoUrl, user.nama);
                     alert("Foto Profil Berhasil Diperbarui!");
                 } else {
-                    alert("Gagal Simpan ke Sheets: " + dGas.message);
+                    alert("Gagal Simpan: " + dGas.message);
                 }
             } catch(e) { 
-                console.error(e);
-                alert("Kesalahan: " + e.message); 
+                alert("Kesalahan Upload: " + e.message); 
             } finally { 
                 txt.innerHTML = originalContent; 
             }
         }
 
-        // FUNGSI ABSENSI
         async function takeAbsen(tipe) {
-            const btnIn = document.getElementById('btn-in');
-            const btnOut = document.getElementById('btn-out');
-            
             navigator.geolocation.getCurrentPosition(async p => {
                 try {
                     const r = await fetch(API_URL, { 
@@ -215,9 +205,9 @@
                     alert(d.message);
                     if(d.result === 'success') location.reload();
                 } catch(e) {
-                    alert("Gagal kirim data absen!");
+                    alert("Gagal kirim absen!");
                 }
-            }, () => alert("GPS Wajib Aktif untuk Absen!"));
+            }, () => alert("GPS Wajib Aktif!"));
         }
     </script>
 </body>
