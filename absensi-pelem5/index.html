@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SPPG PELEM 5 - Absensi</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            min-height: 100vh;
+            color: white;
+            font-family: 'Inter', sans-serif;
+        }
+        .glass {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 24px;
+        }
+        .btn-primary {
+            background: linear-gradient(90deg, #3b82f6 0%, #2563eb 100%);
+            transition: all 0.3s ease;
+        }
+        .btn-primary:active { transform: scale(0.95); }
+        #camera-preview { width: 100%; border-radius: 15px; display: none; }
+    </style>
+</head>
+<body class="p-4 flex flex-col items-center">
+
+    <div id="login-page" class="w-full max-w-md mt-10 p-8 glass">
+        <div class="text-center mb-8">
+            <h1 class="text-3xl font-bold text-blue-400">PELEM 5</h1>
+            <p class="text-gray-400">Attendance System</p>
+        </div>
+        <input type="text" id="user-id" placeholder="ID Karyawan" class="w-full mb-4 p-4 bg-slate-800 rounded-xl border border-slate-700 outline-none focus:border-blue-500">
+        <input type="password" id="user-pin" placeholder="PIN" class="w-full mb-6 p-4 bg-slate-800 rounded-xl border border-slate-700 outline-none focus:border-blue-500">
+        <button onclick="handleLogin()" id="login-btn" class="w-full p-4 btn-primary rounded-xl font-bold text-lg">LOG IN</button>
+    </div>
+
+    <div id="main-page" class="w-full max-w-md hidden">
+        <div class="glass p-6 mb-4 flex items-center justify-between">
+            <div>
+                <h2 id="display-name" class="text-xl font-bold text-white">Halo, User!</h2>
+                <p id="display-divisi" class="text-sm text-blue-300">Divisi</p>
+            </div>
+            <div id="user-avatar" class="w-12 h-12 bg-blue-600 rounded-full flex items-center justify-center font-bold text-lg">U</div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-4 mb-6">
+            <div class="glass p-4 text-center">
+                <p class="text-xs text-gray-400 uppercase">Hadir Periode Ini</p>
+                <h3 id="stat-hadir" class="text-2xl font-bold text-blue-400">0 Hari</h3>
+            </div>
+            <div class="glass p-4 text-center">
+                <p class="text-xs text-gray-400 uppercase">Total Telat</p>
+                <h3 id="stat-telat" class="text-2xl font-bold text-red-400">0 Menit</h3>
+            </div>
+        </div>
+
+        <div class="glass p-6 mb-4 space-y-4 text-center">
+            <p id="realtime-clock" class="text-2xl font-mono text-white mb-4 italic">00:00:00</p>
+            <button onclick="takeAbsen('DATANG')" class="w-full p-5 bg-green-600 rounded-2xl font-bold flex items-center justify-center gap-3">
+                <i class="fas fa-sign-in-alt"></i> ABSEN DATANG
+            </button>
+            <button onclick="takeAbsen('PULANG')" class="w-full p-5 bg-orange-600 rounded-2xl font-bold flex items-center justify-center gap-3">
+                <i class="fas fa-sign-out-alt"></i> ABSEN PULANG
+            </button>
+            <button onclick="showIzinForm()" class="w-full p-3 bg-slate-700 rounded-xl text-sm font-semibold">Ajukan Izin / Sakit</button>
+        </div>
+    </div>
+
+    <div id="izin-page" class="w-full max-w-md hidden glass p-6">
+        <h2 class="text-xl font-bold mb-4">Pengajuan Izin</h2>
+        <select id="izin-kategori" class="w-full mb-4 p-3 bg-slate-800 rounded-lg">
+            <option value="SAKIT">SAKIT</option>
+            <option value="IZIN">IZIN KEPERLUAN</option>
+            <option value="DINAS">DINAS LUAR</option>
+        </select>
+        <textarea id="izin-alasan" placeholder="Alasan detail..." class="w-full mb-4 p-3 bg-slate-800 rounded-lg h-24"></textarea>
+        <video id="camera-preview" autoplay playsinline class="mb-4"></video>
+        <button onclick="capturePhoto()" id="btn-camera" class="w-full p-3 bg-blue-500 rounded-lg mb-4">Ambil Foto Bukti</button>
+        <canvas id="canvas-photo" class="hidden"></canvas>
+        <button onclick="submitIzin()" id="btn-submit-izin" class="w-full p-4 btn-primary rounded-xl font-bold">KIRIM IZIN</button>
+        <button onclick="cancelIzin()" class="w-full mt-4 text-gray-400 text-sm">Batal</button>
+    </div>
+
+    <script>
+        const API_URL = "https://script.google.com/macros/s/AKfycbyVWJbY_WlPxIM4MQsKzH0JpdGHd2UzbRWHU3Q_RWAVcax_AJ9rzjonYnYBVyRKv11FeA/exec";
+        let currentUser = null;
+        let photoBase64 = "";
+
+        // CLOCK
+        setInterval(() => {
+            const now = new Date();
+            document.getElementById('realtime-clock').innerText = now.toLocaleTimeString('id-ID');
+        }, 1000);
+
+        async function handleLogin() {
+            const id = document.getElementById('user-id').value;
+            const pin = document.getElementById('user-pin').value;
+            const btn = document.getElementById('login-btn');
+            
+            btn.innerText = "CHECKING...";
+            btn.disabled = true;
+
+            try {
+                const res = await fetch(API_URL, {
+                    method: 'POST',
+                    body: JSON.stringify({ action: 'login', id, pin })
+                });
+                const data = await res.json();
+                
+                if(data.result === 'success') {
+                    currentUser = data.user;
+                    document.getElementById('login-page').classList.add('hidden');
+                    document.getElementById('main-page').classList.remove('hidden');
+                    document.getElementById('display-name').innerText = "Halo, " + currentUser.nama;
+                    document.getElementById('display-divisi').innerText = currentUser.divisi;
+                } else {
+                    alert(data.message);
+                }
+            } catch (e) { alert("Koneksi Error!"); }
+            btn.innerText = "LOG IN";
+            btn.disabled = false;
+        }
+
+        async function takeAbsen(tipe) {
+            if(!confirm(`Yakin ingin Absen ${tipe}?`)) return;
+            
+            navigator.geolocation.getCurrentPosition(async (pos) => {
+                const payload = {
+                    action: 'absen',
+                    id: currentUser.id,
+                    nama: currentUser.nama,
+                    tipe: tipe,
+                    lat: pos.coords.latitude,
+                    long: pos.coords.longitude
+                };
+
+                const res = await fetch(API_URL, { method: 'POST', body: JSON.stringify(payload) });
+                const result = await res.json();
+                
+                if(result.result === 'success') {
+                    alert(`Berhasil Absen ${tipe}! Status: ${result.status}`);
+                } else {
+                    alert(result.message);
+                }
+            }, (err) => alert("Aktifkan GPS anda!"));
+        }
+
+        // FUNGSI KAMERA & IZIN
+        async function showIzinForm() {
+            document.getElementById('main-page').classList.add('hidden');
+            document.getElementById('izin-page').classList.remove('hidden');
+            const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
+            document.getElementById('camera-preview').srcObject = stream;
+            document.getElementById('camera-preview').style.display = 'block';
+        }
+
+        function capturePhoto() {
+            const video = document.getElementById('camera-preview');
+            const canvas = document.getElementById('canvas-photo');
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            canvas.getContext('2d').drawImage(video, 0, 0);
+            photoBase64 = canvas.toDataURL('image/jpeg').split(',')[1];
+            video.style.display = 'none';
+            alert("Foto Tersimpan!");
+        }
+
+        async function submitIzin() {
+            if(!photoBase64) return alert("Wajib ambil foto bukti!");
+            const payload = {
+                action: 'izin',
+                id: currentUser.id,
+                nama: currentUser.nama,
+                kategori: document.getElementById('izin-kategori').value,
+                alasan: document.getElementById('izin-alasan').value,
+                foto: photoBase64
+            };
+            const res = await fetch(API_URL, { method: 'POST', body: JSON.stringify(payload) });
+            const data = await res.json();
+            if(data.result === 'success') {
+                alert("Izin Berhasil Dikirim!");
+                location.reload();
+            }
+        }
+    </script>
+</body>
+</html>
