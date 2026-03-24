@@ -123,10 +123,12 @@
             btn.innerText = "MENGECEK..."; btn.disabled = true;
             try {
                 const res = await fetch(API_URL, { 
-                    method: 'POST', 
+                    method: 'POST',
+                    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
                     body: JSON.stringify({ action: "login", id: id, pin: pin }) 
                 });
-                const d = await res.json();
+              const text = await res.text(); 
+                const d = JSON.parse(text); 
                 if(d.result === 'success') {
                     user = d.user;
                     document.getElementById('login-page').classList.add('hidden');
@@ -135,10 +137,11 @@
                     document.getElementById('display-divisi').innerText = user.divisi;
                     setAvatar(user.foto, user.nama);
                 } else { alert(d.message); }
-            } catch(e) { alert("Gagal koneksi! Cek URL Apps Script lu."); }
-            finally { btn.innerText = "MASUK"; btn.disabled = false; }
+            } catch(e) { 
+                console.error("Detail Error:", e);
+                alert("Koneksi ditolak (CORS)! Pastikan Apps Script sudah Deploy Baru & Set ke 'Anyone'."); 
+            } finally { btn.innerText = "MASUK"; btn.disabled = false; }
         }
-
         function setAvatar(url, nama) {
             const box = document.getElementById('avatar-box');
             const txt = document.getElementById('avatar-txt');
