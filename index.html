@@ -9,7 +9,7 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;700;800&display=swap');
         body { background: #0f172a; color: white; font-family: 'Plus Jakarta Sans', sans-serif; min-height: 100vh; display: flex; justify-content: center; align-items: center; padding: 20px; }
-        .glass { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.1); border-radius: 24px; }
+        .glass { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.1); border-radius: 28px; }
         .btn-grad { background: linear-gradient(135deg, #3b82f6, #1d4ed8); transition: 0.2s; }
         .btn-grad:active { transform: scale(0.95); }
     </style>
@@ -17,65 +17,67 @@
 <body>
 
     <div id="login-page" class="glass p-10 w-full max-w-sm text-center">
-        <div class="w-20 h-20 bg-blue-600 rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-xl shadow-blue-500/20">
-            <i class="fas fa-fingerprint text-4xl"></i>
+        <div class="w-16 h-16 bg-blue-600 rounded-2xl flex items-center justify-center mx-auto mb-6">
+            <i class="fas fa-fingerprint text-3xl"></i>
         </div>
-        <h1 class="text-2xl font-extrabold mb-8 uppercase tracking-tighter">Pelem 5 Login</h1>
+        <h1 class="text-2xl font-black mb-8">PELEM 5 LOGIN</h1>
         <div class="space-y-4">
-            <input type="text" id="user-id" placeholder="ID Karyawan" class="w-full bg-slate-900/50 border border-white/10 p-4 rounded-xl outline-none focus:border-blue-500">
-            <input type="password" id="user-pin" placeholder="PIN Keamanan" class="w-full bg-slate-900/50 border border-white/10 p-4 rounded-xl outline-none focus:border-blue-500">
+            <input type="text" id="user-id" placeholder="ID Karyawan" class="w-full bg-slate-900/50 p-4 rounded-xl outline-none border border-white/10 focus:border-blue-500">
+            <input type="password" id="user-pin" placeholder="PIN" class="w-full bg-slate-900/50 p-4 rounded-xl outline-none border border-white/10 focus:border-blue-500">
             <button onclick="handleLogin()" id="btn-login" class="btn-grad w-full py-4 rounded-xl font-bold uppercase tracking-widest">Masuk</button>
         </div>
     </div>
 
     <div id="main-page" class="hidden w-full max-w-md space-y-4">
         <div class="glass p-6 flex items-center gap-4 border-l-8 border-blue-500">
-            <div id="avatar" class="w-16 h-16 rounded-full bg-blue-600 flex items-center justify-center text-2xl font-black overflow-hidden border-2 border-white/20"></div>
+            <div id="avatar-container" class="relative group w-16 h-16 rounded-full bg-blue-600 flex items-center justify-center text-2xl font-black overflow-hidden border-2 border-white/20 shadow-xl">
+                <span id="avatar-txt">--</span>
+                <label class="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 flex items-center justify-center cursor-pointer transition-all">
+                    <i class="fas fa-camera text-xs"></i>
+                    <input type="file" class="hidden" accept="image/*" onchange="uploadFoto(this)">
+                </label>
+            </div>
             <div>
-                <p class="text-[10px] text-blue-400 font-bold uppercase">Karyawan Aktif</p>
-                <h2 id="display-name" class="text-xl font-bold">...</h2>
-                <p id="display-divisi" class="text-xs text-slate-400">...</p>
+                <h2 id="display-name" class="text-xl font-bold tracking-tight">...</h2>
+                <p id="display-divisi" class="text-xs text-slate-400 font-medium tracking-wide">...</p>
+                <span id="shift-info" class="mt-1 inline-block px-2 py-0.5 bg-blue-500/20 text-blue-400 text-[9px] font-bold rounded uppercase border border-blue-500/20 italic">SHIFT: --:--</span>
             </div>
         </div>
 
         <div class="glass p-6 text-center">
             <div id="clock" class="text-5xl font-black tracking-tighter mb-1">00:00:00</div>
-            <div id="dist-info" class="text-[10px] font-bold uppercase">Mencari Lokasi...</div>
+            <div id="dist-info" class="text-[10px] font-bold uppercase tracking-widest text-slate-500 animate-pulse">Mencari Lokasi...</div>
         </div>
 
         <div class="grid grid-cols-3 gap-3">
             <div class="glass p-4 text-center">
-                <p class="text-[9px] text-slate-500 font-bold">HADIR</p>
+                <p class="text-[9px] text-slate-500 font-bold uppercase">Hadir</p>
                 <p id="rekap-hadir" class="text-xl font-black text-emerald-400">0</p>
             </div>
             <div class="glass p-4 text-center">
-                <p class="text-[9px] text-slate-500 font-bold">TELAT</p>
+                <p class="text-[9px] text-slate-500 font-bold uppercase">Telat</p>
                 <p id="rekap-telat" class="text-xl font-black text-yellow-500">0</p>
             </div>
             <div class="glass p-4 text-center">
-                <p class="text-[9px] text-slate-500 font-bold">JAM KERJA</p>
+                <p class="text-[9px] text-slate-500 font-bold uppercase">Durasi</p>
                 <p id="rekap-durasi" class="text-xl font-black text-white">0h</p>
             </div>
         </div>
 
-        <div id="feedback" class="hidden glass p-4 border-l-4 border-emerald-500">
-            <p id="fb-msg" class="text-sm font-bold"></p>
-            <p id="fb-dur" class="text-[10px] text-slate-400"></p>
-        </div>
-
         <div class="grid grid-cols-2 gap-4">
-            <button onclick="takeAbsen('DATANG')" id="btn-in" class="bg-emerald-600 p-6 rounded-3xl font-bold flex flex-col items-center gap-2 transition-all active:scale-95 shadow-lg shadow-emerald-900/20">
-                <i class="fas fa-sign-in-alt text-xl"></i><span>DATANG</span>
+            <button onclick="takeAbsen('DATANG')" id="btn-in" class="bg-emerald-600 p-6 rounded-[28px] font-bold flex flex-col items-center gap-2 active:scale-95 transition-all shadow-lg shadow-emerald-900/20">
+                <i class="fas fa-sign-in-alt text-xl"></i><span>MASUK</span>
             </button>
-            <button onclick="takeAbsen('PULANG')" id="btn-out" class="bg-orange-600 p-6 rounded-3xl font-bold flex flex-col items-center gap-2 transition-all active:scale-95 shadow-lg shadow-orange-900/20">
+            <button onclick="takeAbsen('PULANG')" id="btn-out" class="bg-orange-600 p-6 rounded-[28px] font-bold flex flex-col items-center gap-2 active:scale-95 transition-all shadow-lg shadow-orange-900/20">
                 <i class="fas fa-sign-out-alt text-xl"></i><span>PULANG</span>
             </button>
         </div>
-        <button onclick="location.reload()" class="w-full text-[10px] text-slate-600 font-bold uppercase py-4">Keluar Sistem</button>
+        <button onclick="location.reload()" class="w-full py-4 text-[10px] text-slate-600 font-bold uppercase tracking-[0.4em]">Logout System</button>
     </div>
 
     <script>
         const API_URL = "https://script.google.com/macros/s/AKfycbzlWKh-cyPQ_XL-3aiiJkFfh_-aCe0aHGpgcHd3csB5x8R6fmbYXQH3-8bh6OVi3twVyw/exec";
+        const IMGBB_KEY = "f339ea5101b01a5d9cae669d6a1d18be";
         let user = null;
 
         setInterval(() => {
@@ -83,15 +85,14 @@
             navigator.geolocation.getCurrentPosition(p => {
                 const d = calculateDistance(p.coords.latitude, p.coords.longitude, -7.749941, 112.174396);
                 const info = document.getElementById('dist-info');
-                info.innerText = `Jarak: ${Math.round(d)}m dari kantor`;
+                info.innerText = `Jarak: ${Math.round(d)}m dari Jl. Langkat`;
                 info.className = d > 100 ? "text-[10px] text-red-500 font-bold uppercase" : "text-[10px] text-emerald-500 font-bold uppercase";
             });
         }, 1000);
 
         function calculateDistance(lat1, lon1, lat2, lon2) {
             const R = 6371e3;
-            const dLat = (lat2-lat1) * Math.PI/180;
-            const dLon = (lon2-lon1) * Math.PI/180;
+            const dLat = (lat2-lat1)*Math.PI/180, dLon = (lon2-lon1)*Math.PI/180;
             const a = Math.sin(dLat/2)**2 + Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dLon/2)**2;
             return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
         }
@@ -100,7 +101,9 @@
             const id = document.getElementById('user-id').value;
             const pin = document.getElementById('user-pin').value;
             const btn = document.getElementById('btn-login');
-            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+            if(!id || !pin) return alert("Isi ID & PIN!");
+            btn.innerText = "Verifikasi...";
+            
             try {
                 const r = await fetch(API_URL, { method: 'POST', body: JSON.stringify({ action: "login", id, pin }) });
                 const d = await r.json();
@@ -109,36 +112,56 @@
                     document.getElementById('login-page').classList.add('hidden');
                     document.getElementById('main-page').classList.remove('hidden');
                     document.getElementById('display-name').innerText = user.nama;
-                    document.getElementById('display-divisi').innerText = user.divisi;
+                    document.getElementById('display-divisi').innerText = user.divisi + " | " + user.ket;
+                    document.getElementById('shift-info').innerText = "SHIFT: " + user.shift;
                     
-                    const av = document.getElementById('avatar');
-                    if(user.foto) av.innerHTML = `<img src="${user.foto}" class="w-full h-full object-cover">`;
-                    else av.innerText = user.nama.split(' ').map(n=>n[0]).join('').substring(0,2).toUpperCase();
-                    
+                    updateAvatarUi(user.foto, user.nama);
                     document.getElementById('rekap-hadir').innerText = d.rekap.hadir;
                     document.getElementById('rekap-telat').innerText = d.rekap.telat;
                     document.getElementById('rekap-durasi').innerText = d.rekap.jam + "h";
                 } else alert(d.message);
-            } catch(e) { alert("Error Server"); }
+            } catch(e) { alert("Server Sibuk/Error"); }
             finally { btn.innerText = "Masuk"; }
         }
 
+        function updateAvatarUi(url, nama) {
+            const box = document.getElementById('avatar-container');
+            const txt = document.getElementById('avatar-txt');
+            if(url) {
+                box.style.backgroundImage = `url('${url}')`;
+                box.style.backgroundSize = "cover";
+                txt.innerText = "";
+            } else {
+                box.style.backgroundImage = "none";
+                txt.innerText = nama.split(' ').map(n=>n[0]).join('').toUpperCase().substring(0,2);
+            }
+        }
+
+        async function uploadFoto(input) {
+            if (!input.files[0]) return;
+            const txt = document.getElementById('avatar-txt');
+            txt.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+            const form = new FormData();
+            form.append("image", input.files[0]);
+
+            try {
+                const r = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_KEY}`, { method: 'POST', body: form });
+                const d = await r.json();
+                const fotoUrl = d.data.url;
+                await fetch(API_URL, { method: 'POST', body: JSON.stringify({ action: "update_foto", id: user.id, fotoUrl }) });
+                updateAvatarUi(fotoUrl, user.nama);
+                alert("Foto Berhasil Diganti!");
+            } catch(e) { alert("Gagal Upload"); }
+            finally { txt.innerHTML = ""; }
+        }
+
         async function takeAbsen(tipe) {
-            const btn = tipe === 'DATANG' ? document.getElementById('btn-in') : document.getElementById('btn-out');
-            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
             navigator.geolocation.getCurrentPosition(async p => {
-                try {
-                    const r = await fetch(API_URL, { method: 'POST', body: JSON.stringify({ action: tipe, id: user.id, nama: user.nama, lat: p.coords.latitude, lng: p.coords.longitude }) });
-                    const d = await r.json();
-                    const fb = document.getElementById('feedback');
-                    fb.classList.remove('hidden');
-                    fb.style.borderColor = d.result === 'success' ? '#10b981' : '#ef4444';
-                    document.getElementById('fb-msg').innerText = d.message;
-                    if(tipe === 'PULANG' && d.durasi) document.getElementById('fb-dur').innerText = "Total: " + d.durasi;
-                    alert(d.message);
-                } catch(e) { alert("Gagal kirim"); }
-                finally { btn.innerHTML = tipe; }
-            });
+                const r = await fetch(API_URL, { method: 'POST', body: JSON.stringify({ action: tipe, id: user.id, nama: user.nama, lat: p.coords.latitude, lng: p.coords.longitude }) });
+                const d = await r.json();
+                alert(d.message);
+                if(d.result === 'success') location.reload();
+            }, () => alert("GPS Wajib Aktif!"));
         }
     </script>
 </body>
