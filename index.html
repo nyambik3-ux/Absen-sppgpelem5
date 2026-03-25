@@ -109,11 +109,37 @@
             else if (d.statusHariIni === "PULANG") { btnT.innerText = "DONE"; btnS.innerText = "SAMPAI BESOK"; document.getElementById('main-btn').disabled = true; document.getElementById('main-btn').style.opacity = "0.5"; }
             else { btnT.innerText = "DATANG"; btnS.innerText = "KLIK UNTUK ABSEN"; }
 
-            if(userData.foto && userData.foto.includes("http")) {
-                const img = document.getElementById('user-photo');
-                img.src = userData.foto; img.classList.remove('hidden');
-                document.getElementById('initials').classList.add('hidden');
-            }
+           if(userData.foto && userData.foto.includes("http")) {
+    const img = document.getElementById('user-photo');
+    const initials = document.getElementById('initials');
+
+    // 1. TEKNIK CACHE BUSTER (Wajib!)
+    // Kita tambah &t=[angka_acak] supaya browser dipaksa ambil foto terbaru, bukan cache 403 lama
+    const cleanUrl = userData.foto.replace("&t=", "").split("&t=")[0]; // Bersihkan link lama
+    const finalUrl = cleanUrl + "&t=" + new Date().getTime(); 
+
+    // 2. SET CROSSORIGIN
+    // Penting agar browser tidak curiga saat narik gambar dari domain Google Drive
+    img.crossOrigin = "anonymous";
+    img.src = finalUrl;
+
+    // 3. TAMPILKAN JIKA BERHASIL
+    img.onload = () => {
+        img.classList.remove('hidden');
+        initials.classList.add('hidden');
+        console.log("✅ Foto Profil Terkoneksi!");
+    };
+
+    // 4. JIKA GAGAL (BACKUP PLAN)
+    // Kalau link 'uc?id=' diblokir, kita paksa pakai format thumbnail yang lebih ringan
+    img.onerror = () => {
+        console.warn("⚠️ Link Utama Gagal, Mencoba Jalur Alternatif...");
+        const fileId = userData.foto.split('id=')[1];
+        if(fileId) {
+            img.src = `https://lh3.googleusercontent.com/u/0/d/${fileId}=w200-h200-p-k-no-nu`;
+        }
+    };
+}
 
             if(d.history && d.history.length > 0) {
                 const hPanel = document.getElementById('history-panel');
