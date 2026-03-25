@@ -2,45 +2,71 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Absensi Pelem 5</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Absensi Pelem 5 - Digital</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap');
-        body { font-family: 'Inter', sans-serif; background-color: #020617; color: white; }
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap');
+        body { font-family: 'Plus Jakarta Sans', sans-serif; -webkit-tap-highlight-color: transparent; background-color: #020617; }
+        .status-pulse { animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: .4; } }
+        .bg-glass { background: rgba(15, 23, 42, 0.8); backdrop-filter: blur(12px); }
     </style>
 </head>
-<body class="p-4 min-h-screen flex flex-col items-center">
+<body class="text-slate-100 p-4 min-h-screen flex flex-col antialiased select-none">
 
-    <div class="w-full max-w-md flex flex-col gap-6">
-        <div class="bg-slate-900 border border-slate-800 p-5 rounded-3xl flex items-center gap-4">
-            <div class="w-14 h-14 rounded-xl bg-blue-600 flex items-center justify-center text-2xl font-black" id="initials">--</div>
-            <div>
-                <h1 id="display-name" class="font-bold text-lg">Siap Kerja?</h1>
-                <p id="display-divisi" class="text-blue-400 text-xs font-bold uppercase tracking-widest">Silahkan Login</p>
+    <div id="app-container" class="w-full max-w-lg mx-auto flex flex-col flex-1 gap-5">
+        
+        <div class="bg-glass border border-slate-800 p-5 rounded-3xl flex items-center gap-4 shadow-2xl">
+            <div onclick="document.getElementById('file-input').click()" class="relative w-16 h-16 rounded-2xl bg-gradient-to-tr from-blue-600 to-blue-400 flex items-center justify-center text-3xl font-black cursor-pointer overflow-hidden border-2 border-slate-700">
+                <span id="initials">--</span>
+                <img id="user-photo" class="hidden absolute inset-0 w-full h-full object-cover">
+            </div>
+            <input type="file" id="file-input" class="hidden" accept="image/*">
+            <div class="flex-1">
+                <h1 id="display-name" class="font-extrabold text-xl leading-tight italic">Siap Kerja?</h1>
+                <p id="display-divisi" class="text-blue-400 text-[10px] mt-1 font-black uppercase tracking-widest bg-blue-950/30 px-2 py-1 inline-block rounded-md border border-blue-900/50">SILAHKAN LOGIN</p>
             </div>
         </div>
 
-        <div class="text-center py-6">
-            <div id="live-clock" class="text-6xl font-black tabular-nums">00:00:00</div>
-            <div id="live-date" class="text-slate-500 text-sm mt-2">Memuat Tanggal...</div>
+        <div id="location-card" class="bg-slate-900/50 border border-slate-800 p-4 rounded-2xl flex items-center justify-between shadow-lg">
+            <div class="flex items-center gap-2">
+                <div id="status-dot" class="w-2.5 h-2.5 rounded-full bg-slate-700"></div>
+                <span id="location-text" class="text-[11px] font-bold uppercase tracking-widest text-slate-500 italic">Mencari Sinyal GPS...</span>
+            </div>
+            <span id="distance-meter" class="text-[11px] font-mono text-slate-500 bg-slate-800 px-2 py-1 rounded-lg font-bold">0 m</span>
         </div>
 
-        <div class="flex justify-center">
-            <button id="main-btn" onclick="handleAction()" class="w-52 h-52 rounded-full bg-blue-600 border-[12px] border-slate-900 shadow-2xl text-2xl font-black hover:scale-95 transition-all">
-                LOGIN
+        <div class="flex-1 flex flex-col justify-center items-center py-8 gap-10">
+            <div class="text-center">
+                <div id="live-clock" class="text-7xl font-black tracking-tighter tabular-nums text-white">00:00:00</div>
+                <p id="live-date" class="text-slate-500 text-[11px] font-bold uppercase mt-4 bg-slate-900 px-5 py-2 rounded-full border border-slate-800 inline-block tracking-widest italic">-- -- ----</p>
+            </div>
+
+            <button id="main-btn" onclick="handleAction()" class="relative w-56 h-56 rounded-full bg-slate-900 border-[10px] border-slate-950 flex flex-col items-center justify-center active:scale-90 transition-all shadow-2xl">
+                <span id="btn-text" class="text-white font-black text-4xl tracking-tighter">LOGIN</span>
+                <span id="btn-sub" class="text-slate-500 text-[10px] font-extrabold mt-2 uppercase tracking-widest italic">MASUKKAN ID</span>
             </button>
         </div>
 
-        <div class="bg-slate-900/50 border border-slate-800 p-4 rounded-2xl flex justify-between items-center text-xs font-bold">
-            <span id="location-text" class="text-slate-500">CEK LOKASI...</span>
-            <span id="distance-meter" class="bg-slate-800 px-2 py-1 rounded">0 m</span>
+        <div class="bg-slate-900 border-t border-slate-800 p-6 rounded-t-[40px] shadow-2xl mt-auto -mx-4 flex flex-col gap-4">
+            <p class="text-slate-600 text-[10px] font-black uppercase tracking-[0.3em]">PELEM 5 MONITORING</p>
+            <div class="flex justify-between items-end">
+                <div class="flex-1">
+                    <h3 id="info-periode" class="text-2xl font-black text-white leading-none tracking-tight">0 Hari</h3>
+                    <p class="text-slate-500 text-[10px] mt-3 font-semibold italic opacity-60">*Total Masuk (14 Hari Terakhir)</p>
+                </div>
+                <div class="text-right p-3 bg-slate-800/40 rounded-2xl border border-slate-700/50 min-w-[110px]">
+                    <span class="block text-[9px] text-slate-500 font-black uppercase mb-1">STATUS:</span>
+                    <span id="status-absen-display" class="text-sm font-black text-blue-400">NORMAL</span>
+                </div>
+            </div>
         </div>
     </div>
 
     <script>
-        const API_URL = "https://script.google.com/macros/s/AKfycbwYG_DGgpuY27RHI15Ny6x4KxhzpOWYYlNYJptjNo255FoyYORqkwnfvuxKs3I4ctt3/exec";
-        const TARGET_COORDS = { lat: -7.749894307797291, lng: 112.1744187592495 };
+        const API_URL = "https://script.google.com/macros/s/AKfycbwqUE7ndXHYp7u6s-MTygpt2TEGM3_fcKp3XyjBqr1eCRbI4kbE8PoEWryAZuhnH5JI/exec";
+        const TARGET_COORDS = { lat: -7.749894307797291, lng: 112.1744187592495 }; 
         const MAX_DISTANCE = 100;
 
         let userData = JSON.parse(localStorage.getItem('pelem5_user')) || null;
@@ -60,13 +86,18 @@
                     const dist = calculateDistance(pos.coords.latitude, pos.coords.longitude, TARGET_COORDS.lat, TARGET_COORDS.lng);
                     isInside = dist <= MAX_DISTANCE;
                     document.getElementById('distance-meter').innerText = `± ${Math.round(dist)} m`;
+                    
+                    const dot = document.getElementById('status-dot');
                     const txt = document.getElementById('location-text');
+                    
                     if(isInside) {
+                        dot.className = "w-2.5 h-2.5 rounded-full bg-emerald-500 status-pulse";
                         txt.innerText = "AREA PELEM 5";
-                        txt.className = "text-emerald-400";
+                        txt.className = "text-[11px] font-bold uppercase tracking-widest text-emerald-400";
                     } else {
+                        dot.className = "w-2.5 h-2.5 rounded-full bg-rose-600";
                         txt.innerText = "DILUAR JANGKAUAN";
-                        txt.className = "text-rose-500";
+                        txt.className = "text-[11px] font-bold uppercase tracking-widest text-slate-500 italic";
                     }
                 }, null, { enableHighAccuracy: true });
             }
@@ -85,13 +116,21 @@
             document.getElementById('display-name').innerText = userData.nama;
             document.getElementById('display-divisi').innerText = userData.divisi;
             document.getElementById('initials').innerText = userData.nama.substring(0,2).toUpperCase();
-            document.getElementById('main-btn').innerText = "DATANG";
+            if(userData.foto) {
+                const img = document.getElementById('user-photo');
+                img.src = userData.foto;
+                img.classList.remove('hidden');
+                document.getElementById('initials').classList.add('hidden');
+            }
+            document.getElementById('main-btn').className = "relative w-56 h-56 rounded-full bg-gradient-to-b from-blue-600 to-blue-800 border-[10px] border-slate-950 flex flex-col items-center justify-center active:scale-90 transition-all shadow-2xl";
+            document.getElementById('btn-text').innerText = "DATANG";
+            document.getElementById('btn-sub').innerText = "KLIK UNTUK ABSEN";
         }
 
         async function handleAction() {
             if (!userData) {
-                const id = prompt("Masukkan ID Karyawan:");
-                const pin = prompt("Masukkan PIN:");
+                const id = prompt("ID:");
+                const pin = prompt("PIN:");
                 if(!id || !pin) return;
                 try {
                     const r = await fetch(API_URL, { method: 'POST', body: JSON.stringify({ action: 'login', id, pin }) });
@@ -100,22 +139,53 @@
                         userData = d.user;
                         localStorage.setItem('pelem5_user', JSON.stringify(userData));
                         updateUI();
-                    } else { alert(d.message); }
-                } catch(e) { alert("Gagal koneksi ke server!"); }
+                    } else alert(d.message);
+                } catch(e) { alert("Server Error!"); }
                 return;
             }
 
-            if (!isInside) return alert("Anda harus berada di lokasi!");
-            
-            const action = document.getElementById('main-btn').innerText;
+            if (!isInside) return alert("Woi! Lu belum nyampe lokasi!");
+
+            const action = document.getElementById('btn-text').innerText;
+            const btn = document.getElementById('main-btn');
+            btn.disabled = true;
+
             try {
                 const r = await fetch(API_URL, { method: 'POST', body: JSON.stringify({ action, id: userData.id, nama: userData.nama, lat: 0, lng: 0 }) });
                 const d = await r.json();
-                alert(d.message);
-                if(d.result === 'success' && action === 'PULANG') { localStorage.clear(); location.reload(); }
-                else if(d.result === 'success') { document.getElementById('main-btn').innerText = "PULANG"; }
-            } catch(e) { alert("Error saat absen!"); }
+                
+                if(d.result === 'success') {
+                    // Update Info Periode & Status
+                    if(d.status_telat) document.getElementById('status-absen-display').innerText = d.status_telat;
+                    document.getElementById('info-periode').innerText = (d.message.match(/\d+/g) || ["0"])[0] + " Hari";
+                    
+                    alert(d.message);
+                    
+                    if(action === 'DATANG') {
+                        document.getElementById('btn-text').innerText = 'PULANG';
+                        document.getElementById('btn-sub').innerText = 'SELESAI KERJA';
+                    } else {
+                        localStorage.clear();
+                        location.reload();
+                    }
+                } else alert(d.message);
+            } catch(e) { alert("Gagal kirim data!"); }
+            btn.disabled = false;
         }
+
+        // Handle Foto
+        document.getElementById('file-input').onchange = async (e) => {
+            if(!userData) return;
+            const file = e.target.files[0];
+            const reader = new FileReader();
+            reader.onload = async () => {
+                const base64 = reader.result.split(',')[1];
+                const r = await fetch(API_URL, { method: 'POST', body: JSON.stringify({ action: 'update_foto', id: userData.id, base64Data: base64 }) });
+                const d = await r.json();
+                if(d.result === 'success') location.reload();
+            };
+            reader.readAsDataURL(file);
+        };
 
         updateUI();
         checkLocation();
