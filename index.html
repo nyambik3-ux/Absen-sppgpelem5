@@ -93,4 +93,122 @@
                     
                     const meterEl = document.getElementById('distance-meter');
                     const dotEl = document.getElementById('status-dot');
-                    const textEl = document.getElementById('location-text
+                    const textEl = document.getElementById('location-text');
+                    
+                    meterEl.innerText = `± ${Math.round(dist)} m`;
+                    if(isInside) {
+                        meterEl.className = "text-[11px] font-mono text-emerald-500 bg-emerald-950 px-2 py-0.5 rounded-md font-bold";
+                        dotEl.className = "w-2.5 h-2.5 rounded-full bg-emerald-500 status-pulse";
+                        textEl.innerText = "AREA PELEM 5 TERDETEKSI";
+                        textEl.classList.replace('text-slate-500', 'text-emerald-400');
+                    } else {
+                        meterEl.className = "text-[11px] font-mono text-rose-500 bg-rose-950 px-2 py-0.5 rounded-md font-bold";
+                        dotEl.className = "w-2.5 h-2.5 rounded-full bg-rose-500";
+                        textEl.innerText = "DILUAR JANGKAUAN";
+                        textEl.classList.replace('text-emerald-400', 'text-slate-500');
+                    }
+                });
+            }
+        }
+
+        function calculateDistance(lat1, lon1, lat2, lon2) {
+            const R = 6371e3;
+            const φ1 = lat1 * Math.PI/180;
+            const φ2 = lat2 * Math.PI/180;
+            const Δφ = (lat2-lat1) * Math.PI/180;
+            const Δλ = (lon2-lon1) * Math.PI/180;
+            const a = Math.sin(Δφ/2) * Math.sin(Δφ/2) + Math.cos(φ1) * Math.cos(φ2) * Math.sin(Δλ/2) * Math.sin(Δλ/2);
+            return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+        }
+
+        // --- 3. UI HANDLER ---
+        function updateUI() {
+            if (!userData) {
+                document.getElementById('btn-text').innerText = "LOGIN";
+                document.getElementById('main-btn').className = "relative w-52 h-52 rounded-full bg-slate-800 border-8 border-slate-950 flex flex-col items-center justify-center active:scale-95 transition-all shadow-2xl";
+                return;
+            }
+
+            document.getElementById('display-name').innerText = userData.nama;
+            document.getElementById('display-divisi').innerText = userData.divisi;
+            document.getElementById('initials').innerText = userData.nama.substring(0,2).toUpperCase();
+            
+            if(userData.foto && userData.foto !== "") {
+                const img = document.getElementById('user-photo');
+                img.src = userData.foto;
+                img.classList.remove('hidden');
+            }
+
+            // Ganti Button Style
+            const btn = document.getElementById('main-btn');
+            const glow = document.getElementById('btn-glow');
+            btn.className = "relative w-52 h-52 rounded-full bg-gradient-to-b from-blue-500 to-blue-700 shadow-2xl shadow-blue-900/50 border-8 border-slate-950 flex flex-col items-center justify-center active:scale-95 transition-all";
+            glow.classList.replace('opacity-20', 'opacity-50');
+            document.getElementById('btn-text').innerText = "DATANG";
+            document.getElementById('btn-sub').innerText = "KLIK UNTUK ABSEN";
+        }
+
+        async function handleAction() {
+            if (!userData) {
+                const id = prompt("Masukkan ID Karyawan:");
+                const pin = prompt("Masukkan PIN:");
+                if(!id || !pin) return;
+                
+                try {
+                    const r = await fetch(API_URL, { method: 'POST', body: JSON.stringify({ action: 'login', id, pin }) });
+                    const d = await r.json();
+                    if(d.result === 'success') {
+                        userData = d.user;
+                        localStorage.setItem('pelem5_user', JSON.stringify(userData));
+                        updateUI();
+                    } else alert(d.message);
+                } catch(e) { alert("Error Login!"); }
+                return;
+            }
+
+            if (!isInside) return alert("Anda harus berada di area Pelem 5!");
+
+            const action = document.getElementById('btn-text').innerText;
+            try {
+                const r = await fetch(API_URL, { 
+                    method: 'POST', 
+                    body: JSON.stringify({ 
+                        action: action, 
+                        id: userData.id, 
+                        nama: userData.nama,
+                        lat: 0, lng: 0 
+                    }) 
+                });
+                const d = await r.json();
+                alert(d.message);
+                if(d.result === 'success') {
+                    if(action === 'DATANG') {
+                        document.getElementById('btn-text').innerText = 'PULANG';
+                        document.getElementById('masuk-time').innerText = new Date().toLocaleTimeString('id-ID', {hour:'2-digit', minute:'2-digit'});
+                    } else {
+                        location.reload();
+                    }
+                }
+            } catch(e) { alert("Gagal Absen!"); }
+        }
+
+        // --- 4. PHOTO UPLOAD ---
+        document.getElementById('file-input').onchange = async (e) => {
+            const file = e.target.files[0];
+            const reader = new FileReader();
+            reader.onload = async () => {
+                const base64 = reader.result.split(',')[1];
+                const r = await fetch(API_URL, { method: 'POST', body: JSON.stringify({ action: 'update_foto', id: userData.id, base64Data: base64 }) });
+                const d = await r.json();
+                if(d.result === 'success') location.reload();
+            };
+            reader.readAsDataURL(file);
+        };
+
+        // Initialize
+        updateClock();
+        updateUI();
+        checkLocation();
+    </script>
+</body>
+</html>
