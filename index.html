@@ -24,4 +24,112 @@
         .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 30px; padding-top: 20px; border-top: 1px solid #eee; }
         .info-item span { display: block; font-size: 11px; color: var(--gray); margin-bottom: 4px; }
         .info-item b { font-size: 15px; color: var(--dark); }
-        .spinner { width: 22px; height: 2
+        .spinner { width: 22px; height: 22px; border: 3px solid rgba(255,255,255,0.3); border-radius: 50%; border-top-color: white; animation: spin 0.8s linear infinite; display: none; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <div class="card">
+            <img id="u-foto" src="https://via.placeholder.com/150" class="profile-img">
+            <h2 id="u-nama">Loading...</h2>
+            <p id="u-divisi" class="role">---</p>
+            <div id="u-badge" class="badge" style="background:#eee; color:#666;">CHECKING...</div>
+            <button id="main-btn" class="btn-main state-datang" onclick="handleAbsen()" disabled>
+                <div id="loader" class="spinner"></div>
+                <i id="btn-icon" class="fas fa-fingerprint"></i>
+                <span id="btn-text">TUNGGU...</span>
+            </button>
+            <div class="info-grid">
+                <div class="info-item"><span>Target Masuk</span><b id="u-target-masuk">--:--</b></div>
+                <div class="info-item"><span>Target Pulang</span><b id="u-target-pulang">--:--</b></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const scriptURL = "URL_WEB_APP_GAS_LU"; 
+        const KANTOR = { lat: -7.xxxxxx, lng: 112.xxxxxx, rad: 150 }; // GANTI KOORDINAT LU
+        let userData = JSON.parse(localStorage.getItem('user_pelem_5'));
+        let currentStatus = "DATANG";
+
+        window.onload = async () => {
+            if(!userData) return window.location.href = "login.html";
+            document.getElementById('u-nama').innerText = userData.nama;
+            document.getElementById('u-divisi').innerText = userData.divisi;
+            document.getElementById('u-foto').src = userData.foto || "https://via.placeholder.com/150";
+            document.getElementById('u-target-masuk').innerText = userData.jamMasuk;
+            document.getElementById('u-target-pulang').innerText = userData.jamPulang;
+            await syncStatus();
+        };
+
+        async function syncStatus() {
+            try {
+                const res = await fetch(scriptURL, { method: 'POST', body: JSON.stringify({ action: "login", id: userData.id, pin: "RECHECK" }) });
+                const data = await res.json();
+                currentStatus = data.statusHariIni;
+                renderUI();
+            } catch (e) { alert("Server Offline!"); }
+        }
+
+        function renderUI() {
+            const btn = document.getElementById('main-btn');
+            const txt = document.getElementById('btn-text');
+            const ico = document.getElementById('btn-icon');
+            const bdg = document.getElementById('u-badge');
+            btn.disabled = false;
+
+            if (currentStatus === "SELESAI") {
+                btn.className = "btn-main state-selesai"; btn.disabled = true;
+                txt.innerText = "SESI SELESAI"; ico.className = "fas fa-check-double";
+                bdg.innerText = "BERES ✓"; bdg.style.background = "#d1d1d6"; bdg.style.color = "#1c1c1e";
+            } else if (currentStatus === "PULANG") {
+                btn.className = "btn-main state-pulang"; txt.innerText = "ABSEN PULANG";
+                ico.className = "fas fa-door-open"; bdg.innerText = "STATUS: DATANG";
+                bdg.style.background = "#fff2e0"; bdg.style.color = "#ff9500";
+            } else {
+                btn.className = "btn-main state-datang"; txt.innerText = "ABSEN DATANG";
+                ico.className = "fas fa-fingerprint"; bdg.innerText = "STATUS: BELUM ABSEN";
+                bdg.style.background = "#e5f1ff"; bdg.style.color = "#007aff";
+            }
+        }
+
+        async function handleAbsen() {
+            setLoading(true);
+            navigator.geolocation.getCurrentPosition(async (pos) => {
+                const dist = getDist(pos.coords.latitude, pos.coords.longitude, KANTOR.lat, KANTOR.lng);
+                if(dist > KANTOR.rad) {
+                    alert(`🚨 DILUAR RADIUS!\nJarak Anda: ${Math.round(dist)} meter.\nMinimal 150 meter dari kantor.`);
+                    setLoading(false); return;
+                }
+
+                try {
+                    const res = await fetch(scriptURL, { method: 'POST', body: JSON.stringify({ action: currentStatus, id: userData.id, nama: userData.nama, lat: pos.coords.latitude, lng: pos.coords.longitude }) });
+                    const result = await res.json();
+                    if(result.result === "success") {
+                        // LOGIKA NOTIF TELAT
+                        const now = new Date();
+                        const jamSkrg = now.getHours().toString().padStart(2,'0') + ":" + now.getMinutes().toString().padStart(2,'0');
+                        if(currentStatus === "DATANG" && jamSkrg > userData.jamMasuk) {
+                            alert("⚠️ KAMU TERLAMBAT!\nTetap semangat kerja, Boss.");
+                        } else { alert("✅ BERHASIL!"); }
+                        location.reload();
+                    }
+                } catch(e) { alert("Gagal Kirim!"); setLoading(false); }
+            }, (err) => { alert("GPS Error!"); setLoading(false); }, { enableHighAccuracy: true });
+        }
+
+        function setLoading(s) {
+            document.getElementById('loader').style.display = s ? "block" : "none";
+            document.getElementById('btn-icon').style.display = s ? "none" : "block";
+            document.getElementById('main-btn').disabled = s;
+        }
+
+        function getDist(lat1, lon1, lat2, lon2) {
+            const R = 6371e3; const dLat = (lat2-lat1)*Math.PI/180; const dLon = (lon2-lon1)*Math.PI/180;
+            const a = Math.sin(dLat/2)*Math.sin(dLat/2) + Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dLon/2)*Math.sin(dLon/2);
+            return R * (2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)));
+        }
+    </script>
+</body>
+</html>
