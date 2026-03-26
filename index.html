@@ -4,213 +4,152 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Pelem 5 Pro Max</title>
-    <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap');
-        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #020617; color: white; -webkit-tap-highlight-color: transparent; }
-        .bg-glass { background: rgba(15, 23, 42, 0.8); backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.1); }
-        .animate-pulse-fast { animation: pulse 0.5s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
-        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: .5; } }
+        body { font-family: sans-serif; text-align: center; padding: 20px; background: #f4f4f4; }
+        .card { background: white; padding: 20px; border-radius: 15px; shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        #btn-absen { 
+            width: 80%; padding: 15px; font-size: 18px; font-weight: bold;
+            border: none; border-radius: 10px; color: white; cursor: pointer;
+            transition: 0.3s;
+        }
+        .bg-blue { background-color: #007bff; } /* Warna Datang */
+        .bg-orange { background-color: #fd7e14; } /* Warna Pulang */
+        .bg-gray { background-color: #6c757d; cursor: not-allowed !important; } /* Warna Selesai */
     </style>
 </head>
-<body class="p-4 min-h-screen flex flex-col items-center select-none">
-    <div class="w-full max-w-md space-y-5">
+<body>
+
+    <div class="card">
+        <h2 id="user-name">Memuat Data...</h2>
+        <p id="user-info">Cek status absensi hari ini...</p>
         
-        <div class="bg-glass p-5 rounded-3xl flex items-center gap-4 shadow-xl">
-            <div onclick="document.getElementById('file-input').click()" class="relative w-16 h-16 rounded-2xl bg-slate-800 flex items-center justify-center overflow-hidden border-2 border-slate-700 cursor-pointer group">
-                <span id="initials" class="text-2xl font-black italic text-slate-500">--</span>
-                <img id="user-photo" class="hidden absolute inset-0 w-full h-full object-cover">
-                <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center text-[8px] font-bold transition-opacity">UPDATE</div>
-            </div>
-            <input type="file" id="file-input" class="hidden" accept="image/*">
-            <div class="flex-1">
-                <h1 id="display-name" class="font-extrabold text-xl italic leading-tight uppercase tracking-tighter">GUEST USER</h1>
-                <p id="display-divisi" class="text-blue-400 text-[9px] font-black uppercase tracking-widest bg-blue-900/20 px-2 py-0.5 rounded border border-blue-900/50 mt-1 inline-block">Mencari Data...</p>
-            </div>
-        </div>
-
-        <div class="bg-slate-900/50 p-4 rounded-2xl border border-slate-800 space-y-2">
-            <div class="flex justify-between items-center">
-                <div class="flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest">
-                    <div id="status-dot" class="w-2.5 h-2.5 rounded-full bg-slate-700"></div>
-                    <span id="location-text" class="text-slate-500">GPS OFFLINE</span>
-                </div>
-                <span id="distance-meter" class="text-[10px] font-mono text-slate-400 italic">0 m</span>
-            </div>
-            <div class="flex justify-between px-1 text-[8px] font-bold text-slate-600 uppercase">
-                <span>Accuracy: <span id="gps-acc" class="text-slate-400">0m</span></span>
-                <span id="gps-status">SIGNAL: ---</span>
-            </div>
-        </div>
-
-        <div class="py-8 text-center flex flex-col items-center">
-            <div id="live-clock" class="text-7xl font-black tracking-tighter tabular-nums mb-8 drop-shadow-2xl">00:00:00</div>
-            <button id="main-btn" onclick="handleAction()" class="relative w-56 h-56 rounded-full bg-slate-900 border-[12px] border-slate-950 flex flex-col items-center justify-center active:scale-95 transition-all shadow-[0_0_50px_rgba(0,0,0,0.5)] overflow-hidden">
-                <span id="btn-text" class="text-3xl font-black italic z-10">LOGIN</span>
-                <span id="btn-sub" class="text-[9px] text-slate-500 font-bold uppercase mt-1 z-10">MASUKKAN ID</span>
-                <div id="btn-bg" class="absolute inset-0 bg-gradient-to-b from-blue-600 to-blue-900 opacity-0 transition-opacity duration-700"></div>
-            </button>
-        </div>
-
-        <div class="bg-slate-900 p-5 rounded-3xl border border-slate-800 flex justify-between items-end">
-            <div>
-                <p class="text-slate-600 text-[9px] font-black mb-1 italic">AKUMULASI KERJA</p>
-                <h3 id="info-periode" class="text-4xl font-black tracking-tighter">0 Hari</h3>
-            </div>
-            <div class="text-right">
-                <p class="text-slate-600 text-[9px] font-black mb-1 italic uppercase tracking-widest text-blue-400">Shift Kerja</p>
-                <span id="shift-display" class="font-black text-sm italic tracking-widest">-- : --</span>
-            </div>
-        </div>
-
-        <div id="history-panel" class="bg-slate-900/30 border border-slate-800 rounded-2xl p-4 hidden">
-            <p class="text-[9px] font-black text-slate-500 mb-3 italic uppercase tracking-widest">Aktivitas Terakhir</p>
-            <div id="history-list" class="space-y-3">
-                </div>
-        </div>
+        <hr>
+        
+        <button id="btn-absen" class="bg-blue" onclick="eksekusiAbsen()" disabled>
+            <span id="text-btn">MENGECEK...</span>
+        </button>
+        
+        <p id="msg-jarak" style="font-size: 12px; color: #666; margin-top: 10px;"></p>
     </div>
 
     <script>
-        const API_URL = "https://script.google.com/macros/s/AKfycbzaN8_f8seaol0AvFqXvsvgYdGJLtv9P89hAxqG4GboKJMe4eWGcoBKUyKAinQ0Q7NJ/exec"; 
-        const TARGET_COORDS = { lat: -7.867587225083626, lng: 112.01943672342513 };
-        const MAX_DISTANCE = 150; 
+        // --- CONFIGURATION ---
+        const scriptURL = "https://script.google.com/macros/s/AKfycbw2IX4crZvE0G58C75Qok7cmatgajj7udrmUd5LZFeSJQ3zpINtLEh5Ng7DLlOd-Vmn/exec"; // Ganti dengan URL Deployment GAS Lu
+        let userData = JSON.parse(localStorage.getItem('user_pelem_5')); // Pastikan Key-nya sama saat Login
+        let statusHariIni = "DATANG";
+        const KANTOR_LAT = -7.867663381755683; // Ganti Koordinat Pelem 5 Lu
+        const KANTOR_LNG = 112.01942773980798; // Ganti Koordinat Pelem 5 Lu
+        const RADIUS_MAX = 150; // Meter
 
-        let userData = JSON.parse(localStorage.getItem('pelem5_user')) || null;
-        let isInside = false;
-
-        setInterval(() => {
-            const now = new Date();
-            const skrg = now.toLocaleTimeString('id-ID', { hour12: false });
-            document.getElementById('live-clock').innerText = skrg;
-            if(userData && userData.jamMasuk && document.getElementById('btn-text').innerText === "DATANG") {
-                let t = userData.jamMasuk.split(":");
-                let target = new Date(); target.setHours(t[0], t[1], 0);
-                let remind = new Date(target.getTime() - 5 * 60000);
-                let waktuRemind = `${remind.getHours().toString().padStart(2,'0')}:${remind.getMinutes().toString().padStart(2,'0')}`;
-                if (skrg.substring(0,5) === waktuRemind && !sessionStorage.getItem('notif_sent')) {
-                    alert(`⚠️ WOI ABSEN! 5 Menit lagi jam masuk (${userData.jamMasuk})!`);
-                    sessionStorage.setItem('notif_sent', 'true');
-                }
-            }
-        }, 1000);
-
-        function updateUI(d) {
-            userData = d.user;
-            localStorage.setItem('pelem5_user', JSON.stringify(userData));
-            document.getElementById('display-name').innerText = userData.nama;
-            document.getElementById('display-divisi').innerText = userData.divisi;
-            document.getElementById('info-periode').innerText = d.totalAkumulasi + " Hari";
-            document.getElementById('shift-display').innerText = userData.jamMasuk + " - " + userData.jamPulang;
-            document.getElementById('btn-bg').style.opacity = "1";
-            
-            const btnT = document.getElementById('btn-text');
-            const btnS = document.getElementById('btn-sub');
-            if (d.statusHariIni === "DATANG") { btnT.innerText = "PULANG"; btnS.innerText = "SELESAI KERJA"; }
-            else if (d.statusHariIni === "PULANG") { btnT.innerText = "DONE"; btnS.innerText = "SAMPAI BESOK"; document.getElementById('main-btn').disabled = true; document.getElementById('main-btn').style.opacity = "0.5"; }
-            else { btnT.innerText = "DATANG"; btnS.innerText = "KLIK UNTUK ABSEN"; }
-
-           if(userData.foto && userData.foto.includes("http")) {
-    const img = document.getElementById('user-photo');
-    const initials = document.getElementById('initials');
-
-    // 1. TEKNIK CACHE BUSTER (Wajib!)
-    // Kita tambah &t=[angka_acak] supaya browser dipaksa ambil foto terbaru, bukan cache 403 lama
-    const cleanUrl = userData.foto.replace("&t=", "").split("&t=")[0]; // Bersihkan link lama
-    const finalUrl = cleanUrl + "&t=" + new Date().getTime(); 
-
-    // 2. SET CROSSORIGIN
-    // Penting agar browser tidak curiga saat narik gambar dari domain Google Drive
-    img.crossOrigin = "anonymous";
-    img.src = finalUrl;
-
-    // 3. TAMPILKAN JIKA BERHASIL
-    img.onload = () => {
-        img.classList.remove('hidden');
-        initials.classList.add('hidden');
-        console.log("✅ Foto Profil Terkoneksi!");
-    };
-
-    // 4. JIKA GAGAL (BACKUP PLAN)
-    // Kalau link 'uc?id=' diblokir, kita paksa pakai format thumbnail yang lebih ringan
-    img.onerror = () => {
-        console.warn("⚠️ Link Utama Gagal, Mencoba Jalur Alternatif...");
-        const fileId = userData.foto.split('id=')[1];
-        if(fileId) {
-            img.src = `https://lh3.googleusercontent.com/u/0/d/${fileId}=w200-h200-p-k-no-nu`;
-        }
-    };
-}
-
-            if(d.history && d.history.length > 0) {
-                const hPanel = document.getElementById('history-panel');
-                const hList = document.getElementById('history-list');
-                hPanel.classList.remove('hidden');
-                hList.innerHTML = d.history.map(h => `
-                    <div class="flex justify-between items-center text-[10px] border-b border-slate-800/50 pb-2">
-                        <span class="font-bold text-slate-400 tracking-tighter">${h.tgl}</span>
-                        <span class="px-2 py-0.5 bg-blue-900/30 rounded text-blue-400 font-black italic">${h.tipe}</span>
-                        <span class="font-mono text-slate-300">${h.jam}</span>
-                    </div>
-                `).join('');
-            }
-        }
-
-        async function handleAction() {
+        // --- 1. INISIALISASI HALAMAN ---
+        window.onload = async () => {
             if (!userData) {
-                const id = prompt("ID:"); const pin = prompt("PIN:"); if(!id || !pin) return;
-                const r = await fetch(API_URL, { method: 'POST', body: JSON.stringify({ action: 'login', id, pin }) });
-                const d = await r.json();
-                if(d.result === 'success') updateUI(d); else alert(d.message);
+                alert("Sesi habis, silakan login ulang!");
+                window.location.href = "login.html"; // Arahkan ke hal login lu
                 return;
             }
-            if (!isInside) return alert("❌ ANDA DILUAR RADIUS!");
-            const action = document.getElementById('btn-text').innerText;
-            const btn = document.getElementById('main-btn'); btn.disabled = true;
-            try {
-                const r = await fetch(API_URL, { method: 'POST', body: JSON.stringify({ action, id: userData.id, nama: userData.nama }) });
-                if((await r.json()).result === 'success') { alert("Absen Berhasil!"); location.reload(); }
-            } catch(e) { alert("Error!"); btn.disabled = false; }
-        }
-
-        if (navigator.geolocation) {
-            navigator.geolocation.watchPosition(pos => {
-                const dist = calculateDist(pos.coords.latitude, pos.coords.longitude, TARGET_COORDS.lat, TARGET_COORDS.lng);
-                const acc = Math.round(pos.coords.accuracy);
-                isInside = dist <= MAX_DISTANCE;
-                
-                document.getElementById('distance-meter').innerText = `${Math.round(dist)} m`;
-                document.getElementById('gps-acc').innerText = acc + "m";
-                const sig = document.getElementById('gps-status');
-                if(acc < 30) { sig.innerText = "SIGNAL: STRONG"; sig.className = "text-emerald-500"; }
-                else { sig.innerText = "SIGNAL: WEAK"; sig.className = "text-amber-500"; }
-                
-                document.getElementById('status-dot').className = isInside ? "w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse-fast" : "w-2.5 h-2.5 rounded-full bg-rose-600";
-                document.getElementById('location-text').innerText = isInside ? "LOKASI TERKUNCI" : "DILUAR RADIUS";
-                document.getElementById('location-text').className = isInside ? "text-emerald-400 italic" : "text-rose-500 italic";
-            }, null, { enableHighAccuracy: true });
-        }
-
-        function calculateDist(lat1, lon1, lat2, lon2) {
-            const R = 6371e3;
-            const dLat = (lat2-lat1)*Math.PI/180; const dLon = (lon2-lon1)*Math.PI/180;
-            const a = Math.sin(dLat/2)*Math.sin(dLat/2) + Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dLon/2)*Math.sin(dLon/2);
-            return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-        }
-
-        document.getElementById('file-input').onchange = (e) => {
-            const file = e.target.files[0]; if(!file || !userData) return;
-            const reader = new FileReader();
-            reader.onload = () => {
-                alert("Mengirim Foto... Sabar ya.");
-                fetch(API_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ action: 'update_foto', id: userData.id, base64Data: reader.result }) });
-                setTimeout(() => location.reload(), 5000);
-            };
-            reader.readAsDataURL(file);
+            document.getElementById('user-name').innerText = userData.nama;
+            await cekStatusKe GAS();
         };
 
-        if(userData) {
-            fetch(API_URL, { method: 'POST', body: JSON.stringify({ action: 'login', id: userData.id, pin: "RECHECK" }) })
-            .then(r => r.json()).then(d => updateUI(d));
+        // --- 2. CEK STATUS KE GOOGLE SHEETS ---
+        async function cekStatusKeGAS() {
+            try {
+                const response = await fetch(scriptURL, {
+                    method: 'POST',
+                    body: JSON.stringify({ action: "login", id: userData.id, pin: "RECHECK" })
+                });
+                const data = await response.json();
+                
+                statusHariIni = data.statusHariIni;
+                renderTombol();
+            } catch (e) {
+                console.error(e);
+                alert("Gagal sinkronisasi data server!");
+            }
+        }
+
+        // --- 3. RENDER TAMPILAN TOMBOL ---
+        function renderTombol() {
+            const btn = document.getElementById('btn-absen');
+            const txt = document.getElementById('text-btn');
+            
+            if (statusHariIni === "SELESAI") {
+                btn.disabled = true;
+                btn.className = "bg-gray";
+                txt.innerText = "SESI HARI INI SELESAI ✓";
+                document.getElementById('user-info').innerText = "Kamu sudah absen Datang & Pulang.";
+            } else if (statusHariIni === "PULANG") {
+                btn.disabled = false;
+                btn.className = "bg-orange";
+                txt.innerText = "ABSEN PULANG";
+                document.getElementById('user-info').innerText = "Sudah absen datang, jangan lupa pulang.";
+            } else {
+                btn.disabled = false;
+                btn.className = "bg-blue";
+                txt.innerText = "ABSEN DATANG";
+                document.getElementById('user-info').innerText = "Siap kerja? Absen dulu Boss!";
+            }
+        }
+
+        // --- 4. EKSEKUSI KLIK ABSEN ---
+        async function eksekusiAbsen() {
+            const btn = document.getElementById('btn-absen');
+            btn.disabled = true;
+            document.getElementById('text-btn').innerText = "MENGIRIM...";
+
+            // Cek GPS Akurat
+            navigator.geolocation.getCurrentPosition(async (pos) => {
+                const lat = pos.coords.latitude;
+                const lng = pos.coords.longitude;
+                const jarak = hitungJarak(lat, lng, KANTOR_LAT, KANTOR_LNG);
+
+                if (jarak > RADIUS_MAX) {
+                    alert(`Gagal! Jarak lu ${Math.round(jarak)}m. Harus di bawah 150m dari kantor!`);
+                    renderTombol(); // Balikin tombol
+                    return;
+                }
+
+                // Kirim ke GAS
+                try {
+                    const res = await fetch(scriptURL, {
+                        method: 'POST',
+                        body: JSON.stringify({
+                            action: statusHariIni,
+                            id: userData.id,
+                            nama: userData.nama,
+                            lat: lat,
+                            lng: lng
+                        })
+                    });
+                    const result = await res.json();
+                    
+                    if (result.result === "success") {
+                        alert(`Berhasil Absen ${statusHariIni}!`);
+                        location.reload(); // REFRESH biar status jadi PULANG/SELESAI
+                    }
+                } catch (e) {
+                    alert("Koneksi Error!");
+                    renderTombol();
+                }
+            }, (err) => {
+                alert("GPS Error! Pastikan Izin Lokasi Aktif.");
+                renderTombol();
+            }, { enableHighAccuracy: true });
+        }
+
+        // --- HELPER: HITUNG JARAK ---
+        function hitungJarak(lat1, lon1, lat2, lon2) {
+            const R = 6371e3;
+            const φ1 = lat1 * Math.PI/180;
+            const φ2 = lat2 * Math.PI/180;
+            const Δφ = (lat2-lat1) * Math.PI/180;
+            const Δλ = (lon2-lon1) * Math.PI/180;
+            const a = Math.sin(Δφ/2) * Math.sin(Δφ/2) +
+                      Math.cos(φ1) * Math.cos(φ2) *
+                      Math.sin(Δλ/2) * Math.sin(Δλ/2);
+            const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+            return R * c;
         }
     </script>
 </body>
