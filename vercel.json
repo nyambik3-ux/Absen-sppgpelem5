@@ -1,8 +1,3 @@
 {
-  "cleanUrls": true,
-  "trailingSlash": false,
-  "rewrites": [
-    { "source": "/login", "destination": "/login.html" },
-    { "source": "/index", "destination": "/index.html" }
-  ]
+  "cleanUrls": true
 }
