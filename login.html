@@ -18,7 +18,7 @@
 
 <div class="card">
     <h2>LOGIN KARYAWAN</h2>
-    <input type="number" id="id" placeholder="Masukkan ID">
+    <input type="text" id="id" placeholder="Masukkan ID (Huruf/Angka)">
     <input type="password" id="pin" placeholder="Masukkan PIN">
     <button id="btn" onclick="doLogin()">MASUK</button>
 </div>
@@ -41,7 +41,6 @@
             const res = await r.json();
             
             if(res.result === "success") {
-                // INI KUNCI UTAMANYA BIAR GAK RE-LOG TERUS
                 localStorage.setItem('user_pelem_5', JSON.stringify(res.user));
                 window.location.href = "index.html"; 
             } else {
