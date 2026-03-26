@@ -4,8 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Pelem 5 Monitoring</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
     <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; }
         body { background-color: #04091A; color: white; display: flex; justify-content: center; min-height: 100vh; padding: 30px 0; }
         .app { width: 90%; max-width: 400px; text-align: center; }
 
@@ -72,7 +73,7 @@
 </div>
 
 <script>
-    const scriptURL = "https://script.google.com/macros/s/AKfycbzrrQ510rB9niFNcs9_8eucQXIRVgJU9lsUOp_BgTaFoOs_Vr55XkVThndWb5qD9cRS/exec"; 
+    const scriptURL = "https://script.google.com/macros/s/AKfycbxEFpKs-YtSV8Z8QWLnqEgNDDWebgmZpsK161qBMtb7pUuU1h2gMoNkMZY5Zv5vbaxf/exec"; 
     const KANTOR = { lat: -7.86765090281387, lng: 112.01944788836946, rad: 150 }; 
     
     let user = JSON.parse(localStorage.getItem('user_pelem_5'));
@@ -86,8 +87,7 @@
     setInterval(updateClock, 1000); updateClock();
 
     window.onload = async () => {
-        if(!user) return window.location.href = "login.html"; // Ini bakal ngarahin ke login kalau belum login
-        
+        if(!user) return window.location.href = "login.html";
         document.getElementById('t-m').innerText = user.jamMasuk || "--:--";
         document.getElementById('t-p').innerText = user.jamPulang || "--:--";
         syncStatus();
@@ -129,7 +129,7 @@
                 if(res.result === "success") {
                     const jamNow = new Date().getHours().toString().padStart(2,'0') + ":" + new Date().getMinutes().toString().padStart(2,'0');
                     if(statusHarian === "DATANG" && jamNow > user.jamMasuk) alert(`⚠️ TELAT LU!\nTarget: ${user.jamMasuk}\nAbsen: ${jamNow}`);
-                    else alert("✅ ABSEN BERHASIL!");
+                    else alert("✅ BERHASIL!");
                     location.reload();
                 }
             } catch(e) { alert("Error Server!"); setLoading(false); }
