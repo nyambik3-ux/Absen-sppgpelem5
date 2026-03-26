@@ -3,154 +3,25 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Pelem 5 Pro Max</title>
+    <title>Pelem 5 Absensi Pro</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
     <style>
-        body { font-family: sans-serif; text-align: center; padding: 20px; background: #f4f4f4; }
-        .card { background: white; padding: 20px; border-radius: 15px; shadow: 0 4px 6px rgba(0,0,0,0.1); }
-        #btn-absen { 
-            width: 80%; padding: 15px; font-size: 18px; font-weight: bold;
-            border: none; border-radius: 10px; color: white; cursor: pointer;
-            transition: 0.3s;
-        }
-        .bg-blue { background-color: #007bff; } /* Warna Datang */
-        .bg-orange { background-color: #fd7e14; } /* Warna Pulang */
-        .bg-gray { background-color: #6c757d; cursor: not-allowed !important; } /* Warna Selesai */
-    </style>
-</head>
-<body>
-
-    <div class="card">
-        <h2 id="user-name">Memuat Data...</h2>
-        <p id="user-info">Cek status absensi hari ini...</p>
-        
-        <hr>
-        
-        <button id="btn-absen" class="bg-blue" onclick="eksekusiAbsen()" disabled>
-            <span id="text-btn">MENGECEK...</span>
-        </button>
-        
-        <p id="msg-jarak" style="font-size: 12px; color: #666; margin-top: 10px;"></p>
-    </div>
-
-    <script>
-        // --- CONFIGURATION ---
-        const scriptURL = "https://script.google.com/macros/s/AKfycbw2IX4crZvE0G58C75Qok7cmatgajj7udrmUd5LZFeSJQ3zpINtLEh5Ng7DLlOd-Vmn/exec"; // Ganti dengan URL Deployment GAS Lu
-        let userData = JSON.parse(localStorage.getItem('user_pelem_5')); // Pastikan Key-nya sama saat Login
-        let statusHariIni = "DATANG";
-        const KANTOR_LAT = -7.867663381755683; // Ganti Koordinat Pelem 5 Lu
-        const KANTOR_LNG = 112.01942773980798; // Ganti Koordinat Pelem 5 Lu
-        const RADIUS_MAX = 150; // Meter
-
-        // --- 1. INISIALISASI HALAMAN ---
-        window.onload = async () => {
-            if (!userData) {
-                alert("Sesi habis, silakan login ulang!");
-                window.location.href = "login.html"; // Arahkan ke hal login lu
-                return;
-            }
-            document.getElementById('user-name').innerText = userData.nama;
-            await cekStatusKe GAS();
-        };
-
-        // --- 2. CEK STATUS KE GOOGLE SHEETS ---
-        async function cekStatusKeGAS() {
-            try {
-                const response = await fetch(scriptURL, {
-                    method: 'POST',
-                    body: JSON.stringify({ action: "login", id: userData.id, pin: "RECHECK" })
-                });
-                const data = await response.json();
-                
-                statusHariIni = data.statusHariIni;
-                renderTombol();
-            } catch (e) {
-                console.error(e);
-                alert("Gagal sinkronisasi data server!");
-            }
-        }
-
-        // --- 3. RENDER TAMPILAN TOMBOL ---
-        function renderTombol() {
-            const btn = document.getElementById('btn-absen');
-            const txt = document.getElementById('text-btn');
-            
-            if (statusHariIni === "SELESAI") {
-                btn.disabled = true;
-                btn.className = "bg-gray";
-                txt.innerText = "SESI HARI INI SELESAI ✓";
-                document.getElementById('user-info').innerText = "Kamu sudah absen Datang & Pulang.";
-            } else if (statusHariIni === "PULANG") {
-                btn.disabled = false;
-                btn.className = "bg-orange";
-                txt.innerText = "ABSEN PULANG";
-                document.getElementById('user-info').innerText = "Sudah absen datang, jangan lupa pulang.";
-            } else {
-                btn.disabled = false;
-                btn.className = "bg-blue";
-                txt.innerText = "ABSEN DATANG";
-                document.getElementById('user-info').innerText = "Siap kerja? Absen dulu Boss!";
-            }
-        }
-
-        // --- 4. EKSEKUSI KLIK ABSEN ---
-        async function eksekusiAbsen() {
-            const btn = document.getElementById('btn-absen');
-            btn.disabled = true;
-            document.getElementById('text-btn').innerText = "MENGIRIM...";
-
-            // Cek GPS Akurat
-            navigator.geolocation.getCurrentPosition(async (pos) => {
-                const lat = pos.coords.latitude;
-                const lng = pos.coords.longitude;
-                const jarak = hitungJarak(lat, lng, KANTOR_LAT, KANTOR_LNG);
-
-                if (jarak > RADIUS_MAX) {
-                    alert(`Gagal! Jarak lu ${Math.round(jarak)}m. Harus di bawah 150m dari kantor!`);
-                    renderTombol(); // Balikin tombol
-                    return;
-                }
-
-                // Kirim ke GAS
-                try {
-                    const res = await fetch(scriptURL, {
-                        method: 'POST',
-                        body: JSON.stringify({
-                            action: statusHariIni,
-                            id: userData.id,
-                            nama: userData.nama,
-                            lat: lat,
-                            lng: lng
-                        })
-                    });
-                    const result = await res.json();
-                    
-                    if (result.result === "success") {
-                        alert(`Berhasil Absen ${statusHariIni}!`);
-                        location.reload(); // REFRESH biar status jadi PULANG/SELESAI
-                    }
-                } catch (e) {
-                    alert("Koneksi Error!");
-                    renderTombol();
-                }
-            }, (err) => {
-                alert("GPS Error! Pastikan Izin Lokasi Aktif.");
-                renderTombol();
-            }, { enableHighAccuracy: true });
-        }
-
-        // --- HELPER: HITUNG JARAK ---
-        function hitungJarak(lat1, lon1, lat2, lon2) {
-            const R = 6371e3;
-            const φ1 = lat1 * Math.PI/180;
-            const φ2 = lat2 * Math.PI/180;
-            const Δφ = (lat2-lat1) * Math.PI/180;
-            const Δλ = (lon2-lon1) * Math.PI/180;
-            const a = Math.sin(Δφ/2) * Math.sin(Δφ/2) +
-                      Math.cos(φ1) * Math.cos(φ2) *
-                      Math.sin(Δλ/2) * Math.sin(Δλ/2);
-            const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-            return R * c;
-        }
-    </script>
-</body>
-</html>
+        :root { --primary: #007AFF; --success: #34C759; --warning: #FF9500; --danger: #FF3B30; --gray: #8E8E93; --dark: #1C1C1E; }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: -apple-system, system-ui, sans-serif; background: #f2f2f7; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
+        .app-container { width: 100%; max-width: 400px; padding: 20px; }
+        .card { background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(15px); border-radius: 28px; padding: 30px; text-align: center; box-shadow: 0 15px 35px rgba(0,0,0,0.08); border: 1px solid white; }
+        .profile-img { width: 90px; height: 90px; border-radius: 50%; object-fit: cover; border: 3px solid white; box-shadow: 0 5px 15px rgba(0,0,0,0.1); margin-bottom: 15px; }
+        h2 { font-size: 22px; font-weight: 800; color: var(--dark); }
+        .role { font-size: 14px; color: var(--gray); margin-bottom: 25px; }
+        .badge { display: inline-block; padding: 6px 14px; border-radius: 20px; font-size: 11px; font-weight: 700; text-transform: uppercase; margin-bottom: 25px; }
+        .btn-main { width: 100%; padding: 20px; border: none; border-radius: 20px; font-size: 16px; font-weight: 700; color: white; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 12px; transition: 0.3s; box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
+        .btn-main:active { transform: scale(0.97); }
+        .btn-main:disabled { opacity: 0.6; cursor: not-allowed; box-shadow: none; }
+        .state-datang { background: var(--primary); }
+        .state-pulang { background: var(--warning); }
+        .state-selesai { background: var(--dark); }
+        .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 30px; padding-top: 20px; border-top: 1px solid #eee; }
+        .info-item span { display: block; font-size: 11px; color: var(--gray); margin-bottom: 4px; }
+        .info-item b { font-size: 15px; color: var(--dark); }
+        .spinner { width: 22px; height: 2
