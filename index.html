@@ -41,7 +41,7 @@
         </div>
     </div>
     <script>
-        // --- SUDAH GUE ISI OTOMATIS SESUAI DATA LU ---
+        // LINK SUDAH GUE BERSIHKAN DARI KARAKTER ANEH
         const scriptURL = "https://script.google.com/macros/s/AKfycbzrrQ510rB9niFNcs9_8eucQXIRVgJU9lsUOp_BgTaFoOs_Vr55XkVThndWb5qD9cRS/exec"; 
         const KANTOR = { lat: -7.86765090281387, lng: 112.01944788836946, rad: 150 }; 
         
@@ -63,7 +63,10 @@
                 const d = await r.json();
                 status = d.statusHariIni;
                 ui();
-            } catch (e) { document.getElementById('u-badge').innerText = "OFFLINE!"; }
+            } catch (e) { 
+                document.getElementById('u-badge').innerText = "LINK ERROR!"; 
+                console.log(e);
+            }
         }
 
         function ui() {
@@ -96,7 +99,7 @@
                         else alert("✅ BERHASIL!");
                         location.reload();
                     }
-                } catch(e) { alert("Error!"); setL(false); }
+                } catch(e) { alert("Cek Koneksi!"); setL(false); }
             }, (e) => { alert("GPS Mati!"); setL(false); }, { enableHighAccuracy: true });
         }
 
