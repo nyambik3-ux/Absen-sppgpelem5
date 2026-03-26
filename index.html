@@ -3,24 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Pelem 5 Absensi Pro Max</title>
+    <title>Pelem 5 Pro Max</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
     <style>
         :root { --p: #007AFF; --w: #FF9500; --d: #1C1C1E; --g: #8E8E93; }
-        * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-        body { font-family: -apple-system, system-ui, sans-serif; background: #f2f2f7; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: -apple-system, sans-serif; background: #f2f2f7; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
         .app { width: 100%; max-width: 400px; padding: 20px; }
         .card { background: rgba(255,255,255,0.9); backdrop-filter: blur(10px); border-radius: 28px; padding: 30px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.05); border: 1px solid white; }
         .img { width: 85px; height: 85px; border-radius: 50%; object-fit: cover; border: 3px solid white; box-shadow: 0 4px 10px rgba(0,0,0,0.1); margin-bottom: 15px; }
         h2 { font-size: 22px; margin-bottom: 5px; color: var(--d); font-weight: 800; }
-        .badge { display: inline-block; padding: 6px 14px; border-radius: 20px; font-size: 11px; font-weight: 700; margin-bottom: 25px; text-transform: uppercase; }
-        .btn { width: 100%; padding: 18px; border: none; border-radius: 18px; font-size: 16px; font-weight: 700; color: white; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; transition: 0.3s; box-shadow: 0 8px 20px rgba(0,0,0,0.1); }
-        .btn:active { transform: scale(0.97); }
-        .btn:disabled { opacity: 0.6; cursor: not-allowed; box-shadow: none; }
+        .badge { display: inline-block; padding: 6px 14px; border-radius: 20px; font-size: 11px; font-weight: 700; margin-bottom: 25px; }
+        .btn { width: 100%; padding: 18px; border: none; border-radius: 18px; font-size: 16px; font-weight: 700; color: white; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; transition: 0.3s; }
+        .btn:disabled { opacity: 0.6; cursor: not-allowed; }
         .s-d { background: var(--p); } .s-p { background: var(--w); } .s-s { background: var(--d); }
         .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 25px; border-top: 1px solid #eee; padding-top: 20px; text-align: left; }
-        .item span { display: block; font-size: 10px; color: var(--g); margin-bottom: 2px; }
-        .item b { font-size: 14px; color: var(--d); }
+        .item span { display: block; font-size: 10px; color: var(--g); }
         .spinner { width: 20px; height: 20px; border: 3px solid rgba(255,255,255,0.3); border-radius: 50%; border-top-color: white; animation: spin 0.8s linear infinite; display: none; }
         @keyframes spin { to { transform: rotate(360deg); } }
     </style>
@@ -29,27 +27,24 @@
     <div class="app">
         <div class="card">
             <img id="u-foto" src="https://via.placeholder.com/150" class="img">
-            <h2 id="u-nama">Memuat...</h2>
-            <div id="u-badge" class="badge" style="background:#eee; color:#666;">SINKRON...</div>
-            
+            <h2 id="u-nama">Loading...</h2>
+            <div id="u-badge" class="badge">SINKRON...</div>
             <button id="btn" class="btn s-d" onclick="doAbsen()" disabled>
                 <div id="loader" class="spinner"></div>
                 <i id="ico" class="fas fa-fingerprint"></i>
                 <span id="txt">TUNGGU...</span>
             </button>
-
             <div class="grid">
                 <div class="item"><span>Target Masuk</span><b id="t-m">--:--</b></div>
                 <div class="item"><span>Target Pulang</span><b id="t-p">--:--</b></div>
             </div>
         </div>
     </div>
-
     <script>
-        // --- 1. SETTING UTAMA (GANTI DISINI) ---
+        // --- SUDAH GUE ISI OTOMATIS SESUAI DATA LU ---
         const scriptURL = "https://script.google.com/macros/s/AKfycbzrrQ510rB9niFNcs9_8eucQXIRVgJU9lsUOp_BgTaFoOs_Vr55XkVThndWb5qD9cRS/exec"; 
-        const KANTOR = { lat: -7.867628433881566, lng: 112.0194491485052, rad: 150 }; 
-
+        const KANTOR = { lat: -7.86765090281387, lng: 112.01944788836946, rad: 150 }; 
+        
         let user = JSON.parse(localStorage.getItem('user_pelem_5'));
         let status = "DATANG";
 
@@ -59,88 +54,46 @@
             document.getElementById('u-foto').src = user.foto || "https://via.placeholder.com/150";
             document.getElementById('t-m').innerText = user.jamMasuk;
             document.getElementById('t-p').innerText = user.jamPulang;
-            await sync();
+            sync();
         };
 
         async function sync() {
             try {
-                const r = await fetch(scriptURL, { 
-                    method: 'POST', 
-                    body: JSON.stringify({ action: "login", id: user.id, pin: "RECHECK" })
-                });
+                const r = await fetch(scriptURL, { method: 'POST', body: JSON.stringify({ action: "login", id: user.id, pin: "RECHECK" })});
                 const d = await r.json();
                 status = d.statusHariIni;
                 ui();
-            } catch (e) { alert("Server Error/Offline!"); }
+            } catch (e) { document.getElementById('u-badge').innerText = "OFFLINE!"; }
         }
 
         function ui() {
-            const b = document.getElementById('btn');
-            const t = document.getElementById('txt');
-            const i = document.getElementById('ico');
-            const g = document.getElementById('u-badge');
+            const b = document.getElementById('btn'); const t = document.getElementById('txt');
+            const i = document.getElementById('ico'); const g = document.getElementById('u-badge');
             b.disabled = false;
-            
             if(status === "SELESAI"){
                 b.className = "btn s-s"; b.disabled = true; t.innerText = "SESI SELESAI"; i.className = "fas fa-check-double";
-                g.innerText = "BERES ✓"; g.style.background = "#d1d1d6"; g.style.color = "#1c1c1e";
+                g.innerText = "BERES"; g.style.background = "#eee";
             } else if(status === "PULANG"){
                 b.className = "btn s-p"; t.innerText = "ABSEN PULANG"; i.className = "fas fa-door-open";
-                g.innerText = "STATUS: DATANG"; g.style.background = "#fff2e0"; g.style.color = "#ff9500";
+                g.innerText = "SUDAH DATANG"; g.style.background = "#fff2e0"; g.style.color = "#ff9500";
             } else {
                 b.className = "btn s-d"; t.innerText = "ABSEN DATANG"; i.className = "fas fa-fingerprint";
                 g.innerText = "BELUM ABSEN"; g.style.background = "#e5f1ff"; g.style.color = "#007aff";
             }
         }
 
-        async function doAbsen() {
+        function doAbsen() {
             setL(true);
             navigator.geolocation.getCurrentPosition(async (p) => {
                 const d = dist(p.coords.latitude, p.coords.longitude, KANTOR.lat, KANTOR.lng);
-                
-                if(d > KANTOR.rad) { 
-                    alert(`🚨 LU KEJAUHAN!\nJarak: ${Math.round(d)}m. Max: 150m.`); 
-                    setL(false); return; 
-                }
-
+                if(d > KANTOR.rad) { alert(`LU KEJAUHAN!\nJarak: ${Math.round(d)}m`); setL(false); return; }
                 try {
-                    const r = await fetch(scriptURL, { 
-                        method: 'POST', 
-                        body: JSON.stringify({ 
-                            action: status, 
-                            id: user.id, 
-                            nama: user.nama, 
-                            lat: p.coords.latitude, 
-                            lng: p.coords.longitude 
-                        })
-                    });
+                    const r = await fetch(scriptURL, { method: 'POST', body: JSON.stringify({ action: status, id: user.id, nama: user.nama, lat: p.coords.latitude, lng: p.coords.longitude })});
                     const res = await r.json();
                     if(res.result === "success") {
-                        const jam = new Date().toLocaleTimeString('id-ID', { hour12: false, hour: '2-digit', minute: '2-digit' });
-                        
-                        // Notif Telat
-                        if(status === "DATANG" && jam > user.jamMasuk) {
-                            alert(`⚠️ TELAT BOSS!\nMasuk: ${user.jamMasuk}\nAbsen: ${jam}`);
-                        } else {
-                            alert("✅ ABSEN BERHASIL!");
-                        }
+                        const jam = new Date().getHours().toString().padStart(2,'0') + ":" + new Date().getMinutes().toString().padStart(2,'0');
+                        if(status === "DATANG" && jam > user.jamMasuk) alert(`⚠️ TERLAMBAT!\nMasuk: ${user.jamMasuk}\nAbsen: ${jam}`);
+                        else alert("✅ BERHASIL!");
                         location.reload();
                     }
-                } catch(e) { alert("Koneksi Gagal!"); setL(false); }
-            }, (e) => { alert("GPS Mati/Ditolak!"); setL(false); }, { enableHighAccuracy: true });
-        }
-
-        function setL(s) {
-            document.getElementById('loader').style.display = s ? "block" : "none";
-            document.getElementById('ico').style.display = s ? "none" : "block";
-            document.getElementById('btn').disabled = s;
-        }
-
-        function dist(l1, n1, l2, n2) {
-            const R = 6371e3; const dL = (l2-l1)*Math.PI/180; const dN = (n2-n1)*Math.PI/180;
-            const a = Math.sin(dL/2)*Math.sin(dL/2) + Math.cos(l1*Math.PI/180)*Math.cos(l2*Math.PI/180)*Math.sin(dN/2)*Math.sin(dN/2);
-            return R * (2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)));
-        }
-    </script>
-</body>
-</html>
+                } catch
