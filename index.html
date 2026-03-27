@@ -1,182 +1,43 @@
-<!DOCTYPE html>
-<html lang="id">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Pelem 5 Monitoring</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
-    <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; }
-        body { background-color: #04091A; color: white; display: flex; justify-content: center; min-height: 100vh; padding: 20px 0; }
-        .app { width: 90%; max-width: 400px; text-align: center; position: relative; }
-        
-        .top-bar { display: flex; justify-content: flex-end; margin-bottom: 30px; position: relative; z-index: 50; }
-        .profile-dropdown { display: flex; align-items: center; background: #0A1124; border: 1px solid #1A2238; border-radius: 15px; padding: 8px 15px; cursor: pointer; transition: 0.2s; user-select: none; }
-        .profile-dropdown:active { transform: scale(0.98); }
-        .p-foto { width: 35px; height: 35px; border-radius: 50%; object-fit: cover; margin-right: 10px; border: 1px solid #1A2238; }
-        .p-info { text-align: left; }
-        .p-name { font-size: 13px; font-weight: bold; color: white; }
-        .p-div { font-size: 10px; color: #848999; }
-        
-        .dropdown-content { display: none; position: absolute; top: 115%; right: 0; background: #0A1124; border: 1px solid #1A2238; border-radius: 12px; width: 180px; box-shadow: 0 10px 25px rgba(0,0,0,0.5); overflow: hidden; text-align: left; z-index: 100; }
-        .dropdown-content.show { display: block; animation: fadeIn 0.2s ease; }
-        .dd-item { padding: 15px; font-size: 13px; color: #848999; border-bottom: 1px solid #1A2238; display: flex; align-items: center; gap: 10px; transition: 0.2s; cursor: pointer; user-select: none; }
-        .dd-item:active { background: #12182B; color: white; }
-        .dd-item:last-child { border-bottom: none; }
-        .dd-item.logout { color: #FF4B4B; }
-        .dd-item.logout:active { background: rgba(255, 75, 75, 0.1); color: #FF4B4B; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
-
-        /* MODAL UPLOAD FOTO */
-        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 9999; justify-content: center; align-items: center; }
-        .modal.show { display: flex; animation: fadeInModal 0.2s ease; }
-        .modal-content { background: #0A1124; border: 1px solid #1A2238; padding: 30px; border-radius: 20px; width: 90%; max-width: 350px; text-align: left; box-shadow: 0 15px 35px rgba(0,0,0,0.8); position: relative; }
-        .modal-header { font-size: 16px; font-weight: bold; color: white; margin-bottom: 25px; display: flex; justify-content: space-between; align-items: center; }
-        .modal-close { cursor: pointer; color: #848999; font-size: 20px; padding: 5px; }
-        .upload-label { display: block; width: 100%; padding: 20px; border-radius: 12px; border: 2px dashed #2196F3; background: #12182B; color: #2196F3; font-size: 15px; font-weight: bold; text-align: center; cursor: pointer; margin-bottom: 10px; transition: 0.2s; user-select: none; }
-        .upload-label:active { background: #1A2238; transform: scale(0.98); }
-        .upload-label i { font-size: 24px; display: block; margin-bottom: 8px; }
-        .modal-btn { width: 100%; padding: 15px; background: #1565C0; color: white; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; font-size: 15px; transition: 0.2s; }
-        .modal-btn:active { background: #1976D2; transform: scale(0.98); }
-        .modal-btn:disabled { background: #333; cursor: not-allowed; transform: none; }
-        @keyframes fadeInModal { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
-
-        /* MAIN AREA */
-        #clock { font-size: 50px; font-weight: bold; margin-bottom: 5px; }
-        #date { font-size: 12px; color: #848999; background: #12182B; padding: 8px 15px; border-radius: 20px; display: inline-block; margin-bottom: 40px; }
-        .circle-btn { width: 180px; height: 180px; border-radius: 50%; background: #1565C0; display: flex; flex-direction: column; justify-content: center; align-items: center; margin: 0 auto 40px; cursor: pointer; box-shadow: 0 0 30px rgba(21, 101, 192, 0.5); border: none; transition: 0.3s; color: white; -webkit-tap-highlight-color: transparent; }
-        .circle-btn:disabled { background: #333; box-shadow: none; cursor: not-allowed; }
-        .circle-btn:active:not(:disabled) { transform: scale(0.95); }
-        .circle-btn h1 { font-size: 32px; font-weight: 800; margin-bottom: 5px; }
-        .circle-btn p { font-size: 11px; color: #BBDEFB; }
-        
-        .card { background: #0A1124; border-radius: 20px; padding: 25px; text-align: left; border: 1px solid #1A2238; margin-bottom: 20px; }
-        .card-header { font-size: 11px; color: #848999; margin-bottom: 20px; font-weight: bold; }
-        .stat-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
-        .stat-main { font-size: 28px; font-weight: bold; }
-        .stat-sub { font-size: 11px; color: #848999; font-style: italic; }
-        .status-pill { background: #12182B; padding: 10px 20px; border-radius: 10px; text-align: center; border: 1px solid #1A2238; }
-        .status-pill span { font-size: 10px; color: #848999; display: block; margin-bottom: 2px; }
-        .status-pill b { font-size: 14px; color: #2196F3; }
-        .target-row { display: flex; justify-content: space-between; padding: 10px 0; border-top: 1px solid #1A2238; font-size: 13px; }
-        .target-label { color: #848999; }
-        .target-time { font-weight: bold; color: white; }
-        .loader { display: none; width: 25px; height: 25px; border: 3px solid #ffffff33; border-top: 3px solid white; border-radius: 50%; animation: spin 1s linear infinite; }
-        @keyframes spin { to { transform: rotate(360deg); } }
-    </style>
-</head>
-<body>
-<div class="app">
-    
-    <div class="top-bar">
-        <div class="profile-dropdown" onclick="toggleMenu(event)">
-            <img id="p-foto" src="https://ui-avatars.com/api/?name=User&background=333&color=fff&bold=true" class="p-foto" alt="Profile">
-            <div class="p-info">
-                <div class="p-name" id="p-nama">Loading...</div>
-                <div class="p-div" id="p-divisi">Karyawan</div>
-            </div>
-            <i class="fas fa-chevron-down" style="color: #848999; margin-left: 12px; font-size: 12px;"></i>
-            
-            <div class="dropdown-content" id="dd-menu">
-                <div class="dd-item" onclick="openPhotoModal(event)">
-                    <i class="fas fa-camera" style="color: #2196F3;"></i> Upload Foto
-                </div>
-                <div class="dd-item logout" onclick="doLogout(event)">
-                    <i class="fas fa-sign-out-alt"></i> Log Out
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="modal" id="photo-modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                Pilih Foto dari Galeri
-                <i class="fas fa-times modal-close" onclick="closePhotoModal(event)"></i>
-            </div>
-            <input type="file" id="photo-upload" accept="image/*" style="display: none;" onchange="updateFileName()">
-            <label for="photo-upload" class="upload-label"><i class="fas fa-images"></i> BUKA GALERI HP</label>
-            <div id="file-name-display" style="font-size: 11px; color: #848999; margin-bottom: 25px; text-align: center;">Belum ada foto dipilih</div>
-            <button id="btn-save-photo" class="modal-btn" onclick="uploadToDrive()">UPLOAD & SIMPAN</button>
-        </div>
-    </div>
-
-    <div id="clock">00:00:00</div>
-    <div id="date">MEMUAT...</div>
-
-    <button id="btn-absen" class="circle-btn" onclick="doAbsen()" disabled>
-        <div id="loader" class="loader"></div>
-        <div id="btn-content">
-            <h1 id="txt-action">DATANG</h1>
-            <p>KLIK UNTUK ABSEN</p>
-        </div>
-    </button>
-
-    <div class="card">
-        <div class="card-header">PELEM 5 MONITORING</div>
-        <div class="stat-row">
-            <div>
-                <div class="stat-main" id="u-akumulasi">0 Hari</div>
-                <div class="stat-sub">*Total Masuk Bulan Ini</div>
-            </div>
-            <div class="status-pill">
-                <span>STATUS:</span>
-                <b id="u-status-hari-ini">SINKRON...</b>
-            </div>
-        </div>
-        <div class="target-row" style="margin-top: 20px;">
-            <span class="target-label">Target Masuk</span>
-            <span class="target-time" id="t-m">--:--</span>
-        </div>
-        <div class="target-row">
-            <span class="target-label">Target Pulang</span>
-            <span class="target-time" id="t-p">--:--</span>
-        </div>
-    </div>
-</div>
-
 <script>
     // --- SETTING APLIKASI ---
     const scriptURL = "https://script.google.com/macros/s/AKfycbwHn6QDyZluAHqMmDPxnZIi5jU4x204fc3Ck-5eDVEsk70cKTLxskfMjWty3sZfP6oF/exec"; 
     const KANTOR = { lat: -7.86765090281387, lng: 112.01944788836946, rad: 150 }; 
     let statusHarian = "DATANG";
 
-    // --- 1. SHOCK ABSORBER (ANTI-BENGONG) ---
-    // Mencegah aplikasi crash kalau data di memori rusak
     let user = null;
     try {
         let memoriLokal = localStorage.getItem('user_pelem_5');
-        if (memoriLokal && memoriLokal !== "undefined") {
-            user = JSON.parse(memoriLokal);
-        }
+        if (memoriLokal && memoriLokal !== "undefined") user = JSON.parse(memoriLokal);
     } catch (e) {
-        console.log("Memori rusak, melakukan reset...");
         localStorage.removeItem('user_pelem_5');
     }
 
-    // --- 2. JAM DIGITAL (HARUS NYALA TERUS) ---
+    // --- FIX LINK GOOGLE DRIVE ---
+    // Fungsi buat ngakalin link Drive biar jadi gambar langsung
+    function dapatkanLinkDirect(url) {
+        if (!url || !url.includes("drive.google.com")) return url;
+        let id = "";
+        if (url.includes("/d/")) id = url.split('/d/')[1].split('/')[0];
+        else if (url.includes("id=")) id = url.split('id=')[1].split('&')[0];
+        return id ? "https://drive.google.com/thumbnail?id=" + id + "&sz=w200" : url;
+    }
+
     function updateClock() {
         const now = new Date();
         document.getElementById('clock').innerText = now.getHours().toString().padStart(2, '0') + "." + now.getMinutes().toString().padStart(2, '0') + "." + now.getSeconds().toString().padStart(2, '0');
         document.getElementById('date').innerText = now.toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }).toUpperCase();
     }
-    setInterval(updateClock, 1000); 
-    updateClock();
+    setInterval(updateClock, 1000); updateClock();
 
-    // --- 3. INIT HALAMAN ---
     window.onload = async () => {
-        // Kalau user gak ada / rusak, tendang ke login
-        if(!user || !user.id) {
-            window.location.href = "login.html";
-            return;
-        }
+        if(!user || !user.id) return window.location.href = "login.html";
         
-        // Tampilkan Data User
         document.getElementById('p-nama').innerText = user.nama || "User";
         document.getElementById('p-divisi').innerText = user.divisi || "Karyawan";
         
+        // Panggil fungsi penerjemah link Drive di sini
         if(user.foto && user.foto.includes("http")) { 
-            document.getElementById('p-foto').src = user.foto; 
+            document.getElementById('p-foto').src = dapatkanLinkDirect(user.foto); 
         } else { 
             document.getElementById('p-foto').src = `https://ui-avatars.com/api/?name=${user.nama}&background=1565C0&color=fff&bold=true`; 
         }
@@ -184,57 +45,22 @@
         document.getElementById('t-m').innerText = user.jamMasuk || "--:--";
         document.getElementById('t-p').innerText = user.jamPulang || "--:--";
         
-        // Mulai sinkronisasi ke GAS
         syncStatus();
     };
 
-    // --- 4. LOGIC UI & MODAL ---
-    function toggleMenu(e) { 
-        if(e) e.stopPropagation(); 
-        document.getElementById('dd-menu').classList.toggle('show'); 
-    }
-    
-    window.onclick = function(event) { 
-        if (!event.target.closest('.profile-dropdown') && !event.target.closest('.modal-content')) { 
-            document.getElementById('dd-menu').classList.remove('show'); 
-        } 
-    }
-    
-    function openPhotoModal(e) { 
-        if(e) e.stopPropagation(); 
-        document.getElementById('dd-menu').classList.remove('show'); 
-        setTimeout(() => { document.getElementById('photo-modal').classList.add('show'); }, 50); 
-    }
-    
-    function closePhotoModal(e) { 
-        if(e) e.stopPropagation(); 
-        document.getElementById('photo-modal').classList.remove('show'); 
-        document.getElementById('photo-upload').value = ""; 
-        document.getElementById('file-name-display').innerText = "Belum ada foto dipilih"; 
-        document.getElementById('file-name-display').style.color = "#848999"; 
-    }
-    
-    function doLogout(e) { 
-        if(e) e.stopPropagation(); 
-        if(confirm("Yakin Keluar?")) { 
-            localStorage.removeItem('user_pelem_5'); 
-            window.location.href = "login.html"; 
-        } 
-    }
+    function toggleMenu(e) { if(e) e.stopPropagation(); document.getElementById('dd-menu').classList.toggle('show'); }
+    window.onclick = function(event) { if (!event.target.closest('.profile-dropdown') && !event.target.closest('.modal-content')) { document.getElementById('dd-menu').classList.remove('show'); } }
+    function openPhotoModal(e) { if(e) e.stopPropagation(); document.getElementById('dd-menu').classList.remove('show'); setTimeout(() => { document.getElementById('photo-modal').classList.add('show'); }, 50); }
+    function closePhotoModal(e) { if(e) e.stopPropagation(); document.getElementById('photo-modal').classList.remove('show'); document.getElementById('photo-upload').value = ""; document.getElementById('file-name-display').innerText = "Belum ada foto dipilih"; document.getElementById('file-name-display').style.color = "#848999"; }
+    function doLogout(e) { if(e) e.stopPropagation(); if(confirm("Yakin Keluar?")) { localStorage.removeItem('user_pelem_5'); window.location.href = "login.html"; } }
 
     function updateFileName() {
         const fileInput = document.getElementById('photo-upload');
         const display = document.getElementById('file-name-display');
-        if(fileInput.files.length > 0) { 
-            display.innerText = "Siap Upload: " + fileInput.files[0].name; 
-            display.style.color = "#2196F3"; 
-        } else { 
-            display.innerText = "Belum ada foto dipilih"; 
-            display.style.color = "#848999"; 
-        }
+        if(fileInput.files.length > 0) { display.innerText = "Siap Upload: " + fileInput.files[0].name; display.style.color = "#2196F3"; } 
+        else { display.innerText = "Belum ada foto dipilih"; display.style.color = "#848999"; }
     }
 
-    // --- 5. LOGIC UPLOAD FOTO ---
     async function uploadToDrive() {
         const fileInput = document.getElementById('photo-upload');
         const btnSave = document.getElementById('btn-save-photo');
@@ -243,109 +69,66 @@
         const file = fileInput.files[0];
         if(file.size > 2.5 * 1024 * 1024) return alert("Maksimal 2.5 MB!");
 
-        btnSave.disabled = true; 
-        btnSave.innerText = "UPLOADING...";
+        btnSave.disabled = true; btnSave.innerText = "UPLOADING...";
         
         const reader = new FileReader();
         reader.onload = async function(e) {
             const base64Data = e.target.result.split(',')[1]; 
             try {
-                const r = await fetch(scriptURL, { 
-                    method: 'POST', 
-                    body: JSON.stringify({ action: "updatePhoto", id: user.id, nama: user.nama, base64: base64Data, mimeType: file.type, filename: file.name }) 
-                });
+                const r = await fetch(scriptURL, { method: 'POST', body: JSON.stringify({ action: "updatePhoto", id: user.id, nama: user.nama, base64: base64Data, mimeType: file.type, filename: file.name }) });
                 const res = await r.json();
                 
                 if(res.result === "success") {
                     user.foto = res.newPhotoUrl; 
                     localStorage.setItem('user_pelem_5', JSON.stringify(user));
-                    document.getElementById('p-foto').src = res.newPhotoUrl; 
-                    alert("✅ Berhasil Upload!"); 
-                    closePhotoModal();
-                } else { 
-                    alert("❌ Gagal: " + res.message); 
-                }
-            } catch(e) { 
-                alert("❌ Koneksi gagal, coba lagi."); 
-            } finally { 
-                btnSave.disabled = false; 
-                btnSave.innerText = "UPLOAD & SIMPAN"; 
-            }
+                    
+                    // Langsung terjemahin juga pas sukses upload
+                    document.getElementById('p-foto').src = dapatkanLinkDirect(res.newPhotoUrl); 
+                    
+                    alert("✅ Berhasil Upload!"); closePhotoModal();
+                } else { alert("❌ Gagal: " + res.message); }
+            } catch(e) { alert("❌ Koneksi gagal, coba lagi."); } 
+            finally { btnSave.disabled = false; btnSave.innerText = "UPLOAD & SIMPAN"; }
         };
         reader.readAsDataURL(file);
     }
 
-    // --- 6. LOGIC MESIN ABSEN & GPS ---
     async function syncStatus() {
         try {
             const r = await fetch(scriptURL, { method: 'POST', body: JSON.stringify({ action: "login", id: user.id, pin: "RECHECK" })});
             const d = await r.json();
-            statusHarian = d.statusHariIni; 
-            document.getElementById('u-akumulasi').innerText = `${d.totalAkumulasi || 0} Hari`; 
-            updateUI();
-        } catch (e) { 
-            document.getElementById('u-status-hari-ini').innerText = "OFFLINE"; 
-        }
+            statusHarian = d.statusHariIni; document.getElementById('u-akumulasi').innerText = `${d.totalAkumulasi || 0} Hari`; updateUI();
+        } catch (e) { document.getElementById('u-status-hari-ini').innerText = "OFFLINE"; }
     }
 
     function updateUI() {
-        const btn = document.getElementById('btn-absen'); 
-        const txt = document.getElementById('txt-action'); 
-        const pill = document.getElementById('u-status-hari-ini');
-        
+        const btn = document.getElementById('btn-absen'); const txt = document.getElementById('txt-action'); const pill = document.getElementById('u-status-hari-ini');
         btn.disabled = false;
-        
-        if(statusHarian === "SELESAI"){ 
-            btn.disabled = true; txt.innerText = "DONE"; btn.style.background = "#333"; btn.style.boxShadow = "none"; pill.innerText = "BERES ✓"; pill.style.color = "#848999"; 
-        } else if(statusHarian === "PULANG"){ 
-            txt.innerText = "PULANG"; btn.style.background = "#F57C00"; btn.style.boxShadow = "0 0 30px rgba(245, 124, 0, 0.5)"; pill.innerText = "SDH MASUK"; pill.style.color = "#F57C00"; 
-        } else { 
-            txt.innerText = "DATANG"; btn.style.background = "#1565C0"; btn.style.boxShadow = "0 0 30px rgba(21, 101, 192, 0.5)"; pill.innerText = "NORMAL"; pill.style.color = "#2196F3"; 
-        }
+        if(statusHarian === "SELESAI"){ btn.disabled = true; txt.innerText = "DONE"; btn.style.background = "#333"; btn.style.boxShadow = "none"; pill.innerText = "BERES ✓"; pill.style.color = "#848999"; } 
+        else if(statusHarian === "PULANG"){ txt.innerText = "PULANG"; btn.style.background = "#F57C00"; btn.style.boxShadow = "0 0 30px rgba(245, 124, 0, 0.5)"; pill.innerText = "SDH MASUK"; pill.style.color = "#F57C00"; } 
+        else { txt.innerText = "DATANG"; btn.style.background = "#1565C0"; btn.style.boxShadow = "0 0 30px rgba(21, 101, 192, 0.5)"; pill.innerText = "NORMAL"; pill.style.color = "#2196F3"; }
     }
 
     function doAbsen() {
         setLoading(true);
         navigator.geolocation.getCurrentPosition(async (p) => {
             const d = dist(p.coords.latitude, p.coords.longitude, KANTOR.lat, KANTOR.lng);
-            if(d > KANTOR.rad) { 
-                alert(`KEJAUHAN!\nJarak: ${Math.round(d)}m. Max: 150m.`); 
-                setLoading(false); return; 
-            }
+            if(d > KANTOR.rad) { alert(`KEJAUHAN!\nJarak: ${Math.round(d)}m. Max: 150m.`); setLoading(false); return; }
             try {
                 const r = await fetch(scriptURL, { method: 'POST', body: JSON.stringify({ action: statusHarian, id: user.id, nama: user.nama, lat: p.coords.latitude, lng: p.coords.longitude })});
                 const res = await r.json();
-                
                 if(res.result === "success") {
                     const jamNow = new Date().getHours().toString().padStart(2,'0') + ":" + new Date().getMinutes().toString().padStart(2,'0');
-                    if(statusHarian === "DATANG" && jamNow > user.jamMasuk) {
-                        alert(`⚠️ TELAT LU!\nTarget: ${user.jamMasuk}\nAbsen: ${jamNow}`);
-                    } else {
-                        alert("✅ BERHASIL!");
-                    }
+                    if(statusHarian === "DATANG" && jamNow > user.jamMasuk) alert(`⚠️ TELAT LU!\nTarget: ${user.jamMasuk}\nAbsen: ${jamNow}`);
+                    else alert("✅ BERHASIL!");
                     location.reload();
                 }
-            } catch(e) { 
-                alert("Error Server!"); 
-                setLoading(false); 
-            }
-        }, (e) => { 
-            alert("GPS Mati!"); 
-            setLoading(false); 
-        }, { enableHighAccuracy: true });
+            } catch(e) { alert("Error Server!"); setLoading(false); }
+        }, (e) => { alert("GPS Mati!"); setLoading(false); }, { enableHighAccuracy: true });
     }
 
-    function setLoading(s) { 
-        document.getElementById('loader').style.display = s ? "block" : "none"; 
-        document.getElementById('btn-content').style.display = s ? "none" : "block"; 
-        document.getElementById('btn-absen').disabled = s; 
-    }
-    
-    function dist(l1, n1, l2, n2) { 
-        const R = 6371e3; const dL = (l2-l1)*Math.PI/180; const dN = (n2-n1)*Math.PI/180; 
-        const a = Math.sin(dL/2)*Math.sin(dL/2) + Math.cos(l1*Math.PI/180)*Math.cos(l2*Math.PI/180)*Math.sin(dN/2)*Math.sin(dN/2); 
-        return R * (2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a))); 
-    }
+    function setLoading(s) { document.getElementById('loader').style.display = s ? "block" : "none"; document.getElementById('btn-content').style.display = s ? "none" : "block"; document.getElementById('btn-absen').disabled = s; }
+    function dist(l1, n1, l2, n2) { const R = 6371e3; const dL = (l2-l1)*Math.PI/180; const dN = (n2-n1)*Math.PI/180; const a = Math.sin(dL/2)*Math.sin(dL/2) + Math.cos(l1*Math.PI/180)*Math.cos(l2*Math.PI/180)*Math.sin(dN/2)*Math.sin(dN/2); return R * (2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a))); }
 </script>
 </body>
 </html>
