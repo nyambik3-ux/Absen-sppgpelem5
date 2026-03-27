@@ -137,7 +137,7 @@
 
 <script>
     // --- SETTING APLIKASI ---
-    const scriptURL = "https://script.google.com/macros/s/AKfycbzrrQ510rB9niFNcs9_8eucQXIRVgJU9lsUOp_BgTaFoOs_Vr55XkVThndWb5qD9cRS/exec"; 
+    const scriptURL = "https://script.google.com/macros/s/AKfycbwHn6QDyZluAHqMmDPxnZIi5jU4x204fc3Ck-5eDVEsk70cKTLxskfMjWty3sZfP6oF/exec"; 
     const KANTOR = { lat: -7.86765090281387, lng: 112.01944788836946, rad: 150 }; 
     let statusHarian = "DATANG";
 
@@ -213,4 +213,58 @@
         reader.onload = async function(e) {
             const base64Data = e.target.result.split(',')[1]; 
             try {
-                const r = await fetch(scriptURL, { method: 'POST', body: JSON.stringify({ action: "updatePhoto", id: user
+                const r = await fetch(scriptURL, { method: 'POST', body: JSON.stringify({ action: "updatePhoto", id: user.id, nama: user.nama, base64: base64Data, mimeType: file.type, filename: file.name }) });
+                const res = await r.json();
+                
+                if(res.result === "success") {
+                    user.foto = res.newPhotoUrl; 
+                    localStorage.setItem('user_pelem_5', JSON.stringify(user));
+                    document.getElementById('p-foto').src = dapatkanLinkDirect(res.newPhotoUrl); 
+                    alert("✅ Berhasil Upload!"); closePhotoModal();
+                } else { alert("❌ Gagal: " + res.message); }
+            } catch(e) { alert("❌ Koneksi gagal, coba lagi."); } 
+            finally { btnSave.disabled = false; btnSave.innerText = "UPLOAD & SIMPAN"; }
+        };
+        reader.readAsDataURL(file);
+    }
+
+    // --- MESIN ABSEN ---
+    async function syncStatus() {
+        try {
+            const r = await fetch(scriptURL, { method: 'POST', body: JSON.stringify({ action: "login", id: user.id, pin: "RECHECK" })});
+            const d = await r.json();
+            statusHarian = d.statusHariIni; document.getElementById('u-akumulasi').innerText = `${d.totalAkumulasi || 0} Hari`; updateUI();
+        } catch (e) { document.getElementById('u-status-hari-ini').innerText = "OFFLINE"; }
+    }
+
+    function updateUI() {
+        const btn = document.getElementById('btn-absen'); const txt = document.getElementById('txt-action'); const pill = document.getElementById('u-status-hari-ini');
+        btn.disabled = false;
+        if(statusHarian === "SELESAI"){ btn.disabled = true; txt.innerText = "DONE"; btn.style.background = "#333"; btn.style.boxShadow = "none"; pill.innerText = "BERES ✓"; pill.style.color = "#848999"; } 
+        else if(statusHarian === "PULANG"){ txt.innerText = "PULANG"; btn.style.background = "#F57C00"; btn.style.boxShadow = "0 0 30px rgba(245, 124, 0, 0.5)"; pill.innerText = "SDH MASUK"; pill.style.color = "#F57C00"; } 
+        else { txt.innerText = "DATANG"; btn.style.background = "#1565C0"; btn.style.boxShadow = "0 0 30px rgba(21, 101, 192, 0.5)"; pill.innerText = "NORMAL"; pill.style.color = "#2196F3"; }
+    }
+
+    function doAbsen() {
+        setLoading(true);
+        navigator.geolocation.getCurrentPosition(async (p) => {
+            const d = dist(p.coords.latitude, p.coords.longitude, KANTOR.lat, KANTOR.lng);
+            if(d > KANTOR.rad) { alert(`KEJAUHAN!\nJarak: ${Math.round(d)}m. Max: 150m.`); setLoading(false); return; }
+            try {
+                const r = await fetch(scriptURL, { method: 'POST', body: JSON.stringify({ action: statusHarian, id: user.id, nama: user.nama, lat: p.coords.latitude, lng: p.coords.longitude })});
+                const res = await r.json();
+                if(res.result === "success") {
+                    const jamNow = new Date().getHours().toString().padStart(2,'0') + ":" + new Date().getMinutes().toString().padStart(2,'0');
+                    if(statusHarian === "DATANG" && jamNow > user.jamMasuk) alert(`⚠️ TELAT LU!\nTarget: ${user.jamMasuk}\nAbsen: ${jamNow}`);
+                    else alert("✅ BERHASIL!");
+                    location.reload();
+                }
+            } catch(e) { alert("Error Server!"); setLoading(false); }
+        }, (e) => { alert("GPS Mati!"); setLoading(false); }, { enableHighAccuracy: true });
+    }
+
+    function setLoading(s) { document.getElementById('loader').style.display = s ? "block" : "none"; document.getElementById('btn-content').style.display = s ? "none" : "block"; document.getElementById('btn-absen').disabled = s; }
+    function dist(l1, n1, l2, n2) { const R = 6371e3; const dL = (l2-l1)*Math.PI/180; const dN = (n2-n1)*Math.PI/180; const a = Math.sin(dL/2)*Math.sin(dL/2) + Math.cos(l1*Math.PI/180)*Math.cos(l2*Math.PI/180)*Math.sin(dN/2)*Math.sin(dN/2); return R * (2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a))); }
+</script>
+</body>
+</html>
