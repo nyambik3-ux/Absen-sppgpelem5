@@ -101,10 +101,21 @@
     document.getElementById('j-masuk').innerText = user.jamMasuk || "-";
     document.getElementById('j-pulang').innerText = user.jamPulang || "-";
 
+   // ==========================================
+    // 2. LOGIKA MEMORI "DATANG" & "PULANG" (VERSI SHIFT MALAM - ANTI GAGAL)
     // ==========================================
-    // 2. LOGIKA MEMORI "DATANG" & "PULANG"
-    // ==========================================
-    const tanggalHariIni = new Date().toLocaleDateString('id-ID'); // Contoh: 8/4/2026
+    const waktuSekarang = new Date();
+    const batasJamReset = 6; // Reset tiap jam 06:00 pagi
+    
+    // Kurangi waktu aktual dengan batas jam reset
+    const waktuCustom = new Date(waktuSekarang.getTime() - (batasJamReset * 60 * 60 * 1000));
+    
+    // Bikin format tanggal paten (Contoh: 2026-04-09) biar semua HP seragam
+    const yyyy = waktuCustom.getFullYear();
+    const mm = String(waktuCustom.getMonth() + 1).padStart(2, '0');
+    const dd = String(waktuCustom.getDate()).padStart(2, '0');
+    const tanggalHariIni = `${yyyy}-${mm}-${dd}`; 
+    
     const statusHariIni = localStorage.getItem('absen_' + tanggalHariIni);
     
     let statusHarian = "DATANG"; // Default
