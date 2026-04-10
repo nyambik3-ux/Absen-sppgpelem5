@@ -9,7 +9,6 @@
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; }
         body { background-color: #04091A; color: white; display: flex; justify-content: center; min-height: 100vh; padding: 20px 0; }
         .app { width: 90%; max-width: 400px; text-align: center; position: relative; }
-        
         .top-bar { display: flex; justify-content: flex-end; margin-bottom: 30px; position: relative; z-index: 50; }
         .profile-dropdown { display: flex; align-items: center; background: #0A1124; border: 1px solid #1A2238; border-radius: 15px; padding: 8px 15px; cursor: pointer; transition: 0.2s; user-select: none; }
         .profile-dropdown:active { transform: scale(0.98); }
@@ -17,27 +16,18 @@
         .profile-info { text-align: left; }
         .profile-name { font-weight: bold; font-size: 14px; }
         .profile-role { font-size: 11px; color: #aaa; }
-        
         .dropdown-menu { display: none; position: absolute; top: 60px; right: 0; background: #0A1124; border: 1px solid #1A2238; border-radius: 10px; width: 150px; overflow: hidden; box-shadow: 0 5px 15px rgba(0,0,0,0.5); }
         .dropdown-menu button { width: 100%; padding: 12px; background: transparent; border: none; color: #ff4d4d; font-weight: bold; cursor: pointer; border-bottom: 1px solid #1A2238; }
-        .dropdown-menu button:hover { background: #1A2238; }
-
         .time-display { font-size: 40px; font-weight: bold; margin-bottom: 5px; color: #2196F3; }
         .date-display { font-size: 14px; color: #aaa; margin-bottom: 40px; }
-        
         .card { background: #0A1124; border: 1px solid #1A2238; border-radius: 20px; padding: 25px; margin-bottom: 20px; text-align: left; }
         .card-title { font-size: 12px; color: #888; margin-bottom: 15px; text-transform: uppercase; letter-spacing: 1px; }
-        
         .info-row { display: flex; justify-content: space-between; margin-bottom: 12px; font-size: 14px; }
         .info-label { color: #888; }
         .info-val { font-weight: bold; }
-        
         .btn-absen { width: 100%; padding: 18px; border-radius: 15px; border: none; font-size: 16px; font-weight: bold; color: white; cursor: pointer; transition: 0.3s; margin-top: 10px; }
         .btn-datang { background: #4CAF50; box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3); }
         .btn-pulang { background: #f44336; box-shadow: 0 4px 15px rgba(244, 67, 54, 0.3); }
-        .btn-disabled { background: #555; cursor: not-allowed; box-shadow: none; }
-        .btn-absen:active:not(:disabled) { transform: translateY(2px); }
-
         .loader { display: none; width: 40px; height: 40px; border: 4px solid #1A2238; border-top: 4px solid #2196F3; border-radius: 50%; animation: spin 1s linear infinite; margin: 20px auto; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     </style>
@@ -54,9 +44,7 @@
             </div>
             <i class="fas fa-chevron-down" style="margin-left: 10px; font-size: 12px; color:#888"></i>
         </div>
-        <div class="dropdown-menu" id="d-menu">
-            <button onclick="logout()"><i class="fas fa-sign-out-alt"></i> Keluar</button>
-        </div>
+        <div class="dropdown-menu" id="d-menu"><button onclick="logout()"><i class="fas fa-sign-out-alt"></i> Keluar</button></div>
     </div>
 
     <div id="jam" class="time-display">--:--</div>
@@ -71,7 +59,7 @@
     <div class="card">
         <div class="card-title"><i class="fas fa-map-marker-alt"></i> Lokasi GPS</div>
         <div class="info-row"><span class="info-label">Status</span><span class="info-val" id="l-status" style="color:#FFC107">Mencari...</span></div>
-        <div class="info-row"><span class="info-label">Jarak ke Target</span><span class="info-val" id="l-jarak">-</span></div>
+        <div class="info-row"><span class="info-label">Jarak Target</span><span class="info-val" id="l-jarak">-</span></div>
     </div>
 
     <div class="loader" id="loader"></div>
@@ -79,198 +67,132 @@
 </div>
 
 <script>
-    // ==========================================
-    // 1. PENGATURAN AWAL & CEK SESI LOGIN
-    // ==========================================
+    // ⚠️ JANGAN LUPA: Masukkan URL Script Google lu di sini
+    const scriptURL = "MASUKAN_URL_SCRIPT_GOOGLE_DISINI_YANG_TERBARU"; 
     
-    // ⚠️ WAJIB GANTI: Masukkan URL Apps Script (Google) lu yang terbaru di bawah ini
-    const scriptURL = "https://script.google.com/macros/s/AKfycbyA-Dd5UlbPoEs_PlqrB7ZMV482w9Jq6F75d_JiXST4WAF5ZTK1DFOiBwAwxuBZ3tn6ZA/exec"; 
-    
-    // Cek apakah user udah login
+    // Cek Login
     const userData = localStorage.getItem('user_pelem_5');
-    if (!userData) {
-        window.location.href = "login.html"; // Tendang ke halaman login kalau kosong
-    }
-    
+    if (!userData) window.location.href = "login.html";
     const user = JSON.parse(userData);
     
-    // Tampilkan Data User ke Layar
+    // Nampilin data ke layar
     document.getElementById('u-nama').innerText = user.nama || user.id;
     document.getElementById('u-div').innerText = user.divisi || "Karyawan";
     document.getElementById('u-foto').src = user.foto || "https://via.placeholder.com/150";
     document.getElementById('j-masuk').innerText = user.jamMasuk || "-";
     document.getElementById('j-pulang').innerText = user.jamPulang || "-";
 
-   // ==========================================
-    // 2. LOGIKA MEMORI "DATANG" & "PULANG" (VERSI SHIFT MALAM - ANTI GAGAL)
     // ==========================================
-    const waktuSekarang = new Date();
-    const batasJamReset = 6; // Reset tiap jam 06:00 pagi
+    // LOGIKA TIKET (UDAH ANTI LOGOUT)
+    // ==========================================
+    // Cari tiket berdasarkan ID karyawan yang lagi login (misal: tiket_absen_P-350)
+    let tiketMasuk = localStorage.getItem('tiket_absen_' + user.id);
+    let statusHarian = tiketMasuk ? "PULANG" : "DATANG"; 
     
-    // Kurangi waktu aktual dengan batas jam reset
-    const waktuCustom = new Date(waktuSekarang.getTime() - (batasJamReset * 60 * 60 * 1000));
-    
-    // Bikin format tanggal paten (Contoh: 2026-04-09) biar semua HP seragam
-    const yyyy = waktuCustom.getFullYear();
-    const mm = String(waktuCustom.getMonth() + 1).padStart(2, '0');
-    const dd = String(waktuCustom.getDate()).padStart(2, '0');
-    const tanggalHariIni = `${yyyy}-${mm}-${dd}`; 
-    
-    const statusHariIni = localStorage.getItem('absen_' + tanggalHariIni);
-    
-    let statusHarian = "DATANG"; // Default
     const btnAbsen = document.getElementById('btn-absen');
-
-    function updateTombolBerdasarkanStatus() {
-        if (statusHariIni === "DATANG") {
-            statusHarian = "PULANG";
-            btnAbsen.innerText = "ABSEN PULANG";
-            btnAbsen.className = "btn-absen btn-pulang"; // Ubah warna jadi merah
-        } else if (statusHariIni === "PULANG") {
-            statusHarian = "SELESAI";
-            btnAbsen.innerText = "SUDAH SELESAI HARI INI";
-            btnAbsen.className = "btn-absen btn-disabled"; // Ubah warna jadi abu-abu
-            btnAbsen.disabled = true;
+    
+    function updateTombol() {
+        if (statusHarian === "PULANG") {
+            btnAbsen.innerText = `ABSEN PULANG (Tgl ${tiketMasuk})`; 
+            btnAbsen.className = "btn-absen btn-pulang";
         } else {
-            statusHarian = "DATANG";
             btnAbsen.innerText = "ABSEN MASUK";
-            btnAbsen.className = "btn-absen btn-datang"; // Warna hijau
+            btnAbsen.className = "btn-absen btn-datang";
         }
     }
+    updateTombol();
 
-    // Panggil fungsi untuk setel tampilan awal
-    updateTombolBerdasarkanStatus();
-
-    // ==========================================
-    // 3. FUNGSI JAM REALTIME
-    // ==========================================
+    // Jam Realtime
     setInterval(() => {
         const now = new Date();
         document.getElementById('jam').innerText = now.getHours().toString().padStart(2, '0') + ":" + now.getMinutes().toString().padStart(2, '0');
-        const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-        document.getElementById('tgl').innerText = now.toLocaleDateString('id-ID', options);
+        document.getElementById('tgl').innerText = now.toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
     }, 1000);
 
     // ==========================================
-    // 4. LOKASI & JARAK (GPS)
+    // GPS & LOKASI
     // ==========================================
-    
-    // ⚠️ WAJIB GANTI: Masukkan titik koordinat (Latitude & Longitude) sekolah/kantor lu
-    let locTarget = { lat: -7.749760, lng: 112.174253 }; 
-    
-    let currentLat = 0, currentLng = 0;
-    let isLocationReady = false;
+    // ⚠️ JANGAN LUPA: Ganti koordinat GPS ini sama lokasi tempat lu
+    let locTarget = { lat: -7.801389, lng: 110.364444 }; 
+    let currentLat = 0, currentLng = 0, isLocReady = false;
 
     function getDistance(lat1, lon1, lat2, lon2) {
-        const R = 6371e3; // Radius bumi dalam meter
-        const p1 = lat1 * Math.PI/180;
-        const p2 = lat2 * Math.PI/180;
-        const dp = (lat2-lat1) * Math.PI/180;
-        const dl = (lon2-lon1) * Math.PI/180;
-        const a = Math.sin(dp/2) * Math.sin(dp/2) + Math.cos(p1) * Math.cos(p2) * Math.sin(dl/2) * Math.sin(dl/2);
-        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-        return Math.floor(R * c);
+        const p = Math.PI/180;
+        const a = 0.5 - Math.cos((lat2 - lat1) * p)/2 + Math.cos(lat1 * p) * Math.cos(lat2 * p) * (1 - Math.cos((lon2 - lon1) * p))/2;
+        return Math.floor(12742e3 * Math.asin(Math.sqrt(a)));
     }
 
     navigator.geolocation.watchPosition(
         (pos) => {
-            currentLat = pos.coords.latitude;
-            currentLng = pos.coords.longitude;
+            currentLat = pos.coords.latitude; currentLng = pos.coords.longitude;
             const jarak = getDistance(currentLat, currentLng, locTarget.lat, locTarget.lng);
-            
             document.getElementById('l-status').innerText = "Akurat";
             document.getElementById('l-status').style.color = "#4CAF50";
             document.getElementById('l-jarak').innerText = jarak + " meter";
-            
-            isLocationReady = true;
-            
-            // Nyalain tombolnya kalau GPS udah dapet & absen belum selesai
-            if(statusHarian !== "SELESAI") {
-                btnAbsen.disabled = false;
-            }
+            isLocReady = true; btnAbsen.disabled = false;
         },
         (err) => {
-            document.getElementById('l-status').innerText = "Akses GPS Ditolak / Gagal";
+            document.getElementById('l-status').innerText = "GPS Ditolak";
             document.getElementById('l-status').style.color = "#f44336";
-            btnAbsen.disabled = true;
-            btnAbsen.innerText = "IZINKAN GPS DULU";
-        }, 
-        { enableHighAccuracy: true }
+            btnAbsen.disabled = true; btnAbsen.innerText = "IZINKAN GPS";
+        }, { enableHighAccuracy: true }
     );
 
     // ==========================================
-    // 5. EKSEKUSI ABSEN KE GOOGLE SCRIPT
+    // EKSEKUSI ABSEN
     // ==========================================
     async function doAbsen() {
-        if (!isLocationReady) return alert("Tunggu sampai GPS akurat!");
-        
-        // Cek Jarak (Misal max radius 150 meter)
-        const jarak = getDistance(currentLat, currentLng, locTarget.lat, locTarget.lng);
-        if(jarak > 150) {
-            return alert(`⚠️ KEJAUHAN LU!\nJarak lu: ${jarak}m dari target.\nMaksimal absen dalam radius 150m.`);
-        }
+        if (!isLocReady) return alert("Tunggu sampai GPS akurat!");
+        if (getDistance(currentLat, currentLng, locTarget.lat, locTarget.lng) > 150) return alert("⚠️ KEJAUHAN! Max radius 150m.");
 
-        // Mulai animasi loading
-        btnAbsen.style.display = "none";
-        document.getElementById('loader').style.display = "block";
+        btnAbsen.style.display = "none"; document.getElementById('loader').style.display = "block";
 
         try {
             const reqBody = {
-                action: statusHarian, // Ngirim status "DATANG" atau "PULANG" ke Google
+                action: statusHarian,
                 id: user.id,
                 nama: user.nama || user.id,
-                lat: currentLat,
-                lng: currentLng
+                lat: currentLat, lng: currentLng,
+                tiketTgl: tiketMasuk 
             };
 
-            const resObj = await fetch(scriptURL, {
-                method: 'POST',
-                body: JSON.stringify(reqBody)
-            });
-            
+            const resObj = await fetch(scriptURL, { method: 'POST', body: JSON.stringify(reqBody) });
             const res = await resObj.json();
 
             if (res.result === "success") {
-                // 1. Simpan sukses ke memori HP (Ini yang bikin tombolnya gak lupa)
-                localStorage.setItem('absen_' + tanggalHariIni, statusHarian);
-                
-                // 2. Cek Telat atau Gak (Khusus pas DATANG)
-                const jamNow = new Date().getHours().toString().padStart(2,'0') + ":" + new Date().getMinutes().toString().padStart(2,'0');
-                if (statusHarian === "DATANG" && user.jamMasuk && jamNow > user.jamMasuk) {
-                    alert(`⚠️ TELAT LU!\nTarget Masuk: ${user.jamMasuk}\nAbsen Lu: ${jamNow}`);
+                if (statusHarian === "DATANG") {
+                    // Berhasil datang? Simpan tiket pakai ID Karyawan
+                    localStorage.setItem('tiket_absen_' + user.id, new Date().getDate());
+                    
+                    const jamNow = new Date().getHours().toString().padStart(2,'0') + ":" + new Date().getMinutes().toString().padStart(2,'0');
+                    if (user.jamMasuk && jamNow > user.jamMasuk) alert(`⚠️ TELAT LU!\nTarget: ${user.jamMasuk}\nAbsen: ${jamNow}`);
+                    else alert("✅ ABSEN MASUK BERHASIL!");
                 } else {
-                    alert(`✅ ABSEN ${statusHarian} BERHASIL!`);
+                    // Berhasil pulang? Buang tiket milik karyawan ini
+                    localStorage.removeItem('tiket_absen_' + user.id);
+                    alert("✅ ABSEN PULANG BERHASIL!");
                 }
-
-                // 3. Reload halaman buat nerapin perubahan memori (Tombol otomatis jadi PULANG)
                 window.location.reload();
             } else {
                 alert("GAGAL: " + res.result);
                 resetTombol();
             }
-
         } catch (err) {
-            alert("ERROR KONEKSI: Pastikan Internet Lancar!");
+            alert("ERROR KONEKSI: Cek Internet!");
             resetTombol();
         }
     }
 
-    function resetTombol() {
-        btnAbsen.style.display = "block";
-        document.getElementById('loader').style.display = "none";
-    }
-
+    function resetTombol() { btnAbsen.style.display = "block"; document.getElementById('loader').style.display = "none"; }
+    function toggleMenu() { const m = document.getElementById('d-menu'); m.style.display = m.style.display === 'block' ? 'none' : 'block'; }
+    
     // ==========================================
-    // 6. MENU DROPDOWN & LOGOUT
+    // LOGOUT AMAN (Nggak Hapus Tiket)
     // ==========================================
-    function toggleMenu() {
-        const menu = document.getElementById('d-menu');
-        menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
-    }
-
-    function logout() {
-        localStorage.removeItem('user_pelem_5'); // Hapus sesi
-        window.location.href = "login.html"; // Tendang balik ke login
+    function logout() { 
+        localStorage.removeItem('user_pelem_5'); // Cuma hapus sesi login
+        // TIKET ABSEN TETAP AMAN TIDAK DIHAPUS DI SINI
+        window.location.href = "login.html"; 
     }
 </script>
 </body>
