@@ -531,7 +531,7 @@
         }
         
         const jarak = getDistance(currentLat, currentLng, locTarget.lat, locTarget.lng);
-        if (jarak > 150) {
+        if (jarak > 30000) {
             showToast(`⚠️ Anda di luar radius! Jarak: ${jarak}m (maks 150m)`, "error");
             return;
         }
