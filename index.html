@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>Absensi Relawan</title>
+    <title>Absensi Relawan • Smart Presence</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         * {
             margin: 0;
@@ -11,87 +12,134 @@
             box-sizing: border-box;
         }
         body {
-            font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
-            background: linear-gradient(145deg, #0f172a 0%, #1e1b4b 100%);
+            font-family: 'Inter', sans-serif;
+            background: radial-gradient(circle at 10% 20%, #0a0f2a, #030617);
             min-height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
             padding: 20px;
         }
-        .card {
-            background: rgba(255,255,255,0.05);
-            backdrop-filter: blur(16px);
-            border-radius: 48px;
-            padding: 32px 24px;
+        .glass-card {
+            max-width: 500px;
             width: 100%;
-            max-width: 400px;
-            box-shadow: 0 20px 35px -10px rgba(0,0,0,0.4);
-            border: 1px solid rgba(255,255,255,0.2);
-            text-align: center;
+            background: rgba(15, 25, 45, 0.55);
+            backdrop-filter: blur(16px);
+            border-radius: 56px;
+            padding: 32px 24px 40px;
+            box-shadow: 0 25px 45px rgba(0,0,0,0.4), 0 0 0 1px rgba(255,255,255,0.08);
+            transition: all 0.3s;
+        }
+        .profile {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+            margin-bottom: 28px;
         }
         .avatar {
-            width: 80px;
-            height: 80px;
-            background: linear-gradient(135deg, #38bdf8, #818cf8);
-            border-radius: 40px;
+            width: 70px;
+            height: 70px;
+            background: linear-gradient(145deg, #a855f7, #3b82f6);
+            border-radius: 35px;
             display: flex;
             align-items: center;
             justify-content: center;
-            margin: 0 auto 16px;
-            font-size: 36px;
+            font-size: 32px;
             color: white;
+            box-shadow: 0 8px 20px rgba(168,85,247,0.3);
         }
-        h2 {
-            color: white;
+        .avatar img {
+            width: 70px;
+            height: 70px;
+            border-radius: 35px;
+            object-fit: cover;
+        }
+        .info h2 {
             font-size: 24px;
-            margin-bottom: 6px;
+            font-weight: 700;
+            color: white;
+            letter-spacing: -0.3px;
         }
-        .divisi {
-            color: #a5b4fc;
+        .info p {
             font-size: 14px;
-            margin-bottom: 28px;
+            color: #a0aec0;
+            margin-top: 6px;
         }
-        .jam-info {
-            background: rgba(0,0,0,0.4);
-            border-radius: 32px;
-            padding: 12px;
-            margin-bottom: 30px;
+        .time-panel {
+            background: rgba(0,0,0,0.35);
+            border-radius: 48px;
+            padding: 24px 20px;
+            text-align: center;
+            margin-bottom: 28px;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        .clock {
+            font-size: 64px;
+            font-weight: 800;
+            font-family: monospace;
+            letter-spacing: 4px;
+            background: linear-gradient(135deg, #f0f9ff, #c7d2fe);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            text-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+        .date {
+            font-size: 16px;
+            color: #94a3b8;
+            margin-top: 12px;
+            font-weight: 500;
+        }
+        .schedule {
             display: flex;
             justify-content: space-between;
-            color: #cbd5e1;
+            background: rgba(255,255,255,0.05);
+            padding: 16px 20px;
+            border-radius: 40px;
+            margin-bottom: 32px;
             font-size: 14px;
+            font-weight: 500;
         }
-        .jam-info span {
+        .schedule div {
+            color: #cbd5e1;
+        }
+        .schedule span {
             color: white;
-            font-weight: bold;
+            font-weight: 700;
+            margin-left: 8px;
         }
         .btn-group {
             display: flex;
-            gap: 16px;
-            margin-bottom: 20px;
+            gap: 20px;
+            margin-bottom: 24px;
         }
         button {
             flex: 1;
-            padding: 16px 0;
+            padding: 18px 0;
             border: none;
             border-radius: 60px;
             font-size: 18px;
-            font-weight: 700;
+            font-weight: 800;
+            font-family: 'Inter', sans-serif;
             cursor: pointer;
-            transition: 0.2s;
-            background: #1e293b;
+            transition: 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            background: #1e2a3e;
             color: #94a3b8;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
         }
         button.active-masuk {
             background: linear-gradient(135deg, #10b981, #059669);
             color: white;
-            box-shadow: 0 8px 20px rgba(16,185,129,0.4);
+            box-shadow: 0 10px 20px -5px #10b98180;
         }
         button.active-pulang {
             background: linear-gradient(135deg, #f97316, #ea580c);
             color: white;
-            box-shadow: 0 8px 20px rgba(249,115,22,0.4);
+            box-shadow: 0 10px 20px -5px #f9731680;
         }
         button:active {
             transform: scale(0.97);
@@ -100,59 +148,96 @@
             opacity: 0.5;
             transform: none;
             cursor: not-allowed;
+            filter: grayscale(0.1);
         }
-        .logout {
-            background: none;
-            border: 1px solid #475569;
-            color: #94a3b8;
-            padding: 10px;
-            font-size: 14px;
-            margin-top: 10px;
+        .logout-btn {
+            width: 100%;
+            background: rgba(255,255,255,0.05);
+            color: #b91c1c;
+            border: 1px solid rgba(185,28,28,0.3);
+            box-shadow: none;
+            font-size: 16px;
+            font-weight: 600;
+            padding: 14px;
         }
         .toast {
             position: fixed;
             bottom: 30px;
             left: 20px;
             right: 20px;
-            background: #0f172acc;
-            backdrop-filter: blur(12px);
-            padding: 14px;
-            border-radius: 60px;
-            text-align: center;
+            background: #0f172ae6;
+            backdrop-filter: blur(20px);
+            padding: 14px 20px;
+            border-radius: 80px;
             color: white;
-            font-size: 14px;
+            font-weight: 500;
+            text-align: center;
+            z-index: 1000;
+            animation: slideUp 0.3s ease;
             border-left: 4px solid #10b981;
-            z-index: 999;
-            animation: fadeInUp 0.3s ease;
+            max-width: 480px;
+            margin: 0 auto;
+            pointer-events: none;
         }
-        @keyframes fadeInUp {
-            from { opacity: 0; transform: translateY(20px);}
-            to { opacity: 1; transform: translateY(0);}
+        @keyframes slideUp {
+            from { transform: translateY(50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        i {
+            font-style: normal;
+            font-weight: 500;
+        }
+        @media (max-width: 480px) {
+            .glass-card { padding: 24px 18px; }
+            .clock { font-size: 48px; }
+            .btn-group { gap: 12px; }
+            button { font-size: 16px; padding: 14px 0; }
         }
     </style>
 </head>
 <body>
-<div class="card">
-    <div class="avatar">👤</div>
-    <h2 id="namaUser">Memuat...</h2>
-    <div class="divisi" id="divisiUser">-</div>
-    <div class="jam-info">
-        <div>⏰ Jam Masuk</div>
-        <div><span id="jamMasukTarget">--:--</span></div>
-        <div>🏁 Jam Pulang</div>
-        <div><span id="jamPulangTarget">--:--</span></div>
+<div class="glass-card">
+    <!-- Profile area -->
+    <div class="profile">
+        <div class="avatar" id="avatar">
+            <span>👤</span>
+        </div>
+        <div class="info">
+            <h2 id="namaUser">Memuat...</h2>
+            <p id="divisiUser">-</p>
+        </div>
     </div>
+
+    <!-- Jam & tanggal -->
+    <div class="time-panel">
+        <div class="clock" id="jamDigital">--:--:--</div>
+        <div class="date" id="tanggal">--</div>
+    </div>
+
+    <!-- Jadwal shift -->
+    <div class="schedule">
+        <div>🕘 JAM MASUK <span id="jamMasukTarget">--:--</span></div>
+        <div>🏁 JAM PULANG <span id="jamPulangTarget">--:--</span></div>
+    </div>
+
+    <!-- Tombol aksi -->
     <div class="btn-group">
-        <button id="btnMasuk">📥 MASUK</button>
-        <button id="btnPulang" disabled>📤 PULANG</button>
+        <button id="btnMasuk" class="active-masuk">
+            <span>📥</span> MASUK
+        </button>
+        <button id="btnPulang" disabled>
+            <span>📤</span> PULANG
+        </button>
     </div>
-    <button id="logoutBtn" class="logout">🚪 Keluar</button>
+    <button id="logoutBtn" class="logout-btn">
+        🚪 KELUAR
+    </button>
 </div>
 
 <script>
     // ========== KONFIGURASI ==========
     const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyZZg3ddy394sAI24km9hE1kI8rconMG0XJicU1pwyJNGElrOhs1GX-0B8hX2MpKhiJ6g/exec";
-    
+
     // ========== AMBIL DATA LOGIN ==========
     let user = null;
     try {
@@ -163,20 +248,26 @@
         window.location.href = "login.html";
     }
 
-    // Tampilkan profil
+    // Tampilkan data
     document.getElementById('namaUser').innerText = user.nama || user.id;
     document.getElementById('divisiUser').innerText = user.divisi || "Relawan";
     document.getElementById('jamMasukTarget').innerText = user.jamMasuk || "08:00";
     document.getElementById('jamPulangTarget').innerText = user.jamPulang || "17:00";
 
-    // ========== STATE ABSEN (per hari, disimpan di sessionStorage) ==========
+    // Avatar (jika ada foto)
+    if (user.foto && user.foto !== "") {
+        const avatarDiv = document.getElementById('avatar');
+        avatarDiv.innerHTML = `<img src="${user.foto}" alt="foto">`;
+    }
+
+    // ========== STATE ABSEN (per hari dengan sessionStorage) ==========
     function getTodayKey() {
         const d = new Date();
         return `${d.getFullYear()}-${d.getMonth()+1}-${d.getDate()}`;
     }
-    const tiketKey = `absen_${user.id}_${getTodayKey()}`;
-    let sudahMasuk = sessionStorage.getItem(tiketKey) === 'masuk';
-    let sudahPulang = sessionStorage.getItem(tiketKey) === 'pulang';
+    const STORAGE_KEY = `absen_${user.id}_${getTodayKey()}`;
+    let sudahMasuk = sessionStorage.getItem(STORAGE_KEY) === 'masuk';
+    let sudahPulang = sessionStorage.getItem(STORAGE_KEY) === 'pulang';
 
     const btnMasuk = document.getElementById('btnMasuk');
     const btnPulang = document.getElementById('btnPulang');
@@ -187,6 +278,8 @@
             btnPulang.disabled = true;
             btnMasuk.classList.remove('active-masuk');
             btnPulang.classList.remove('active-pulang');
+            btnPulang.style.opacity = '0.6';
+            btnMasuk.style.opacity = '0.6';
             return;
         }
         if (sudahMasuk) {
@@ -203,68 +296,83 @@
     }
     updateButtonState();
 
-    // ========== FUNGSI PANGGIL BACKEND ==========
-    async function callAbsen(action) {
-        // Nonaktifkan tombol sementara
+    // ========== FUNGSI ABSEN KE BACKEND ==========
+    async function doAbsen(action) {
+        // Lock tombol selama proses
         btnMasuk.disabled = true;
         btnPulang.disabled = true;
         
         try {
-            const res = await fetch(SCRIPT_URL, {
+            const response = await fetch(SCRIPT_URL, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    action: action,   // "DATANG" atau "PULANG"
+                    action: action,       // "DATANG" atau "PULANG"
                     id: user.id,
                     nama: user.nama || user.id,
-                    lat: 0, lng: 0    // opsional, dikirim saja 0
+                    lat: 0,               // opsional
+                    lng: 0
                 })
             });
-            const data = await res.json();
+            const data = await response.json();
             if (data.result === "success") {
                 if (action === "DATANG") {
-                    sessionStorage.setItem(tiketKey, 'masuk');
+                    sessionStorage.setItem(STORAGE_KEY, 'masuk');
                     sudahMasuk = true;
                     showToast("✅ Absen Masuk berhasil!");
                 } else if (action === "PULANG") {
-                    sessionStorage.setItem(tiketKey, 'pulang');
+                    sessionStorage.setItem(STORAGE_KEY, 'pulang');
                     sudahPulang = true;
                     showToast("✅ Absen Pulang berhasil!");
                 }
                 updateButtonState();
-                // Jika sudah pulang, reload agar state tetap (opsional)
                 if (sudahPulang) {
-                    setTimeout(() => window.location.reload(), 1200);
+                    // reload setelah pulang untuk mereset state (opsional, biar bersih)
+                    setTimeout(() => window.location.reload(), 1500);
                 }
             } else {
-                showToast("❌ Gagal: " + (data.message || "Terjadi kesalahan"), true);
-                // Kembalikan state tombol
-                updateButtonState();
+                showToast("❌ Gagal: " + (data.message || "Coba lagi"), true);
+                updateButtonState(); // balikin state sesuai kondisi sebelumnya
             }
         } catch (err) {
             console.error(err);
-            showToast("❌ Error jaringan, coba lagi", true);
+            showToast("❌ Gagal koneksi ke server", true);
             updateButtonState();
         }
     }
 
-    // Event listener tombol
-    btnMasuk.addEventListener('click', () => callAbsen("DATANG"));
-    btnPulang.addEventListener('click', () => callAbsen("PULANG"));
+    // ========== EVENT LISTENER ==========
+    btnMasuk.addEventListener('click', () => doAbsen("DATANG"));
+    btnPulang.addEventListener('click', () => doAbsen("PULANG"));
     document.getElementById('logoutBtn').addEventListener('click', () => {
         sessionStorage.removeItem('user_pelem_5');
-        // Hapus juga tiket hari ini agar tidak menggantung
-        sessionStorage.removeItem(tiketKey);
+        // Hapus juga tiket absen hari ini (opsional)
+        sessionStorage.removeItem(STORAGE_KEY);
         window.location.href = "login.html";
     });
 
+    // ========== JAM DIGITAL + TANGGAL ==========
+    function updateClock() {
+        const now = new Date();
+        const jam = now.getHours().toString().padStart(2,'0');
+        const menit = now.getMinutes().toString().padStart(2,'0');
+        const detik = now.getSeconds().toString().padStart(2,'0');
+        document.getElementById('jamDigital').innerText = `${jam}:${menit}:${detik}`;
+        
+        const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+        document.getElementById('tanggal').innerText = now.toLocaleDateString('id-ID', options);
+    }
+    updateClock();
+    setInterval(updateClock, 1000);
+
+    // ========== TOAST NOTIFICATION ==========
     function showToast(msg, isError = false) {
         const toast = document.createElement('div');
         toast.className = 'toast';
         toast.style.borderLeftColor = isError ? '#f97316' : '#10b981';
         toast.innerText = msg;
         document.body.appendChild(toast);
-        setTimeout(() => toast.remove(), 2500);
+        setTimeout(() => toast.remove(), 2600);
     }
 </script>
 </body>
