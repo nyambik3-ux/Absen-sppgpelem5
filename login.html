@@ -196,8 +196,8 @@
             <div class="logo-icon">
                 <i class="fas fa-fingerprint"></i>
             </div>
-            <h1>Selamat Datang</h1>
-            <div class="subtitle">Absensi Relawan SPPG Pelem 5</div>
+            <h1>Welcome Back</h1>
+            <div class="subtitle">Absensi Karyawan Digital</div>
         </div>
 
         <div class="input-group">
@@ -244,8 +244,7 @@
                 const res = await r.json();
                 
                 if (res.result === "success") {
-                    // Diubah ke sessionStorage agar sesuai dengan index.html
-                    sessionStorage.setItem('user_pelem_5', JSON.stringify(res.user));
+                    localStorage.setItem('user_pelem_5', JSON.stringify(res.user));
                     showToast("Login berhasil! Selamat datang.", "success");
                     setTimeout(() => {
                         window.location.href = "index.html";
