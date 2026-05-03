@@ -2,380 +2,55 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, userexe-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Absensi • Smart Check-in</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Inter', sans-serif;
-            background: linear-gradient(180deg, #0a0e27 0%, #0f1235 100%);
-            min-height: 100vh;
-            padding: 20px;
-        }
-
-        /* Main container */
-        .container {
-            max-width: 500px;
-            margin: 0 auto;
-        }
-
-        /* Header / Profile Section */
-        .profile-section {
-            background: linear-gradient(135deg, rgba(102, 126, 234, 0.2) 0%, rgba(118, 75, 162, 0.2) 100%);
-            backdrop-filter: blur(10px);
-            border-radius: 32px;
-            padding: 20px;
-            margin-bottom: 24px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            transition: all 0.3s ease;
-        }
-
-        .profile-info {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-
-        .avatar {
-            width: 55px;
-            height: 55px;
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            border-radius: 28px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            position: relative;
-        }
-
-        .avatar img {
-            width: 50px;
-            height: 50px;
-            border-radius: 25px;
-            object-fit: cover;
-            border: 2px solid rgba(255, 255, 255, 0.3);
-        }
-
-        .avatar i.fa-user {
-            font-size: 28px;
-            color: white;
-        }
-
-        .online-dot {
-            position: absolute;
-            bottom: 2px;
-            right: 2px;
-            width: 12px;
-            height: 12px;
-            background: #4caf50;
-            border-radius: 50%;
-            border: 2px solid #0a0e27;
-        }
-
-        .user-details h3 {
-            font-size: 18px;
-            font-weight: 700;
-            color: white;
-            margin-bottom: 4px;
-        }
-
-        .user-details p {
-            font-size: 12px;
-            color: rgba(255, 255, 255, 0.6);
-        }
-
-        .menu-btn {
-            background: rgba(255, 255, 255, 0.1);
-            width: 45px;
-            height: 45px;
-            border-radius: 25px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            position: relative;
-        }
-
-        .menu-btn:hover {
-            background: rgba(255, 255, 255, 0.2);
-            transform: scale(1.05);
-        }
-
-        .menu-btn i {
-            font-size: 20px;
-            color: white;
-        }
-
-        /* Dropdown menu */
-        .dropdown-menu {
-            position: absolute;
-            top: 75px;
-            right: 20px;
-            background: rgba(20, 25, 55, 0.98);
-            backdrop-filter: blur(20px);
-            border-radius: 20px;
-            padding: 8px 0;
-            min-width: 160px;
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-            display: none;
-            z-index: 100;
-        }
-
-        .dropdown-menu button {
-            width: 100%;
-            padding: 12px 20px;
-            background: transparent;
-            border: none;
-            color: #ff6b6b;
-            font-weight: 600;
-            font-size: 14px;
-            text-align: left;
-            cursor: pointer;
-            transition: all 0.2s;
-            font-family: 'Inter', sans-serif;
-        }
-
-        .dropdown-menu button:hover {
-            background: rgba(255, 255, 255, 0.1);
-        }
-
-        /* Time Card */
-        .time-card {
-            background: linear-gradient(135deg, #1a1f3e 0%, #131736 100%);
-            border-radius: 32px;
-            padding: 30px 20px;
-            text-align: center;
-            margin-bottom: 24px;
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
-        }
-
-        .clock {
-            font-size: 58px;
-            font-weight: 800;
-            font-family: monospace;
-            letter-spacing: 4px;
-            background: linear-gradient(135deg, #fff 0%, #a0aec0 100%);
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
-            margin-bottom: 10px;
-        }
-
-        .date {
-            font-size: 15px;
-            color: rgba(255, 255, 255, 0.6);
-            font-weight: 500;
-        }
-
-        /* Stats Cards Grid */
-        .stats-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 14px;
-            margin-bottom: 24px;
-        }
-
-        .stat-card {
-            background: rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(10px);
-            border-radius: 24px;
-            padding: 18px;
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            transition: all 0.3s ease;
-        }
-
-        .stat-card:hover {
-            transform: translateY(-2px);
-            background: rgba(255, 255, 255, 0.08);
-        }
-
-        .stat-icon {
-            width: 40px;
-            height: 40px;
-            background: rgba(102, 126, 234, 0.2);
-            border-radius: 20px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-bottom: 12px;
-        }
-
-        .stat-icon i {
-            font-size: 20px;
-            color: #667eea;
-        }
-
-        .stat-label {
-            font-size: 12px;
-            color: rgba(255, 255, 255, 0.5);
-            margin-bottom: 4px;
-        }
-
-        .stat-value {
-            font-size: 18px;
-            font-weight: 700;
-            color: white;
-        }
-
-        /* GPS Status */
-        .gps-card {
-            background: rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(10px);
-            border-radius: 24px;
-            padding: 18px;
-            margin-bottom: 24px;
-            border: 1px solid rgba(255, 255, 255, 0.08);
-        }
-
-        .gps-header {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            margin-bottom: 12px;
-        }
-
-        .gps-header i {
-            font-size: 22px;
-            color: #4caf50;
-        }
-
-        .gps-header h4 {
-            font-size: 14px;
-            font-weight: 600;
-            color: white;
-        }
-
-        .gps-detail {
-            display: flex;
-            justify-content: space-between;
-            padding-left: 34px;
-        }
-
-        .gps-status {
-            font-size: 13px;
-            color: #ffc107;
-        }
-
-        .gps-distance {
-            font-size: 13px;
-            font-weight: 600;
-            color: white;
-        }
-
-        /* Absen Button */
-        .absen-btn {
-            width: 100%;
-            padding: 22px;
-            border: none;
-            border-radius: 28px;
-            font-size: 18px;
-            font-weight: 800;
-            font-family: 'Inter', sans-serif;
-            color: white;
-            cursor: pointer;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 12px;
-            margin-bottom: 20px;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .absen-btn:active {
-            transform: scale(0.98);
-        }
-
-        .absen-btn i {
-            font-size: 24px;
-        }
-
-        .btn-masuk {
-            background: linear-gradient(135deg, #4caf50, #45a049);
-            box-shadow: 0 8px 20px rgba(76, 175, 80, 0.3);
-        }
-
-        .btn-pulang {
-            background: linear-gradient(135deg, #f44336, #d32f2f);
-            box-shadow: 0 8px 20px rgba(244, 67, 54, 0.3);
-        }
-
-        .absen-btn:disabled {
-            opacity: 0.5;
-            transform: none;
-            cursor: not-allowed;
-        }
-
-        /* Loader */
-        .loader-container {
-            display: flex;
-            justify-content: center;
-            margin-bottom: 20px;
-        }
-
-        .loader {
-            width: 50px;
-            height: 50px;
-            border: 3px solid rgba(102, 126, 234, 0.3);
-            border-top-color: #667eea;
-            border-radius: 50%;
-            animation: spin 0.8s linear infinite;
-        }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-
-        /* Toast Notification */
-        .toast {
-            position: fixed;
-            bottom: 30px;
-            left: 20px;
-            right: 20px;
-            background: #1a1f3e;
-            backdrop-filter: blur(20px);
-            padding: 14px 20px;
-            border-radius: 20px;
-            color: white;
-            font-size: 14px;
-            font-weight: 500;
-            z-index: 1000;
-            animation: slideUp 0.3s ease;
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
-            border-left: 4px solid #667eea;
-            max-width: 500px;
-            margin: 0 auto;
-            text-align: center;
-        }
-
-        @keyframes slideUp {
-            from {
-                transform: translateY(100px);
-                opacity: 0;
-            }
-            to {
-                transform: translateY(0);
-                opacity: 1;
-            }
-        }
+        /* ========== STYLE TETAP SEPERTI YANG ANDA PUNYA ========== */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background: linear-gradient(180deg, #0a0e27 0%, #0f1235 100%); min-height: 100vh; padding: 20px; }
+        .container { max-width: 500px; margin: 0 auto; }
+        .profile-section { background: linear-gradient(135deg, rgba(102, 126, 234, 0.2) 0%, rgba(118, 75, 162, 0.2) 100%); backdrop-filter: blur(10px); border-radius: 32px; padding: 20px; margin-bottom: 24px; border: 1px solid rgba(255,255,255,0.1); display: flex; justify-content: space-between; align-items: center; }
+        .profile-info { display: flex; align-items: center; gap: 15px; }
+        .avatar { width: 55px; height: 55px; background: linear-gradient(135deg, #667eea, #764ba2); border-radius: 28px; display: flex; align-items: center; justify-content: center; position: relative; }
+        .avatar img { width: 50px; height: 50px; border-radius: 25px; object-fit: cover; border: 2px solid rgba(255,255,255,0.3); }
+        .online-dot { position: absolute; bottom: 2px; right: 2px; width: 12px; height: 12px; background: #4caf50; border-radius: 50%; border: 2px solid #0a0e27; }
+        .user-details h3 { font-size: 18px; font-weight: 700; color: white; margin-bottom: 4px; }
+        .user-details p { font-size: 12px; color: rgba(255,255,255,0.6); }
+        .menu-btn { background: rgba(255,255,255,0.1); width: 45px; height: 45px; border-radius: 25px; display: flex; align-items: center; justify-content: center; cursor: pointer; }
+        .dropdown-menu { position: absolute; top: 75px; right: 20px; background: rgba(20,25,55,0.98); backdrop-filter: blur(20px); border-radius: 20px; padding: 8px 0; min-width: 160px; border: 1px solid rgba(255,255,255,0.15); display: none; z-index: 100; }
+        .dropdown-menu button { width: 100%; padding: 12px 20px; background: transparent; border: none; color: #ff6b6b; font-weight: 600; font-size: 14px; text-align: left; cursor: pointer; }
+        .time-card { background: linear-gradient(135deg, #1a1f3e 0%, #131736 100%); border-radius: 32px; padding: 30px 20px; text-align: center; margin-bottom: 24px; border: 1px solid rgba(255,255,255,0.08); }
+        .clock { font-size: 58px; font-weight: 800; font-family: monospace; letter-spacing: 4px; background: linear-gradient(135deg, #fff 0%, #a0aec0 100%); -webkit-background-clip: text; background-clip: text; color: transparent; margin-bottom: 10px; }
+        .date { font-size: 15px; color: rgba(255,255,255,0.6); }
+        .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 24px; }
+        .stat-card { background: rgba(255,255,255,0.05); backdrop-filter: blur(10px); border-radius: 24px; padding: 18px; border: 1px solid rgba(255,255,255,0.08); }
+        .stat-icon { width: 40px; height: 40px; background: rgba(102,126,234,0.2); border-radius: 20px; display: flex; align-items: center; justify-content: center; margin-bottom: 12px; }
+        .stat-icon i { font-size: 20px; color: #667eea; }
+        .stat-label { font-size: 12px; color: rgba(255,255,255,0.5); margin-bottom: 4px; }
+        .stat-value { font-size: 18px; font-weight: 700; color: white; }
+        .gps-card { background: rgba(255,255,255,0.05); backdrop-filter: blur(10px); border-radius: 24px; padding: 18px; margin-bottom: 24px; border: 1px solid rgba(255,255,255,0.08); }
+        .gps-header { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+        .gps-header i { font-size: 22px; color: #4caf50; }
+        .gps-header h4 { font-size: 14px; font-weight: 600; color: white; }
+        .gps-detail { display: flex; justify-content: space-between; padding-left: 34px; }
+        .gps-status { font-size: 13px; color: #ffc107; }
+        .gps-distance { font-size: 13px; font-weight: 600; color: white; }
+        .absen-btn { width: 100%; padding: 22px; border: none; border-radius: 28px; font-size: 18px; font-weight: 800; font-family: 'Inter', sans-serif; color: white; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 12px; margin-bottom: 20px; }
+        .absen-btn:active { transform: scale(0.98); }
+        .btn-masuk { background: linear-gradient(135deg, #4caf50, #45a049); box-shadow: 0 8px 20px rgba(76,175,80,0.3); }
+        .btn-pulang { background: linear-gradient(135deg, #f44336, #d32f2f); box-shadow: 0 8px 20px rgba(244,67,54,0.3); }
+        .absen-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+        .loader-container { display: flex; justify-content: center; margin-bottom: 20px; }
+        .loader { width: 50px; height: 50px; border: 3px solid rgba(102,126,234,0.3); border-top-color: #667eea; border-radius: 50%; animation: spin 0.8s linear infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .toast { position: fixed; bottom: 30px; left: 20px; right: 20px; background: #1a1f3e; backdrop-filter: blur(20px); padding: 14px 20px; border-radius: 20px; color: white; font-size: 14px; z-index: 1000; animation: slideUp 0.3s ease; text-align: center; border-left: 4px solid #667eea; max-width: 500px; margin: 0 auto; }
+        @keyframes slideUp { from { transform: translateY(100px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
     </style>
 </head>
 <body>
 <div class="container">
-    <!-- Profile Header -->
     <div class="profile-section">
         <div class="profile-info">
             <div class="avatar">
@@ -391,19 +66,13 @@
             <i class="fas fa-ellipsis-v"></i>
         </div>
     </div>
-
-    <!-- Dropdown Menu -->
     <div class="dropdown-menu" id="d-menu">
         <button onclick="logout()"><i class="fas fa-sign-out-alt" style="margin-right: 10px;"></i> Keluar</button>
     </div>
-
-    <!-- Time Card -->
     <div class="time-card">
         <div class="clock" id="jam">--:--</div>
         <div class="date" id="tgl">--</div>
     </div>
-
-    <!-- Schedule Stats -->
     <div class="stats-grid">
         <div class="stat-card">
             <div class="stat-icon"><i class="fas fa-clock"></i></div>
@@ -416,8 +85,6 @@
             <div class="stat-value" id="j-pulang">--:--</div>
         </div>
     </div>
-
-    <!-- GPS Status -->
     <div class="gps-card">
         <div class="gps-header">
             <i class="fas fa-map-marker-alt"></i>
@@ -428,8 +95,6 @@
             <span class="gps-distance" id="l-jarak">-</span>
         </div>
     </div>
-
-    <!-- Loader & Absen Button -->
     <div id="loaderContainer" style="display: none;" class="loader-container">
         <div class="loader"></div>
     </div>
@@ -440,60 +105,146 @@
 </div>
 
 <script>
-    const scriptURL = "https://script.google.com/macros/s/AKfycbyiSqj0qEc1aUWSO9AJ08leJc6M1zOO4znFdXeywgu3KsD8vXjT7iHSfKuWmhSvyJ_u0w/exec"; 
-    
-    // Session check
+    const scriptURL = "https://script.google.com/macros/s/AKfycbz15Oy6lFo6PL6ixbLlOQy5V9Ecl0jZvYfHN22VSFT95REMsyUcNm3-mXr6LlNNq1hEhA/exec";
+
+    // Cek login dari sessionStorage (konsisten dengan login.html)
     const userData = sessionStorage.getItem('user_pelem_5');
-    if (!userData) window.location.href = "login.html";
+    if (!userData) {
+        window.location.href = "login.html";
+    }
     const user = JSON.parse(userData);
-    
-    // Display user data
+
+    // Tampilkan data user
     document.getElementById('u-nama').innerText = user.nama || user.id;
     document.getElementById('u-div').innerText = user.divisi || "Karyawan";
     document.getElementById('u-foto').src = user.foto || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.nama || user.id)}&background=667eea&color=fff&bold=true`;
     document.getElementById('j-masuk').innerText = user.jamMasuk || "-";
     document.getElementById('j-pulang').innerText = user.jamPulang || "-";
 
-    // Fungsi untuk mendapatkan kunci tiket berdasarkan ID dan tanggal (agar tidak tertukar antar hari)
-function getTiketKey(userId) {
-    const today = new Date().toLocaleDateString('id-ID');
-    return `tiket_absen_${userId}_${today}`;
-}
+    // ========== VARIABEL GLOBAL ==========
+    let statusHarian = "DATANG"; // akan diupdate dari backend
+    let alreadyAbsenMasuk = false;
+    let alreadyAbsenPulang = false;
+    let currentTiketKey = null;
+    let isLocReady = false;
+    let currentLat = 0, currentLng = 0;
+    const locTarget = { lat: -7.749943446258772, lng: 112.17414543253575 }; // ganti dengan koordinat kantor Anda
 
-let tiketMasuk = sessionStorage.getItem('tiket_absen_' + user.id);
-let statusHarian = tiketMasuk ? "PULANG" : "DATANG";
-    
     const btnAbsen = document.getElementById('btn-absen');
     const btnAbsenText = document.getElementById('btn-absen-text');
-    
+
+    // Fungsi untuk mendapatkan kunci tiket hari ini (YYYY-MM-DD)
+    function getTodayKey() {
+        const now = new Date();
+        const y = now.getFullYear();
+        const m = String(now.getMonth() + 1).padStart(2, '0');
+        const d = String(now.getDate()).padStart(2, '0');
+        return `${y}-${m}-${d}`;
+    }
+
+    // Fungsi untuk cek status absen hari ini dari BACKEND (sumber kebenaran)
+    async function fetchTodayStatus() {
+        try {
+            const response = await fetch(scriptURL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    action: 'get_status',
+                    id: user.id
+                })
+            });
+            const result = await response.json();
+            if (result.result === 'success') {
+                alreadyAbsenMasuk = result.hasCheckedIn || false;
+                alreadyAbsenPulang = result.hasCheckedOut || false;
+                if (alreadyAbsenMasuk && !alreadyAbsenPulang) {
+                    statusHarian = "PULANG";
+                } else if (alreadyAbsenMasuk && alreadyAbsenPulang) {
+                    statusHarian = "SUDAH_PULANG";
+                } else {
+                    statusHarian = "DATANG";
+                }
+                // Simpan tiket key lokal untuk sinkronisasi
+                currentTiketKey = getTodayKey();
+                if (alreadyAbsenMasuk) {
+                    sessionStorage.setItem(`tiket_absen_${user.id}_${currentTiketKey}`, 'true');
+                } else {
+                    sessionStorage.removeItem(`tiket_absen_${user.id}_${currentTiketKey}`);
+                }
+                updateTombol();
+                return true;
+            } else {
+                console.error("Gagal get status:", result);
+                // Fallback ke sessionStorage
+                const key = `tiket_absen_${user.id}_${getTodayKey()}`;
+                const tiket = sessionStorage.getItem(key);
+                alreadyAbsenMasuk = !!tiket;
+                alreadyAbsenPulang = false; // sessionStorage hanya mencatat masuk, pulang ditentukan dari ada tidaknya nilai
+                if (alreadyAbsenMasuk) {
+                    statusHarian = "PULANG";
+                } else {
+                    statusHarian = "DATANG";
+                }
+                updateTombol();
+                return false;
+            }
+        } catch(err) {
+            console.error("Error fetch status:", err);
+            // Fallback ke sessionStorage
+            const key = `tiket_absen_${user.id}_${getTodayKey()}`;
+            const tiket = sessionStorage.getItem(key);
+            alreadyAbsenMasuk = !!tiket;
+            if (alreadyAbsenMasuk) {
+                statusHarian = "PULANG";
+            } else {
+                statusHarian = "DATANG";
+            }
+            updateTombol();
+            return false;
+        }
+    }
+
     function updateTombol() {
         if (statusHarian === "PULANG") {
             btnAbsenText.innerText = "ABSEN PULANG";
             btnAbsen.classList.remove('btn-masuk');
             btnAbsen.classList.add('btn-pulang');
+            btnAbsen.disabled = false;
+        } else if (statusHarian === "SUDAH_PULANG") {
+            btnAbsenText.innerText = "SUDAH ABSEN PULANG";
+            btnAbsen.disabled = true;
+            btnAbsen.classList.remove('btn-masuk', 'btn-pulang');
+            btnAbsen.style.opacity = '0.6';
         } else {
             btnAbsenText.innerText = "ABSEN MASUK";
             btnAbsen.classList.remove('btn-pulang');
             btnAbsen.classList.add('btn-masuk');
+            btnAbsen.disabled = false;
+        }
+        // Pastikan GPS siap juga mempengaruhi enable/disable
+        if (!isLocReady && statusHarian !== "SUDAH_PULANG") {
+            btnAbsen.disabled = true;
+            btnAbsenText.innerText = "IZINKAN GPS";
         }
     }
-    updateTombol();
 
-    // Real-time clock
+    // Real-time clock dan pengecekan pergantian hari
     function updateDateTime() {
         const now = new Date();
         const hours = now.getHours().toString().padStart(2, '0');
         const minutes = now.getMinutes().toString().padStart(2, '0');
         document.getElementById('jam').innerText = `${hours}:${minutes}`;
         document.getElementById('tgl').innerText = now.toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+
+        // Cek jika hari berganti, refresh status
+        const todayKey = getTodayKey();
+        if (currentTiketKey !== todayKey) {
+            currentTiketKey = todayKey;
+            fetchTodayStatus(); // re-fetch status dari backend
+        }
     }
-    updateDateTime();
-    setInterval(updateDateTime, 1000);
 
-    // GPS Configuration (⚠️ Edit dengan koordinat kantor kamu)
-    let locTarget = { lat: -7.749943446258772, lng: 112.17414543253575 }; 
-    let currentLat = 0, currentLng = 0, isLocReady = false;
-
+    // GPS
     function getDistance(lat1, lon1, lat2, lon2) {
         const p = Math.PI/180;
         const a = 0.5 - Math.cos((lat2 - lat1) * p)/2 + Math.cos(lat1 * p) * Math.cos(lat2 * p) * (1 - Math.cos((lon2 - lon1) * p))/2;
@@ -507,7 +258,6 @@ let statusHarian = tiketMasuk ? "PULANG" : "DATANG";
             const jarak = getDistance(currentLat, currentLng, locTarget.lat, locTarget.lng);
             const statusEl = document.getElementById('l-status');
             const jarakEl = document.getElementById('l-jarak');
-            
             if (jarak <= 150) {
                 statusEl.innerHTML = '<i class="fas fa-check-circle"></i> Dalam Jangkauan';
                 statusEl.style.color = "#4caf50";
@@ -517,27 +267,33 @@ let statusHarian = tiketMasuk ? "PULANG" : "DATANG";
             }
             jarakEl.innerHTML = `${jarak} meter`;
             isLocReady = true;
-            btnAbsen.disabled = false;
+            if (statusHarian !== "SUDAH_PULANG") {
+                btnAbsen.disabled = false;
+            }
         },
         (err) => {
             document.getElementById('l-status').innerHTML = '<i class="fas fa-ban"></i> GPS ditolak';
             document.getElementById('l-status').style.color = "#f44336";
+            isLocReady = false;
             btnAbsen.disabled = true;
             btnAbsenText.innerText = "IZINKAN GPS";
-        }, 
+        },
         { enableHighAccuracy: true }
     );
 
-    // Absen function
+    // Proses absen
     async function doAbsen() {
         if (!isLocReady) {
             showToast("Menunggu GPS aktif...", "warning");
             return;
         }
-        
         const jarak = getDistance(currentLat, currentLng, locTarget.lat, locTarget.lng);
         if (jarak > 150) {
             showToast(`⚠️ Anda di luar radius! Jarak: ${jarak}m (maks 150m)`, "error");
+            return;
+        }
+        if (statusHarian === "SUDAH_PULANG") {
+            showToast("Anda sudah absen pulang hari ini!", "error");
             return;
         }
 
@@ -546,32 +302,32 @@ let statusHarian = tiketMasuk ? "PULANG" : "DATANG";
 
         try {
             const reqBody = {
-                action: statusHarian,
+                action: statusHarian, // "DATANG" atau "PULANG"
                 id: user.id,
                 nama: user.nama || user.id,
-                lat: currentLat, 
-                lng: currentLng,
-                tiketTgl: tiketMasuk 
+                lat: currentLat,
+                lng: currentLng
             };
-
-            const response = await fetch(scriptURL, { 
-                method: 'POST', 
-                body: JSON.stringify(reqBody) 
+            const response = await fetch(scriptURL, {
+                method: 'POST',
+                body: JSON.stringify(reqBody)
             });
             const res = await response.json();
 
             if (res.result === "success") {
                 if (statusHarian === "DATANG") {
-                    sessionStorage.setItem('tiket_absen_' + user.id, new Date().getDate());
-                    const jamNow = new Date().getHours().toString().padStart(2,'0') + ":" + new Date().getMinutes().toString().padStart(2,'0');
-                    if (user.jamMasuk && jamNow > user.jamMasuk) {
-                        showToast(`⚠️ TERLAMBAT! Target: ${user.jamMasuk} | Absen: ${jamNow}`, "warning");
-                    } else {
-                        showToast("✅ Absen Masuk Berhasil!", "success");
-                    }
-                } else {
-                    sessionStorage.removeItem('tiket_absen_' + user.id);
+                    // Simpan tiket masuk
+                    const key = `tiket_absen_${user.id}_${getTodayKey()}`;
+                    sessionStorage.setItem(key, 'true');
+                    showToast("✅ Absen Masuk Berhasil!", "success");
+                    // Refresh status dari backend setelah berhasil
+                    await fetchTodayStatus();
+                } else if (statusHarian === "PULANG") {
+                    // Hapus tiket masuk
+                    const key = `tiket_absen_${user.id}_${getTodayKey()}`;
+                    sessionStorage.removeItem(key);
                     showToast("✅ Absen Pulang Berhasil!", "success");
+                    await fetchTodayStatus();
                 }
                 setTimeout(() => window.location.reload(), 1500);
             } else {
@@ -596,6 +352,9 @@ let statusHarian = tiketMasuk ? "PULANG" : "DATANG";
 
     function logout() {
         sessionStorage.removeItem('user_pelem_5');
+        // Hapus juga tiket absen hari ini agar tidak menggantung
+        const key = `tiket_absen_${user.id}_${getTodayKey()}`;
+        sessionStorage.removeItem(key);
         window.location.href = "login.html";
     }
 
@@ -607,13 +366,18 @@ let statusHarian = tiketMasuk ? "PULANG" : "DATANG";
         setTimeout(() => toast.remove(), 3000);
     }
 
-    // Close dropdown when clicking outside
     document.addEventListener('click', function(event) {
         const menu = document.getElementById('d-menu');
         const menuBtn = document.querySelector('.menu-btn');
         if (menu && !menu.contains(event.target) && !menuBtn.contains(event.target)) {
             menu.style.display = 'none';
         }
+    });
+
+    // Inisialisasi: cek status dari backend
+    fetchTodayStatus().then(() => {
+        updateDateTime();
+        setInterval(updateDateTime, 1000);
     });
 </script>
 </body>
