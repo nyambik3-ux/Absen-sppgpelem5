@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
     <title>Absensi Relawan • Smart Presence</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         * {
             margin: 0;
@@ -234,7 +234,7 @@
     // ========== KONFIGURASI ==========
     const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyZZg3ddy394sAI24km9hE1kI8rconMG0XJicU1pwyJNGElrOhs1GX-0B8hX2MpKhiJ6g/exec";
 
-    // ========== AMBIL DATA LOGIN ==========
+    // ========== AMBIL DATA LOGIN DARI LOCALSTORAGE ==========
     let user = null;
     try {
         const raw = localStorage.getItem('user_pelem_5');
@@ -244,14 +244,14 @@
         window.location.href = "login.html";
     }
 
-    // Tampilkan data
+    // Tampilkan Data Pengguna
     document.getElementById('namaUser').innerText = user.nama || user.id;
     document.getElementById('divisiUser').innerText = user.divisi || "Relawan";
     document.getElementById('jamMasukTarget').innerText = user.jamMasuk || "08:00";
     document.getElementById('jamPulangTarget').innerText = user.jamPulang || "17:00";
 
-    // Avatar (jika ada foto)
-    if (user.foto && user.foto !== "") {
+    // Tampilkan Avatar
+    if (user.foto && user.foto !== "" && user.foto !== "https://via.placeholder.com/150") {
         const avatarDiv = document.getElementById('avatar');
         avatarDiv.innerHTML = `<img src="${user.foto}" alt="foto">`;
     }
@@ -266,6 +266,7 @@
     }
 
     const STORAGE_KEY = `absen_${user.id}_${getTodayKey()}`;
+    // Membaca state dari localStorage
     let sudahMasuk = localStorage.getItem(STORAGE_KEY) === 'masuk';
     let sudahPulang = localStorage.getItem(STORAGE_KEY) === 'pulang';
 
@@ -296,7 +297,7 @@
     }
     updateButtonState();
 
-    // ========== FUNGSI ABSEN DENGAN GEOLOCATION ==========
+    // ========== FUNGSI ABSENSI (MENGIRIMKAN GEOLOCATION) ==========
     async function doAbsen(action) {
         btnMasuk.disabled = true;
         btnPulang.disabled = true;
@@ -315,7 +316,6 @@
         }
         
         try {
-            // Hapus headers: 'Content-Type' agar tidak memicu preflight CORS
             const response = await fetch(SCRIPT_URL, {
                 method: 'POST',
                 body: JSON.stringify({
@@ -326,7 +326,6 @@
                     lng: lng
                 })
             });
-            
             const data = await response.json();
             
             if (data.result === "success") {
@@ -378,7 +377,7 @@
     updateClock();
     setInterval(updateClock, 1000);
 
-    // ========== TOAST NOTIFICATION ==========
+    // ========== NOTIFIKASI TOAST ==========
     function showToast(msg, isError = false) {
         const toast = document.createElement('div');
         toast.className = 'toast';
