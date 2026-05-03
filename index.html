@@ -443,7 +443,7 @@
     const scriptURL = "https://script.google.com/macros/s/AKfycbyiSqj0qEc1aUWSO9AJ08leJc6M1zOO4znFdXeywgu3KsD8vXjT7iHSfKuWmhSvyJ_u0w/exec"; 
     
     // Session check
-    const userData = localStorage.getItem('user_pelem_5');
+    const userData = sessionStorage.getItem('user_pelem_5');
     if (!userData) window.location.href = "login.html";
     const user = JSON.parse(userData);
     
@@ -454,9 +454,14 @@
     document.getElementById('j-masuk').innerText = user.jamMasuk || "-";
     document.getElementById('j-pulang').innerText = user.jamPulang || "-";
 
-    // Tiket absen logic
-    let tiketMasuk = localStorage.getItem('tiket_absen_' + user.id);
-    let statusHarian = tiketMasuk ? "PULANG" : "DATANG";
+    // Fungsi untuk mendapatkan kunci tiket berdasarkan ID dan tanggal (agar tidak tertukar antar hari)
+function getTiketKey(userId) {
+    const today = new Date().toLocaleDateString('id-ID');
+    return `tiket_absen_${userId}_${today}`;
+}
+
+let tiketMasuk = sessionStorage.getItem('tiket_absen_' + user.id);
+let statusHarian = tiketMasuk ? "PULANG" : "DATANG";
     
     const btnAbsen = document.getElementById('btn-absen');
     const btnAbsenText = document.getElementById('btn-absen-text');
@@ -557,7 +562,7 @@
 
             if (res.result === "success") {
                 if (statusHarian === "DATANG") {
-                    localStorage.setItem('tiket_absen_' + user.id, new Date().getDate());
+                    sessionStorage.setItem('tiket_absen_' + user.id, new Date().getDate());
                     const jamNow = new Date().getHours().toString().padStart(2,'0') + ":" + new Date().getMinutes().toString().padStart(2,'0');
                     if (user.jamMasuk && jamNow > user.jamMasuk) {
                         showToast(`⚠️ TERLAMBAT! Target: ${user.jamMasuk} | Absen: ${jamNow}`, "warning");
@@ -565,7 +570,7 @@
                         showToast("✅ Absen Masuk Berhasil!", "success");
                     }
                 } else {
-                    localStorage.removeItem('tiket_absen_' + user.id);
+                    sessionStorage.removeItem('tiket_absen_' + user.id);
                     showToast("✅ Absen Pulang Berhasil!", "success");
                 }
                 setTimeout(() => window.location.reload(), 1500);
@@ -590,7 +595,7 @@
     }
 
     function logout() {
-        localStorage.removeItem('user_pelem_5');
+        sessionStorage.removeItem('user_pelem_5');
         window.location.href = "login.html";
     }
 
