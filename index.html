@@ -4,14 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Absensi • Smart Check-in</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
-        /* ========== STYLE TETAP SEPERTI YANG ANDA PUNYA ========== */
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: 'Inter', sans-serif; background: linear-gradient(180deg, #0a0e27 0%, #0f1235 100%); min-height: 100vh; padding: 20px; }
         .container { max-width: 500px; margin: 0 auto; }
-        .profile-section { background: linear-gradient(135deg, rgba(102, 126, 234, 0.2) 0%, rgba(118, 75, 162, 0.2) 100%); backdrop-filter: blur(10px); border-radius: 32px; padding: 20px; margin-bottom: 24px; border: 1px solid rgba(255,255,255,0.1); display: flex; justify-content: space-between; align-items: center; }
+        .profile-section { background: linear-gradient(135deg, rgba(102,126,234,0.2) 0%, rgba(118,75,162,0.2) 100%); backdrop-filter: blur(10px); border-radius: 32px; padding: 20px; margin-bottom: 24px; border: 1px solid rgba(255,255,255,0.1); display: flex; justify-content: space-between; align-items: center; }
         .profile-info { display: flex; align-items: center; gap: 15px; }
         .avatar { width: 55px; height: 55px; background: linear-gradient(135deg, #667eea, #764ba2); border-radius: 28px; display: flex; align-items: center; justify-content: center; position: relative; }
         .avatar img { width: 50px; height: 50px; border-radius: 25px; object-fit: cover; border: 2px solid rgba(255,255,255,0.3); }
@@ -37,11 +36,11 @@
         .gps-detail { display: flex; justify-content: space-between; padding-left: 34px; }
         .gps-status { font-size: 13px; color: #ffc107; }
         .gps-distance { font-size: 13px; font-weight: 600; color: white; }
-        .absen-btn { width: 100%; padding: 22px; border: none; border-radius: 28px; font-size: 18px; font-weight: 800; font-family: 'Inter', sans-serif; color: white; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 12px; margin-bottom: 20px; }
+        .absen-btn { width: 100%; padding: 22px; border: none; border-radius: 28px; font-size: 18px; font-weight: 800; font-family: 'Inter', sans-serif; color: white; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 12px; margin-bottom: 20px; transition: 0.2s; }
         .absen-btn:active { transform: scale(0.98); }
         .btn-masuk { background: linear-gradient(135deg, #4caf50, #45a049); box-shadow: 0 8px 20px rgba(76,175,80,0.3); }
         .btn-pulang { background: linear-gradient(135deg, #f44336, #d32f2f); box-shadow: 0 8px 20px rgba(244,67,54,0.3); }
-        .absen-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+        .absen-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
         .loader-container { display: flex; justify-content: center; margin-bottom: 20px; }
         .loader { width: 50px; height: 50px; border: 3px solid rgba(102,126,234,0.3); border-top-color: #667eea; border-radius: 50%; animation: spin 0.8s linear infinite; }
         @keyframes spin { to { transform: rotate(360deg); } }
@@ -105,204 +104,169 @@
 </div>
 
 <script>
-    const scriptURL = "https://script.google.com/macros/s/AKfycbz15Oy6lFo6PL6ixbLlOQy5V9Ecl0jZvYfHN22VSFT95REMsyUcNm3-mXr6LlNNq1hEhA/exec";
+    // ======================= KONFIGURASI =======================
+    const scriptURL = "https://script.google.com/macros/s/AKfycbyZZg3ddy394sAI24km9hE1kI8rconMG0XJicU1pwyJNGElrOhs1GX-0B8hX2MpKhiJ6g/exec";
+    const TARGET_LOC = { lat: -7.749943446258772, lng: 112.17414543253575 }; // Sesuaikan dengan koordinat kantor Anda
+    const MAX_DISTANCE = 150; // meter
 
-    // Cek login dari sessionStorage (konsisten dengan login.html)
+    // ======================= CEK LOGIN =======================
     const userData = sessionStorage.getItem('user_pelem_5');
     if (!userData) {
         window.location.href = "login.html";
     }
-    const user = JSON.parse(userData);
-
-    // Tampilkan data user
-    document.getElementById('u-nama').innerText = user.nama || user.id;
-    document.getElementById('u-div').innerText = user.divisi || "Karyawan";
-    document.getElementById('u-foto').src = user.foto || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.nama || user.id)}&background=667eea&color=fff&bold=true`;
-    document.getElementById('j-masuk').innerText = user.jamMasuk || "-";
-    document.getElementById('j-pulang').innerText = user.jamPulang || "-";
-
-    // ========== VARIABEL GLOBAL ==========
-    let statusHarian = "DATANG"; // akan diupdate dari backend
-    let alreadyAbsenMasuk = false;
-    let alreadyAbsenPulang = false;
-    let currentTiketKey = null;
+    let user = JSON.parse(userData);
+    let statusHarian = "DATANG"; // DATANG, PULANG, SUDAH_PULANG
     let isLocReady = false;
     let currentLat = 0, currentLng = 0;
-    const locTarget = { lat: -7.749943446258772, lng: 112.17414543253575 }; // ganti dengan koordinat kantor Anda
+    let watchId = null;
 
+    // ======================= REFERENSI DOM =======================
     const btnAbsen = document.getElementById('btn-absen');
-    const btnAbsenText = document.getElementById('btn-absen-text');
+    const btnText = document.getElementById('btn-absen-text');
+    const loaderDiv = document.getElementById('loaderContainer');
 
-    // Fungsi untuk mendapatkan kunci tiket hari ini (YYYY-MM-DD)
-    function getTodayKey() {
-        const now = new Date();
-        const y = now.getFullYear();
-        const m = String(now.getMonth() + 1).padStart(2, '0');
-        const d = String(now.getDate()).padStart(2, '0');
-        return `${y}-${m}-${d}`;
+    // ======================= FUNGSI BANTU =======================
+    function showToast(msg, isError = false) {
+        const toast = document.createElement('div');
+        toast.className = 'toast';
+        toast.style.borderLeftColor = isError ? '#f44336' : '#4caf50';
+        toast.innerHTML = msg;
+        document.body.appendChild(toast);
+        setTimeout(() => toast.remove(), 3000);
     }
 
-    // Fungsi untuk cek status absen hari ini dari BACKEND (sumber kebenaran)
-    async function fetchTodayStatus() {
-        try {
-            const response = await fetch(scriptURL, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    action: 'get_status',
-                    id: user.id
-                })
-            });
-            const result = await response.json();
-            if (result.result === 'success') {
-                alreadyAbsenMasuk = result.hasCheckedIn || false;
-                alreadyAbsenPulang = result.hasCheckedOut || false;
-                if (alreadyAbsenMasuk && !alreadyAbsenPulang) {
-                    statusHarian = "PULANG";
-                } else if (alreadyAbsenMasuk && alreadyAbsenPulang) {
-                    statusHarian = "SUDAH_PULANG";
-                } else {
-                    statusHarian = "DATANG";
-                }
-                // Simpan tiket key lokal untuk sinkronisasi
-                currentTiketKey = getTodayKey();
-                if (alreadyAbsenMasuk) {
-                    sessionStorage.setItem(`tiket_absen_${user.id}_${currentTiketKey}`, 'true');
-                } else {
-                    sessionStorage.removeItem(`tiket_absen_${user.id}_${currentTiketKey}`);
-                }
-                updateTombol();
-                return true;
-            } else {
-                console.error("Gagal get status:", result);
-                // Fallback ke sessionStorage
-                const key = `tiket_absen_${user.id}_${getTodayKey()}`;
-                const tiket = sessionStorage.getItem(key);
-                alreadyAbsenMasuk = !!tiket;
-                alreadyAbsenPulang = false; // sessionStorage hanya mencatat masuk, pulang ditentukan dari ada tidaknya nilai
-                if (alreadyAbsenMasuk) {
-                    statusHarian = "PULANG";
-                } else {
-                    statusHarian = "DATANG";
-                }
-                updateTombol();
-                return false;
-            }
-        } catch(err) {
-            console.error("Error fetch status:", err);
-            // Fallback ke sessionStorage
-            const key = `tiket_absen_${user.id}_${getTodayKey()}`;
-            const tiket = sessionStorage.getItem(key);
-            alreadyAbsenMasuk = !!tiket;
-            if (alreadyAbsenMasuk) {
-                statusHarian = "PULANG";
-            } else {
-                statusHarian = "DATANG";
-            }
-            updateTombol();
-            return false;
-        }
-    }
-
-    function updateTombol() {
-        if (statusHarian === "PULANG") {
-            btnAbsenText.innerText = "ABSEN PULANG";
-            btnAbsen.classList.remove('btn-masuk');
-            btnAbsen.classList.add('btn-pulang');
-            btnAbsen.disabled = false;
-        } else if (statusHarian === "SUDAH_PULANG") {
-            btnAbsenText.innerText = "SUDAH ABSEN PULANG";
-            btnAbsen.disabled = true;
-            btnAbsen.classList.remove('btn-masuk', 'btn-pulang');
-            btnAbsen.style.opacity = '0.6';
-        } else {
-            btnAbsenText.innerText = "ABSEN MASUK";
-            btnAbsen.classList.remove('btn-pulang');
-            btnAbsen.classList.add('btn-masuk');
-            btnAbsen.disabled = false;
-        }
-        // Pastikan GPS siap juga mempengaruhi enable/disable
-        if (!isLocReady && statusHarian !== "SUDAH_PULANG") {
-            btnAbsen.disabled = true;
-            btnAbsenText.innerText = "IZINKAN GPS";
-        }
-    }
-
-    // Real-time clock dan pengecekan pergantian hari
-    function updateDateTime() {
-        const now = new Date();
-        const hours = now.getHours().toString().padStart(2, '0');
-        const minutes = now.getMinutes().toString().padStart(2, '0');
-        document.getElementById('jam').innerText = `${hours}:${minutes}`;
-        document.getElementById('tgl').innerText = now.toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
-
-        // Cek jika hari berganti, refresh status
-        const todayKey = getTodayKey();
-        if (currentTiketKey !== todayKey) {
-            currentTiketKey = todayKey;
-            fetchTodayStatus(); // re-fetch status dari backend
-        }
-    }
-
-    // GPS
     function getDistance(lat1, lon1, lat2, lon2) {
         const p = Math.PI/180;
         const a = 0.5 - Math.cos((lat2 - lat1) * p)/2 + Math.cos(lat1 * p) * Math.cos(lat2 * p) * (1 - Math.cos((lon2 - lon1) * p))/2;
         return Math.floor(12742e3 * Math.asin(Math.sqrt(a)));
     }
 
-    navigator.geolocation.watchPosition(
-        (pos) => {
-            currentLat = pos.coords.latitude;
-            currentLng = pos.coords.longitude;
-            const jarak = getDistance(currentLat, currentLng, locTarget.lat, locTarget.lng);
-            const statusEl = document.getElementById('l-status');
-            const jarakEl = document.getElementById('l-jarak');
-            if (jarak <= 150) {
-                statusEl.innerHTML = '<i class="fas fa-check-circle"></i> Dalam Jangkauan';
-                statusEl.style.color = "#4caf50";
+    // ======================= SINKRONISASI STATUS DARI BACKEND =======================
+    async function syncStatusFromBackend() {
+        try {
+            const response = await fetch(scriptURL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ action: 'get_status', id: user.id })
+            });
+            const res = await response.json();
+            if (res.result === 'success') {
+                user.hasCheckedIn = res.hasCheckedIn;
+                user.hasCheckedOut = res.hasCheckedOut;
+                // Simpan kembali ke sessionStorage agar data user terbaru
+                sessionStorage.setItem('user_pelem_5', JSON.stringify(user));
             } else {
-                statusEl.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Di luar radius';
-                statusEl.style.color = "#ffc107";
+                console.warn('Gagal sync status:', res);
             }
-            jarakEl.innerHTML = `${jarak} meter`;
-            isLocReady = true;
-            if (statusHarian !== "SUDAH_PULANG") {
-                btnAbsen.disabled = false;
-            }
-        },
-        (err) => {
-            document.getElementById('l-status').innerHTML = '<i class="fas fa-ban"></i> GPS ditolak';
-            document.getElementById('l-status').style.color = "#f44336";
-            isLocReady = false;
-            btnAbsen.disabled = true;
-            btnAbsenText.innerText = "IZINKAN GPS";
-        },
-        { enableHighAccuracy: true }
-    );
+        } catch (err) {
+            console.error('Error sync status:', err);
+        }
+        updateButtonByStatus();
+    }
 
-    // Proses absen
+    function updateButtonByStatus() {
+        const hasIn = user.hasCheckedIn === true;
+        const hasOut = user.hasCheckedOut === true;
+
+        if (hasIn && hasOut) {
+            statusHarian = "SUDAH_PULANG";
+            btnText.innerText = "SUDAH ABSEN PULANG";
+            btnAbsen.disabled = true;
+            btnAbsen.classList.remove('btn-masuk', 'btn-pulang');
+            btnAbsen.style.opacity = '0.6';
+        } else if (hasIn && !hasOut) {
+            statusHarian = "PULANG";
+            btnText.innerText = "ABSEN PULANG";
+            btnAbsen.classList.remove('btn-masuk');
+            btnAbsen.classList.add('btn-pulang');
+            btnAbsen.disabled = !isLocReady;
+        } else {
+            statusHarian = "DATANG";
+            btnText.innerText = "ABSEN MASUK";
+            btnAbsen.classList.remove('btn-pulang');
+            btnAbsen.classList.add('btn-masuk');
+            btnAbsen.disabled = !isLocReady;
+        }
+        if (!isLocReady && statusHarian !== "SUDAH_PULANG") {
+            btnAbsen.disabled = true;
+            btnText.innerText = "IZINKAN GPS";
+        }
+    }
+
+    // ======================= TAMPILKAN DATA USER =======================
+    document.getElementById('u-nama').innerText = user.nama || user.id;
+    document.getElementById('u-div').innerText = user.divisi || "Karyawan";
+    document.getElementById('u-foto').src = user.foto || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.nama || user.id)}&background=667eea&color=fff&bold=true`;
+    document.getElementById('j-masuk').innerText = user.jamMasuk || "-";
+    document.getElementById('j-pulang').innerText = user.jamPulang || "-";
+
+    // ======================= JAM & TANGGAL =======================
+    function updateDateTime() {
+        const now = new Date();
+        const jam = now.getHours().toString().padStart(2,'0') + ":" + now.getMinutes().toString().padStart(2,'0');
+        const tgl = now.toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+        document.getElementById('jam').innerText = jam;
+        document.getElementById('tgl').innerText = tgl;
+    }
+    updateDateTime();
+    setInterval(updateDateTime, 1000);
+
+    // ======================= GPS =======================
+    function startGPS() {
+        if (watchId) navigator.geolocation.clearWatch(watchId);
+        watchId = navigator.geolocation.watchPosition(
+            (pos) => {
+                currentLat = pos.coords.latitude;
+                currentLng = pos.coords.longitude;
+                const jarak = getDistance(currentLat, currentLng, TARGET_LOC.lat, TARGET_LOC.lng);
+                const statusEl = document.getElementById('l-status');
+                const jarakEl = document.getElementById('l-jarak');
+                if (jarak <= MAX_DISTANCE) {
+                    statusEl.innerHTML = '<i class="fas fa-check-circle"></i> Dalam Jangkauan';
+                    statusEl.style.color = "#4caf50";
+                } else {
+                    statusEl.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Di luar radius';
+                    statusEl.style.color = "#ffc107";
+                }
+                jarakEl.innerHTML = `${jarak} meter`;
+                if (!isLocReady) {
+                    isLocReady = true;
+                    updateButtonByStatus();
+                }
+            },
+            (err) => {
+                console.error('GPS error', err);
+                document.getElementById('l-status').innerHTML = '<i class="fas fa-ban"></i> GPS ditolak';
+                document.getElementById('l-status').style.color = "#f44336";
+                isLocReady = false;
+                updateButtonByStatus();
+            },
+            { enableHighAccuracy: true }
+        );
+    }
+
+    // ======================= PROSES ABSEN =======================
     async function doAbsen() {
         if (!isLocReady) {
-            showToast("Menunggu GPS aktif...", "warning");
+            showToast("Menunggu lokasi GPS...", true);
             return;
         }
-        const jarak = getDistance(currentLat, currentLng, locTarget.lat, locTarget.lng);
-        if (jarak > 150) {
-            showToast(`⚠️ Anda di luar radius! Jarak: ${jarak}m (maks 150m)`, "error");
+        const jarak = getDistance(currentLat, currentLng, TARGET_LOC.lat, TARGET_LOC.lng);
+        if (jarak > MAX_DISTANCE) {
+            showToast(`⚠️ Jarak ${jarak}m melebihi batas ${MAX_DISTANCE}m`, true);
             return;
         }
         if (statusHarian === "SUDAH_PULANG") {
-            showToast("Anda sudah absen pulang hari ini!", "error");
+            showToast("Anda sudah absen pulang hari ini", true);
             return;
         }
 
         btnAbsen.style.display = "none";
-        document.getElementById('loaderContainer').style.display = "flex";
+        loaderDiv.style.display = "flex";
 
         try {
-            const reqBody = {
-                action: statusHarian, // "DATANG" atau "PULANG"
+            const payload = {
+                action: statusHarian,
                 id: user.id,
                 nama: user.nama || user.id,
                 lat: currentLat,
@@ -310,75 +274,60 @@
             };
             const response = await fetch(scriptURL, {
                 method: 'POST',
-                body: JSON.stringify(reqBody)
+                body: JSON.stringify(payload)
             });
             const res = await response.json();
-
             if (res.result === "success") {
-                if (statusHarian === "DATANG") {
-                    // Simpan tiket masuk
-                    const key = `tiket_absen_${user.id}_${getTodayKey()}`;
-                    sessionStorage.setItem(key, 'true');
-                    showToast("✅ Absen Masuk Berhasil!", "success");
-                    // Refresh status dari backend setelah berhasil
-                    await fetchTodayStatus();
-                } else if (statusHarian === "PULANG") {
-                    // Hapus tiket masuk
-                    const key = `tiket_absen_${user.id}_${getTodayKey()}`;
-                    sessionStorage.removeItem(key);
-                    showToast("✅ Absen Pulang Berhasil!", "success");
-                    await fetchTodayStatus();
+                // Langsung sync ulang status dari backend untuk mendapatkan data terbaru
+                await syncStatusFromBackend();
+                showToast(res.message || (statusHarian === "DATANG" ? "✅ Absen Masuk Berhasil" : "✅ Absen Pulang Berhasil"));
+                // Jika sudah pulang, reload halaman setelah 1.5 detik untuk memastikan UI terbaru
+                if (statusHarian === "PULANG") {
+                    setTimeout(() => window.location.reload(), 1500);
+                } else {
+                    resetButton();
                 }
-                setTimeout(() => window.location.reload(), 1500);
             } else {
-                showToast("Gagal: " + (res.message || "Unknown error"), "error");
-                resetTombol();
+                showToast(res.message || "Gagal absen", true);
+                resetButton();
             }
         } catch (err) {
-            showToast("❌ Error koneksi! Cek internet.", "error");
-            resetTombol();
+            console.error(err);
+            showToast("❌ Error jaringan, cek koneksi", true);
+            resetButton();
         }
     }
 
-    function resetTombol() {
+    function resetButton() {
         btnAbsen.style.display = "flex";
-        document.getElementById('loaderContainer').style.display = "none";
+        loaderDiv.style.display = "none";
+    }
+
+    // ======================= LOGOUT & MENU =======================
+    function logout() {
+        sessionStorage.removeItem('user_pelem_5');
+        window.location.href = "login.html";
     }
 
     function toggleMenu() {
         const menu = document.getElementById('d-menu');
         menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
     }
-
-    function logout() {
-        sessionStorage.removeItem('user_pelem_5');
-        // Hapus juga tiket absen hari ini agar tidak menggantung
-        const key = `tiket_absen_${user.id}_${getTodayKey()}`;
-        sessionStorage.removeItem(key);
-        window.location.href = "login.html";
-    }
-
-    function showToast(msg, type) {
-        const toast = document.createElement('div');
-        toast.className = 'toast';
-        toast.innerHTML = msg;
-        document.body.appendChild(toast);
-        setTimeout(() => toast.remove(), 3000);
-    }
-
-    document.addEventListener('click', function(event) {
+    document.addEventListener('click', (e) => {
         const menu = document.getElementById('d-menu');
-        const menuBtn = document.querySelector('.menu-btn');
-        if (menu && !menu.contains(event.target) && !menuBtn.contains(event.target)) {
+        const btn = document.querySelector('.menu-btn');
+        if (menu && !menu.contains(e.target) && !btn.contains(e.target)) {
             menu.style.display = 'none';
         }
     });
 
-    // Inisialisasi: cek status dari backend
-    fetchTodayStatus().then(() => {
-        updateDateTime();
-        setInterval(updateDateTime, 1000);
-    });
+    // ======================= INIT =======================
+    async function init() {
+        // Pastikan status dari backend (mengambil data terbaru)
+        await syncStatusFromBackend();
+        startGPS();
+    }
+    init();
 </script>
 </body>
 </html>
