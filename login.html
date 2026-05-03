@@ -244,7 +244,7 @@
                 const res = await r.json();
                 
                 if (res.result === "success") {
-                    sessionStorage.setItem('user_pelem_5', JSON.stringify(res.user));
+                    localStorage.setItem('user_pelem_5', JSON.stringify(res.user));
                     showToast("Login berhasil! Selamat datang.", "success");
                     setTimeout(() => {
                         window.location.href = "index.html";
