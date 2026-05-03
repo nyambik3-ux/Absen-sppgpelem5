@@ -2,7 +2,7 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Absensi Relawan • Smart Presence</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
@@ -25,9 +25,9 @@
             width: 100%;
             background: rgba(15, 25, 45, 0.55);
             backdrop-filter: blur(16px);
-            border-radius: 56px;
+            border-radius: 48px;
             padding: 32px 24px 40px;
-            box-shadow: 0 25px 45px rgba(0,0,0,0.4), 0 0 0 1px rgba(255,255,255,0.08);
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.08);
             transition: all 0.3s;
         }
         .profile {
@@ -46,7 +46,7 @@
             justify-content: center;
             font-size: 32px;
             color: white;
-            box-shadow: 0 8px 20px rgba(168,85,247,0.3);
+            box-shadow: 0 8px 20px rgba(168, 85, 247, 0.3);
         }
         .avatar img {
             width: 70px;
@@ -55,70 +55,72 @@
             object-fit: cover;
         }
         .info h2 {
-            font-size: 24px;
+            font-size: 22px;
             font-weight: 700;
             color: white;
             letter-spacing: -0.3px;
         }
         .info p {
-            font-size: 14px;
-            color: #a0aec0;
-            margin-top: 6px;
+            font-size: 13px;
+            color: #64748b;
+            margin-top: 4px;
+            font-weight: 500;
         }
         .time-panel {
-            background: rgba(0,0,0,0.35);
-            border-radius: 48px;
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: 36px;
             padding: 24px 20px;
             text-align: center;
             margin-bottom: 28px;
-            border: 1px solid rgba(255,255,255,0.1);
+            border: 1px solid rgba(255, 255, 255, 0.06);
         }
         .clock {
-            font-size: 64px;
+            font-size: 56px;
             font-weight: 800;
             font-family: monospace;
-            letter-spacing: 4px;
+            letter-spacing: 2px;
             background: linear-gradient(135deg, #f0f9ff, #c7d2fe);
             -webkit-background-clip: text;
             background-clip: text;
             color: transparent;
-            text-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            text-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
         }
         .date {
-            font-size: 16px;
+            font-size: 14px;
             color: #94a3b8;
-            margin-top: 12px;
+            margin-top: 10px;
             font-weight: 500;
         }
         .schedule {
             display: flex;
             justify-content: space-between;
-            background: rgba(255,255,255,0.05);
+            background: rgba(255, 255, 255, 0.04);
             padding: 16px 20px;
-            border-radius: 40px;
+            border-radius: 32px;
             margin-bottom: 32px;
-            font-size: 14px;
+            font-size: 13px;
             font-weight: 500;
+            border: 1px solid rgba(255, 255, 255, 0.04);
         }
         .schedule div {
             color: #cbd5e1;
         }
         .schedule span {
-            color: white;
+            color: #ffffff;
             font-weight: 700;
-            margin-left: 8px;
+            margin-left: 6px;
         }
         .btn-group {
             display: flex;
-            gap: 20px;
+            gap: 16px;
             margin-bottom: 24px;
         }
         button {
             flex: 1;
             padding: 18px 0;
             border: none;
-            border-radius: 60px;
-            font-size: 18px;
+            border-radius: 28px;
+            font-size: 16px;
             font-weight: 800;
             font-family: 'Inter', sans-serif;
             cursor: pointer;
@@ -126,39 +128,44 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 12px;
-            background: #1e2a3e;
-            color: #94a3b8;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            gap: 10px;
+            background: rgba(255, 255, 255, 0.06);
+            color: #64748b;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
         }
         button.active-masuk {
             background: linear-gradient(135deg, #10b981, #059669);
             color: white;
-            box-shadow: 0 10px 20px -5px #10b98180;
+            box-shadow: 0 10px 20px -5px rgba(16, 185, 129, 0.4);
         }
         button.active-pulang {
             background: linear-gradient(135deg, #f97316, #ea580c);
             color: white;
-            box-shadow: 0 10px 20px -5px #f9731680;
+            box-shadow: 0 10px 20px -5px rgba(249, 115, 22, 0.4);
         }
         button:active {
             transform: scale(0.97);
         }
         button:disabled {
-            opacity: 0.5;
+            opacity: 0.4;
             transform: none;
             cursor: not-allowed;
-            filter: grayscale(0.1);
+            filter: grayscale(0.2);
+            box-shadow: none;
         }
         .logout-btn {
             width: 100%;
-            background: rgba(255,255,255,0.05);
-            color: #b91c1c;
-            border: 1px solid rgba(185,28,28,0.3);
+            background: rgba(220, 38, 38, 0.1);
+            color: #fca5a5;
+            border: 1px solid rgba(220, 38, 38, 0.3);
             box-shadow: none;
-            font-size: 16px;
+            font-size: 15px;
             font-weight: 600;
             padding: 14px;
+        }
+        .logout-btn:hover {
+            background: rgba(220, 38, 38, 0.2);
+            color: #ef4444;
         }
         .toast {
             position: fixed;
@@ -167,31 +174,27 @@
             right: 20px;
             background: #0f172ae6;
             backdrop-filter: blur(20px);
-            padding: 14px 20px;
-            border-radius: 80px;
+            padding: 12px 24px;
+            border-radius: 40px;
             color: white;
-            font-weight: 500;
+            font-weight: 600;
             text-align: center;
             z-index: 1000;
             animation: slideUp 0.3s ease;
-            border-left: 4px solid #10b981;
-            max-width: 480px;
+            max-width: 440px;
             margin: 0 auto;
+            border-left: 5px solid #059669;
             pointer-events: none;
         }
         @keyframes slideUp {
             from { transform: translateY(50px); opacity: 0; }
             to { transform: translateY(0); opacity: 1; }
         }
-        i {
-            font-style: normal;
-            font-weight: 500;
-        }
         @media (max-width: 480px) {
-            .glass-card { padding: 24px 18px; }
-            .clock { font-size: 48px; }
+            .glass-card { padding: 26px 18px; }
+            .clock { font-size: 44px; }
             .btn-group { gap: 12px; }
-            button { font-size: 16px; padding: 14px 0; }
+            button { font-size: 14px; padding: 14px 0; }
         }
     </style>
 </head>
@@ -213,8 +216,8 @@
     </div>
 
     <div class="schedule">
-        <div>🕘 JAM MASUK <span id="jamMasukTarget">--:--</span></div>
-        <div>🏁 JAM PULANG <span id="jamPulangTarget">--:--</span></div>
+        <div>🕘 MASUK <span id="jamMasukTarget">--:--</span></div>
+        <div>🏁 PULANG <span id="jamPulangTarget">--:--</span></div>
     </div>
 
     <div class="btn-group">
@@ -225,16 +228,18 @@
             <span>📤</span> PULANG
         </button>
     </div>
+    
     <button id="logoutBtn" class="logout-btn">
         🚪 KELUAR
     </button>
 </div>
 
 <script>
-    // ========== KONFIGURASI ==========
+    // ========== KONFIGURASI ENDPOINT ==========
+    // Pastikan URL di bawah sama dengan URL pada file login.html dan Google Apps Script
     const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyZZg3ddy394sAI24km9hE1kI8rconMG0XJicU1pwyJNGElrOhs1GX-0B8hX2MpKhiJ6g/exec";
 
-    // ========== AMBIL DATA LOGIN DARI LOCALSTORAGE ==========
+    // ========== AMBIL DATA DARI LOCAL STORAGE ==========
     let user = null;
     try {
         const raw = localStorage.getItem('user_pelem_5');
@@ -244,31 +249,40 @@
         window.location.href = "login.html";
     }
 
-    // Tampilkan Data Pengguna
-    document.getElementById('namaUser').innerText = user.nama || user.id;
-    document.getElementById('divisiUser').innerText = user.divisi || "Relawan";
-    document.getElementById('jamMasukTarget').innerText = user.jamMasuk || "08:00";
-    document.getElementById('jamPulangTarget').innerText = user.jamPulang || "17:00";
-
-    // Tampilkan Avatar
-    if (user.foto && user.foto !== "" && user.foto !== "https://via.placeholder.com/150") {
-        const avatarDiv = document.getElementById('avatar');
-        avatarDiv.innerHTML = `<img src="${user.foto}" alt="foto">`;
+    // ========== FUNGSI FORMAT WAKTU MENCEGAH TAHUN 1899 ==========
+    function formatTime(val) {
+        if (!val) return "--:--";
+        if (typeof val === 'string' && val.includes('T')) {
+            const date = new Date(val);
+            const h = date.getUTCHours().toString().padStart(2, '0');
+            const m = date.getUTCMinutes().toString().padStart(2, '0');
+            return `${h}:${m}`;
+        }
+        return val;
     }
 
-    // ========== STATE ABSEN ==========
+    document.getElementById('namaUser').innerText = user.nama || user.id;
+    document.getElementById('divisiUser').innerText = user.divisi || "Relawan";
+    document.getElementById('jamMasukTarget').innerText = formatTime(user.jamMasuk);
+    document.getElementById('jamPulangTarget').innerText = formatTime(user.jamPulang);
+
+    if (user.foto && user.foto !== "" && user.foto !== "https://via.placeholder.com/150") {
+        const avatarDiv = document.getElementById('avatar');
+        avatarDiv.innerHTML = `<img src="${user.foto}" alt="Foto Profil">`;
+    }
+
+    // ========== STATE & STATUS ABSENSI HARI INI ==========
     function getTodayKey() {
         const d = new Date();
-        const year = d.getFullYear();
-        const month = (d.getMonth() + 1).toString().padStart(2, '0');
+        const y = d.getFullYear();
+        const m = (d.getMonth() + 1).toString().padStart(2, '0');
         const day = d.getDate().toString().padStart(2, '0');
-        return `${year}-${month}-${day}`;
+        return `${y}-${m}-${day}`;
     }
 
     const STORAGE_KEY = `absen_${user.id}_${getTodayKey()}`;
-    // Membaca state dari localStorage
-    let sudahMasuk = localStorage.getItem(STORAGE_KEY) === 'masuk';
-    let sudahPulang = localStorage.getItem(STORAGE_KEY) === 'pulang';
+    let sudahMasuk = user.hasCheckedIn || localStorage.getItem(STORAGE_KEY) === 'masuk';
+    let sudahPulang = user.hasCheckedOut || localStorage.getItem(STORAGE_KEY) === 'pulang';
 
     const btnMasuk = document.getElementById('btnMasuk');
     const btnPulang = document.getElementById('btnPulang');
@@ -279,8 +293,6 @@
             btnPulang.disabled = true;
             btnMasuk.classList.remove('active-masuk');
             btnPulang.classList.remove('active-pulang');
-            btnPulang.style.opacity = '0.6';
-            btnMasuk.style.opacity = '0.6';
             return;
         }
         if (sudahMasuk) {
@@ -297,14 +309,14 @@
     }
     updateButtonState();
 
-    // ========== FUNGSI ABSENSI (MENGIRIMKAN GEOLOCATION) ==========
+    // ========== FUNGSI ABSEN DENGAN GEOLOCATION ==========
     async function doAbsen(action) {
         btnMasuk.disabled = true;
         btnPulang.disabled = true;
-        
+
         let lat = 0;
         let lng = 0;
-        
+
         try {
             const position = await new Promise((resolve, reject) => {
                 navigator.geolocation.getCurrentPosition(resolve, reject);
@@ -314,8 +326,9 @@
         } catch (err) {
             console.warn("Gagal mendapatkan lokasi atau izin ditolak. Menggunakan koordinat default.");
         }
-        
+
         try {
+            // Pengiriman dilakukan tanpa header JSON tambahan untuk menghindari preflight (CORS)
             const response = await fetch(SCRIPT_URL, {
                 method: 'POST',
                 body: JSON.stringify({
@@ -327,7 +340,7 @@
                 })
             });
             const data = await response.json();
-            
+
             if (data.result === "success") {
                 if (action === "DATANG") {
                     localStorage.setItem(STORAGE_KEY, 'masuk');
@@ -343,12 +356,12 @@
                     setTimeout(() => window.location.reload(), 1500);
                 }
             } else {
-                showToast("❌ Gagal: " + (data.message || "Coba lagi"), true);
+                showToast("❌ Gagal: " + (data.message || "Silakan coba lagi"), true);
                 updateButtonState();
             }
         } catch (err) {
             console.error(err);
-            showToast("❌ Gagal koneksi ke server", true);
+            showToast("❌ Gagal koneksi ke server!", true);
             updateButtonState();
         }
     }
@@ -363,25 +376,25 @@
         window.location.href = "login.html";
     });
 
-    // ========== JAM DIGITAL + TANGGAL ==========
+    // ========== JAM DIGITAL & TANGGAL ==========
     function updateClock() {
         const now = new Date();
-        const jam = now.getHours().toString().padStart(2,'0');
-        const menit = now.getMinutes().toString().padStart(2,'0');
-        const detik = now.getSeconds().toString().padStart(2,'0');
+        const jam = now.getHours().toString().padStart(2, '0');
+        const menit = now.getMinutes().toString().padStart(2, '0');
+        const detik = now.getSeconds().toString().padStart(2, '0');
         document.getElementById('jamDigital').innerText = `${jam}:${menit}:${detik}`;
-        
+
         const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
         document.getElementById('tanggal').innerText = now.toLocaleDateString('id-ID', options);
     }
     updateClock();
     setInterval(updateClock, 1000);
 
-    // ========== NOTIFIKASI TOAST ==========
+    // ========== TOAST NOTIFICATION ==========
     function showToast(msg, isError = false) {
         const toast = document.createElement('div');
         toast.className = 'toast';
-        toast.style.borderLeftColor = isError ? '#f97316' : '#10b981';
+        toast.style.borderLeftColor = isError ? '#ea580c' : '#059669';
         toast.innerText = msg;
         document.body.appendChild(toast);
         setTimeout(() => toast.remove(), 2600);
