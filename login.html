@@ -3,9 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Login • Absensi Relawan</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
+    <title>Masuk • Smart Presence</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
     <style>
         * {
             margin: 0;
@@ -15,68 +16,65 @@
 
         body {
             font-family: 'Inter', sans-serif;
-            background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
+            background: radial-gradient(circle at 10% 20%, #0a0f2a, #030617);
             min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
             padding: 20px;
-            position: relative;
-            overflow-x: hidden;
         }
 
-        /* Glassmorphism card */
         .glass-card {
-            background: rgba(255, 255, 255, 0.08);
+            background: rgba(15, 25, 45, 0.65);
             backdrop-filter: blur(20px);
-            border-radius: 32px;
-            padding: 40px 30px;
+            border-radius: 48px;
+            padding: 40px 32px;
             width: 100%;
             max-width: 420px;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            box-shadow: 0 25px 45px rgba(0, 0, 0, 0.3);
-            transition: transform 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
 
         .glass-card:hover {
-            transform: translateY(-5px);
+            transform: translateY(-2px);
+            box-shadow: 0 30px 60px rgba(168, 85, 247, 0.15);
         }
 
         .logo-area {
             text-align: center;
-            margin-bottom: 35px;
+            margin-bottom: 32px;
         }
 
         .logo-icon {
-            width: 70px;
-            height: 70px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            border-radius: 24px;
+            width: 72px;
+            height: 72px;
+            background: linear-gradient(135deg, #a855f7 0%, #3b82f6 100%);
+            border-radius: 28px;
             display: flex;
             align-items: center;
             justify-content: center;
             margin: 0 auto 20px;
-            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+            box-shadow: 0 10px 25px rgba(168, 85, 247, 0.3);
         }
 
         .logo-icon i {
-            font-size: 36px;
+            font-size: 32px;
             color: white;
         }
 
         h1 {
             font-size: 28px;
-            font-weight: 700;
-            background: linear-gradient(135deg, #fff 0%, #a0aec0 100%);
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
+            font-weight: 800;
+            color: #ffffff;
             margin-bottom: 8px;
+            letter-spacing: -0.5px;
         }
 
         .subtitle {
-            color: rgba(255, 255, 255, 0.6);
+            color: #64748b;
             font-size: 14px;
+            font-weight: 500;
         }
 
         .input-group {
@@ -86,61 +84,60 @@
 
         .input-group i {
             position: absolute;
-            left: 18px;
+            left: 20px;
             top: 50%;
             transform: translateY(-50%);
-            color: rgba(255, 255, 255, 0.5);
+            color: #475569;
             font-size: 18px;
-            transition: all 0.3s ease;
+            transition: all 0.2s ease;
         }
 
         .input-group input {
             width: 100%;
-            padding: 16px 20px 16px 50px;
-            background: rgba(255, 255, 255, 0.08);
-            border: 1.5px solid rgba(255, 255, 255, 0.15);
-            border-radius: 20px;
+            padding: 16px 20px 16px 54px;
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 28px;
             font-size: 15px;
             font-family: 'Inter', sans-serif;
-            color: white;
-            transition: all 0.3s ease;
+            color: #ffffff;
+            transition: all 0.2s ease;
             outline: none;
         }
 
         .input-group input:focus {
-            border-color: #667eea;
-            background: rgba(255, 255, 255, 0.12);
-            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.2);
+            border-color: #a855f7;
+            background: rgba(15, 23, 42, 0.8);
+            box-shadow: 0 0 0 4px rgba(168, 85, 247, 0.25);
         }
 
         .input-group input::placeholder {
-            color: rgba(255, 255, 255, 0.4);
+            color: #475569;
         }
 
         .input-group input:focus + i {
-            color: #667eea;
+            color: #a855f7;
         }
 
         .btn-login {
             width: 100%;
-            padding: 16px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 18px;
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
             border: none;
-            border-radius: 20px;
+            border-radius: 28px;
             font-size: 16px;
-            font-weight: 600;
+            font-weight: 800;
             color: white;
             font-family: 'Inter', sans-serif;
             cursor: pointer;
-            transition: all 0.3s ease;
+            transition: all 0.2s ease;
             margin-top: 10px;
-            position: relative;
-            overflow: hidden;
+            box-shadow: 0 10px 20px -5px rgba(16, 185, 129, 0.4);
         }
 
         .btn-login:hover {
             transform: translateY(-2px);
-            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+            box-shadow: 0 12px 24px -3px rgba(16, 185, 129, 0.5);
         }
 
         .btn-login:active {
@@ -148,20 +145,24 @@
         }
 
         .btn-login:disabled {
-            opacity: 0.6;
+            background: #1e293b;
+            color: #475569;
+            box-shadow: none;
             transform: none;
             cursor: not-allowed;
+            opacity: 0.7;
         }
 
         .spinner {
             display: inline-block;
-            width: 20px;
-            height: 20px;
+            width: 18px;
+            height: 18px;
             border: 2px solid rgba(255, 255, 255, 0.3);
             border-top-color: white;
             border-radius: 50%;
-            animation: spin 0.8s linear infinite;
+            animation: spin 0.7s linear infinite;
             margin-right: 8px;
+            vertical-align: middle;
         }
 
         @keyframes spin {
@@ -170,9 +171,14 @@
 
         .footer-note {
             text-align: center;
-            margin-top: 25px;
-            color: rgba(255, 255, 255, 0.4);
+            margin-top: 32px;
+            color: #475569;
             font-size: 12px;
+            font-weight: 500;
+        }
+
+        .footer-note i {
+            margin-right: 4px;
         }
     </style>
 </head>
@@ -206,73 +212,74 @@
     </div>
 
     <script>
-        // Ganti dengan URL deployment Web Apps Google Apps Script Anda yang terbaru
-        const scriptURL = "https://script.google.com/macros/s/AKfycbyZZg3ddy394sAI24km9hE1kI8rconMG0XJicU1pwyJNGElrOhs1GX-0B8hX2MpKhiJ6g/exec"; 
+        // Samakan endpoint URL dengan file index.html Anda
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyZZg3ddy394sAI24km9hE1kI8rconMG0XJicU1pwyJNGElrOhs1GX-0B8hX2MpKhiJ6g/exec";
         
         async function doLogin() {
-            const id = document.getElementById('id').value.trim();
-            const pin = document.getElementById('pin').value;
+            const idInput = document.getElementById('id').value.trim();
+            const pinInput = document.getElementById('pin').value;
             const btn = document.getElementById('btn');
             const btnText = document.getElementById('btn-text');
 
-            if (!id || !pin) {
-                showToast("Isi ID dan PIN terlebih dahulu!", "error");
+            if (!idInput || !pinInput) {
+                showToast("Isi ID dan PIN terlebih dahulu!", true);
                 return;
             }
             
+            // Animasi tombol loading
             btn.disabled = true;
             btnText.innerHTML = '<span class="spinner"></span> Verifikasi...';
 
             try {
-                const r = await fetch(scriptURL, { 
+                const response = await fetch(SCRIPT_URL, { 
                     method: 'POST', 
-                    body: JSON.stringify({ action: "login", id: id, pin: pin })
+                    body: JSON.stringify({ action: "login", id: idInput, pin: pinInput })
                 });
-                const res = await r.json();
+                const res = await response.json();
                 
                 if (res.result === "success") {
-                    // Menyimpan data ke localStorage untuk kemudahan akses di perangkat sendiri
+                    // Simpan ke localStorage untuk penggunaan HP masing-masing
                     localStorage.setItem('user_pelem_5', JSON.stringify(res.user));
-                    showToast("Login berhasil! Mengarahkan...", "success");
+                    showToast("Login berhasil! Mengalihkan halaman...", false);
                     setTimeout(() => {
                         window.location.href = "index.html";
                     }, 800);
                 } else {
-                    showToast(res.message || "ID atau PIN salah!", "error");
+                    showToast(res.message || "ID atau PIN salah!", true);
                     btn.disabled = false;
-                    btnText.innerHTML = "MASUK";
+                    btnText.innerText = "MASUK";
                 }
             } catch(e) {
-                showToast("Koneksi error! Cek internet Anda.", "error");
+                showToast("Koneksi error, cek internet Anda.", true);
                 btn.disabled = false;
-                btnText.innerHTML = "MASUK";
+                btnText.innerText = "MASUK";
             }
         }
 
-        function showToast(msg, type) {
+        function showToast(msg, isError = false) {
             const toast = document.createElement('div');
             toast.style.cssText = `
                 position: fixed;
                 bottom: 30px;
                 left: 50%;
                 transform: translateX(-50%);
-                background: ${type === 'error' ? '#f44336' : '#4caf50'};
+                background: ${isError ? '#ea580c' : '#059669'};
                 color: white;
-                padding: 12px 24px;
-                border-radius: 50px;
+                padding: 14px 28px;
+                border-radius: 40px;
                 font-size: 14px;
-                font-weight: 500;
+                font-weight: 600;
                 z-index: 1000;
                 animation: slideUp 0.3s ease;
-                box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+                box-shadow: 0 10px 20px -5px rgba(0,0,0,0.5);
                 font-family: 'Inter', sans-serif;
             `;
-            toast.innerHTML = `<i class="fas ${type === 'error' ? 'fa-exclamation-triangle' : 'fa-check-circle'}"></i> ${msg}`;
+            toast.innerHTML = `<i class="fas ${isError ? 'fa-exclamation-triangle' : 'fa-check-circle'}"></i> ${msg}`;
             document.body.appendChild(toast);
             setTimeout(() => toast.remove(), 3000);
         }
 
-        // Penanganan tombol Enter
+        // Enter key listener
         document.querySelectorAll('input').forEach(input => {
             input.addEventListener('keypress', (e) => {
                 if (e.key === 'Enter') doLogin();
