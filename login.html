@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Login • Absensi Modern</title>
+    <title>Login • Absensi Relawan</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
@@ -23,20 +23,6 @@
             padding: 20px;
             position: relative;
             overflow-x: hidden;
-        }
-
-        /* Animated background bubbles */
-        .bubble {
-            position: absolute;
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 50%;
-            pointer-events: none;
-            animation: float 20s infinite ease-in-out;
-        }
-
-        @keyframes float {
-            0%, 100% { transform: translateY(0) rotate(0deg); }
-            50% { transform: translateY(-100px) rotate(180deg); }
         }
 
         /* Glassmorphism card */
@@ -196,8 +182,8 @@
             <div class="logo-icon">
                 <i class="fas fa-fingerprint"></i>
             </div>
-            <h1>Welcome Back</h1>
-            <div class="subtitle">Absensi Karyawan Digital</div>
+            <h1>Selamat Datang</h1>
+            <div class="subtitle">Absensi Relawan SPPG Pelem 5</div>
         </div>
 
         <div class="input-group">
@@ -220,7 +206,7 @@
     </div>
 
     <script>
-        // Sesuaikan URL Google Apps Script yang digunakan
+        // Ganti dengan URL deployment Web Apps Google Apps Script Anda yang terbaru
         const scriptURL = "https://script.google.com/macros/s/AKfycbyZZg3ddy394sAI24km9hE1kI8rconMG0XJicU1pwyJNGElrOhs1GX-0B8hX2MpKhiJ6g/exec"; 
         
         async function doLogin() {
@@ -245,9 +231,9 @@
                 const res = await r.json();
                 
                 if (res.result === "success") {
-                    // Menggunakan localStorage untuk HP pribadi
+                    // Menyimpan data ke localStorage untuk kemudahan akses di perangkat sendiri
                     localStorage.setItem('user_pelem_5', JSON.stringify(res.user));
-                    showToast("Login berhasil! Selamat datang.", "success");
+                    showToast("Login berhasil! Mengarahkan...", "success");
                     setTimeout(() => {
                         window.location.href = "index.html";
                     }, 800);
@@ -286,7 +272,7 @@
             setTimeout(() => toast.remove(), 3000);
         }
 
-        // Enter key handler
+        // Penanganan tombol Enter
         document.querySelectorAll('input').forEach(input => {
             input.addEventListener('keypress', (e) => {
                 if (e.key === 'Enter') doLogin();
