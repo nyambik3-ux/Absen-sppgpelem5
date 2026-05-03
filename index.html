@@ -705,7 +705,7 @@
     // ========== AMBIL DATA LOGIN ==========
     let user = null;
     try {
-        const raw = sessionStorage.getItem('user_pelem_5');
+        const raw = localStorage.getItem('user_pelem_5');
         if (!raw) throw new Error();
         user = JSON.parse(raw);
     } catch(e) {
@@ -827,7 +827,7 @@
     btnPulang.addEventListener('click', () => doAbsen("PULANG"));
 
     document.getElementById('logoutBtn').addEventListener('click', () => {
-        sessionStorage.removeItem('user_pelem_5');
+        localStorage.removeItem('user_pelem_5');
         localStorage.removeItem(STORAGE_KEY);
         window.location.href = "login.html";
     });
@@ -862,7 +862,7 @@
     // ========== AMBIL DATA LOGIN ==========
     let user = null;
     try {
-        const raw = sessionStorage.getItem('user_pelem_5');
+        const raw = localStorage.getItem('user_pelem_5');
         if (!raw) throw new Error();
         user = JSON.parse(raw);
     } catch(e) {
@@ -984,7 +984,7 @@
     btnPulang.addEventListener('click', () => doAbsen("PULANG"));
 
     document.getElementById('logoutBtn').addEventListener('click', () => {
-        sessionStorage.removeItem('user_pelem_5');
+        localStorage.removeItem('user_pelem_5');
         localStorage.removeItem(STORAGE_KEY);
         window.location.href = "login.html";
     });
@@ -1019,7 +1019,7 @@
     // ========== AMBIL DATA LOGIN ==========
     let user = null;
     try {
-        const raw = sessionStorage.getItem('user_pelem_5');
+        const raw = localStorage.getItem('user_pelem_5');
         if (!raw) throw new Error();
         user = JSON.parse(raw);
     } catch(e) {
@@ -1141,7 +1141,7 @@
     btnPulang.addEventListener('click', () => doAbsen("PULANG"));
 
     document.getElementById('logoutBtn').addEventListener('click', () => {
-        sessionStorage.removeItem('user_pelem_5');
+        localStorage.removeItem('user_pelem_5');
         localStorage.removeItem(STORAGE_KEY);
         window.location.href = "login.html";
     });
