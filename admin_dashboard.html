@@ -543,6 +543,7 @@
     </div>
 
     <script>
+        // Pastikan URL di bawah sama persis dengan Web Apps Anda
         const scriptURL = "https://script.google.com/macros/s/AKfycby5-NtTZ01UBnXWtRDVVBTgG-BMJdvQ-vGfsi9Xdq8aKZ82CG9wJXCOBl2Mw3PqHINzaQ/exec";
 
         if (!localStorage.getItem('admin_logged_in')) {
@@ -591,7 +592,7 @@
             if (rankingChart) rankingChart.destroy();
             const data = dashboardData?.ketepatanWaktu || [];
             const labels = data.slice(0, 12).map(d => `${d.nama} (${d.jamAbsen !== '-' ? d.jamAbsen : 'Belum Absen'})`);
-            const skor = data.slice(0, 12).map(d => d.skor);
+            const skor = data.slice(0, 12).map(d => skorKoreksi(d.skor));
 
             rankingChart = new Chart(ctx, {
                 type: 'bar',
@@ -615,6 +616,10 @@
                 }
             });
         }
+        
+        function skorKoreksi(val) {
+            return isNaN(val) ? 0 : val;
+        }
 
         function populateDivisiFilter() {
             const divisiSet = new Set();
@@ -633,7 +638,6 @@
             const divisi = document.getElementById('divisiFilter').value;
             let filtered = dashboardData?.reportHarian || [];
             
-            // Lakukan pengelompokan berdasarkan ID untuk melihat total kehadiran per relawan
             const uniqueMap = {};
             filtered.forEach(d => {
                 if (!uniqueMap[d.id]) {
@@ -660,4 +664,145 @@
         function renderTable(data) {
             const tbody = document.getElementById('tableBody');
             if (!data.length) {
-                tbody.innerHTML = '<tr><td colspan="4" style="text-align:center
+                tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;">Data tidak ditemukan</td></tr>';
+                return;
+            }
+            tbody.innerHTML = data.map(d => {
+                return `<tr>
+                    <td>${d.id}</td>
+                    <td><strong class="clickable-name" onclick="showVolunteerDetails('${d.id}', '${d.nama}')">${d.nama}</strong></td>
+                    <td>${d.divisi || '-'}</td>
+                    <td><span class="status-badge status-hadir">${d.riwayat.length} Hari</span></td>
+                </tr>`;
+            }).join('');
+        }
+
+        function showVolunteerDetails(id, nama) {
+            const modal = document.getElementById('volunteerModal');
+            const modalTitle = document.getElementById('modalTitle');
+            const historyList = document.getElementById('historyList');
+
+            modalTitle.innerText = `Riwayat: ${nama} (${id})`;
+            historyList.innerHTML = '⏳ Memuat riwayat...';
+
+            modal.classList.add('active');
+
+            if (!dashboardData || !dashboardData.reportHarian) {
+                historyList.innerHTML = 'Tidak ada riwayat ditemukan.';
+                return;
+            }
+
+            const volunteerRecords = dashboardData.reportHarian.filter(r => r.id === id);
+
+            if (volunteerRecords.length === 0) {
+                historyList.innerHTML = '<p style="text-align:center; color:#64748b;">Belum ada data absensi untuk relawan ini.</p>';
+            } else {
+                historyList.innerHTML = volunteerRecords.map(r => {
+                    const validationState = r.isValidated ? "validated" : "";
+                    const validationText = r.isValidated ? "Disetujui" : "Validasi";
+                    
+                    return `
+                        <div class="history-item">
+                            <div>
+                                <div class="history-date">${r.tanggal}</div>
+                                <div style="font-size: 12px; color: #64748b; margin-top: 4px;">Status: ${r.status}</div>
+                            </div>
+                            <div class="history-time" style="display:flex; flex-direction:column; align-items:flex-end; gap:6px;">
+                                <div>Masuk: <b>${r.jamMasuk || '-'}</b> | Pulang: <b>${r.jamPulang || '-'}</b></div>
+                                <button id="val-btn-${r.id}-${r.tanggal.replace(/-/g,'')}" class="btn-validate ${validationState}" onclick="validateAttendance('${r.id}', '${r.tanggal}', this)">
+                                    <i class="fas fa-check"></i> ${validationText}
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            }
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('volunteerModal');
+            modal.classList.remove('active');
+        }
+
+        async function validateAttendance(id, tanggal, btnElement) {
+            const originalText = btnElement.innerHTML;
+            btnElement.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Proses...';
+            
+            try {
+                const response = await fetch(scriptURL, {
+                    method: 'POST',
+                    body: JSON.stringify({ action: "validasi", id: id, tanggal: tanggal })
+                });
+                const res = await response.json();
+                if (res.result === "success") {
+                    btnElement.classList.toggle('validated');
+                    if (btnElement.classList.contains('validated')) {
+                        btnElement.innerHTML = '<i class="fas fa-check"></i> Disetujui';
+                    } else {
+                        btnElement.innerHTML = '<i class="fas fa-check"></i> Validasi';
+                    }
+                    loadData();
+                } else {
+                    alert('Gagal memvalidasi: ' + res.message);
+                    btnElement.innerHTML = originalText;
+                }
+            } catch (e) {
+                console.error(e);
+                alert('Terjadi kesalahan jaringan.');
+                btnElement.innerHTML = originalText;
+            }
+        }
+
+        function exportToExcel() {
+            if (!dashboardData?.reportHarian) return;
+            let csv = "ID,Nama,Divisi,Jam Masuk,Jam Pulang,Status\n";
+            dashboardData.reportHarian.forEach(d => {
+                csv += `"${d.id}","${d.nama}","${d.divisi}","${d.jamMasuk}","${d.jamPulang}","${d.status}"\n`;
+            });
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = `Rekap_Absensi_${new Date().toISOString().slice(0,10)}.csv`;
+            link.click();
+        }
+
+        function exportToPDF() {
+            const element = document.querySelector('.table-section');
+            html2pdf().set({
+                margin: 10,
+                filename: 'Rekap_Absensi.pdf',
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: { scale: 2 },
+                jsPDF: { unit: 'mm', format: 'a4', orientation: 'landscape' }
+            }).from(element).save();
+        }
+
+        function toggleTheme() {
+            const body = document.body;
+            body.classList.toggle('dark-mode');
+            const icon = document.getElementById('themeIcon');
+            if (body.classList.contains('dark-mode')) {
+                icon.innerHTML = '<i class="fas fa-sun"></i>';
+                localStorage.setItem('admin_theme', 'dark');
+            } else {
+                icon.innerHTML = '<i class="fas fa-moon"></i>';
+                localStorage.setItem('admin_theme', 'light');
+            }
+        }
+
+        function logout() {
+            localStorage.removeItem('admin_logged_in');
+            localStorage.removeItem('admin_username');
+            window.location.href = "admin_login.html";
+        }
+
+        if (localStorage.getItem('admin_theme') === 'dark') {
+            document.body.classList.add('dark-mode');
+            document.getElementById('themeIcon').innerHTML = '<i class="fas fa-sun"></i>';
+        }
+
+        loadData();
+        setInterval(loadData, 30000);
+    </script>
+</body>
+</html>
