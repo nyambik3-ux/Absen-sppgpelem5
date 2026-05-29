@@ -201,15 +201,17 @@
 <body>
 <div class="glass-card">
     <div class="profile">
-        <div class="avatar" id="avatar">
-            <span>👤</span>
-        </div>
-        <div class="info">
-            <h2 id="namaUser">Memuat...</h2>
-            <p id="divisiUser">-</p>
-        </div>
+    <div class="avatar" id="avatar" style="cursor: pointer; position: relative; overflow: hidden;" onclick="document.getElementById('uploadFoto').click()">
+        <img id="imgAvatar" src="" alt="Avatar" style="display: none; width: 100%; height: 100%; object-fit: cover;">
+        <span id="ikonAvatar">👤</span>
+        <div style="position: absolute; bottom: 0; background: rgba(0,0,0,0.5); width: 100%; text-align: center; font-size: 10px; padding: 4px 0; color: white;">Ganti</div>
     </div>
-
+    <div class="info">
+        <h2 id="namaUser">Memuat...</h2>
+        <p id="divisiUser">-</p>
+    </div>
+</div>
+<input type="file" id="uploadFoto" accept="image/*" style="display: none;" onchange="handleFotoUpload(event)">
     <div class="time-panel">
         <div class="clock" id="jamDigital">--:--:--</div>
         <div class="date" id="tanggal">--</div>
@@ -237,7 +239,7 @@
 <script>
     // ========== KONFIGURASI ENDPOINT ==========
     // Pastikan URL di bawah sama dengan URL pada file login.html dan Google Apps Script
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzz2FeIDnbZd57baKXlt60x_KKMFzx6vlfs6Ibk5e-6wQYytUneshC0ecxAnMut0uyS9Q/exec";
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz0OEp7W8ZBYdwHN0c10RcEZV1QfvKlk83jMr-wsGQasRSQOvtA5jE1uZC9FpbMZJjVKA/exec";
 
     // ========== AMBIL DATA DARI LOCAL STORAGE ==========
     let user = null;
