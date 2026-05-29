@@ -149,4 +149,293 @@
         button:disabled {
             opacity: 0.4;
             transform: none;
-            cursor: not-allowed
+            cursor: not-allowed;
+            filter: grayscale(0.2);
+            box-shadow: none;
+        }
+        .logout-btn {
+            width: 100%;
+            background: rgba(220, 38, 38, 0.1);
+            color: #fca5a5;
+            border: 1px solid rgba(220, 38, 38, 0.3);
+            box-shadow: none;
+            font-size: 15px;
+            font-weight: 600;
+            padding: 14px;
+        }
+        .logout-btn:hover {
+            background: rgba(220, 38, 38, 0.2);
+            color: #ef4444;
+        }
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            left: 20px;
+            right: 20px;
+            background: #0f172ae6;
+            backdrop-filter: blur(20px);
+            padding: 12px 24px;
+            border-radius: 40px;
+            color: white;
+            font-weight: 600;
+            text-align: center;
+            z-index: 1000;
+            animation: slideUp 0.3s ease;
+            max-width: 440px;
+            margin: 0 auto;
+            border-left: 5px solid #059669;
+            pointer-events: none;
+        }
+        @keyframes slideUp {
+            from { transform: translateY(50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        @media (max-width: 480px) {
+            .glass-card { padding: 26px 18px; }
+            .clock { font-size: 44px; }
+            .btn-group { gap: 12px; }
+            button { font-size: 14px; padding: 14px 0; }
+        }
+    </style>
+</head>
+<body>
+<div class="glass-card">
+    <div class="profile">
+        <div class="avatar" id="avatar" style="cursor: pointer; position: relative; overflow: hidden;" onclick="document.getElementById('uploadFoto').click()">
+            <img id="imgAvatar" src="" alt="Avatar" style="display: none; width: 100%; height: 100%; object-fit: cover;">
+            <span id="ikonAvatar">👤</span>
+            <div style="position: absolute; bottom: 0; background: rgba(0,0,0,0.5); width: 100%; text-align: center; font-size: 10px; padding: 4px 0; color: white;">Ganti</div>
+        </div>
+        <div class="info">
+            <h2 id="namaUser">Memuat...</h2>
+            <p id="divisiUser">-</p>
+        </div>
+    </div>
+    
+    <input type="file" id="uploadFoto" accept="image/*" style="display: none;" onchange="handleFotoUpload(event)">
+
+    <div class="time-panel">
+        <div class="clock" id="jamDigital">--:--:--</div>
+        <div class="date" id="tanggal">--</div>
+    </div>
+
+    <div class="schedule">
+        <div>🕘 MASUK <span id="jamMasukTarget">--:--</span></div>
+        <div>🏁 PULANG <span id="jamPulangTarget">--:--</span></div>
+    </div>
+
+    <div class="btn-group">
+        <button id="btnMasuk" class="active-masuk">
+            <span>📥</span> MASUK
+        </button>
+        <button id="btnPulang" disabled>
+            <span>📤</span> PULANG
+        </button>
+    </div>
+    
+    <button id="logoutBtn" class="logout-btn">
+        🚪 KELUAR
+    </button>
+</div>
+
+<script>
+    // ========== KONFIGURASI ENDPOINT ==========
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz0OEp7W8ZBYdwHN0c10RcEZV1QfvKlk83jMr-wsGQasRSQOvtA5jE1uZC9FpbMZJjVKA/exec";
+
+    // ========== AMBIL DATA DARI LOCAL STORAGE ==========
+    let user = null;
+    try {
+        const raw = localStorage.getItem('user_pelem_5');
+        if (!raw) throw new Error();
+        user = JSON.parse(raw);
+    } catch(e) {
+        window.location.href = "login.html";
+    }
+
+    function formatTime(val) {
+        if (!val) return "--:--";
+        if (typeof val === 'string' && val.includes('T')) {
+            const date = new Date(val);
+            const h = date.getUTCHours().toString().padStart(2, '0');
+            const m = date.getUTCMinutes().toString().padStart(2, '0');
+            return `${h}:${m}`;
+        }
+        return val;
+    }
+
+    document.getElementById('namaUser').innerText = user.nama || user.id;
+    document.getElementById('divisiUser').innerText = user.divisi || "Relawan";
+    document.getElementById('jamMasukTarget').innerText = formatTime(user.jamMasuk);
+    document.getElementById('jamPulangTarget').innerText = formatTime(user.jamPulang);
+
+    if (user.foto && user.foto !== "" && user.foto !== "https://via.placeholder.com/150") {
+        document.getElementById('imgAvatar').src = user.foto;
+        document.getElementById('imgAvatar').style.display = "block";
+        document.getElementById('ikonAvatar').style.display = "none";
+    }
+
+    // ========== STATE & STATUS ABSENSI ==========
+    function getTodayKey() {
+        const d = new Date();
+        const y = d.getFullYear();
+        const m = (d.getMonth() + 1).toString().padStart(2, '0');
+        const day = d.getDate().toString().padStart(2, '0');
+        return `${y}-${m}-${day}`;
+    }
+
+    const STORAGE_KEY = `absen_${user.id}_${getTodayKey()}`;
+    let sudahMasuk = user.hasCheckedIn || localStorage.getItem(STORAGE_KEY) === 'masuk';
+    let sudahPulang = user.hasCheckedOut || localStorage.getItem(STORAGE_KEY) === 'pulang';
+
+    const btnMasuk = document.getElementById('btnMasuk');
+    const btnPulang = document.getElementById('btnPulang');
+
+    function updateButtonState() {
+        if (sudahPulang) {
+            btnMasuk.disabled = true;
+            btnPulang.disabled = true;
+            btnMasuk.classList.remove('active-masuk');
+            btnPulang.classList.remove('active-pulang');
+            return;
+        }
+        if (sudahMasuk) {
+            btnMasuk.disabled = true;
+            btnMasuk.classList.remove('active-masuk');
+            btnPulang.disabled = false;
+            btnPulang.classList.add('active-pulang');
+        } else {
+            btnMasuk.disabled = false;
+            btnMasuk.classList.add('active-masuk');
+            btnPulang.disabled = true;
+            btnPulang.classList.remove('active-pulang');
+        }
+    }
+    updateButtonState();
+
+    // ========== FUNGSI ABSEN ==========
+    async function doAbsen(action) {
+        btnMasuk.disabled = true;
+        btnPulang.disabled = true;
+
+        let lat = 0; let lng = 0;
+        try {
+            const position = await new Promise((resolve, reject) => {
+                navigator.geolocation.getCurrentPosition(resolve, reject);
+            });
+            lat = position.coords.latitude;
+            lng = position.coords.longitude;
+        } catch (err) {
+            console.warn("Gagal mendapatkan lokasi");
+        }
+
+        try {
+            const response = await fetch(SCRIPT_URL, {
+                method: 'POST',
+                body: JSON.stringify({ action: action, id: user.id, nama: user.nama || user.id, lat: lat, lng: lng })
+            });
+            const data = await response.json();
+
+            if (data.result === "success") {
+                if (action === "DATANG") {
+                    localStorage.setItem(STORAGE_KEY, 'masuk');
+                    sudahMasuk = true;
+                    showToast("✅ Absen Masuk berhasil!");
+                } else if (action === "PULANG") {
+                    localStorage.setItem(STORAGE_KEY, 'pulang');
+                    sudahPulang = true;
+                    showToast("✅ Absen Pulang berhasil!");
+                }
+                updateButtonState();
+                if (sudahPulang) setTimeout(() => window.location.reload(), 1500);
+            } else {
+                showToast("❌ Gagal: " + (data.message || "Silakan coba lagi"), true);
+                updateButtonState();
+            }
+        } catch (err) {
+            showToast("❌ Gagal koneksi ke server!", true);
+            updateButtonState();
+        }
+    }
+
+    btnMasuk.addEventListener('click', () => doAbsen("DATANG"));
+    btnPulang.addEventListener('click', () => doAbsen("PULANG"));
+
+    document.getElementById('logoutBtn').addEventListener('click', () => {
+        localStorage.removeItem('user_pelem_5');
+        localStorage.removeItem(STORAGE_KEY);
+        window.location.href = "login.html";
+    });
+
+    // ========== JAM & TANGGAL ==========
+    function updateClock() {
+        const now = new Date();
+        const jam = now.getHours().toString().padStart(2, '0');
+        const menit = now.getMinutes().toString().padStart(2, '0');
+        const detik = now.getSeconds().toString().padStart(2, '0');
+        document.getElementById('jamDigital').innerText = `${jam}:${menit}:${detik}`;
+
+        const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+        document.getElementById('tanggal').innerText = now.toLocaleDateString('id-ID', options);
+    }
+    updateClock();
+    setInterval(updateClock, 1000);
+
+    function showToast(msg, isError = false) {
+        const toast = document.createElement('div');
+        toast.className = 'toast';
+        toast.style.borderLeftColor = isError ? '#ea580c' : '#059669';
+        toast.innerText = msg;
+        document.body.appendChild(toast);
+        setTimeout(() => toast.remove(), 2600);
+    }
+
+    // ========== UPLOAD FOTO ==========
+    function handleFotoUpload(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+
+        if (file.size > 2 * 1024 * 1024) {
+            showToast("Ukuran foto terlalu besar. Maksimal 2MB.", true);
+            return;
+        }
+
+        const userDataStr = localStorage.getItem('user_pelem_5');
+        if (!userDataStr) return;
+        const userData = JSON.parse(userDataStr);
+        const userId = userData.id;
+
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const base64Image = e.target.result;
+            showToast("Sedang mengunggah foto...");
+            document.getElementById('imgAvatar').style.opacity = "0.5";
+
+            fetch(SCRIPT_URL, {
+                method: "POST",
+                body: JSON.stringify({ action: "update_foto", id: userId, fotoBase64: base64Image })
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('imgAvatar').style.opacity = "1";
+                if (data.result === "success") {
+                    showToast("Foto profil berhasil diganti!");
+                    document.getElementById('imgAvatar').src = data.url;
+                    document.getElementById('imgAvatar').style.display = "block";
+                    document.getElementById('ikonAvatar').style.display = "none";
+                    
+                    userData.foto = data.url;
+                    localStorage.setItem('user_pelem_5', JSON.stringify(userData));
+                } else {
+                    showToast(data.message, true);
+                }
+            })
+            .catch(err => {
+                document.getElementById('imgAvatar').style.opacity = "1";
+                showToast("Gagal mengunggah, cek koneksi internet Anda.", true);
+            });
+        };
+        reader.readAsDataURL(file);
+    }
+</script>
+</body>
+</html>
