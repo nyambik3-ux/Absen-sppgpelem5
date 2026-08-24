@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Riwayat • Smart Presence</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: radial-gradient(circle at 20% 30%, #0f172a, #020617);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 20px;
+            padding-bottom: 100px;
+        }
+        .aurora-bg {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            z-index: 0;
+            background: linear-gradient(-45deg, #0a0f1e, #1a1040, #0d1b2a, #1a0f2a);
+            background-size: 400% 400%;
+            animation: aurora 15s ease infinite;
+        }
+        @keyframes aurora {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        .particles {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            z-index: 0;
+            pointer-events: none;
+            overflow: hidden;
+        }
+        .particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: rgba(168, 85, 247, 0.3);
+            border-radius: 50%;
+            animation: floatUp linear infinite;
+        }
+        @keyframes floatUp {
+            0% { transform: translateY(100vh) scale(0); opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { transform: translateY(-10vh) scale(1); opacity: 0; }
+        }
+
+        .glass-card {
+            position: relative;
+            z-index: 1;
+            max-width: 480px;
+            width: 100%;
+            background: rgba(15, 23, 42, 0.65);
+            backdrop-filter: blur(20px);
+            border-radius: 48px;
+            padding: 28px 24px 32px;
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
+        }
+
+        .page-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 24px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+        }
+        .page-header .back-btn {
+            background: rgba(255,255,255,0.06);
+            border: none;
+            color: white;
+            width: 44px;
+            height: 44px;
+            border-radius: 14px;
+            cursor: pointer;
+            font-size: 18px;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .page-header .back-btn:active { transform: scale(0.95); }
+        .page-header h1 {
+            font-size: 22px;
+            font-weight: 800;
+            color: white;
+            letter-spacing: -0.3px;
+        }
+        .page-header .sub {
+            font-size: 12px;
+            color: #64748b;
+            font-weight: 500;
+        }
+
+        /* Summary */
+        .summary-bar {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+            margin-bottom: 20px;
+        }
+        .summary-item {
+            background: rgba(0,0,0,0.25);
+            border-radius: 14px;
+            padding: 12px;
+            text-align: center;
+            border: 1px solid rgba(255,255,255,0.04);
+        }
+        .summary-item .num {
+            font-size: 20px;
+            font-weight: 800;
+            color: white;
+        }
+        .summary-item .num.hadir { color: #34d399; }
+        .summary-item .num.telat { color: #fb923c; }
+        .summary-item .num.alfa { color: #f87171; }
+        .summary-item .label {
+            font-size: 9px;
+            color: #64748b;
+            font-weight: 600;
+            text-transform: uppercase;
+            margin-top: 2px;
+        }
+
+        /* History List */
+        .history-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            max-height: 400px;
+            overflow-y: auto;
+            padding-right: 4px;
+        }
+        .history-list::-webkit-scrollbar {
+            width: 3px;
+        }
+        .history-list::-webkit-scrollbar-track {
+            background: rgba(255,255,255,0.05);
+            border-radius: 10px;
+        }
+        .history-list::-webkit-scrollbar-thumb {
+            background: #a855f7;
+            border-radius: 10px;
+        }
+
+        .history-item {
+            background: rgba(0,0,0,0.2);
+            border-radius: 16px;
+            padding: 14px 16px;
+            border: 1px solid rgba(255,255,255,0.04);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.2s;
+        }
+        .history-item:active { transform: scale(0.98); }
+        .history-item .left .date {
+            font-size: 14px;
+            font-weight: 700;
+            color: white;
+        }
+        .history-item .left .day {
+            font-size: 11px;
+            color: #64748b;
+        }
+        .history-item .right {
+            text-align: right;
+        }
+        .history-item .right .jam {
+            font-size: 13px;
+            font-weight: 600;
+            color: #94a3b8;
+        }
+        .history-item .right .status {
+            font-size: 11px;
+            font-weight: 600;
+            padding: 2px 12px;
+            border-radius: 12px;
+            display: inline-block;
+            margin-top: 2px;
+        }
+        .history-item .right .status.hadir {
+            background: rgba(16,185,129,0.15);
+            color: #34d399;
+        }
+        .history-item .right .status.telat {
+            background: rgba(251,146,60,0.15);
+            color: #fb923c;
+        }
+        .history-item .right .status.alfa {
+            background: rgba(239,68,68,0.1);
+            color: #64748b;
+        }
+
+        .empty-state {
+            text-align: center;
+            color: #64748b;
+            padding: 40px 0;
+        }
+        .empty-state i {
+            font-size: 48px;
+            color: #1e293b;
+            margin-bottom: 12px;
+        }
+
+        /* Bottom Nav */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(15, 23, 42, 0.85);
+            backdrop-filter: blur(20px);
+            border-top: 1px solid rgba(255, 255, 255, 0.06);
+            padding: 8px 16px;
+            padding-bottom: max(8px, env(safe-area-inset-bottom));
+            display: flex;
+            justify-content: space-around;
+            z-index: 50;
+            max-width: 480px;
+            margin: 0 auto;
+            border-radius: 28px 28px 0 0;
+        }
+        .bottom-nav .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2px;
+            cursor: pointer;
+            padding: 4px 10px;
+            border-radius: 14px;
+            background: none;
+            border: none;
+            color: #64748b;
+            font-family: 'Inter', sans-serif;
+            font-size: 9px;
+            font-weight: 600;
+            min-width: 50px;
+            text-decoration: none;
+        }
+        .bottom-nav .nav-item i { font-size: 18px; transition: all 0.2s; }
+        .bottom-nav .nav-item.active { color: #a855f7; }
+        .bottom-nav .nav-item.active i { transform: translateY(-2px); }
+        .bottom-nav .nav-item .dot {
+            width: 4px; height: 4px; border-radius: 50%;
+            background: #a855f7; opacity: 0;
+            transition: all 0.2s;
+        }
+        .bottom-nav .nav-item.active .dot { opacity: 1; }
+
+        .toast-container {
+            position: fixed;
+            bottom: 100px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 1000;
+            max-width: 90%;
+            width: 400px;
+        }
+        .toast {
+            background: rgba(15,23,42,0.92);
+            backdrop-filter: blur(20px);
+            padding: 12px 20px;
+            border-radius: 18px;
+            color: white;
+            font-weight: 600;
+            font-size: 13px;
+            text-align: center;
+            border-left: 4px solid #10b981;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+            animation: slideUp 0.4s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        .toast.error { border-left-color: #ef4444; }
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(30px) scale(0.95); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        @media (max-width: 480px) {
+            body { padding: 12px; padding-bottom: 90px; }
+            .glass-card { padding: 18px 14px 22px; border-radius: 32px; }
+            .page-header h1 { font-size: 18px; }
+            .summary-item .num { font-size: 16px; }
+            .history-item { padding: 12px; }
+            .history-item .left .date { font-size: 12px; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="aurora-bg"></div>
+<div class="particles" id="particles"></div>
+
+<div class="glass-card">
+    <!-- Header -->
+    <div class="page-header">
+        <button class="back-btn" onclick="window.location.href='index.html'">
+            <i class="fas fa-arrow-left"></i>
+        </button>
+        <div>
+            <h1>📋 Riwayat Absensi</h1>
+            <div class="sub">Semua catatan kehadiran Anda</div>
+        </div>
+    </div>
+
+    <!-- Summary -->
+    <div class="summary-bar" id="summaryBar">
+        <div class="summary-item">
+            <div class="num hadir" id="sumHadir">0</div>
+            <div class="label">✅ Hadir</div>
+        </div>
+        <div class="summary-item">
+            <div class="num telat" id="sumTelat">0</div>
+            <div class="label">⏰ Telat</div>
+        </div>
+        <div class="summary-item">
+            <div class="num alfa" id="sumAlfa">0</div>
+            <div class="label">❌ Alfa</div>
+        </div>
+    </div>
+
+    <!-- History List -->
+    <div class="history-list" id="historyList">
+        <div style="text-align:center;color:#64748b;padding:20px 0;font-size:13px;">
+            <i class="fas fa-spinner fa-pulse"></i> Memuat riwayat...
+        </div>
+    </div>
+</div>
+
+<!-- Bottom Nav -->
+<div class="bottom-nav">
+    <a href="index.html" class="nav-item">
+        <i class="fas fa-home"></i> Home <div class="dot"></div>
+    </a>
+    <a href="stats.html" class="nav-item">
+        <i class="fas fa-chart-bar"></i> Statistik <div class="dot"></div>
+    </a>
+    <a href="history.html" class="nav-item active">
+        <i class="fas fa-history"></i> Riwayat <div class="dot"></div>
+    </a>
+    <a href="#" class="nav-item" onclick="doLogout(event)">
+        <i class="fas fa-sign-out-alt"></i> Keluar <div class="dot"></div>
+    </a>
+</div>
+
+<div class="toast-container" id="toastContainer"></div>
+
+<script>
+    // ============================================================
+    // KONFIGURASI
+    // ============================================================
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycby7Jr23qX7_5evsw_QlsIab1OiDBAgSfYR8AzVb7kaRWukrloy6ePX-4eZYMI0QvMHgzg/exec";
+
+    // ============================================================
+    // AMBIL DATA USER
+    // ============================================================
+    let user = null;
+    try {
+        const raw = localStorage.getItem('user_pelem_5');
+        if (!raw) throw new Error();
+        user = JSON.parse(raw);
+        if (!user.id) throw new Error();
+    } catch(e) {
+        window.location.href = "login.html";
+    }
+
+    // ============================================================
+    // TOAST
+    // ============================================================
+    function showToast(msg, type = 'success') {
+        const container = document.getElementById('toastContainer');
+        container.innerHTML = '';
+        const toast = document.createElement('div');
+        toast.className = 'toast' + (type !== 'success' ? ' ' + type : '');
+        const icons = { success: '✅', error: '❌', warning: '⚠️', info: 'ℹ️' };
+        toast.innerHTML = `<span>${icons[type] || 'ℹ️'}</span> ${msg}`;
+        container.appendChild(toast);
+        setTimeout(() => {
+            toast.style.opacity = '0';
+            toast.style.transform = 'translateY(20px)';
+            setTimeout(() => toast.remove(), 300);
+        }, 3000);
+    }
+
+    // ============================================================
+    // PARTICLES
+    // ============================================================
+    function createParticles() {
+        const container = document.getElementById('particles');
+        for (let i = 0; i < 20; i++) {
+            const p = document.createElement('div');
+            p.className = 'particle';
+            p.style.left = Math.random() * 100 + '%';
+            p.style.width = (Math.random() * 3 + 2) + 'px';
+            p.style.height = p.style.width;
+            p.style.animationDuration = (Math.random() * 15 + 10) + 's';
+            p.style.animationDelay = (Math.random() * 10) + 's';
+            p.style.opacity = Math.random() * 0.4 + 0.1;
+            container.appendChild(p);
+        }
+    }
+    createParticles();
+
+    // ============================================================
+    // LOAD HISTORY
+    // ============================================================
+    let historyData = null;
+
+    async function loadHistory() {
+        try {
+            const response = await fetch(SCRIPT_URL, {
+                method: 'POST',
+                body: JSON.stringify({
+                    action: 'get_history',
+                    id: user.id
+                })
+            });
+            const data = await response.json();
+            
+            if (data.result === 'success') {
+                historyData = data.data;
+                renderSummary();
+                renderHistory();
+            } else {
+                showToast('Gagal memuat riwayat', 'error');
+            }
+        } catch(e) {
+            showToast('Gagal koneksi ke server!', 'error');
+        }
+    }
+
+    // ============================================================
+    // RENDER SUMMARY
+    // ============================================================
+    function renderSummary() {
+        if (!historyData) return;
+        document.getElementById('sumHadir').textContent = historyData.totalHadir || 0;
+        document.getElementById('sumTelat').textContent = historyData.totalTelat || 0;
+        document.getElementById('sumAlfa').textContent = historyData.totalAlfa || 0;
+    }
+
+    // ============================================================
+    // RENDER HISTORY
+    // ============================================================
+    function renderHistory() {
+        const container = document.getElementById('historyList');
+        const list = historyData?.list || [];
+        
+        if (list.length === 0) {
+            container.innerHTML = `
+                <div class="empty-state">
+                    <i class="fas fa-calendar-times"></i>
+                    <p>Belum ada riwayat absensi</p>
+                </div>
+            `;
+            return;
+        }
+        
+        let html = '';
+        list.forEach(item => {
+            const statusClass = item.status === 'hadir' ? 'hadir' : item.status === 'telat' ? 'telat' : 'alfa';
+            const statusLabel = item.status === 'hadir' ? '✅ Hadir' : item.status === 'telat' ? '⏰ Telat' : '❌ Alfa';
+            
+            html += `
+                <div class="history-item">
+                    <div class="left">
+                        <div class="date">${item.tanggal}</div>
+                        <div class="day">${item.hari || ''}</div>
+                    </div>
+                    <div class="right">
+                        <div class="jam">${item.jamMasuk || '-'} → ${item.jamPulang || '-'}</div>
+                        <div class="status ${statusClass}">${statusLabel}</div>
+                    </div>
+                </div>
+            `;
+        });
+        
+        container.innerHTML = html;
+    }
+
+    // ============================================================
+    // LOGOUT
+    // ============================================================
+    function doLogout(event) {
+        if (event && event.currentTarget) {
+            document.querySelectorAll('.bottom-nav .nav-item').forEach(el => el.classList.remove('active'));
+            event.currentTarget.classList.add('active');
+        }
+        if (confirm('Yakin ingin keluar?')) {
+            localStorage.removeItem('user_pelem_5');
+            window.location.href = 'login.html';
+        }
+    }
+
+    // ============================================================
+    // INIT
+    // ============================================================
+    loadHistory();
+    setInterval(loadHistory, 60000);
+
+    console.log('📋 History page loaded for:', user.nama);
+</script>
+
+</body>
+</html>
