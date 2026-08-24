@@ -66,7 +66,6 @@
             box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
         }
 
-        /* Header */
         .page-header {
             display: flex;
             align-items: center;
@@ -102,36 +101,6 @@
             font-weight: 500;
         }
 
-        /* Filter */
-        .filter-bar {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
-            overflow-x: auto;
-            padding-bottom: 4px;
-        }
-        .filter-bar::-webkit-scrollbar { display: none; }
-        .filter-btn {
-            padding: 8px 18px;
-            border-radius: 20px;
-            border: 1px solid rgba(255,255,255,0.08);
-            background: rgba(255,255,255,0.04);
-            color: #94a3b8;
-            font-size: 12px;
-            font-weight: 600;
-            cursor: pointer;
-            white-space: nowrap;
-            transition: all 0.2s;
-            font-family: 'Inter', sans-serif;
-        }
-        .filter-btn.active {
-            background: rgba(168, 85, 247, 0.2);
-            border-color: #a855f7;
-            color: #a855f7;
-        }
-        .filter-btn:active { transform: scale(0.95); }
-
-        /* Stat Cards */
         .stat-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -161,7 +130,6 @@
         .stat-card-big .num.alfa { color: #f87171; }
         .stat-card-big .num.persen { color: #60a5fa; }
 
-        /* Chart */
         .chart-container {
             background: rgba(0,0,0,0.25);
             border-radius: 20px;
@@ -219,7 +187,55 @@
             flex-shrink: 0;
         }
 
-        /* Bottom Nav */
+        .daily-list {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            max-height: 250px;
+            overflow-y: auto;
+            padding-right: 4px;
+        }
+        .daily-list::-webkit-scrollbar { width: 3px; }
+        .daily-list::-webkit-scrollbar-track { background: rgba(255,255,255,0.05); border-radius: 10px; }
+        .daily-list::-webkit-scrollbar-thumb { background: #a855f7; border-radius: 10px; }
+
+        .daily-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 12px;
+            background: rgba(0,0,0,0.15);
+            border-radius: 12px;
+            border: 1px solid rgba(255,255,255,0.03);
+        }
+        .daily-item .left {
+            font-size: 13px;
+            font-weight: 600;
+            color: white;
+        }
+        .daily-item .left .date-sub {
+            font-size: 11px;
+            color: #64748b;
+            font-weight: 400;
+        }
+        .daily-item .right {
+            text-align: right;
+        }
+        .daily-item .right .jam {
+            font-size: 12px;
+            color: #94a3b8;
+        }
+        .daily-item .right .status-badge {
+            font-size: 10px;
+            font-weight: 600;
+            padding: 2px 10px;
+            border-radius: 10px;
+            display: inline-block;
+            margin-top: 2px;
+        }
+        .daily-item .right .status-badge.hadir { background: rgba(16,185,129,0.15); color: #34d399; }
+        .daily-item .right .status-badge.telat { background: rgba(251,146,60,0.15); color: #fb923c; }
+        .daily-item .right .status-badge.alfa { background: rgba(239,68,68,0.1); color: #64748b; }
+
         .bottom-nav {
             position: fixed;
             bottom: 0;
@@ -303,6 +319,8 @@
             .stat-card-big .num { font-size: 26px; }
             .chart-bar-item .day { width: 28px; font-size: 10px; }
             .chart-bar-item .pct { width: 32px; font-size: 10px; }
+            .daily-item { padding: 8px 10px; }
+            .daily-item .left { font-size: 12px; }
         }
     </style>
 </head>
@@ -312,23 +330,14 @@
 <div class="particles" id="particles"></div>
 
 <div class="glass-card">
-    <!-- Header -->
     <div class="page-header">
         <button class="back-btn" onclick="window.location.href='index.html'">
             <i class="fas fa-arrow-left"></i>
         </button>
         <div>
             <h1>📊 Statistik</h1>
-            <div class="sub">Rekap kehadiran divisi Anda</div>
+            <div class="sub">Rekap kehadiran Anda</div>
         </div>
-    </div>
-
-    <!-- Filter -->
-    <div class="filter-bar" id="filterBar">
-        <button class="filter-btn active" data-filter="all">Semua</button>
-        <button class="filter-btn" data-filter="7">7 Hari</button>
-        <button class="filter-btn" data-filter="30">30 Hari</button>
-        <button class="filter-btn" data-filter="90">90 Hari</button>
     </div>
 
     <!-- Stat Cards -->
@@ -353,7 +362,7 @@
 
     <!-- Chart -->
     <div class="chart-container">
-        <h3><i class="fas fa-chart-bar" style="color:#a855f7;"></i> Grafik Kehadiran Mingguan</h3>
+        <h3><i class="fas fa-chart-bar" style="color:#a855f7;"></i> Grafik 7 Hari Terakhir</h3>
         <div class="chart-bar" id="chartBar">
             <div style="text-align:center;color:#64748b;padding:16px 0;font-size:13px;">
                 <i class="fas fa-spinner fa-pulse"></i> Memuat data...
@@ -361,10 +370,10 @@
         </div>
     </div>
 
-    <!-- Detail -->
+    <!-- Daily List -->
     <div class="chart-container">
-        <h3><i class="fas fa-list" style="color:#34d399;"></i> Rekap Harian</h3>
-        <div id="dailyList">
+        <h3><i class="fas fa-list" style="color:#34d399;"></i> Riwayat Harian</h3>
+        <div class="daily-list" id="dailyList">
             <div style="text-align:center;color:#64748b;padding:16px 0;font-size:13px;">
                 <i class="fas fa-spinner fa-pulse"></i> Memuat data...
             </div>
@@ -391,14 +400,8 @@
 <div class="toast-container" id="toastContainer"></div>
 
 <script>
-    // ============================================================
-    // KONFIGURASI
-    // ============================================================
     const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbziyQlHaWjY4HJsc8CxSUzCghn2N3Wpw_JkoBtgAU0cL6d3JOMyOAjjLWUz_d9g8ylljg/exec";
 
-    // ============================================================
-    // AMBIL DATA USER
-    // ============================================================
     let user = null;
     try {
         const raw = localStorage.getItem('user_pelem_5');
@@ -409,9 +412,6 @@
         window.location.href = "login.html";
     }
 
-    // ============================================================
-    // TOAST
-    // ============================================================
     function showToast(msg, type = 'success') {
         const container = document.getElementById('toastContainer');
         container.innerHTML = '';
@@ -427,9 +427,6 @@
         }, 3000);
     }
 
-    // ============================================================
-    // PARTICLES
-    // ============================================================
     function createParticles() {
         const container = document.getElementById('particles');
         for (let i = 0; i < 20; i++) {
@@ -446,141 +443,92 @@
     }
     createParticles();
 
-    // ============================================================
-    // LOAD DATA STATISTIK
-    // ============================================================
-    let statsData = null;
-    let filterDays = 'all';
-
     async function loadStats() {
         try {
             const response = await fetch(SCRIPT_URL, {
                 method: 'POST',
                 body: JSON.stringify({
                     action: 'get_stats',
-                    id: user.id,
-                    divisi: user.divisi || ''
+                    id: user.id
                 })
             });
             const data = await response.json();
-            
-            if (data.result === 'success') {
-                statsData = data.data;
-                renderStats();
-                renderChart();
-                renderDailyList();
+
+            if (data.result === 'success' && data.data) {
+                renderStats(data.data);
             } else {
-                showToast('Gagal memuat data statistik', 'error');
+                showToast('Gagal memuat statistik', 'error');
             }
         } catch(e) {
             showToast('Gagal koneksi ke server!', 'error');
         }
     }
 
-    // ============================================================
-    // RENDER STATISTIK
-    // ============================================================
-    function renderStats() {
-        if (!statsData) return;
-        
-        const total = statsData.total || { hadir: 0, telat: 0, alfa: 0 };
-        const persen = statsData.persentase || 0;
-        
-        document.getElementById('totalHadir').textContent = total.hadir || 0;
-        document.getElementById('totalTelat').textContent = total.telat || 0;
-        document.getElementById('totalAlfa').textContent = total.alfa || 0;
-        document.getElementById('persenKehadiran').textContent = Math.round(persen) + '%';
-    }
+    function renderStats(data) {
+        // Total
+        document.getElementById('totalHadir').textContent = data.total?.hadir || 0;
+        document.getElementById('totalTelat').textContent = data.total?.telat || 0;
+        document.getElementById('totalAlfa').textContent = data.total?.alfa || 0;
+        document.getElementById('persenKehadiran').textContent = Math.round(data.persentase || 0) + '%';
 
-    // ============================================================
-    // RENDER CHART
-    // ============================================================
-    function renderChart() {
-        const container = document.getElementById('chartBar');
-        const chart = statsData?.chart || [];
-        
+        // Chart
+        const chartContainer = document.getElementById('chartBar');
+        const chart = data.chart || [];
+
         if (chart.length === 0) {
-            container.innerHTML = `
+            chartContainer.innerHTML = `
                 <div style="text-align:center;color:#64748b;padding:16px 0;font-size:13px;">
                     <i class="fas fa-inbox"></i> Belum ada data chart
                 </div>
             `;
-            return;
-        }
-        
-        let html = '';
-        const colors = ['green', 'orange', 'red'];
-        
-        chart.forEach((item, index) => {
-            const color = item.persen >= 80 ? 'green' : item.persen >= 50 ? 'orange' : 'red';
-            html += `
-                <div class="chart-bar-item">
-                    <div class="day">${item.hari}</div>
-                    <div class="bar-track">
-                        <div class="bar-fill ${color}" style="width:${Math.min(100, item.persen)}%"></div>
+        } else {
+            let html = '';
+            chart.forEach(item => {
+                const color = item.persen >= 80 ? 'green' : item.persen >= 50 ? 'orange' : 'red';
+                html += `
+                    <div class="chart-bar-item">
+                        <div class="day">${item.hari}</div>
+                        <div class="bar-track">
+                            <div class="bar-fill ${color}" style="width:${Math.min(100, item.persen)}%"></div>
+                        </div>
+                        <div class="pct">${Math.round(item.persen)}%</div>
                     </div>
-                    <div class="pct">${Math.round(item.persen)}%</div>
-                </div>
-            `;
-        });
-        
-        container.innerHTML = html;
-    }
+                `;
+            });
+            chartContainer.innerHTML = html;
+        }
 
-    // ============================================================
-    // RENDER DAILY LIST
-    // ============================================================
-    function renderDailyList() {
-        const container = document.getElementById('dailyList');
-        const daily = statsData?.daily || [];
-        
+        // Daily List
+        const dailyContainer = document.getElementById('dailyList');
+        const daily = data.daily || [];
+
         if (daily.length === 0) {
-            container.innerHTML = `
+            dailyContainer.innerHTML = `
                 <div style="text-align:center;color:#64748b;padding:16px 0;font-size:13px;">
-                    <i class="fas fa-inbox"></i> Belum ada data harian
+                    <i class="fas fa-inbox"></i> Belum ada riwayat harian
                 </div>
             `;
-            return;
+        } else {
+            let html = '';
+            daily.forEach(item => {
+                const statusClass = item.status === 'hadir' ? 'hadir' : item.status === 'telat' ? 'telat' : 'alfa';
+                const statusLabel = item.status === 'hadir' ? '✅ Hadir' : item.status === 'telat' ? '⏰ Telat' : '❌ Alfa';
+                html += `
+                    <div class="daily-item">
+                        <div class="left">
+                            ${item.tanggal}
+                            <div class="date-sub">${item.jamMasuk || '-'} → ${item.jamPulang || '-'}</div>
+                        </div>
+                        <div class="right">
+                            <div class="status-badge ${statusClass}">${statusLabel}</div>
+                        </div>
+                    </div>
+                `;
+            });
+            dailyContainer.innerHTML = html;
         }
-        
-        let html = '';
-        daily.forEach(item => {
-            const statusIcon = item.status === 'hadir' ? '✅' : item.status === 'telat' ? '⏰' : '❌';
-            const statusColor = item.status === 'hadir' ? '#34d399' : item.status === 'telat' ? '#fb923c' : '#f87171';
-            
-            html += `
-                <div style="display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid rgba(255,255,255,0.04);">
-                    <div>
-                        <span style="font-size:13px;font-weight:600;color:white;">${item.tanggal}</span>
-                        <span style="font-size:11px;color:#64748b;margin-left:8px;">${item.jamMasuk || '-'}</span>
-                    </div>
-                    <div>
-                        <span style="font-size:13px;font-weight:600;color:${statusColor};">${statusIcon} ${item.statusLabel || item.status}</span>
-                        <span style="font-size:11px;color:#64748b;margin-left:8px;">${item.jamPulang || '-'}</span>
-                    </div>
-                </div>
-            `;
-        });
-        
-        container.innerHTML = html;
     }
 
-    // ============================================================
-    // FILTER
-    // ============================================================
-    document.querySelectorAll('.filter-btn').forEach(btn => {
-        btn.addEventListener('click', function() {
-            document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-            this.classList.add('active');
-            filterDays = this.dataset.filter;
-            // Reload data dengan filter
-            loadStats();
-        });
-    });
-
-    // ============================================================
-    // LOGOUT
-    // ============================================================
     function doLogout(event) {
         if (event && event.currentTarget) {
             document.querySelectorAll('.bottom-nav .nav-item').forEach(el => el.classList.remove('active'));
@@ -592,11 +540,8 @@
         }
     }
 
-    // ============================================================
-    // INIT
-    // ============================================================
     loadStats();
-    setInterval(loadStats, 60000); // Refresh tiap 1 menit
+    setInterval(loadStats, 60000);
 
     console.log('📊 Stats page loaded for:', user.nama);
 </script>
