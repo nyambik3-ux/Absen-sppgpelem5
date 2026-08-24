@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Statistik • Smart Presence</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: radial-gradient(circle at 20% 30%, #0f172a, #020617);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 20px;
+            padding-bottom: 100px;
+        }
+        .aurora-bg {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            z-index: 0;
+            background: linear-gradient(-45deg, #0a0f1e, #1a1040, #0d1b2a, #1a0f2a);
+            background-size: 400% 400%;
+            animation: aurora 15s ease infinite;
+        }
+        @keyframes aurora {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        .particles {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            z-index: 0;
+            pointer-events: none;
+            overflow: hidden;
+        }
+        .particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: rgba(168, 85, 247, 0.3);
+            border-radius: 50%;
+            animation: floatUp linear infinite;
+        }
+        @keyframes floatUp {
+            0% { transform: translateY(100vh) scale(0); opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { transform: translateY(-10vh) scale(1); opacity: 0; }
+        }
+
+        .glass-card {
+            position: relative;
+            z-index: 1;
+            max-width: 480px;
+            width: 100%;
+            background: rgba(15, 23, 42, 0.65);
+            backdrop-filter: blur(20px);
+            border-radius: 48px;
+            padding: 28px 24px 32px;
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
+        }
+
+        /* Header */
+        .page-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 24px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+        }
+        .page-header .back-btn {
+            background: rgba(255,255,255,0.06);
+            border: none;
+            color: white;
+            width: 44px;
+            height: 44px;
+            border-radius: 14px;
+            cursor: pointer;
+            font-size: 18px;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .page-header .back-btn:active { transform: scale(0.95); }
+        .page-header h1 {
+            font-size: 22px;
+            font-weight: 800;
+            color: white;
+            letter-spacing: -0.3px;
+        }
+        .page-header .sub {
+            font-size: 12px;
+            color: #64748b;
+            font-weight: 500;
+        }
+
+        /* Filter */
+        .filter-bar {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            overflow-x: auto;
+            padding-bottom: 4px;
+        }
+        .filter-bar::-webkit-scrollbar { display: none; }
+        .filter-btn {
+            padding: 8px 18px;
+            border-radius: 20px;
+            border: 1px solid rgba(255,255,255,0.08);
+            background: rgba(255,255,255,0.04);
+            color: #94a3b8;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: all 0.2s;
+            font-family: 'Inter', sans-serif;
+        }
+        .filter-btn.active {
+            background: rgba(168, 85, 247, 0.2);
+            border-color: #a855f7;
+            color: #a855f7;
+        }
+        .filter-btn:active { transform: scale(0.95); }
+
+        /* Stat Cards */
+        .stat-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        .stat-card-big {
+            background: rgba(0,0,0,0.25);
+            border-radius: 20px;
+            padding: 16px;
+            text-align: center;
+            border: 1px solid rgba(255,255,255,0.04);
+        }
+        .stat-card-big .num {
+            font-size: 32px;
+            font-weight: 800;
+            color: white;
+        }
+        .stat-card-big .label {
+            font-size: 11px;
+            color: #64748b;
+            font-weight: 500;
+            margin-top: 2px;
+        }
+        .stat-card-big .num.hadir { color: #34d399; }
+        .stat-card-big .num.telat { color: #fb923c; }
+        .stat-card-big .num.alfa { color: #f87171; }
+        .stat-card-big .num.persen { color: #60a5fa; }
+
+        /* Chart */
+        .chart-container {
+            background: rgba(0,0,0,0.25);
+            border-radius: 20px;
+            padding: 18px;
+            margin-bottom: 20px;
+            border: 1px solid rgba(255,255,255,0.04);
+        }
+        .chart-container h3 {
+            font-size: 14px;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .chart-bar {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .chart-bar-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .chart-bar-item .day {
+            font-size: 12px;
+            font-weight: 600;
+            color: #94a3b8;
+            width: 36px;
+            flex-shrink: 0;
+        }
+        .chart-bar-item .bar-track {
+            flex: 1;
+            height: 8px;
+            background: rgba(255,255,255,0.06);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        .chart-bar-item .bar-track .bar-fill {
+            height: 100%;
+            border-radius: 4px;
+            transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .chart-bar-item .bar-track .bar-fill.green { background: linear-gradient(90deg, #10b981, #34d399); }
+        .chart-bar-item .bar-track .bar-fill.orange { background: linear-gradient(90deg, #f59e0b, #fb923c); }
+        .chart-bar-item .bar-track .bar-fill.red { background: linear-gradient(90deg, #ef4444, #f87171); }
+        .chart-bar-item .pct {
+            font-size: 12px;
+            font-weight: 700;
+            color: white;
+            width: 40px;
+            text-align: right;
+            flex-shrink: 0;
+        }
+
+        /* Bottom Nav */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(15, 23, 42, 0.85);
+            backdrop-filter: blur(20px);
+            border-top: 1px solid rgba(255, 255, 255, 0.06);
+            padding: 8px 16px;
+            padding-bottom: max(8px, env(safe-area-inset-bottom));
+            display: flex;
+            justify-content: space-around;
+            z-index: 50;
+            max-width: 480px;
+            margin: 0 auto;
+            border-radius: 28px 28px 0 0;
+        }
+        .bottom-nav .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2px;
+            cursor: pointer;
+            padding: 4px 10px;
+            border-radius: 14px;
+            background: none;
+            border: none;
+            color: #64748b;
+            font-family: 'Inter', sans-serif;
+            font-size: 9px;
+            font-weight: 600;
+            min-width: 50px;
+            text-decoration: none;
+        }
+        .bottom-nav .nav-item i { font-size: 18px; transition: all 0.2s; }
+        .bottom-nav .nav-item.active { color: #a855f7; }
+        .bottom-nav .nav-item.active i { transform: translateY(-2px); }
+        .bottom-nav .nav-item .dot {
+            width: 4px; height: 4px; border-radius: 50%;
+            background: #a855f7; opacity: 0;
+            transition: all 0.2s;
+        }
+        .bottom-nav .nav-item.active .dot { opacity: 1; }
+
+        .toast-container {
+            position: fixed;
+            bottom: 100px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 1000;
+            max-width: 90%;
+            width: 400px;
+        }
+        .toast {
+            background: rgba(15,23,42,0.92);
+            backdrop-filter: blur(20px);
+            padding: 12px 20px;
+            border-radius: 18px;
+            color: white;
+            font-weight: 600;
+            font-size: 13px;
+            text-align: center;
+            border-left: 4px solid #10b981;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+            animation: slideUp 0.4s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        .toast.error { border-left-color: #ef4444; }
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(30px) scale(0.95); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        @media (max-width: 480px) {
+            body { padding: 12px; padding-bottom: 90px; }
+            .glass-card { padding: 18px 14px 22px; border-radius: 32px; }
+            .page-header h1 { font-size: 18px; }
+            .stat-card-big .num { font-size: 26px; }
+            .chart-bar-item .day { width: 28px; font-size: 10px; }
+            .chart-bar-item .pct { width: 32px; font-size: 10px; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="aurora-bg"></div>
+<div class="particles" id="particles"></div>
+
+<div class="glass-card">
+    <!-- Header -->
+    <div class="page-header">
+        <button class="back-btn" onclick="window.location.href='index.html'">
+            <i class="fas fa-arrow-left"></i>
+        </button>
+        <div>
+            <h1>📊 Statistik</h1>
+            <div class="sub">Rekap kehadiran divisi Anda</div>
+        </div>
+    </div>
+
+    <!-- Filter -->
+    <div class="filter-bar" id="filterBar">
+        <button class="filter-btn active" data-filter="all">Semua</button>
+        <button class="filter-btn" data-filter="7">7 Hari</button>
+        <button class="filter-btn" data-filter="30">30 Hari</button>
+        <button class="filter-btn" data-filter="90">90 Hari</button>
+    </div>
+
+    <!-- Stat Cards -->
+    <div class="stat-grid" id="statGrid">
+        <div class="stat-card-big">
+            <div class="num hadir" id="totalHadir">0</div>
+            <div class="label">✅ Total Hadir</div>
+        </div>
+        <div class="stat-card-big">
+            <div class="num telat" id="totalTelat">0</div>
+            <div class="label">⏰ Total Telat</div>
+        </div>
+        <div class="stat-card-big">
+            <div class="num alfa" id="totalAlfa">0</div>
+            <div class="label">❌ Total Alfa</div>
+        </div>
+        <div class="stat-card-big">
+            <div class="num persen" id="persenKehadiran">0%</div>
+            <div class="label">📈 Persentase</div>
+        </div>
+    </div>
+
+    <!-- Chart -->
+    <div class="chart-container">
+        <h3><i class="fas fa-chart-bar" style="color:#a855f7;"></i> Grafik Kehadiran Mingguan</h3>
+        <div class="chart-bar" id="chartBar">
+            <div style="text-align:center;color:#64748b;padding:16px 0;font-size:13px;">
+                <i class="fas fa-spinner fa-pulse"></i> Memuat data...
+            </div>
+        </div>
+    </div>
+
+    <!-- Detail -->
+    <div class="chart-container">
+        <h3><i class="fas fa-list" style="color:#34d399;"></i> Rekap Harian</h3>
+        <div id="dailyList">
+            <div style="text-align:center;color:#64748b;padding:16px 0;font-size:13px;">
+                <i class="fas fa-spinner fa-pulse"></i> Memuat data...
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Bottom Nav -->
+<div class="bottom-nav">
+    <a href="index.html" class="nav-item">
+        <i class="fas fa-home"></i> Home <div class="dot"></div>
+    </a>
+    <a href="stats.html" class="nav-item active">
+        <i class="fas fa-chart-bar"></i> Statistik <div class="dot"></div>
+    </a>
+    <a href="history.html" class="nav-item">
+        <i class="fas fa-history"></i> Riwayat <div class="dot"></div>
+    </a>
+    <a href="#" class="nav-item" onclick="doLogout(event)">
+        <i class="fas fa-sign-out-alt"></i> Keluar <div class="dot"></div>
+    </a>
+</div>
+
+<div class="toast-container" id="toastContainer"></div>
+
+<script>
+    // ============================================================
+    // KONFIGURASI
+    // ============================================================
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycby7Jr23qX7_5evsw_QlsIab1OiDBAgSfYR8AzVb7kaRWukrloy6ePX-4eZYMI0QvMHgzg/exec";
+
+    // ============================================================
+    // AMBIL DATA USER
+    // ============================================================
+    let user = null;
+    try {
+        const raw = localStorage.getItem('user_pelem_5');
+        if (!raw) throw new Error();
+        user = JSON.parse(raw);
+        if (!user.id) throw new Error();
+    } catch(e) {
+        window.location.href = "login.html";
+    }
+
+    // ============================================================
+    // TOAST
+    // ============================================================
+    function showToast(msg, type = 'success') {
+        const container = document.getElementById('toastContainer');
+        container.innerHTML = '';
+        const toast = document.createElement('div');
+        toast.className = 'toast' + (type !== 'success' ? ' ' + type : '');
+        const icons = { success: '✅', error: '❌', warning: '⚠️', info: 'ℹ️' };
+        toast.innerHTML = `<span>${icons[type] || 'ℹ️'}</span> ${msg}`;
+        container.appendChild(toast);
+        setTimeout(() => {
+            toast.style.opacity = '0';
+            toast.style.transform = 'translateY(20px)';
+            setTimeout(() => toast.remove(), 300);
+        }, 3000);
+    }
+
+    // ============================================================
+    // PARTICLES
+    // ============================================================
+    function createParticles() {
+        const container = document.getElementById('particles');
+        for (let i = 0; i < 20; i++) {
+            const p = document.createElement('div');
+            p.className = 'particle';
+            p.style.left = Math.random() * 100 + '%';
+            p.style.width = (Math.random() * 3 + 2) + 'px';
+            p.style.height = p.style.width;
+            p.style.animationDuration = (Math.random() * 15 + 10) + 's';
+            p.style.animationDelay = (Math.random() * 10) + 's';
+            p.style.opacity = Math.random() * 0.4 + 0.1;
+            container.appendChild(p);
+        }
+    }
+    createParticles();
+
+    // ============================================================
+    // LOAD DATA STATISTIK
+    // ============================================================
+    let statsData = null;
+    let filterDays = 'all';
+
+    async function loadStats() {
+        try {
+            const response = await fetch(SCRIPT_URL, {
+                method: 'POST',
+                body: JSON.stringify({
+                    action: 'get_stats',
+                    id: user.id,
+                    divisi: user.divisi || ''
+                })
+            });
+            const data = await response.json();
+            
+            if (data.result === 'success') {
+                statsData = data.data;
+                renderStats();
+                renderChart();
+                renderDailyList();
+            } else {
+                showToast('Gagal memuat data statistik', 'error');
+            }
+        } catch(e) {
+            showToast('Gagal koneksi ke server!', 'error');
+        }
+    }
+
+    // ============================================================
+    // RENDER STATISTIK
+    // ============================================================
+    function renderStats() {
+        if (!statsData) return;
+        
+        const total = statsData.total || { hadir: 0, telat: 0, alfa: 0 };
+        const persen = statsData.persentase || 0;
+        
+        document.getElementById('totalHadir').textContent = total.hadir || 0;
+        document.getElementById('totalTelat').textContent = total.telat || 0;
+        document.getElementById('totalAlfa').textContent = total.alfa || 0;
+        document.getElementById('persenKehadiran').textContent = Math.round(persen) + '%';
+    }
+
+    // ============================================================
+    // RENDER CHART
+    // ============================================================
+    function renderChart() {
+        const container = document.getElementById('chartBar');
+        const chart = statsData?.chart || [];
+        
+        if (chart.length === 0) {
+            container.innerHTML = `
+                <div style="text-align:center;color:#64748b;padding:16px 0;font-size:13px;">
+                    <i class="fas fa-inbox"></i> Belum ada data chart
+                </div>
+            `;
+            return;
+        }
+        
+        let html = '';
+        const colors = ['green', 'orange', 'red'];
+        
+        chart.forEach((item, index) => {
+            const color = item.persen >= 80 ? 'green' : item.persen >= 50 ? 'orange' : 'red';
+            html += `
+                <div class="chart-bar-item">
+                    <div class="day">${item.hari}</div>
+                    <div class="bar-track">
+                        <div class="bar-fill ${color}" style="width:${Math.min(100, item.persen)}%"></div>
+                    </div>
+                    <div class="pct">${Math.round(item.persen)}%</div>
+                </div>
+            `;
+        });
+        
+        container.innerHTML = html;
+    }
+
+    // ============================================================
+    // RENDER DAILY LIST
+    // ============================================================
+    function renderDailyList() {
+        const container = document.getElementById('dailyList');
+        const daily = statsData?.daily || [];
+        
+        if (daily.length === 0) {
+            container.innerHTML = `
+                <div style="text-align:center;color:#64748b;padding:16px 0;font-size:13px;">
+                    <i class="fas fa-inbox"></i> Belum ada data harian
+                </div>
+            `;
+            return;
+        }
+        
+        let html = '';
+        daily.forEach(item => {
+            const statusIcon = item.status === 'hadir' ? '✅' : item.status === 'telat' ? '⏰' : '❌';
+            const statusColor = item.status === 'hadir' ? '#34d399' : item.status === 'telat' ? '#fb923c' : '#f87171';
+            
+            html += `
+                <div style="display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid rgba(255,255,255,0.04);">
+                    <div>
+                        <span style="font-size:13px;font-weight:600;color:white;">${item.tanggal}</span>
+                        <span style="font-size:11px;color:#64748b;margin-left:8px;">${item.jamMasuk || '-'}</span>
+                    </div>
+                    <div>
+                        <span style="font-size:13px;font-weight:600;color:${statusColor};">${statusIcon} ${item.statusLabel || item.status}</span>
+                        <span style="font-size:11px;color:#64748b;margin-left:8px;">${item.jamPulang || '-'}</span>
+                    </div>
+                </div>
+            `;
+        });
+        
+        container.innerHTML = html;
+    }
+
+    // ============================================================
+    // FILTER
+    // ============================================================
+    document.querySelectorAll('.filter-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+            this.classList.add('active');
+            filterDays = this.dataset.filter;
+            // Reload data dengan filter
+            loadStats();
+        });
+    });
+
+    // ============================================================
+    // LOGOUT
+    // ============================================================
+    function doLogout(event) {
+        if (event && event.currentTarget) {
+            document.querySelectorAll('.bottom-nav .nav-item').forEach(el => el.classList.remove('active'));
+            event.currentTarget.classList.add('active');
+        }
+        if (confirm('Yakin ingin keluar?')) {
+            localStorage.removeItem('user_pelem_5');
+            window.location.href = 'login.html';
+        }
+    }
+
+    // ============================================================
+    // INIT
+    // ============================================================
+    loadStats();
+    setInterval(loadStats, 60000); // Refresh tiap 1 menit
+
+    console.log('📊 Stats page loaded for:', user.nama);
+</script>
+
+</body>
+</html>
