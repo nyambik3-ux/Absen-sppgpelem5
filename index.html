@@ -90,16 +90,18 @@
             display: flex;
             align-items: center;
             gap: 20px;
-            margin-bottom: 20px;
+            margin-bottom: 16px;
             padding-bottom: 16px;
             border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+             min-height: 70px;  /* ← Batasi tinggi minimum */
+             max-height: 100px; /* ← Batasi tinggi maksimum */
         }
 
         /* ===== AVATAR - KOTAK TANPA RING ===== */
         .avatar-wrapper {
             position: relative;
-            width: 90px;
-            height: 90px;
+            width: 75px;
+            height: 75px;
             flex-shrink: 0;
             cursor: pointer;
         }
@@ -288,7 +290,7 @@
             align-items: center;
             gap: 10px;
             padding: 8px 0;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
         }
 
         .target-item:last-child { border-bottom: none; }
