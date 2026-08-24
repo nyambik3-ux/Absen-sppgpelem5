@@ -101,7 +101,6 @@
             font-weight: 500;
         }
 
-        /* Summary */
         .summary-bar {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
@@ -131,26 +130,17 @@
             margin-top: 2px;
         }
 
-        /* History List */
         .history-list {
             display: flex;
             flex-direction: column;
             gap: 8px;
-            max-height: 400px;
+            max-height: 420px;
             overflow-y: auto;
             padding-right: 4px;
         }
-        .history-list::-webkit-scrollbar {
-            width: 3px;
-        }
-        .history-list::-webkit-scrollbar-track {
-            background: rgba(255,255,255,0.05);
-            border-radius: 10px;
-        }
-        .history-list::-webkit-scrollbar-thumb {
-            background: #a855f7;
-            border-radius: 10px;
-        }
+        .history-list::-webkit-scrollbar { width: 3px; }
+        .history-list::-webkit-scrollbar-track { background: rgba(255,255,255,0.05); border-radius: 10px; }
+        .history-list::-webkit-scrollbar-thumb { background: #a855f7; border-radius: 10px; }
 
         .history-item {
             background: rgba(0,0,0,0.2);
@@ -160,9 +150,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            transition: all 0.2s;
         }
-        .history-item:active { transform: scale(0.98); }
         .history-item .left .date {
             font-size: 14px;
             font-weight: 700;
@@ -201,18 +189,6 @@
             color: #64748b;
         }
 
-        .empty-state {
-            text-align: center;
-            color: #64748b;
-            padding: 40px 0;
-        }
-        .empty-state i {
-            font-size: 48px;
-            color: #1e293b;
-            margin-bottom: 12px;
-        }
-
-        /* Bottom Nav */
         .bottom-nav {
             position: fixed;
             bottom: 0;
@@ -305,7 +281,6 @@
 <div class="particles" id="particles"></div>
 
 <div class="glass-card">
-    <!-- Header -->
     <div class="page-header">
         <button class="back-btn" onclick="window.location.href='index.html'">
             <i class="fas fa-arrow-left"></i>
@@ -316,7 +291,6 @@
         </div>
     </div>
 
-    <!-- Summary -->
     <div class="summary-bar" id="summaryBar">
         <div class="summary-item">
             <div class="num hadir" id="sumHadir">0</div>
@@ -332,7 +306,6 @@
         </div>
     </div>
 
-    <!-- History List -->
     <div class="history-list" id="historyList">
         <div style="text-align:center;color:#64748b;padding:20px 0;font-size:13px;">
             <i class="fas fa-spinner fa-pulse"></i> Memuat riwayat...
@@ -340,7 +313,6 @@
     </div>
 </div>
 
-<!-- Bottom Nav -->
 <div class="bottom-nav">
     <a href="index.html" class="nav-item">
         <i class="fas fa-home"></i> Home <div class="dot"></div>
@@ -359,14 +331,8 @@
 <div class="toast-container" id="toastContainer"></div>
 
 <script>
-    // ============================================================
-    // KONFIGURASI
-    // ============================================================
     const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbziyQlHaWjY4HJsc8CxSUzCghn2N3Wpw_JkoBtgAU0cL6d3JOMyOAjjLWUz_d9g8ylljg/exec";
 
-    // ============================================================
-    // AMBIL DATA USER
-    // ============================================================
     let user = null;
     try {
         const raw = localStorage.getItem('user_pelem_5');
@@ -377,9 +343,6 @@
         window.location.href = "login.html";
     }
 
-    // ============================================================
-    // TOAST
-    // ============================================================
     function showToast(msg, type = 'success') {
         const container = document.getElementById('toastContainer');
         container.innerHTML = '';
@@ -395,9 +358,6 @@
         }, 3000);
     }
 
-    // ============================================================
-    // PARTICLES
-    // ============================================================
     function createParticles() {
         const container = document.getElementById('particles');
         for (let i = 0; i < 20; i++) {
@@ -414,11 +374,6 @@
     }
     createParticles();
 
-    // ============================================================
-    // LOAD HISTORY
-    // ============================================================
-    let historyData = null;
-
     async function loadHistory() {
         try {
             const response = await fetch(SCRIPT_URL, {
@@ -429,11 +384,9 @@
                 })
             });
             const data = await response.json();
-            
-            if (data.result === 'success') {
-                historyData = data.data;
-                renderSummary();
-                renderHistory();
+
+            if (data.result === 'success' && data.data) {
+                renderHistory(data.data);
             } else {
                 showToast('Gagal memuat riwayat', 'error');
             }
@@ -442,38 +395,30 @@
         }
     }
 
-    // ============================================================
-    // RENDER SUMMARY
-    // ============================================================
-    function renderSummary() {
-        if (!historyData) return;
-        document.getElementById('sumHadir').textContent = historyData.totalHadir || 0;
-        document.getElementById('sumTelat').textContent = historyData.totalTelat || 0;
-        document.getElementById('sumAlfa').textContent = historyData.totalAlfa || 0;
-    }
+    function renderHistory(data) {
+        // Summary
+        document.getElementById('sumHadir').textContent = data.totalHadir || 0;
+        document.getElementById('sumTelat').textContent = data.totalTelat || 0;
+        document.getElementById('sumAlfa').textContent = data.totalAlfa || 0;
 
-    // ============================================================
-    // RENDER HISTORY
-    // ============================================================
-    function renderHistory() {
+        // History List
         const container = document.getElementById('historyList');
-        const list = historyData?.list || [];
-        
+        const list = data.list || [];
+
         if (list.length === 0) {
             container.innerHTML = `
-                <div class="empty-state">
-                    <i class="fas fa-calendar-times"></i>
+                <div style="text-align:center;color:#64748b;padding:40px 0;">
+                    <i class="fas fa-calendar-times" style="font-size:40px;display:block;margin-bottom:12px;"></i>
                     <p>Belum ada riwayat absensi</p>
                 </div>
             `;
             return;
         }
-        
+
         let html = '';
         list.forEach(item => {
             const statusClass = item.status === 'hadir' ? 'hadir' : item.status === 'telat' ? 'telat' : 'alfa';
             const statusLabel = item.status === 'hadir' ? '✅ Hadir' : item.status === 'telat' ? '⏰ Telat' : '❌ Alfa';
-            
             html += `
                 <div class="history-item">
                     <div class="left">
@@ -487,13 +432,10 @@
                 </div>
             `;
         });
-        
+
         container.innerHTML = html;
     }
 
-    // ============================================================
-    // LOGOUT
-    // ============================================================
     function doLogout(event) {
         if (event && event.currentTarget) {
             document.querySelectorAll('.bottom-nav .nav-item').forEach(el => el.classList.remove('active'));
@@ -505,9 +447,6 @@
         }
     }
 
-    // ============================================================
-    // INIT
-    // ============================================================
     loadHistory();
     setInterval(loadHistory, 60000);
 
