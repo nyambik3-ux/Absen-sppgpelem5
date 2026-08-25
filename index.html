@@ -7,9 +7,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
-        /* ================================================
-           STYLE - SAMA KAYAK SEBELUMNYA (GAK BERUBAH)
-           ================================================ */
+        /* ===== STYLE SAMA KAYAK SEBELUMNYA ===== */
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             font-family: 'Inter', sans-serif;
@@ -495,16 +493,18 @@
     const KANTOR = { lat: -7.749989456709709, lng: 112.17422484608356, rad: 250 };
 
     // ============================================================
-    // AMBIL DATA USER
+    // AMBIL DATA USER - DENGAN FALLBACK
     // ============================================================
     let user = null;
     try {
         const raw = localStorage.getItem('user_pelem_5');
-        if (!raw) throw new Error();
+        if (!raw) throw new Error('No user data');
         user = JSON.parse(raw);
-        if (!user.id) throw new Error();
+        if (!user.id) throw new Error('Invalid user');
     } catch(e) {
-        window.location.href = "login.html";
+        console.warn('⚠️ User data error, redirect to login');
+        localStorage.removeItem('user_pelem_5');
+        window.location.href = 'login.html';
     }
 
     // ============================================================
@@ -521,10 +521,10 @@
         statAlfa: 0,
         statTercepat: '--:--'
     };
-    let hariLiburMap = {}; // Format: { "2026-08-25|PEMORSIAN MAKANAN": true }
+    let hariLiburMap = {};
 
     // ============================================================
-    // 1. LOAD HARI LIBUR DARI SUPABASE
+    // 1. LOAD HARI LIBUR
     // ============================================================
     async function loadHariLibur() {
         try {
@@ -550,9 +550,6 @@
         }
     }
 
-    // ============================================================
-    // 2. CEK APAKAH HARI INI LIBUR UNTUK DIVISI USER
-    // ============================================================
     function isTodayLibur() {
         const today = new Date().toISOString().split('T')[0];
         const key = today + '|' + user.divisi;
@@ -560,7 +557,7 @@
     }
 
     // ============================================================
-    // 3. FUNGSI UTILITY
+    // 2. FUNGSI UTILITY
     // ============================================================
     function formatTime(val) {
         if (!val) return "--:--";
@@ -598,7 +595,7 @@
     }
 
     // ============================================================
-    // 4. TOAST
+    // 3. TOAST
     // ============================================================
     function showToast(msg, type = 'success') {
         const container = document.getElementById('toastContainer');
@@ -616,7 +613,7 @@
     }
 
     // ============================================================
-    // 5. CACHE SYSTEM
+    // 4. CACHE
     // ============================================================
     const CACHE_CONFIG = {
         status: { key: 'cache_status_' + user.id, duration: 60000 },
@@ -654,7 +651,7 @@
     }
 
     // ============================================================
-    // 6. LOAD FUNCTIONS (PAKAI SUPABASE + CACHE)
+    // 5. LOAD DATA
     // ============================================================
     async function loadWithCache(endpoint, cacheKey, duration, forceRefresh = false) {
         if (!forceRefresh) {
@@ -667,11 +664,9 @@
 
         console.log(`🌐 ${endpoint} from Supabase`);
         try {
-            let response;
-
             if (endpoint === 'cek_status') {
                 const today = new Date().toISOString().split('T')[0];
-                response = await fetch(
+                const response = await fetch(
                     `${SUPABASE_URL}/rest/v1/absensi?select=*&karyawan_id=eq.${user.id}&tanggal=eq.${today}`,
                     {
                         headers: {
@@ -682,8 +677,6 @@
                 );
                 const data = await response.json();
                 const record = data[0] || {};
-
-                // CEK LIBUR
                 const isLibur = isTodayLibur();
 
                 const result = {
@@ -703,7 +696,6 @@
             }
 
             if (endpoint === 'get_ranking') {
-                // Ambil divisi user
                 const userRes = await fetch(
                     `${SUPABASE_URL}/rest/v1/karyawan?select=divisi&id=eq.${user.id}`,
                     {
@@ -720,7 +712,6 @@
                     return [];
                 }
 
-                // Ambil semua anggota divisi
                 const anggotaRes = await fetch(
                     `${SUPABASE_URL}/rest/v1/karyawan?select=id,nama,divisi&divisi=eq.${divisi}`,
                     {
@@ -752,7 +743,6 @@
                     const absen = await absenRes.json();
                     const record = absen[0] || {};
 
-                    // CEK LIBUR UNTUK DIVISI INI
                     const keyLibur = today + '|' + ang.divisi;
                     const isLibur = hariLiburMap[keyLibur] || false;
 
@@ -803,7 +793,7 @@
     }
 
     // ============================================================
-    // 7. PARTICLES
+    // 6. PARTICLES & CLOCK
     // ============================================================
     function createParticles() {
         const container = document.getElementById('particles');
@@ -821,9 +811,6 @@
     }
     createParticles();
 
-    // ============================================================
-    // 8. CLOCK
-    // ============================================================
     function updateClock() {
         const now = new Date();
         const h = String(now.getHours()).padStart(2,'0');
@@ -837,7 +824,7 @@
     setInterval(updateClock, 1000);
 
     // ============================================================
-    // 9. LOAD USER DATA
+    // 7. LOAD USER DATA
     // ============================================================
     function loadUserData() {
         document.getElementById('userName').textContent = user.nama || user.id || 'User';
@@ -867,7 +854,7 @@
     }
 
     // ============================================================
-    // 10. LOAD STATUS & RANKING
+    // 8. LOAD STATUS & RANKING
     // ============================================================
     async function loadStatus(force = false) {
         const data = await loadWithCache('cek_status', CACHE_CONFIG.status.key, CACHE_CONFIG.status.duration, force);
@@ -891,10 +878,9 @@
     }
 
     // ============================================================
-    // 11. UPDATE UI
+    // 9. UPDATE UI
     // ============================================================
     function updateUI() {
-        // Cek libur hari ini
         const isLibur = statusData.isLibur || false;
 
         if (isLibur) {
@@ -1002,7 +988,7 @@
     }
 
     // ============================================================
-    // 12. RENDER RANKING
+    // 10. RENDER RANKING
     // ============================================================
     function renderRanking() {
         const container = document.getElementById('rankingList');
@@ -1079,9 +1065,11 @@
     }
 
     // ============================================================
-    // 13. SYNC STATUS
+    // 11. SYNC STATUS
     // ============================================================
     async function syncStatus() {
+        await loadHariLibur();
+
         const hasStatus = await loadStatus(false);
         const hasRanking = await loadRanking(false);
 
@@ -1108,7 +1096,7 @@
     }
 
     // ============================================================
-    // 14. FAB BUTTON
+    // 12. FAB BUTTON
     // ============================================================
     function updateFabButton() {
         const btn = document.getElementById('fabAbsen');
@@ -1147,7 +1135,7 @@
     }
 
     // ============================================================
-    // 15. HANDLE ABSEN
+    // 13. HANDLE ABSEN
     // ============================================================
     let isProcessing = false;
 
@@ -1309,7 +1297,7 @@
     }
 
     // ============================================================
-    // 16. UPLOAD FOTO
+    // 14. UPLOAD FOTO
     // ============================================================
     async function handleFotoUpload(event) {
         const file = event.target.files[0];
@@ -1342,7 +1330,7 @@
     }
 
     // ============================================================
-    // 17. NAVIGATION
+    // 15. NAVIGATION
     // ============================================================
     function navigateTo(page, event) {
         if (event && event.currentTarget) {
@@ -1371,7 +1359,7 @@
     }
 
     // ============================================================
-    // 18. KEYBOARD SHORTCUT
+    // 16. KEYBOARD SHORTCUT
     // ============================================================
     document.addEventListener('keydown', function(e) {
         if (e.key === 'Enter' && !isProcessing && !statusData.isLibur) {
@@ -1384,32 +1372,29 @@
     });
 
     // ============================================================
-    // 19. INIT
+    // 17. INIT - 🔥 FIXED! PAKAI IIFE
     // ============================================================
     console.log('🚀 Smart Presence loaded!');
     console.log('👤 User:', user.nama);
     console.log('🏢 Divisi:', user.divisi);
 
-    // Load data
     loadUserData();
     updateClock();
     setInterval(updateClock, 1000);
 
-    // 1. Load hari libur dulu
-    await loadHariLibur();
+    // 🔥 PAKAI IIFE UNTUK ASYNC
+    (async function() {
+        await loadHariLibur();
+        await syncStatus();
+    })();
 
-    // 2. Sync status
-    setTimeout(() => {
-        syncStatus();
-    }, 50);
-
-    // 3. Periodic refresh
+    // Periodic refresh
     setInterval(() => {
         loadStatus(true);
         loadRanking(true);
     }, 60000);
 
-    // 4. Connection status
+    // Connection status
     window.addEventListener('online', () => {
         document.getElementById('connectionStatus').textContent = 'Online';
         document.getElementById('connectionStatus').style.color = '#34d399';
