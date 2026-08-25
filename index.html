@@ -3,16 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Absensi • Smart Presence</title>
+    <title>Riwayat • Smart Presence</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
+        /* SAME AS STATS.HTML, adjust as needed */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             font-family: 'Inter', sans-serif;
             background: radial-gradient(circle at 20% 30%, #0f172a, #020617);
@@ -21,40 +17,28 @@
             justify-content: center;
             align-items: flex-start;
             padding: 20px;
-            padding-bottom: 140px;
+            padding-bottom: 100px;
         }
-
-        /* ===== AURORA BACKGROUND ===== */
         .aurora-bg {
             position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
+            top: 0; left: 0; right: 0; bottom: 0;
             z-index: 0;
             background: linear-gradient(-45deg, #0a0f1e, #1a1040, #0d1b2a, #1a0f2a);
             background-size: 400% 400%;
             animation: aurora 15s ease infinite;
-            overflow: hidden;
         }
-
         @keyframes aurora {
             0% { background-position: 0% 50%; }
             50% { background-position: 100% 50%; }
             100% { background-position: 0% 50%; }
         }
-
         .particles {
             position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
+            top: 0; left: 0; right: 0; bottom: 0;
             z-index: 0;
             pointer-events: none;
             overflow: hidden;
         }
-
         .particle {
             position: absolute;
             width: 4px;
@@ -63,7 +47,6 @@
             border-radius: 50%;
             animation: floatUp linear infinite;
         }
-
         @keyframes floatUp {
             0% { transform: translateY(100vh) scale(0); opacity: 0; }
             10% { opacity: 1; }
@@ -71,7 +54,6 @@
             100% { transform: translateY(-10vh) scale(1); opacity: 0; }
         }
 
-        /* ===== MAIN CARD ===== */
         .glass-card {
             position: relative;
             z-index: 1;
@@ -82,517 +64,159 @@
             border-radius: 48px;
             padding: 28px 24px 32px;
             border: 1px solid rgba(255, 255, 255, 0.06);
-            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5), 0 0 80px rgba(168, 85, 247, 0.05);
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
         }
 
-        /* ===== PROFILE - TANPA KOTAK BIRU ===== */
-        .profile {
+        .page-header {
             display: flex;
             align-items: center;
             gap: 16px;
-            margin-bottom: 12px;
-            padding-bottom: 16px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-             min-height: 60px;  /* ← Batasi tinggi minimum */
-             max-height: 80px; /* ← Batasi tinggi maksimum */
-            overflow: hidden;
-        }
-
-        /* ===== AVATAR - KOTAK TANPA RING ===== */
-        .avatar-wrapper {
-            position: relative;
-            width: 70px;
-            height: 70px;
-            flex-shrink: 0;
-            cursor: pointer;
-        }
-
-        .avatar-wrapper img {
-            width: 100%;
-            height: 100%;
-            border-radius: 20px;
-            object-fit: cover;
-            display: block;
-            background: #0f172a;
-        }
-
-        .avatar-wrapper .avatar-placeholder {
-            width: 100%;
-            height: 100%;
-            border-radius: 20px;
-            background: linear-gradient(135deg, #a855f7, #3b82f6);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 38px;
-            color: white;
-        }
-
-        .avatar-hover {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: rgba(0, 0, 0, 0.7);
-            padding: 5px 0;
-            border-radius: 0 0 20px 20px;
-            font-size: 10px;
-            color: white;
-            text-align: center;
-            opacity: 0;
-            transition: all 0.3s ease;
-            z-index: 2;
-            pointer-events: none;
-            font-weight: 600;
-            letter-spacing: 0.3px;
-        }
-
-        .avatar-wrapper:hover .avatar-hover {
-            opacity: 1;
-        }
-
-        .profile-info {
-            flex: 1;
-            min-width: 0;
-        }
-
-        .profile-info .name {
-            font-size: 20px;
-            font-weight: 800;
-            color: white;
-            letter-spacing: -0.3px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            flex-wrap: wrap;
-        }
-
-        .profile-info .name .badge {
-            font-size: 10px;
-            font-weight: 600;
-            background: rgba(16, 185, 129, 0.2);
-            color: #34d399;
-            padding: 2px 12px;
-            border-radius: 20px;
-            border: 1px solid rgba(16, 185, 129, 0.2);
-        }
-
-        .profile-info .divisi {
-            font-size: 13px;
-            color: #94a3b8;
-            margin-top: 2px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .profile-info .divisi .status-dot {
-            display: inline-block;
-            width: 7px;
-            height: 7px;
-            border-radius: 50%;
-            background: #10b981;
-            animation: blink 1.5s infinite;
-        }
-
-        @keyframes blink {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.3; }
-        }
-
-        /* ===== CLOCK ===== */
-        .clock-panel {
-            background: rgba(0, 0, 0, 0.3);
-            border-radius: 28px;
-            padding: 18px 20px;
-            text-align: center;
             margin-bottom: 20px;
-            border: 1px solid rgba(255, 255, 255, 0.04);
+            padding-bottom: 14px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
         }
-
-        .clock-panel .clock {
-            font-size: 44px;
-            font-weight: 800;
-            font-family: 'Inter', monospace;
-            letter-spacing: 2px;
-            background: linear-gradient(135deg, #f0f9ff, #c7d2fe);
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
-            text-shadow: 0 2px 20px rgba(168, 85, 247, 0.1);
-            font-variant-numeric: tabular-nums;
-        }
-
-        .clock-panel .date {
-            font-size: 13px;
-            color: #94a3b8;
-            margin-top: 6px;
-            font-weight: 500;
-            letter-spacing: 0.3px;
-        }
-
-        .clock-panel .weather {
-            font-size: 11px;
-            color: #64748b;
-            margin-top: 4px;
+        .page-header .back-btn {
+            background: rgba(255,255,255,0.06);
+            border: none;
+            color: white;
+            width: 44px;
+            height: 44px;
+            border-radius: 14px;
+            cursor: pointer;
+            font-size: 18px;
+            transition: all 0.2s;
             display: flex;
+            align-items: center;
             justify-content: center;
-            gap: 14px;
         }
-
-        /* ===== STATUS HARI INI ===== */
-        .status-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-            margin-bottom: 18px;
-        }
-
-        .status-card {
-            background: rgba(0, 0, 0, 0.25);
-            border-radius: 18px;
-            padding: 14px;
-            border: 1px solid rgba(255, 255, 255, 0.04);
-            text-align: center;
-        }
-
-        .status-card .label {
-            font-size: 10px;
-            color: #64748b;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .status-card .value {
+        .page-header .back-btn:active { transform: scale(0.95); }
+        .page-header h1 {
             font-size: 22px;
             font-weight: 800;
             color: white;
-            margin: 3px 0 2px;
+            letter-spacing: -0.3px;
+        }
+        .page-header .sub {
+            font-size: 12px;
+            color: #64748b;
+            font-weight: 500;
         }
 
-        .status-card .sub {
-            font-size: 10px;
-            color: #94a3b8;
-        }
-
-        .status-card.masuk { border-color: rgba(16, 185, 129, 0.2); }
-        .status-card.masuk .value { color: #34d399; }
-        .status-card.pulang { border-color: rgba(251, 146, 60, 0.2); }
-        .status-card.pulang .value { color: #fb923c; }
-
-        /* ===== TARGET PROGRESS ===== */
-        .target-section {
-            margin-bottom: 18px;
-        }
-
-        .target-item {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            padding: 8px 0;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-        }
-
-        .target-item:last-child { border-bottom: none; }
-
-        .target-item .icon { font-size: 16px; width: 32px; text-align: center; }
-        .target-item .info { flex: 1; }
-        .target-item .info .label { font-size: 11px; color: #64748b; font-weight: 500; }
-        .target-item .info .time { font-size: 14px; font-weight: 700; color: white; }
-        .target-item .progress-bar {
-            width: 70px;
-            height: 4px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 2px;
-            overflow: hidden;
-            flex-shrink: 0;
-        }
-        .target-item .progress-bar .fill {
-            height: 100%;
-            border-radius: 2px;
-            transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        .target-item .progress-bar .fill.green { background: linear-gradient(90deg, #10b981, #34d399); }
-        .target-item .progress-bar .fill.orange { background: linear-gradient(90deg, #f59e0b, #fb923c); }
-        .target-item .progress-bar .fill.red { background: linear-gradient(90deg, #ef4444, #f87171); }
-        .target-item .status-text {
-            font-size: 10px;
-            font-weight: 600;
-            flex-shrink: 0;
-            min-width: 55px;
-            text-align: right;
-        }
-        .target-item .status-text.on-time { color: #34d399; }
-        .target-item .status-text.late { color: #fb923c; }
-        .target-item .status-text.very-late { color: #f87171; }
-
-        /* ===== RANKING ===== */
-        .ranking-section {
-            background: rgba(0, 0, 0, 0.25);
-            border-radius: 20px;
-            padding: 14px 16px;
-            margin-bottom: 18px;
-            border: 1px solid rgba(255, 255, 255, 0.04);
-        }
-
-        .ranking-section .header {
+        .refresh-bar {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 12px;
-        }
-
-        .ranking-section .header .title {
-            font-size: 14px;
-            font-weight: 700;
-            color: white;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .ranking-section .header .title i { color: #f59e0b; }
-
-        .ranking-section .header .badge-divisi {
-            font-size: 10px;
-            background: rgba(168, 85, 247, 0.2);
-            color: #a855f7;
-            padding: 3px 12px;
-            border-radius: 20px;
-            font-weight: 600;
-            border: 1px solid rgba(168, 85, 247, 0.15);
-        }
-
-        .ranking-list {
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-        }
-
-        .ranking-item {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            padding: 6px 10px;
+            margin-bottom: 16px;
+            padding: 8px 12px;
+            background: rgba(0,0,0,0.2);
             border-radius: 12px;
-            background: rgba(255, 255, 255, 0.02);
         }
-
-        .ranking-item .rank {
-            font-size: 12px;
-            font-weight: 700;
-            width: 26px;
-            text-align: center;
-            flex-shrink: 0;
+        .refresh-bar .last-update {
+            font-size: 11px;
+            color: #64748b;
         }
-        .ranking-item .rank.gold { color: #fbbf24; }
-        .ranking-item .rank.silver { color: #94a3b8; }
-        .ranking-item .rank.bronze { color: #d97706; }
-        .ranking-item .rank.normal { color: #475569; }
-
-        .ranking-item .name {
-            flex: 1;
-            font-size: 13px;
-            font-weight: 600;
-            color: #e2e8f0;
-        }
-
-        .ranking-item .time {
-            font-size: 12px;
-            font-weight: 600;
-            color: #94a3b8;
-        }
-
-        .ranking-item .status-badge {
-            font-size: 9px;
-            font-weight: 600;
-            padding: 2px 8px;
-            border-radius: 10px;
-            flex-shrink: 0;
-        }
-
-        .ranking-item .status-badge.on-time { background: rgba(16, 185, 129, 0.15); color: #34d399; }
-        .ranking-item .status-badge.late { background: rgba(251, 146, 60, 0.15); color: #fb923c; }
-        .ranking-item .status-badge.very-late { background: rgba(239, 68, 68, 0.15); color: #f87171; }
-        .ranking-item .status-badge.alfa { background: rgba(239, 68, 68, 0.1); color: #64748b; }
-
-        .ranking-item.is-you {
-            background: rgba(59, 130, 246, 0.1);
-            border: 1px solid rgba(59, 130, 246, 0.15);
-        }
-        .ranking-item.is-you .name { color: #60a5fa; }
-        .ranking-item.is-you .rank { color: #60a5fa; }
-
-        .ranking-divider {
+        .refresh-bar .refresh-btn {
+            background: rgba(168,85,247,0.15);
             border: none;
-            border-top: 1px dashed rgba(255, 255, 255, 0.06);
-            margin: 4px 0;
+            color: #a855f7;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+            transition: all 0.2s;
         }
+        .refresh-bar .refresh-btn:active { transform: scale(0.95); }
 
-        .stats-mini {
+        .summary-bar {
             display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 6px;
-            margin-top: 10px;
-            padding-top: 10px;
-            border-top: 1px solid rgba(255, 255, 255, 0.06);
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+            margin-bottom: 20px;
         }
-
-        .stats-mini .stat-item { text-align: center; }
-        .stats-mini .stat-item .num {
-            font-size: 16px;
+        .summary-item {
+            background: rgba(0,0,0,0.25);
+            border-radius: 14px;
+            padding: 12px;
+            text-align: center;
+            border: 1px solid rgba(255,255,255,0.04);
+        }
+        .summary-item .num {
+            font-size: 20px;
             font-weight: 800;
             color: white;
         }
-        .stats-mini .stat-item .num.hadir { color: #34d399; }
-        .stats-mini .stat-item .num.telat { color: #fb923c; }
-        .stats-mini .stat-item .num.alfa { color: #f87171; }
-        .stats-mini .stat-item .num.tercepat { color: #fbbf24; }
-        .stats-mini .stat-item .label {
-            font-size: 8px;
+        .summary-item .num.hadir { color: #34d399; }
+        .summary-item .num.telat { color: #fb923c; }
+        .summary-item .num.alfa { color: #f87171; }
+        .summary-item .label {
+            font-size: 9px;
             color: #64748b;
             font-weight: 600;
             text-transform: uppercase;
-            letter-spacing: 0.3px;
             margin-top: 2px;
         }
 
-        /* ===== NOTIFICATION ===== */
-        .notification {
-            background: rgba(0, 0, 0, 0.25);
-            border-radius: 14px;
-            padding: 12px 16px;
+        .history-list {
             display: flex;
-            align-items: flex-start;
-            gap: 10px;
-            border-left: 3px solid #3b82f6;
-            margin-top: 14px;
+            flex-direction: column;
+            gap: 8px;
+            max-height: 400px;
+            overflow-y: auto;
+            padding-right: 4px;
         }
+        .history-list::-webkit-scrollbar { width: 3px; }
+        .history-list::-webkit-scrollbar-track { background: rgba(255,255,255,0.05); border-radius: 10px; }
+        .history-list::-webkit-scrollbar-thumb { background: #a855f7; border-radius: 10px; }
 
-        .notification .icon { font-size: 16px; flex-shrink: 0; margin-top: 1px; }
-        .notification .text {
-            font-size: 12px;
-            color: #cbd5e1;
-            line-height: 1.5;
+        .history-item {
+            background: rgba(0,0,0,0.2);
+            border-radius: 16px;
+            padding: 14px 16px;
+            border: 1px solid rgba(255,255,255,0.04);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
-        .notification .text strong { color: white; }
-
-        /* ============================================================
-           FLOATING ACTION BUTTON (FAB) - TOMBOL ABSEN
-           ============================================================ */
-        .fab-container {
-            position: fixed;
-            bottom: 90px;
-            left: 50%;
-            transform: translateX(-50%);
-            z-index: 100;
-            width: 100%;
-            max-width: 480px;
-            padding: 0 20px;
-            pointer-events: none;
-        }
-
-        .fab-btn {
-            width: 100%;
-            padding: 16px 20px;
-            border: none;
-            border-radius: 24px;
-            font-family: 'Inter', sans-serif;
-            font-size: 16px;
+        .history-item .left .date {
+            font-size: 14px;
             font-weight: 700;
             color: white;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
-            pointer-events: auto;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            position: relative;
-            overflow: hidden;
         }
-
-        .fab-btn:active:not(:disabled) {
-            transform: scale(0.96);
+        .history-item .left .day {
+            font-size: 11px;
+            color: #64748b;
         }
-
-        .fab-btn:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-            transform: scale(0.98);
+        .history-item .right {
+            text-align: right;
         }
-
-        .fab-btn .spinner {
-            display: none;
-            width: 20px;
-            height: 20px;
-            border: 3px solid rgba(255, 255, 255, 0.2);
-            border-top: 3px solid white;
-            border-radius: 50%;
-            animation: spin 0.8s linear infinite;
+        .history-item .right .jam {
+            font-size: 13px;
+            font-weight: 600;
+            color: #94a3b8;
         }
-
-        .fab-btn.loading .spinner {
+        .history-item .right .status {
+            font-size: 11px;
+            font-weight: 600;
+            padding: 2px 12px;
+            border-radius: 12px;
             display: inline-block;
+            margin-top: 2px;
+        }
+        .history-item .right .status.hadir {
+            background: rgba(16,185,129,0.15);
+            color: #34d399;
+        }
+        .history-item .right .status.telat {
+            background: rgba(251,146,60,0.15);
+            color: #fb923c;
+        }
+        .history-item .right .status.alfa {
+            background: rgba(239,68,68,0.1);
+            color: #64748b;
         }
 
-        .fab-btn.loading .btn-text {
-            display: none;
-        }
-
-        .fab-btn.loading .fab-icon {
-            display: none;
-        }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-
-        .fab-btn.btn-datang {
-            background: linear-gradient(135deg, #10b981, #059669);
-            box-shadow: 0 8px 30px rgba(16, 185, 129, 0.35);
-        }
-
-        .fab-btn.btn-datang:hover:not(:disabled) {
-            transform: translateY(-2px);
-            box-shadow: 0 12px 40px rgba(16, 185, 129, 0.45);
-        }
-
-        .fab-btn.btn-pulang {
-            background: linear-gradient(135deg, #f59e0b, #d97706);
-            box-shadow: 0 8px 30px rgba(245, 158, 11, 0.35);
-        }
-
-        .fab-btn.btn-pulang:hover:not(:disabled) {
-            transform: translateY(-2px);
-            box-shadow: 0 12px 40px rgba(245, 158, 11, 0.45);
-        }
-
-        .fab-btn.btn-selesai {
-            background: #1e293b;
-            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
-            cursor: default;
-        }
-
-        .fab-btn .fab-icon {
-            font-size: 20px;
-        }
-
-        .fab-btn .btn-text {
-            font-size: 15px;
-            letter-spacing: 0.3px;
-        }
-
-        .fab-btn .btn-sub {
-            font-size: 10px;
-            font-weight: 500;
-            opacity: 0.7;
-            margin-left: 4px;
-        }
-
-        /* ===== BOTTOM NAV ===== */
         .bottom-nav {
             position: fixed;
             bottom: 0;
@@ -610,7 +234,6 @@
             margin: 0 auto;
             border-radius: 28px 28px 0 0;
         }
-
         .bottom-nav .nav-item {
             display: flex;
             flex-direction: column;
@@ -619,7 +242,6 @@
             cursor: pointer;
             padding: 4px 10px;
             border-radius: 14px;
-            transition: all 0.2s ease;
             background: none;
             border: none;
             color: #64748b;
@@ -627,47 +249,29 @@
             font-size: 9px;
             font-weight: 600;
             min-width: 50px;
+            text-decoration: none;
         }
-
-        .bottom-nav .nav-item i {
-            font-size: 18px;
-            transition: all 0.2s ease;
-        }
-
-        .bottom-nav .nav-item.active {
-            color: #a855f7;
-        }
-
-        .bottom-nav .nav-item.active i {
-            transform: translateY(-2px);
-        }
-
+        .bottom-nav .nav-item i { font-size: 18px; transition: all 0.2s; }
+        .bottom-nav .nav-item.active { color: #a855f7; }
+        .bottom-nav .nav-item.active i { transform: translateY(-2px); }
         .bottom-nav .nav-item .dot {
-            width: 4px;
-            height: 4px;
-            border-radius: 50%;
-            background: #a855f7;
-            opacity: 0;
-            transition: all 0.2s ease;
+            width: 4px; height: 4px; border-radius: 50%;
+            background: #a855f7; opacity: 0;
+            transition: all 0.2s;
         }
+        .bottom-nav .nav-item.active .dot { opacity: 1; }
 
-        .bottom-nav .nav-item.active .dot {
-            opacity: 1;
-        }
-
-        /* ===== TOAST ===== */
         .toast-container {
             position: fixed;
-            bottom: 155px;
+            bottom: 100px;
             left: 50%;
             transform: translateX(-50%);
             z-index: 1000;
             max-width: 90%;
             width: 400px;
         }
-
         .toast {
-            background: rgba(15, 23, 42, 0.92);
+            background: rgba(15,23,42,0.92);
             backdrop-filter: blur(20px);
             padding: 12px 20px;
             border-radius: 18px;
@@ -676,246 +280,99 @@
             font-size: 13px;
             text-align: center;
             border-left: 4px solid #10b981;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
             animation: slideUp 0.4s ease;
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 8px;
         }
-
         .toast.error { border-left-color: #ef4444; }
-        .toast.warning { border-left-color: #f59e0b; }
-
         @keyframes slideUp {
             from { opacity: 0; transform: translateY(30px) scale(0.95); }
             to { opacity: 1; transform: translateY(0) scale(1); }
         }
 
-        /* ===== RESPONSIVE ===== */
         @media (max-width: 480px) {
-            body { padding: 12px; padding-bottom: 130px; }
+            body { padding: 12px; padding-bottom: 90px; }
             .glass-card { padding: 18px 14px 22px; border-radius: 32px; }
-            
-            .avatar-wrapper { width: 75px; height: 75px; }
-            .avatar-wrapper .avatar-placeholder { font-size: 30px; }
-            .profile-info .name { font-size: 17px; }
-            .profile-info .divisi { font-size: 12px; }
-            .profile { gap: 14px; padding-bottom: 12px; }
-            
-            .clock-panel .clock { font-size: 36px; }
-            .clock-panel { padding: 14px 16px; }
-            
-            .status-grid { gap: 8px; }
-            .status-card { padding: 10px; }
-            .status-card .value { font-size: 18px; }
-            
-            .ranking-item { padding: 5px 8px; }
-            .ranking-item .name { font-size: 12px; }
-            .stats-mini { gap: 4px; }
-            .stats-mini .stat-item .num { font-size: 14px; }
-            
-            .bottom-nav { padding: 6px 12px; }
-            .bottom-nav .nav-item { font-size: 8px; min-width: 44px; }
-            .bottom-nav .nav-item i { font-size: 16px; }
-            
-            .fab-btn { padding: 14px 16px; font-size: 14px; border-radius: 20px; }
-            .fab-btn .fab-icon { font-size: 17px; }
-            .fab-btn .btn-text { font-size: 13px; }
-            .fab-container { bottom: 80px; padding: 0 14px; }
-            .toast-container { bottom: 140px; }
-        }
-
-        @media (max-width: 380px) {
-            .clock-panel .clock { font-size: 30px; }
-            .target-item .progress-bar { width: 50px; }
-            .ranking-item .status-badge { font-size: 8px; padding: 1px 6px; }
-            .avatar-wrapper { width: 65px; height: 65px; }
-            .avatar-wrapper .avatar-placeholder { font-size: 26px; }
-            .profile-info .name { font-size: 15px; }
-            .fab-btn .btn-sub { display: none; }
+            .page-header h1 { font-size: 18px; }
+            .summary-item .num { font-size: 16px; }
+            .history-item { padding: 12px; }
+            .history-item .left .date { font-size: 12px; }
+            .refresh-bar { flex-wrap: wrap; gap: 6px; }
+            .refresh-bar .last-update { font-size: 10px; }
         }
     </style>
 </head>
 <body>
 
-<!-- AURORA BACKGROUND -->
 <div class="aurora-bg"></div>
 <div class="particles" id="particles"></div>
 
-<!-- MAIN CONTENT -->
-<div class="glass-card" id="app">
-
-    <!-- PROFILE - TANPA KOTAK BIRU -->
-    <div class="profile">
-        <div class="avatar-wrapper" id="avatarWrapper" onclick="document.getElementById('uploadFoto').click()">
-            <div id="avatarContent">
-                <img id="imgAvatar" src="" alt="Avatar" style="display:none;">
-                <div class="avatar-placeholder" id="avatarPlaceholder">
-                    <i class="fas fa-user"></i>
-                </div>
-            </div>
-            <div class="avatar-hover">
-                <i class="fas fa-camera" style="font-size:11px;"></i> Ganti
-            </div>
-        </div>
-        <input type="file" id="uploadFoto" accept="image/*" style="display:none;" onchange="handleFotoUpload(event)">
-
-        <div class="profile-info">
-            <div class="name">
-                <span id="userName">Memuat...</span>
-                <span class="badge" id="userBadge">🟢 Online</span>
-            </div>
-            <div class="divisi">
-                <span class="status-dot"></span>
-                <span id="userDivisi">-</span>
-                <span style="color:#475569;font-size:11px;" id="userDivisiBadge"></span>
-            </div>
+<div class="glass-card">
+    <div class="page-header">
+        <button class="back-btn" onclick="window.location.href='index.html'">
+            <i class="fas fa-arrow-left"></i>
+        </button>
+        <div>
+            <h1>📋 Riwayat Absensi</h1>
+            <div class="sub">Semua catatan kehadiran Anda</div>
         </div>
     </div>
 
-    <!-- CLOCK -->
-    <div class="clock-panel">
-        <div class="clock" id="clock">00:00:00</div>
-        <div class="date" id="date">Memuat...</div>
-        <div class="weather">
-            <span><i class="fas fa-map-marker-alt"></i> Kantor SPPG</span>
-            <span><i class="fas fa-wifi"></i> <span id="connectionStatus">Online</span></span>
+    <div class="refresh-bar">
+        <span class="last-update" id="lastUpdate">🔄 Terakhir: --:--</span>
+        <button class="refresh-btn" onclick="refreshHistory()">
+            <i class="fas fa-sync-alt"></i> Refresh
+        </button>
+    </div>
+
+    <div class="summary-bar" id="summaryBar">
+        <div class="summary-item">
+            <div class="num hadir" id="sumHadir">0</div>
+            <div class="label">✅ Hadir</div>
+        </div>
+        <div class="summary-item">
+            <div class="num telat" id="sumTelat">0</div>
+            <div class="label">⏰ Telat</div>
+        </div>
+        <div class="summary-item">
+            <div class="num alfa" id="sumAlfa">0</div>
+            <div class="label">❌ Alfa</div>
         </div>
     </div>
 
-    <!-- STATUS HARI INI -->
-    <div class="status-grid">
-        <div class="status-card masuk">
-            <div class="label"><i class="fas fa-sign-in-alt"></i> MASUK</div>
-            <div class="value" id="statusMasuk">--:--</div>
-            <div class="sub" id="statusMasukSub">Belum absen</div>
-        </div>
-        <div class="status-card pulang">
-            <div class="label"><i class="fas fa-sign-out-alt"></i> PULANG</div>
-            <div class="value" id="statusPulang">--:--</div>
-            <div class="sub" id="statusPulangSub">Belum absen</div>
+    <div class="history-list" id="historyList">
+        <div style="text-align:center;color:#64748b;padding:20px 0;font-size:13px;">
+            <i class="fas fa-spinner fa-pulse"></i> Memuat riwayat...
         </div>
     </div>
-
-    <!-- TARGET JAM -->
-    <div class="target-section">
-        <div class="target-item">
-            <div class="icon">⏰</div>
-            <div class="info">
-                <div class="label">Target Masuk</div>
-                <div class="time" id="targetMasuk">--:--</div>
-            </div>
-            <div class="progress-bar">
-                <div class="fill green" id="progressMasuk" style="width:0%"></div>
-            </div>
-            <div class="status-text" id="statusMasukText">-</div>
-        </div>
-        <div class="target-item">
-            <div class="icon">🏁</div>
-            <div class="info">
-                <div class="label">Target Pulang</div>
-                <div class="time" id="targetPulang">--:--</div>
-            </div>
-            <div class="progress-bar">
-                <div class="fill green" id="progressPulang" style="width:0%"></div>
-            </div>
-            <div class="status-text" id="statusPulangText">-</div>
-        </div>
-    </div>
-
-    <!-- RANKING DIVISI -->
-    <div class="ranking-section" id="rankingSection">
-        <div class="header">
-            <div class="title">
-                <i class="fas fa-trophy"></i> Ranking Divisi
-            </div>
-            <div class="badge-divisi" id="divisiBadge">Loading...</div>
-        </div>
-        <div class="ranking-list" id="rankingList">
-            <div style="text-align:center;color:#64748b;padding:16px 0;font-size:12px;">
-                <i class="fas fa-spinner fa-pulse"></i> Memuat ranking...
-            </div>
-        </div>
-        <div class="stats-mini" id="statsMini">
-            <div class="stat-item">
-                <div class="num hadir" id="statHadir">0</div>
-                <div class="label">Hadir</div>
-            </div>
-            <div class="stat-item">
-                <div class="num telat" id="statTelat">0</div>
-                <div class="label">Telat</div>
-            </div>
-            <div class="stat-item">
-                <div class="num alfa" id="statAlfa">0</div>
-                <div class="label">Alfa</div>
-            </div>
-            <div class="stat-item">
-                <div class="num tercepat" id="statTercepat">--:--</div>
-                <div class="label">Tercepat</div>
-            </div>
-        </div>
-    </div>
-
-    <!-- NOTIFIKASI -->
-    <div class="notification" id="notification">
-        <div class="icon">💡</div>
-        <div class="text" id="notifText">
-            Selamat datang! <strong id="notifName">User</strong>, jangan lupa absen hari ini.
-        </div>
-    </div>
-
 </div>
 
-<!-- ============================================================
-     FLOATING ACTION BUTTON - TOMBOL ABSEN
-     ============================================================ -->
-<div class="fab-container">
-    <button class="fab-btn btn-datang" id="fabAbsen" onclick="handleAbsenClick()">
-        <span class="spinner"></span>
-        <span class="fab-icon">📥</span>
-        <span class="btn-text" id="fabText">ABSEN MASUK</span>
-        <span class="btn-sub" id="fabSub">klik untuk absen</span>
-    </button>
-</div>
-
-<!-- BOTTOM NAVIGATION -->
 <div class="bottom-nav">
-    <button class="nav-item active" onclick="navigateTo('home', event)">
-        <i class="fas fa-home"></i>
-        <span>Home</span>
-        <div class="dot"></div>
-    </button>
-    <button class="nav-item" onclick="navigateTo('stats', event)">
-        <i class="fas fa-chart-bar"></i>
-        <span>Statistik</span>
-        <div class="dot"></div>
-    </button>
-    <button class="nav-item" onclick="navigateTo('history', event)">
-        <i class="fas fa-history"></i>
-        <span>Riwayat</span>
-        <div class="dot"></div>
-    </button>
-    <button class="nav-item" onclick="doLogout(event)">
-        <i class="fas fa-sign-out-alt"></i>
-        <span>Keluar</span>
-        <div class="dot"></div>
-    </button>
+    <a href="index.html" class="nav-item">
+        <i class="fas fa-home"></i> Home <div class="dot"></div>
+    </a>
+    <a href="stats.html" class="nav-item">
+        <i class="fas fa-chart-bar"></i> Statistik <div class="dot"></div>
+    </a>
+    <a href="history.html" class="nav-item active">
+        <i class="fas fa-history"></i> Riwayat <div class="dot"></div>
+    </a>
+    <a href="#" class="nav-item" onclick="doLogout(event)">
+        <i class="fas fa-sign-out-alt"></i> Keluar <div class="dot"></div>
+    </a>
 </div>
 
-<!-- TOAST CONTAINER -->
 <div class="toast-container" id="toastContainer"></div>
 
 <script>
     // ============================================================
     // KONFIGURASI
     // ============================================================
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbziyQlHaWjY4HJsc8CxSUzCghn2N3Wpw_JkoBtgAU0cL6d3JOMyOAjjLWUz_d9g8ylljg/exec";
-    const KANTOR = { lat: -7.749989456709709, lng: 112.17422484608356, rad: 250 };
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzrrQ510rB9niFNcs9_8eucQXIRVgJU9lsUOp_BgTaFoOs_Vr55XkVThndWb5qD9cRS/exec";
 
-    // ============================================================
-    // AMBIL DATA USER
-    // ============================================================
     let user = null;
     try {
         const raw = localStorage.getItem('user_pelem_5');
@@ -927,41 +384,36 @@
     }
 
     // ============================================================
-    // FUNGSI UTILITY
+    // CACHE SYSTEM
     // ============================================================
-    function formatTime(val) {
-        if (!val) return "--:--";
-        if (typeof val === 'string' && val.includes('T')) {
-            const date = new Date(val);
-            return date.getHours().toString().padStart(2,'0') + ':' + date.getMinutes().toString().padStart(2,'0');
+    const CACHE_CONFIG = {
+        history: {
+            key: 'cache_history_' + user.id,
+            duration: 300000 // 5 menit
         }
-        return val;
+    };
+
+    function getCache(key) {
+        try {
+            const raw = localStorage.getItem(key);
+            if (!raw) return null;
+            const data = JSON.parse(raw);
+            if (Date.now() - data.timestamp > data.duration) {
+                localStorage.removeItem(key);
+                return null;
+            }
+            return data.value;
+        } catch(e) { return null; }
     }
 
-    function getDriveDirectUrl(url) {
-        if (!url) return null;
-        if (url.includes('lh3.googleusercontent.com')) return url;
-        if (url.includes('drive.google.com/thumbnail')) return url;
-        let match = url.match(/[-\w]{25,}/);
-        if (match) return 'https://lh3.googleusercontent.com/d/' + match[0];
-        return url;
-    }
-
-    function hitungJarak(lat1, lon1, lat2, lon2) {
-        const R = 6371e3;
-        const dLat = (lat2 - lat1) * Math.PI / 180;
-        const dLon = (lon2 - lon1) * Math.PI / 180;
-        const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
-                  Math.cos(lat1 * Math.PI/180) * Math.cos(lat2 * Math.PI/180) *
-                  Math.sin(dLon/2) * Math.sin(dLon/2);
-        return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-    }
-
-    function parseTime(str) {
-        if (!str) return null;
-        const parts = str.split(':');
-        if (parts.length === 2) return parseInt(parts[0]) * 60 + parseInt(parts[1]);
-        return null;
+    function setCache(key, value, duration) {
+        try {
+            localStorage.setItem(key, JSON.stringify({
+                timestamp: Date.now(),
+                duration: duration,
+                value: value
+            }));
+        } catch(e) {}
     }
 
     // ============================================================
@@ -987,7 +439,7 @@
     // ============================================================
     function createParticles() {
         const container = document.getElementById('particles');
-        for (let i = 0; i < 25; i++) {
+        for (let i = 0; i < 20; i++) {
             const p = document.createElement('div');
             p.className = 'particle';
             p.style.left = Math.random() * 100 + '%';
@@ -1002,479 +454,118 @@
     createParticles();
 
     // ============================================================
-    // CLOCK
+    // LOAD HISTORY DENGAN CACHE
     // ============================================================
-    function updateClock() {
-        const now = new Date();
-        const h = String(now.getHours()).padStart(2,'0');
-        const m = String(now.getMinutes()).padStart(2,'0');
-        const s = String(now.getSeconds()).padStart(2,'0');
-        document.getElementById('clock').textContent = h + ':' + m + ':' + s;
-        const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-        document.getElementById('date').textContent = now.toLocaleDateString('id-ID', options);
-    }
-    updateClock();
-    setInterval(updateClock, 1000);
-
-    // ============================================================
-    // LOAD USER DATA
-    // ============================================================
-    function loadUserData() {
-        document.getElementById('userName').textContent = user.nama || user.id || 'User';
-        document.getElementById('userDivisi').textContent = user.divisi || 'Relawan';
-        document.getElementById('userDivisiBadge').textContent = user.divisi ? '• ' + user.divisi : '';
-        document.getElementById('divisiBadge').textContent = user.divisi || 'Divisi';
-        document.getElementById('notifName').textContent = user.nama || 'User';
-        document.getElementById('targetMasuk').textContent = formatTime(user.jamMasuk);
-        document.getElementById('targetPulang').textContent = formatTime(user.jamPulang);
+    async function loadHistory(forceRefresh = false) {
+        const cacheKey = CACHE_CONFIG.history.key;
         
-        if (user.foto && user.foto !== '' && user.foto !== 'https://via.placeholder.com/150') {
-            const img = document.getElementById('imgAvatar');
-            const url = getDriveDirectUrl(user.foto);
-            img.src = url;
-            img.style.display = 'block';
-            document.getElementById('avatarPlaceholder').style.display = 'none';
-            img.onerror = function() {
-                img.style.display = 'none';
-                document.getElementById('avatarPlaceholder').style.display = 'flex';
-            };
-        }
-    }
-    loadUserData();
-
-    // ============================================================
-    // SYNC STATUS
-    // ============================================================
-    let statusData = {
-        sudahMasuk: false,
-        sudahPulang: false,
-        jamMasuk: null,
-        jamPulang: null,
-        ranking: [],
-        statHadir: 0,
-        statTelat: 0,
-        statAlfa: 0,
-        statTercepat: '--:--'
-    };
-
-    async function syncStatus() {
-        try {
-            const response = await fetch(SCRIPT_URL, {
-                method: 'POST',
-                body: JSON.stringify({ action: 'cek_status', id: user.id })
-            });
-            const data = await response.json();
-            
-            if (data.result === 'success') {
-                statusData.sudahMasuk = data.sudahMasuk || false;
-                statusData.sudahPulang = data.sudahPulang || false;
-                statusData.jamMasuk = data.jamMasuk || null;
-                statusData.jamPulang = data.jamPulang || null;
-                statusData.ranking = data.ranking || [];
-                if (data.statistik) {
-                    statusData.statHadir = data.statistik.hadir || 0;
-                    statusData.statTelat = data.statistik.telat || 0;
-                    statusData.statAlfa = data.statistik.alfa || 0;
-                    statusData.statTercepat = data.statistik.tercepat || '--:--';
-                }
-                updateUI();
-                updateFabButton();
-            }
-        } catch(e) {
-            console.warn('Gagal sync status:', e);
-        }
-    }
-
-    // ============================================================
-    // UPDATE UI
-    // ============================================================
-    function updateUI() {
-        // Status masuk
-        if (statusData.sudahMasuk && statusData.jamMasuk) {
-            document.getElementById('statusMasuk').textContent = formatTime(statusData.jamMasuk);
-            document.getElementById('statusMasukSub').textContent = '✅ Sudah absen';
-        } else {
-            document.getElementById('statusMasuk').textContent = '--:--';
-            document.getElementById('statusMasukSub').textContent = '⏳ Belum absen';
-        }
-        
-        // Status pulang
-        if (statusData.sudahPulang && statusData.jamPulang) {
-            document.getElementById('statusPulang').textContent = formatTime(statusData.jamPulang);
-            document.getElementById('statusPulangSub').textContent = '✅ Sudah absen';
-        } else {
-            document.getElementById('statusPulang').textContent = '--:--';
-            document.getElementById('statusPulangSub').textContent = '⏳ Belum absen';
-        }
-        
-        updateProgress();
-        renderRanking();
-        
-        document.getElementById('statHadir').textContent = statusData.statHadir;
-        document.getElementById('statTelat').textContent = statusData.statTelat;
-        document.getElementById('statAlfa').textContent = statusData.statAlfa;
-        document.getElementById('statTercepat').textContent = statusData.statTercepat;
-    }
-
-    function updateProgress() {
-        const now = new Date();
-        const jamSekarang = now.getHours() * 60 + now.getMinutes();
-        
-        const targetMasuk = parseTime(user.jamMasuk);
-        if (targetMasuk) {
-            const selisih = jamSekarang - targetMasuk;
-            let progress = 0, status = '', statusClass = '';
-            
-            if (statusData.sudahMasuk) {
-                progress = 100;
-                if (selisih <= 5) { status = '✅ On Time'; statusClass = 'on-time'; }
-                else if (selisih <= 30) { status = '⏰ +' + selisih + "'"; statusClass = 'late'; }
-                else { status = '⚠️ +' + selisih + "'"; statusClass = 'very-late'; }
-            } else {
-                if (jamSekarang <= targetMasuk) {
-                    progress = Math.min(100, ((targetMasuk - jamSekarang) / 60) * 100);
-                    status = '⏳ ' + Math.ceil((targetMasuk - jamSekarang)) + "' lagi";
-                    statusClass = 'on-time';
-                } else {
-                    progress = 100;
-                    status = '⏰ Telat ' + (jamSekarang - targetMasuk) + "'";
-                    statusClass = 'late';
-                }
-            }
-            
-            document.getElementById('progressMasuk').style.width = Math.min(100, progress) + '%';
-            document.getElementById('statusMasukText').textContent = status;
-            document.getElementById('statusMasukText').className = 'status-text ' + statusClass;
-        }
-        
-        const targetPulang = parseTime(user.jamPulang);
-        if (targetPulang) {
-            let progress = 0, status = '', statusClass = '';
-            
-            if (statusData.sudahPulang) {
-                progress = 100;
-                status = '✅ Selesai';
-                statusClass = 'on-time';
-            } else if (statusData.sudahMasuk) {
-                const selisih = jamSekarang - targetPulang;
-                if (selisih < 0) {
-                    progress = Math.min(100, ((targetPulang - jamSekarang) / 60) * 100);
-                    status = '⏳ ' + Math.ceil((targetPulang - jamSekarang)) + "' lagi";
-                    statusClass = 'on-time';
-                } else {
-                    progress = 100;
-                    status = '⚠️ +' + selisih + "'";
-                    statusClass = 'very-late';
-                }
-            } else {
-                progress = 0;
-                status = '⏳ Belum masuk';
-                statusClass = '';
-            }
-            
-            document.getElementById('progressPulang').style.width = Math.min(100, progress) + '%';
-            document.getElementById('statusPulangText').textContent = status;
-            document.getElementById('statusPulangText').className = 'status-text ' + statusClass;
-        }
-    }
-
-    // ============================================================
-    // RENDER RANKING
-    // ============================================================
-    function renderRanking() {
-        const container = document.getElementById('rankingList');
-        const ranking = statusData.ranking || [];
-        
-        if (ranking.length === 0) {
-            container.innerHTML = `
-                <div style="text-align:center;color:#64748b;padding:14px 0;font-size:12px;">
-                    <i class="fas fa-inbox"></i> Belum ada data ranking
-                </div>
-            `;
-            return;
-        }
-        
-        let html = '';
-        let userIndex = -1;
-        
-        ranking.forEach((item, index) => {
-            const isYou = item.id === user.id;
-            if (isYou) userIndex = index;
-            
-            let rankClass = 'normal';
-            let rankDisplay = '#' + (index + 1);
-            
-            if (index === 0) { rankClass = 'gold'; rankDisplay = '🥇'; }
-            else if (index === 1) { rankClass = 'silver'; rankDisplay = '🥈'; }
-            else if (index === 2) { rankClass = 'bronze'; rankDisplay = '🥉'; }
-            
-            let statusBadge = '', statusClass = '';
-            
-            if (item.status === 'hadir') {
-                const telat = item.selisih || 0;
-                if (telat <= 5) { statusBadge = 'On Time'; statusClass = 'on-time'; }
-                else if (telat <= 30) { statusBadge = '+' + telat + "'"; statusClass = 'late'; }
-                else { statusBadge = '+' + telat + "'"; statusClass = 'very-late'; }
-            } else if (item.status === 'alfa') {
-                statusBadge = 'Alfa';
-                statusClass = 'alfa';
-            } else {
-                statusBadge = '-';
-                statusClass = '';
-            }
-            
-            const youClass = isYou ? 'is-you' : '';
-            const displayName = isYou ? '👤 ' + item.nama : item.nama;
-            
-            html += `
-                <div class="ranking-item ${youClass}">
-                    <div class="rank ${rankClass}">${rankDisplay}</div>
-                    <div class="name">${displayName}</div>
-                    <div class="time">${item.jam || '--:--'}</div>
-                    ${statusBadge ? `<div class="status-badge ${statusClass}">${statusBadge}</div>` : ''}
-                </div>
-            `;
-            
-            if (isYou && index > 0 && index < ranking.length - 1) {
-                html += `<hr class="ranking-divider">`;
-            }
-        });
-        
-        container.innerHTML = html;
-        
-        if (userIndex >= 0) {
-            setTimeout(() => {
-                const items = container.querySelectorAll('.ranking-item');
-                if (items[userIndex]) {
-                    items[userIndex].scrollIntoView({ block: 'center', behavior: 'smooth' });
-                }
-            }, 300);
-        }
-    }
-
-    // ============================================================
-    // FAB BUTTON - TOMBOL ABSEN
-    // ============================================================
-    function updateFabButton() {
-        const btn = document.getElementById('fabAbsen');
-        const text = document.getElementById('fabText');
-        const sub = document.getElementById('fabSub');
-        const icon = btn.querySelector('.fab-icon');
-        
-        // Reset class
-        btn.className = 'fab-btn';
-        btn.disabled = false;
-        
-        if (statusData.sudahMasuk && statusData.sudahPulang) {
-            // Sudah absen masuk & pulang
-            btn.classList.add('btn-selesai');
-            btn.disabled = true;
-            text.textContent = '✅ SELESAI';
-            sub.textContent = 'absen hari ini selesai';
-            icon.textContent = '✅';
-        } else if (statusData.sudahMasuk && !statusData.sudahPulang) {
-            // Sudah masuk, belum pulang
-            btn.classList.add('btn-pulang');
-            text.textContent = '📤 ABSEN PULANG';
-            sub.textContent = 'klik untuk pulang';
-            icon.textContent = '📤';
-            btn.onclick = function() { handleAbsenClick('PULANG'); };
-        } else {
-            // Belum masuk
-            btn.classList.add('btn-datang');
-            text.textContent = '📥 ABSEN MASUK';
-            sub.textContent = 'klik untuk absen';
-            icon.textContent = '📥';
-            btn.onclick = function() { handleAbsenClick('DATANG'); };
-        }
-    }
-
-    // ============================================================
-    // HANDLE ABSEN CLICK
-    // ============================================================
-    let isProcessing = false;
-
-    async function handleAbsenClick(action) {
-        // Auto detect action jika tidak dikirim
-        if (!action) {
-            if (!statusData.sudahMasuk) {
-                action = 'DATANG';
-            } else if (!statusData.sudahPulang) {
-                action = 'PULANG';
-            } else {
-                showToast('Anda sudah absen hari ini!', 'warning');
+        if (!forceRefresh) {
+            const cached = getCache(cacheKey);
+            if (cached) {
+                console.log('📦 History from cache');
+                renderHistory(cached);
+                updateLastUpdate();
                 return;
             }
         }
         
-        if (isProcessing) return;
-        isProcessing = true;
-        
-        const btn = document.getElementById('fabAbsen');
-        btn.classList.add('loading');
-        btn.disabled = true;
-        
-        // Cek GPS dulu
-        showToast('Mengambil lokasi GPS...', 'info');
-        
-        let lat = 0, lng = 0;
-        try {
-            const position = await new Promise((resolve, reject) => {
-                navigator.geolocation.getCurrentPosition(resolve, reject, {
-                    enableHighAccuracy: true,
-                    timeout: 10000,
-                    maximumAge: 0
-                });
-            });
-            lat = position.coords.latitude;
-            lng = position.coords.longitude;
-        } catch(err) {
-            showToast('Gagal mengambil lokasi. Pastikan GPS aktif!', 'error');
-            btn.classList.remove('loading');
-            btn.disabled = false;
-            isProcessing = false;
-            return;
-        }
-        
-        // Cek radius
-        const jarak = hitungJarak(lat, lng, KANTOR.lat, KANTOR.lng);
-        if (jarak > KANTOR.rad) {
-            showToast(`📍 Kejauhan! Jarak: ${Math.round(jarak)}m (Max: ${KANTOR.rad}m)`, 'error');
-            btn.classList.remove('loading');
-            btn.disabled = false;
-            isProcessing = false;
-            return;
-        }
-        
-        showToast('Mengirim absen...', 'info');
-        
+        console.log('🌐 History from server');
         try {
             const response = await fetch(SCRIPT_URL, {
                 method: 'POST',
                 body: JSON.stringify({
-                    action: action,
-                    id: user.id,
-                    nama: user.nama || user.id,
-                    lat: lat,
-                    lng: lng
+                    action: 'get_history',
+                    id: user.id
                 })
             });
             const data = await response.json();
             
-            if (data.result === 'success') {
-                const label = action === 'DATANG' ? 'Masuk' : 'Pulang';
-                showToast('✅ Absen ' + label + ' berhasil!', 'success');
-                if (navigator.vibrate) navigator.vibrate(50);
-                
-                // Reload status
-                await syncStatus();
-                updateFabButton();
+            if (data.result === 'success' && data.data) {
+                setCache(cacheKey, data.data, CACHE_CONFIG.history.duration);
+                renderHistory(data.data);
+                updateLastUpdate();
             } else {
-                showToast('❌ Gagal: ' + (data.message || 'Coba lagi'), 'error');
+                showToast('Gagal memuat riwayat', 'error');
             }
         } catch(e) {
-            showToast('❌ Gagal koneksi ke server!', 'error');
-        }
-        
-        btn.classList.remove('loading');
-        btn.disabled = false;
-        isProcessing = false;
-    }
-
-    // ============================================================
-    // UPLOAD FOTO
-    // ============================================================
-    async function handleFotoUpload(event) {
-        const file = event.target.files[0];
-        if (!file) return;
-        
-        const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
-        if (!allowedTypes.includes(file.type)) {
-            showToast('Format harus JPG, PNG, atau WEBP', 'error');
-            event.target.value = '';
-            return;
-        }
-        
-        if (file.size > 2 * 1024 * 1024) {
-            showToast('Ukuran maksimal 2MB', 'error');
-            event.target.value = '';
-            return;
-        }
-        
-        // Preview dulu
-        const readerPreview = new FileReader();
-        readerPreview.onload = function(e) {
-            const img = document.getElementById('imgAvatar');
-            img.src = e.target.result;
-            img.style.display = 'block';
-            document.getElementById('avatarPlaceholder').style.display = 'none';
-        };
-        readerPreview.readAsDataURL(file);
-        
-        showToast('Mengunggah foto...', 'info');
-        
-        const reader = new FileReader();
-        reader.onload = async function(e) {
-            try {
-                const response = await fetch(SCRIPT_URL, {
-                    method: 'POST',
-                    body: JSON.stringify({
-                        action: 'update_foto',
-                        id: user.id,
-                        fotoBase64: e.target.result
-                    })
-                });
-                const data = await response.json();
-                
-                if (data.result === 'success') {
-                    user.foto = data.url;
-                    localStorage.setItem('user_pelem_5', JSON.stringify(user));
-                    
-                    const img = document.getElementById('imgAvatar');
-                    const url = getDriveDirectUrl(data.url);
-                    img.src = url;
-                    img.style.display = 'block';
-                    document.getElementById('avatarPlaceholder').style.display = 'none';
-                    
-                    showToast('✅ Foto profil berhasil diupdate!', 'success');
-                    if (navigator.vibrate) navigator.vibrate(30);
-                } else {
-                    showToast('❌ Gagal: ' + (data.message || 'Coba lagi'), 'error');
-                    loadUserData();
-                }
-            } catch(e) {
-                showToast('❌ Gagal koneksi ke server!', 'error');
-                loadUserData();
+            showToast('Gagal koneksi ke server!', 'error');
+            const oldCache = localStorage.getItem(cacheKey);
+            if (oldCache) {
+                const parsed = JSON.parse(oldCache);
+                renderHistory(parsed.value);
+                showToast('📡 Menggunakan data terakhir', 'warning');
             }
-        };
-        reader.readAsDataURL(file);
-        event.target.value = '';
-    }
-
-    // ============================================================
-    // NAVIGATION
-    // ============================================================
-    function navigateTo(page, event) {
-        if (event && event.currentTarget) {
-            document.querySelectorAll('.bottom-nav .nav-item').forEach(el => el.classList.remove('active'));
-            event.currentTarget.classList.add('active');
-        }
-        
-        if (page === 'home') {
-            // Sudah di home
-        } else if (page === 'stats') {
-            window.location.href = 'stats.html';
-        } else if (page === 'history') {
-            window.location.href = 'history.html';
         }
     }
 
+    // ============================================================
+    // RENDER HISTORY
+    // ============================================================
+    function renderHistory(data) {
+        document.getElementById('sumHadir').textContent = data.totalHadir || 0;
+        document.getElementById('sumTelat').textContent = data.totalTelat || 0;
+        document.getElementById('sumAlfa').textContent = data.totalAlfa || 0;
+
+        const container = document.getElementById('historyList');
+        const list = data.list || [];
+
+        if (list.length === 0) {
+            container.innerHTML = `
+                <div style="text-align:center;color:#64748b;padding:40px 0;">
+                    <i class="fas fa-calendar-times" style="font-size:40px;display:block;margin-bottom:12px;"></i>
+                    <p>Belum ada riwayat absensi</p>
+                </div>
+            `;
+            return;
+        }
+
+        let html = '';
+        list.forEach(item => {
+            const statusClass = item.status === 'hadir' ? 'hadir' : item.status === 'telat' ? 'telat' : 'alfa';
+            const statusLabel = item.status === 'hadir' ? '✅ Hadir' : item.status === 'telat' ? '⏰ Telat' : '❌ Alfa';
+            html += `
+                <div class="history-item">
+                    <div class="left">
+                        <div class="date">${item.tanggal}</div>
+                        <div class="day">${item.hari || ''}</div>
+                    </div>
+                    <div class="right">
+                        <div class="jam">${item.jamMasuk || '-'} → ${item.jamPulang || '-'}</div>
+                        <div class="status ${statusClass}">${statusLabel}</div>
+                    </div>
+                </div>
+            `;
+        });
+
+        container.innerHTML = html;
+    }
+
+    // ============================================================
+    // UPDATE LAST UPDATE TIME
+    // ============================================================
+    function updateLastUpdate() {
+        const now = new Date();
+        const el = document.getElementById('lastUpdate');
+        el.textContent = '🔄 Terakhir: ' + now.toLocaleTimeString();
+    }
+
+    // ============================================================
+    // REFRESH
+    // ============================================================
+    async function refreshHistory() {
+        showToast('🔄 Memperbarui data...', 'info');
+        await loadHistory(true);
+        showToast('✅ Data diperbarui!', 'success');
+    }
+
+    // ============================================================
+    // LOGOUT
+    // ============================================================
     function doLogout(event) {
         if (event && event.currentTarget) {
             document.querySelectorAll('.bottom-nav .nav-item').forEach(el => el.classList.remove('active'));
             event.currentTarget.classList.add('active');
         }
-        
         if (confirm('Yakin ingin keluar?')) {
             localStorage.removeItem('user_pelem_5');
             window.location.href = 'login.html';
@@ -1482,37 +573,13 @@
     }
 
     // ============================================================
-    // KEYBOARD SHORTCUT - ENTER UNTUK ABSEN
-    // ============================================================
-    document.addEventListener('keydown', function(e) {
-        if (e.key === 'Enter' && !isProcessing) {
-            if (!statusData.sudahMasuk) {
-                handleAbsenClick('DATANG');
-            } else if (!statusData.sudahPulang) {
-                handleAbsenClick('PULANG');
-            }
-        }
-    });
-
-    // ============================================================
     // INIT
     // ============================================================
-    syncStatus();
-    setInterval(syncStatus, 30000);
-    
-    window.addEventListener('online', () => {
-        document.getElementById('connectionStatus').textContent = 'Online';
-        document.getElementById('connectionStatus').style.color = '#34d399';
-        syncStatus();
-    });
-    window.addEventListener('offline', () => {
-        document.getElementById('connectionStatus').textContent = 'Offline';
-        document.getElementById('connectionStatus').style.color = '#ef4444';
-    });
+    loadHistory(false);
+    setTimeout(() => { loadHistory(true); }, 500);
+    setInterval(() => { loadHistory(true); }, 300000);
 
-    console.log('🚀 Smart Presence loaded!');
-    console.log('👤 User:', user.nama);
-    console.log('🏢 Divisi:', user.divisi);
+    console.log('📋 History page loaded for:', user.nama);
 </script>
 
 </body>
