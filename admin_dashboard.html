@@ -588,6 +588,43 @@
     const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpjYXFxeWJvbnBmaXNod2ttZmZnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODc2Mjc2NDgsImV4cCI6MjEwMzIwMzY0OH0.pBk5nwJI3u9n08onTNmvcOFxtCXQvv-ipYIu2f_iAiQ';
 
     // ============================================================
+    // FUNGSI TANGGAL INDONESIA (GMT+7)
+    // ============================================================
+    function getTodayIndonesia() {
+        const now = new Date();
+        const offset = 7 * 60 * 60 * 1000;
+        return new Date(now.getTime() + offset).toISOString().split('T')[0];
+    }
+
+    function getDateIndonesia(date) {
+        const offset = 7 * 60 * 60 * 1000;
+        return new Date(date.getTime() + offset).toISOString().split('T')[0];
+    }
+
+    function parseDateIndonesia(dateStr) {
+        const parts = dateStr.split('-');
+        return new Date(parts[0], parts[1] - 1, parts[2]);
+    }
+
+    // ============================================================
+    // SET DEFAULT DATE (FIXED - PAKAI GMT+7)
+    // ============================================================
+    function setDefaultDates() {
+        const todayStr = getTodayIndonesia();
+        const end = todayStr;
+        
+        const today = new Date();
+        const offset = 7 * 60 * 60 * 1000;
+        const localToday = new Date(today.getTime() + offset);
+        const startDate = new Date(localToday);
+        startDate.setDate(startDate.getDate() - 6);
+        const start = getDateIndonesia(startDate);
+        
+        document.getElementById('startDate').value = start;
+        document.getElementById('endDate').value = end;
+    }
+
+    // ============================================================
     // CEK LOGIN
     // ============================================================
     if (!localStorage.getItem('admin_logged_in')) {
@@ -630,16 +667,8 @@
     }
 
     // ============================================================
-    // SET DEFAULT DATE
+    // SET DEFAULT DATE (PANGGIL)
     // ============================================================
-    function setDefaultDates() {
-        const today = new Date();
-        const end = today.toISOString().split('T')[0];
-        const start = new Date(today);
-        start.setDate(start.getDate() - 6);
-        document.getElementById('startDate').value = start.toISOString().split('T')[0];
-        document.getElementById('endDate').value = end;
-    }
     setDefaultDates();
 
     // ============================================================
@@ -719,12 +748,12 @@
             absensi.forEach(a => { statusMap[a.tanggal] = a.status || 'hadir'; });
             
             let html = '';
-            const dStart = new Date(start);
-            const dEnd = new Date(end);
+            const dStart = parseDateIndonesia(start);
+            const dEnd = parseDateIndonesia(end);
             let total = 0, hadir = 0;
             
             for (let d = new Date(dStart); d <= dEnd; d.setDate(d.getDate() + 1)) {
-                const tglStr = d.toISOString().split('T')[0];
+                const tglStr = getDateIndonesia(d);
                 const status = statusMap[tglStr] || 'alfa';
                 if (status === 'hadir') hadir++;
                 total++;
@@ -774,7 +803,8 @@
         bulkData[tanggal] = newStatus;
         
         el.className = `bulk-item ${newStatus}`;
-        const hari = tanggal.split('-')[2];
+        const parts = tanggal.split('-');
+        const hari = parts[2];
         el.innerHTML = `${newStatus === 'hadir' ? '✅' : '❌'} <span class="tgl">${hari}</span>`;
         
         updateBulkCounter();
@@ -805,13 +835,11 @@
         isBulkMode = toggle.checked;
 
         if (isBulkMode) {
-            // MODE BULK EDIT (ON)
             statusText.textContent = 'ON';
             statusText.className = 'status-text on';
             label.textContent = '📊 Bulk Edit (Edit Banyak Hari Sekaligus)';
             bulkSection.classList.remove('hidden');
             
-            // Nonaktifkan Quick Edit (klik ikon di tabel)
             document.querySelectorAll('.status-icon').forEach(el => {
                 el.classList.add('quick-edit-disabled');
                 el.classList.remove('quick-edit-enabled');
@@ -819,17 +847,14 @@
                 el.onclick = null;
             });
             
-            // Load grid
             loadBulkGrid();
             
         } else {
-            // MODE QUICK EDIT (OFF)
             statusText.textContent = 'OFF';
             statusText.className = 'status-text off';
             label.textContent = '⚡ Edit Manual (Klik Ikon di Tabel)';
             bulkSection.classList.add('hidden');
             
-            // Aktifkan Quick Edit (klik ikon di tabel)
             document.querySelectorAll('.status-icon').forEach(el => {
                 el.classList.remove('quick-edit-disabled');
                 el.classList.add('quick-edit-enabled');
@@ -943,7 +968,8 @@
             el.dataset.status = 'alfa';
             bulkData[tgl] = 'alfa';
             el.className = 'bulk-item alfa';
-            const hari = tgl.split('-')[2];
+            const parts = tgl.split('-');
+            const hari = parts[2];
             el.innerHTML = `❌ <span class="tgl">${hari}</span>`;
         });
         
@@ -952,7 +978,7 @@
     }
 
     // ============================================================
-    // QUICK EDIT - MODAL 4 STATUS (Hadir, Telat, Izin, Alfa)
+    // QUICK EDIT - MODAL 4 STATUS
     // ============================================================
     function quickEdit(id, tanggal) {
         if (isBulkMode) {
@@ -960,7 +986,6 @@
             return;
         }
         
-        // Cari data karyawan
         const karyawan = currentData.find(k => k.id === id);
         if (!karyawan) { showToast('Data tidak ditemukan', 'error'); return; }
         
@@ -968,17 +993,19 @@
         if (!dateData) { showToast('Data tidak ditemukan', 'error'); return; }
         if (dateData.isLibur) { showToast('Hari libur tidak bisa diedit', 'warning'); return; }
         
-        const d = new Date(tanggal + 'T00:00:00');
+        const d = parseDateIndonesia(tanggal);
         const tglDisplay = `${d.getDate()}/${d.getMonth()+1}/${d.getFullYear()}`;
         const currentStatus = dateData.status;
         
-        // Pilihan status
         const statusOptions = [
             { value: 'hadir', label: '✅ Hadir', color: '#34d399' },
             { value: 'telat', label: '⏰ Telat', color: '#fb923c' },
             { value: 'izin', label: '📝 Izin', color: '#60a5fa' },
             { value: 'alfa', label: '❌ Alfa', color: '#f87171' }
         ];
+        
+        const currentJamMasuk = dateData.jamMasuk !== '-' ? dateData.jamMasuk : '';
+        const currentJamPulang = dateData.jamPulang !== '-' ? dateData.jamPulang : '';
         
         let html = `
             <div style="margin-bottom:12px;font-weight:600;color:white;">
@@ -1010,12 +1037,23 @@
         
         html += `
             </div>
-            <div style="display:flex;gap:12px;justify-content:flex-end;margin-top:8px;padding-top:12px;border-top:1px solid rgba(255,255,255,0.06);">
+            <div style="grid-column:1/-1;display:flex;gap:10px;margin-top:8px;">
+                <div style="flex:1;">
+                    <label style="font-size:11px;color:#94a3b8;">Jam Masuk</label>
+                    <input type="time" id="editJamMasuk" value="${currentJamMasuk}" 
+                           style="width:100%;padding:8px 12px;border-radius:8px;background:rgba(0,0,0,0.3);color:white;border:1px solid rgba(255,255,255,0.1);font-family:'Inter',sans-serif;">
+                </div>
+                <div style="flex:1;">
+                    <label style="font-size:11px;color:#94a3b8;">Jam Pulang</label>
+                    <input type="time" id="editJamPulang" value="${currentJamPulang}" 
+                           style="width:100%;padding:8px 12px;border-radius:8px;background:rgba(0,0,0,0.3);color:white;border:1px solid rgba(255,255,255,0.1);font-family:'Inter',sans-serif;">
+                </div>
+            </div>
+            <div style="display:flex;gap:12px;justify-content:flex-end;margin-top:12px;padding-top:12px;border-top:1px solid rgba(255,255,255,0.06);">
                 <button onclick="closeQuickModal()" style="padding:10px 20px;border:none;border-radius:10px;background:#1e293b;color:#94a3b8;cursor:pointer;font-weight:600;font-family:'Inter',sans-serif;">Batal</button>
             </div>
         `;
         
-        // Tampilkan modal
         const modal = document.createElement('div');
         modal.id = 'quickModal';
         modal.style.cssText = `
@@ -1035,98 +1073,95 @@
         document.body.appendChild(modal);
     }
 
-   // ============================================================
-// SET STATUS DARI QUICK MODAL (FIXED!)
-// ============================================================
-async function setStatusQuick(id, tanggal, status) {
-    try {
-        showToast('🔄 Menyimpan...', 'info');
-
-        const karyawan = currentData.find(k => k.id === id);
-        if (!karyawan) { showToast('Data tidak ditemukan', 'error'); return; }
-
-        const dateData = karyawan.dates.find(d => d.tanggal === tanggal);
-        if (!dateData) { showToast('Data tidak ditemukan', 'error'); return; }
-
-        // Tentukan jam berdasarkan status
-        let jamMasuk = null, jamPulang = null;
-        if (status === 'hadir') {
-            jamMasuk = '08:00';
-            jamPulang = '17:00';
-        } else if (status === 'telat') {
-            jamMasuk = '09:00';
-            jamPulang = '17:00';
-        }
-
-        const payload = {
-            status: status,
-            jam_masuk: jamMasuk,
-            jam_pulang: jamPulang
-        };
-
-        let res;
-        
-        // 🔥 CEK: KALAU ADA ABSEN ID → UPDATE, ELSE → INSERT
-        if (dateData.absenId) {
-            // UPDATE
-            console.log('📝 UPDATE absen:', dateData.absenId);
-            res = await fetch(
-                `${SUPABASE_URL}/rest/v1/absensi?id=eq.${dateData.absenId}`,
-                {
-                    method: 'PATCH',
-                    headers: {
-                        'apikey': SUPABASE_ANON_KEY,
-                        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(payload)
-                }
-            );
-        } else {
-            // 🔥 INSERT BARU (PASTIKAN karyawan_id & tanggal DIKIRIM!)
-            console.log('📝 INSERT baru untuk:', id, tanggal);
-            const insertPayload = {
-                karyawan_id: id,
-                tanggal: tanggal,
-                ...payload
+    // ============================================================
+    // SET STATUS DARI QUICK MODAL
+    // ============================================================
+    async function setStatusQuick(id, tanggal, status) {
+        try {
+            showToast('🔄 Menyimpan...', 'info');
+            
+            const karyawan = currentData.find(k => k.id === id);
+            if (!karyawan) { showToast('Data tidak ditemukan', 'error'); return; }
+            
+            const dateData = karyawan.dates.find(d => d.tanggal === tanggal);
+            if (!dateData) { showToast('Data tidak ditemukan', 'error'); return; }
+            
+            const jamMasukInput = document.getElementById('editJamMasuk')?.value || null;
+            const jamPulangInput = document.getElementById('editJamPulang')?.value || null;
+            
+            let jamMasuk = jamMasukInput;
+            let jamPulang = jamPulangInput;
+            
+            if (!jamMasuk && status === 'hadir') jamMasuk = '08:00';
+            if (!jamMasuk && status === 'telat') jamMasuk = '09:00';
+            if (!jamPulang && (status === 'hadir' || status === 'telat')) jamPulang = '17:00';
+            if (status === 'izin' || status === 'alfa') {
+                jamMasuk = null;
+                jamPulang = null;
+            }
+            
+            const payload = {
+                status: status,
+                jam_masuk: jamMasuk,
+                jam_pulang: jamPulang
             };
-            res = await fetch(
-                `${SUPABASE_URL}/rest/v1/absensi`,
-                {
-                    method: 'POST',
-                    headers: {
-                        'apikey': SUPABASE_ANON_KEY,
-                        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(insertPayload)
-                }
-            );
+            
+            let res;
+            if (dateData.absenId) {
+                res = await fetch(
+                    `${SUPABASE_URL}/rest/v1/absensi?id=eq.${dateData.absenId}`,
+                    {
+                        method: 'PATCH',
+                        headers: {
+                            'apikey': SUPABASE_ANON_KEY,
+                            'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(payload)
+                    }
+                );
+            } else {
+                const insertPayload = {
+                    karyawan_id: id,
+                    tanggal: tanggal,
+                    ...payload
+                };
+                res = await fetch(
+                    `${SUPABASE_URL}/rest/v1/absensi`,
+                    {
+                        method: 'POST',
+                        headers: {
+                            'apikey': SUPABASE_ANON_KEY,
+                            'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(insertPayload)
+                    }
+                );
+            }
+            
+            const responseText = await res.text();
+            console.log('📄 Response:', responseText);
+            
+            if (res.ok) {
+                const statusLabel = { hadir: 'Hadir', telat: 'Telat', izin: 'Izin', alfa: 'Alfa' };
+                showToast(`✅ Status diubah menjadi ${statusLabel[status] || status}!`, 'success');
+                closeQuickModal();
+                loadRekap();
+            } else {
+                let errorMsg = responseText;
+                try {
+                    const json = JSON.parse(responseText);
+                    errorMsg = json.message || json.error || responseText;
+                } catch(e) {}
+                showToast('❌ Gagal: ' + errorMsg, 'error');
+            }
+        } catch(e) {
+            console.error('Quick edit error:', e);
+            showToast('❌ Gagal koneksi ke server', 'error');
         }
-
-        // 🔥 CEK RESPONSE DARI SUPABASE
-        const responseText = await res.text();
-        console.log('📄 Response:', responseText);
-
-        if (res.ok) {
-            const statusLabel = { hadir: 'Hadir', telat: 'Telat', izin: 'Izin', alfa: 'Alfa' };
-            showToast(`✅ Status diubah menjadi ${statusLabel[status] || status}!`, 'success');
-            closeQuickModal();
-            loadRekap();
-        } else {
-            // 🔥 TAMPILIN ERROR DARI SUPABASE
-            let errorMsg = responseText;
-            try {
-                const json = JSON.parse(responseText);
-                errorMsg = json.message || json.error || responseText;
-            } catch(e) {}
-            showToast('❌ Gagal: ' + errorMsg, 'error');
-        }
-    } catch(e) {
-        console.error('❌ Quick edit error:', e);
-        showToast('❌ Gagal koneksi ke server', 'error');
     }
-}
+
     // ============================================================
     // CLOSE QUICK MODAL
     // ============================================================
@@ -1139,7 +1174,6 @@ async function setStatusQuick(id, tanggal, status) {
     // OPEN MODAL LIBUR
     // ============================================================
     function openModalLibur(tanggal) {
-        // Ambil daftar divisi unik dari data
         const divisiList = [...new Set(currentData.map(row => row.divisi))].filter(d => d && d !== '-');
         
         if (divisiList.length === 0) {
@@ -1147,7 +1181,6 @@ async function setStatusQuick(id, tanggal, status) {
             return;
         }
         
-        // Buat modal pilihan divisi
         let html = `<div style="margin-bottom:12px;font-weight:600;">🗓️ ${formatTanggal(tanggal)}</div>`;
         html += `<div style="display:flex;flex-direction:column;gap:8px;">`;
         
@@ -1170,7 +1203,6 @@ async function setStatusQuick(id, tanggal, status) {
             <button onclick="closeModalLibur()" style="padding:10px 20px;border:none;border-radius:10px;background:#1e293b;color:#94a3b8;cursor:pointer;font-weight:600;">Tutup</button>
         </div>`;
         
-        // Tampilkan modal
         const modal = document.createElement('div');
         modal.id = 'modalLibur';
         modal.style.cssText = `
@@ -1194,6 +1226,11 @@ async function setStatusQuick(id, tanggal, status) {
     // TOGGLE LIBUR DIVISI
     // ============================================================
     async function toggleLiburDivisi(tanggal, divisi) {
+        if (!divisi || divisi === '') {
+            showToast('❌ Divisi tidak valid!', 'error');
+            return;
+        }
+        
         const key = tanggal + '|' + divisi;
         const isLibur = hariLiburMap[key] || false;
         
@@ -1252,7 +1289,7 @@ async function setStatusQuick(id, tanggal, status) {
     // FORMAT TANGGAL
     // ============================================================
     function formatTanggal(tgl) {
-        const d = new Date(tgl + 'T00:00:00');
+        const d = parseDateIndonesia(tgl);
         const bulan = ['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agu','Sep','Okt','Nov','Des'];
         return `${d.getDate()} ${bulan[d.getMonth()]} ${d.getFullYear()}`;
     }
@@ -1269,7 +1306,6 @@ async function setStatusQuick(id, tanggal, status) {
         const karyawan = currentData.find(k => k.id === id);
         if (!karyawan) { showToast('Data tidak ditemukan', 'error'); return; }
         
-        // Cari tanggal pertama yang bisa diedit
         const firstDate = karyawan.dates.find(d => !d.isLibur);
         if (firstDate) {
             quickEdit(id, firstDate.tanggal);
@@ -1312,10 +1348,10 @@ async function setStatusQuick(id, tanggal, status) {
             });
 
             const dateList = [];
-            const dStart = new Date(start);
-            const dEnd = new Date(end);
+            const dStart = parseDateIndonesia(start);
+            const dEnd = parseDateIndonesia(end);
             for (let d = new Date(dStart); d <= dEnd; d.setDate(d.getDate() + 1)) {
-                dateList.push(d.toISOString().split('T')[0]);
+                dateList.push(getDateIndonesia(d));
             }
 
             currentData = [];
@@ -1399,7 +1435,7 @@ async function setStatusQuick(id, tanggal, status) {
 
         let html = '<table><thead><tr><th>No</th><th>Nama</th><th>Divisi</th>';
         dateList.forEach(tgl => {
-            const d = new Date(tgl + 'T00:00:00');
+            const d = parseDateIndonesia(tgl);
             const liburDivisi = Object.keys(hariLiburMap).filter(k => k.startsWith(tgl + '|')).map(k => k.split('|')[1]);
             const isAnyLibur = liburDivisi.length > 0;
             const liburBadge = isAnyLibur ? `<span class="libur-badge">${liburDivisi.length}🗓️</span>` : '';
@@ -1425,7 +1461,6 @@ async function setStatusQuick(id, tanggal, status) {
                     else if (d.status === 'izin') { icon = '📝'; cls = 'izin'; }
                     else { icon = '❌'; cls = 'alfa'; }
                     
-                    // Quick Edit onclick (hanya aktif kalau mode OFF)
                     const onClick = isBulkMode ? '' : `onclick="quickEdit('${row.id}','${d.tanggal}')"`;
                     const disabledClass = isBulkMode ? 'quick-edit-disabled' : 'quick-edit-enabled';
                     html += `<td><span class="status-icon ${cls} ${disabledClass}" ${onClick} title="${isBulkMode ? 'Mode Bulk aktif' : 'Klik untuk edit'}">${icon}</span></td>`;
@@ -1467,7 +1502,7 @@ async function setStatusQuick(id, tanggal, status) {
         let csv = `Rekapitulasi Absensi ${start} - ${end}\n\nNo,Nama,Divisi,`;
         const dateList = currentData[0]?.dates.map(d => d.tanggal) || [];
         dateList.forEach(tgl => {
-            const d = new Date(tgl + 'T00:00:00');
+            const d = parseDateIndonesia(tgl);
             csv += `${d.getDate()}/${d.getMonth()+1},`;
         });
         csv += 'Akumulasi\n';
@@ -1516,19 +1551,17 @@ async function setStatusQuick(id, tanggal, status) {
     // ============================================================
     // INIT
     // ============================================================
-    // Event listener untuk dropdown bulk
     document.getElementById('bulkKaryawan').addEventListener('change', loadBulkGrid);
 
-    // Load semua
     loadBulkKaryawan();
     setTimeout(() => loadRekap(), 100);
 
-    // 🔥 SET DEFAULT MODE = OFF (Quick Edit)
     document.getElementById('modeToggle').checked = false;
     toggleMode();
 
     console.log('🛡️ Admin Dashboard loaded!');
     console.log('📌 Mode:', isBulkMode ? 'BULK EDIT' : 'QUICK EDIT');
+    console.log('🗓️ Today (WIB):', getTodayIndonesia());
 </script>
 
 </body>
