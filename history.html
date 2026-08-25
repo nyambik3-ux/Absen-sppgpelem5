@@ -52,7 +52,6 @@
             90% { opacity: 1; }
             100% { transform: translateY(-10vh) scale(1); opacity: 0; }
         }
-
         .glass-card {
             position: relative;
             z-index: 1;
@@ -65,13 +64,12 @@
             border: 1px solid rgba(255, 255, 255, 0.06);
             box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
         }
-
         .page-header {
             display: flex;
             align-items: center;
             gap: 16px;
-            margin-bottom: 24px;
-            padding-bottom: 16px;
+            margin-bottom: 20px;
+            padding-bottom: 14px;
             border-bottom: 1px solid rgba(255, 255, 255, 0.06);
         }
         .page-header .back-btn {
@@ -100,7 +98,32 @@
             color: #64748b;
             font-weight: 500;
         }
-
+        .refresh-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+            padding: 8px 12px;
+            background: rgba(0,0,0,0.2);
+            border-radius: 12px;
+        }
+        .refresh-bar .last-update {
+            font-size: 11px;
+            color: #64748b;
+        }
+        .refresh-bar .refresh-btn {
+            background: rgba(168,85,247,0.15);
+            border: none;
+            color: #a855f7;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+            transition: all 0.2s;
+        }
+        .refresh-bar .refresh-btn:active { transform: scale(0.95); }
         .summary-bar {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
@@ -129,19 +152,17 @@
             text-transform: uppercase;
             margin-top: 2px;
         }
-
         .history-list {
             display: flex;
             flex-direction: column;
             gap: 8px;
-            max-height: 420px;
+            max-height: 400px;
             overflow-y: auto;
             padding-right: 4px;
         }
         .history-list::-webkit-scrollbar { width: 3px; }
         .history-list::-webkit-scrollbar-track { background: rgba(255,255,255,0.05); border-radius: 10px; }
         .history-list::-webkit-scrollbar-thumb { background: #a855f7; border-radius: 10px; }
-
         .history-item {
             background: rgba(0,0,0,0.2);
             border-radius: 16px;
@@ -188,7 +209,6 @@
             background: rgba(239,68,68,0.1);
             color: #64748b;
         }
-
         .bottom-nav {
             position: fixed;
             bottom: 0;
@@ -232,7 +252,6 @@
             transition: all 0.2s;
         }
         .bottom-nav .nav-item.active .dot { opacity: 1; }
-
         .toast-container {
             position: fixed;
             bottom: 100px;
@@ -264,7 +283,6 @@
             from { opacity: 0; transform: translateY(30px) scale(0.95); }
             to { opacity: 1; transform: translateY(0) scale(1); }
         }
-
         @media (max-width: 480px) {
             body { padding: 12px; padding-bottom: 90px; }
             .glass-card { padding: 18px 14px 22px; border-radius: 32px; }
@@ -272,6 +290,8 @@
             .summary-item .num { font-size: 16px; }
             .history-item { padding: 12px; }
             .history-item .left .date { font-size: 12px; }
+            .refresh-bar { flex-wrap: wrap; gap: 6px; }
+            .refresh-bar .last-update { font-size: 10px; }
         }
     </style>
 </head>
@@ -289,6 +309,13 @@
             <h1>📋 Riwayat Absensi</h1>
             <div class="sub">Semua catatan kehadiran Anda</div>
         </div>
+    </div>
+
+    <div class="refresh-bar">
+        <span class="last-update" id="lastUpdate">🔄 Terakhir: --:--</span>
+        <button class="refresh-btn" onclick="refreshHistory()">
+            <i class="fas fa-sync-alt"></i> Refresh
+        </button>
     </div>
 
     <div class="summary-bar" id="summaryBar">
@@ -331,8 +358,15 @@
 <div class="toast-container" id="toastContainer"></div>
 
 <script>
+    // ============================================================
+    // KONFIGURASI SUPABASE
+    // ============================================================
     const SUPABASE_URL = 'https://zcaqqybonpfishwkmffg.supabase.co';
-    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpjYXFxeWJvbnBmaXNod2ttZmZnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODc2Mjc2NDgsImV4cCI6MjEwMzIwMzY0OH0.pBk5nwJI3u9n08onTNmvcOFxtCXQvv-ipYIu2f_iAiQ';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpjYXFxeWJvbnBmaXNod2ttZmZnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODc2Mjc2NDgsImV4cCI6MjEwMzIwMzY0OH0.pBk5nwJI3u9n08onTNmvcOFxtCXQvv-ipYIu2f_iAiQ';
+
+    // ============================================================
+    // AMBIL DATA USER
+    // ============================================================
     let user = null;
     try {
         const raw = localStorage.getItem('user_pelem_5');
@@ -343,6 +377,9 @@
         window.location.href = "login.html";
     }
 
+    // ============================================================
+    // TOAST
+    // ============================================================
     function showToast(msg, type = 'success') {
         const container = document.getElementById('toastContainer');
         container.innerHTML = '';
@@ -358,6 +395,9 @@
         }, 3000);
     }
 
+    // ============================================================
+    // PARTICLES
+    // ============================================================
     function createParticles() {
         const container = document.getElementById('particles');
         for (let i = 0; i < 20; i++) {
@@ -374,34 +414,113 @@
     }
     createParticles();
 
-    async function loadHistory() {
+    // ============================================================
+    // FUNGSI CACHE
+    // ============================================================
+    function getCache(key) {
         try {
-            const response = await fetch(SCRIPT_URL, {
-                method: 'POST',
-                body: JSON.stringify({
-                    action: 'get_history',
-                    id: user.id
-                })
-            });
-            const data = await response.json();
-
-            if (data.result === 'success' && data.data) {
-                renderHistory(data.data);
-            } else {
-                showToast('Gagal memuat riwayat', 'error');
+            const raw = localStorage.getItem(key);
+            if (!raw) return null;
+            const data = JSON.parse(raw);
+            if (Date.now() - data.timestamp > data.duration) {
+                localStorage.removeItem(key);
+                return null;
             }
+            return data.value;
+        } catch(e) { return null; }
+    }
+
+    function setCache(key, value, duration) {
+        try {
+            localStorage.setItem(key, JSON.stringify({
+                timestamp: Date.now(),
+                duration: duration,
+                value: value
+            }));
+        } catch(e) {}
+    }
+
+    // ============================================================
+    // LOAD HISTORY DARI SUPABASE
+    // ============================================================
+    async function loadHistory(forceRefresh = false) {
+        const cacheKey = 'cache_history_' + user.id;
+        
+        if (!forceRefresh) {
+            const cached = getCache(cacheKey);
+            if (cached) {
+                console.log('📦 History from cache');
+                renderHistory(cached);
+                updateLastUpdate();
+                return;
+            }
+        }
+
+        console.log('🌐 History from Supabase');
+        try {
+            const response = await fetch(
+                `${SUPABASE_URL}/rest/v1/absensi?select=*&karyawan_id=eq.${user.id}&order=tanggal.desc&limit=30`,
+                {
+                    headers: {
+                        'apikey': SUPABASE_ANON_KEY,
+                        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
+                    }
+                }
+            );
+            const absensi = await response.json();
+
+            let totalHadir = 0, totalTelat = 0, totalAlfa = 0;
+            const list = [];
+
+            absensi.forEach(item => {
+                const status = item.jam_pulang ? 'hadir' : (item.jam_masuk ? 'telat' : 'alfa');
+                if (status === 'hadir') totalHadir++;
+                else if (status === 'telat') totalTelat++;
+                else totalAlfa++;
+
+                const d = new Date(item.tanggal);
+                const hari = d.toLocaleDateString('id-ID', { weekday: 'short' });
+
+                list.push({
+                    tanggal: item.tanggal,
+                    hari: hari,
+                    jamMasuk: item.jam_masuk || '-',
+                    jamPulang: item.jam_pulang || '-',
+                    status: status
+                });
+            });
+
+            const result = {
+                totalHadir: totalHadir,
+                totalTelat: totalTelat,
+                totalAlfa: totalAlfa,
+                list: list
+            };
+
+            setCache(cacheKey, result, 300000);
+            renderHistory(result);
+            updateLastUpdate();
+
         } catch(e) {
-            showToast('Gagal koneksi ke server!', 'error');
+            console.error('Load history error:', e);
+            showToast('Gagal memuat riwayat', 'error');
+            const oldCache = localStorage.getItem(cacheKey);
+            if (oldCache) {
+                const parsed = JSON.parse(oldCache);
+                renderHistory(parsed.value);
+                showToast('📡 Menggunakan data terakhir', 'warning');
+            }
         }
     }
 
+    // ============================================================
+    // RENDER HISTORY
+    // ============================================================
     function renderHistory(data) {
-        // Summary
         document.getElementById('sumHadir').textContent = data.totalHadir || 0;
         document.getElementById('sumTelat').textContent = data.totalTelat || 0;
         document.getElementById('sumAlfa').textContent = data.totalAlfa || 0;
 
-        // History List
         const container = document.getElementById('historyList');
         const list = data.list || [];
 
@@ -426,7 +545,7 @@
                         <div class="day">${item.hari || ''}</div>
                     </div>
                     <div class="right">
-                        <div class="jam">${item.jamMasuk || '-'} → ${item.jamPulang || '-'}</div>
+                        <div class="jam">${item.jamMasuk} → ${item.jamPulang}</div>
                         <div class="status ${statusClass}">${statusLabel}</div>
                     </div>
                 </div>
@@ -436,6 +555,27 @@
         container.innerHTML = html;
     }
 
+    // ============================================================
+    // UPDATE LAST UPDATE
+    // ============================================================
+    function updateLastUpdate() {
+        const now = new Date();
+        const el = document.getElementById('lastUpdate');
+        el.textContent = '🔄 Terakhir: ' + now.toLocaleTimeString();
+    }
+
+    // ============================================================
+    // REFRESH
+    // ============================================================
+    async function refreshHistory() {
+        showToast('🔄 Memperbarui data...', 'info');
+        await loadHistory(true);
+        showToast('✅ Data diperbarui!', 'success');
+    }
+
+    // ============================================================
+    // LOGOUT
+    // ============================================================
     function doLogout(event) {
         if (event && event.currentTarget) {
             document.querySelectorAll('.bottom-nav .nav-item').forEach(el => el.classList.remove('active'));
@@ -447,8 +587,12 @@
         }
     }
 
-    loadHistory();
-    setInterval(loadHistory, 60000);
+    // ============================================================
+    // INIT
+    // ============================================================
+    loadHistory(false);
+    setTimeout(() => { loadHistory(true); }, 500);
+    setInterval(() => { loadHistory(true); }, 300000);
 
     console.log('📋 History page loaded for:', user.nama);
 </script>
