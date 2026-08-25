@@ -52,7 +52,6 @@
             90% { opacity: 1; }
             100% { transform: translateY(-10vh) scale(1); opacity: 0; }
         }
-
         .glass-card {
             position: relative;
             z-index: 1;
@@ -65,13 +64,12 @@
             border: 1px solid rgba(255, 255, 255, 0.06);
             box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
         }
-
         .page-header {
             display: flex;
             align-items: center;
             gap: 16px;
-            margin-bottom: 24px;
-            padding-bottom: 16px;
+            margin-bottom: 20px;
+            padding-bottom: 14px;
             border-bottom: 1px solid rgba(255, 255, 255, 0.06);
         }
         .page-header .back-btn {
@@ -100,7 +98,32 @@
             color: #64748b;
             font-weight: 500;
         }
-
+        .refresh-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+            padding: 8px 12px;
+            background: rgba(0,0,0,0.2);
+            border-radius: 12px;
+        }
+        .refresh-bar .last-update {
+            font-size: 11px;
+            color: #64748b;
+        }
+        .refresh-bar .refresh-btn {
+            background: rgba(168,85,247,0.15);
+            border: none;
+            color: #a855f7;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+            transition: all 0.2s;
+        }
+        .refresh-bar .refresh-btn:active { transform: scale(0.95); }
         .stat-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -129,7 +152,6 @@
         .stat-card-big .num.telat { color: #fb923c; }
         .stat-card-big .num.alfa { color: #f87171; }
         .stat-card-big .num.persen { color: #60a5fa; }
-
         .chart-container {
             background: rgba(0,0,0,0.25);
             border-radius: 20px;
@@ -186,7 +208,6 @@
             text-align: right;
             flex-shrink: 0;
         }
-
         .daily-list {
             display: flex;
             flex-direction: column;
@@ -198,7 +219,6 @@
         .daily-list::-webkit-scrollbar { width: 3px; }
         .daily-list::-webkit-scrollbar-track { background: rgba(255,255,255,0.05); border-radius: 10px; }
         .daily-list::-webkit-scrollbar-thumb { background: #a855f7; border-radius: 10px; }
-
         .daily-item {
             display: flex;
             justify-content: space-between;
@@ -235,7 +255,6 @@
         .daily-item .right .status-badge.hadir { background: rgba(16,185,129,0.15); color: #34d399; }
         .daily-item .right .status-badge.telat { background: rgba(251,146,60,0.15); color: #fb923c; }
         .daily-item .right .status-badge.alfa { background: rgba(239,68,68,0.1); color: #64748b; }
-
         .bottom-nav {
             position: fixed;
             bottom: 0;
@@ -279,7 +298,6 @@
             transition: all 0.2s;
         }
         .bottom-nav .nav-item.active .dot { opacity: 1; }
-
         .toast-container {
             position: fixed;
             bottom: 100px;
@@ -311,7 +329,6 @@
             from { opacity: 0; transform: translateY(30px) scale(0.95); }
             to { opacity: 1; transform: translateY(0) scale(1); }
         }
-
         @media (max-width: 480px) {
             body { padding: 12px; padding-bottom: 90px; }
             .glass-card { padding: 18px 14px 22px; border-radius: 32px; }
@@ -321,6 +338,8 @@
             .chart-bar-item .pct { width: 32px; font-size: 10px; }
             .daily-item { padding: 8px 10px; }
             .daily-item .left { font-size: 12px; }
+            .refresh-bar { flex-wrap: wrap; gap: 6px; }
+            .refresh-bar .last-update { font-size: 10px; }
         }
     </style>
 </head>
@@ -340,7 +359,13 @@
         </div>
     </div>
 
-    <!-- Stat Cards -->
+    <div class="refresh-bar">
+        <span class="last-update" id="lastUpdate">🔄 Terakhir: --:--</span>
+        <button class="refresh-btn" onclick="refreshStats()">
+            <i class="fas fa-sync-alt"></i> Refresh
+        </button>
+    </div>
+
     <div class="stat-grid" id="statGrid">
         <div class="stat-card-big">
             <div class="num hadir" id="totalHadir">0</div>
@@ -360,7 +385,6 @@
         </div>
     </div>
 
-    <!-- Chart -->
     <div class="chart-container">
         <h3><i class="fas fa-chart-bar" style="color:#a855f7;"></i> Grafik 7 Hari Terakhir</h3>
         <div class="chart-bar" id="chartBar">
@@ -370,7 +394,6 @@
         </div>
     </div>
 
-    <!-- Daily List -->
     <div class="chart-container">
         <h3><i class="fas fa-list" style="color:#34d399;"></i> Riwayat Harian</h3>
         <div class="daily-list" id="dailyList">
@@ -381,7 +404,6 @@
     </div>
 </div>
 
-<!-- Bottom Nav -->
 <div class="bottom-nav">
     <a href="index.html" class="nav-item">
         <i class="fas fa-home"></i> Home <div class="dot"></div>
@@ -400,8 +422,15 @@
 <div class="toast-container" id="toastContainer"></div>
 
 <script>
+    // ============================================================
+    // KONFIGURASI SUPABASE
+    // ============================================================
     const SUPABASE_URL = 'https://zcaqqybonpfishwkmffg.supabase.co';
-    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpjYXFxeWJvbnBmaXNod2ttZmZnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODc2Mjc2NDgsImV4cCI6MjEwMzIwMzY0OH0.pBk5nwJI3u9n08onTNmvcOFxtCXQvv-ipYIu2f_iAiQ';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpjYXFxeWJvbnBmaXNod2ttZmZnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODc2Mjc2NDgsImV4cCI6MjEwMzIwMzY0OH0.pBk5nwJI3u9n08onTNmvcOFxtCXQvv-ipYIu2f_iAiQ';
+
+    // ============================================================
+    // AMBIL DATA USER
+    // ============================================================
     let user = null;
     try {
         const raw = localStorage.getItem('user_pelem_5');
@@ -412,6 +441,9 @@
         window.location.href = "login.html";
     }
 
+    // ============================================================
+    // TOAST
+    // ============================================================
     function showToast(msg, type = 'success') {
         const container = document.getElementById('toastContainer');
         container.innerHTML = '';
@@ -427,6 +459,9 @@
         }, 3000);
     }
 
+    // ============================================================
+    // PARTICLES
+    // ============================================================
     function createParticles() {
         const container = document.getElementById('particles');
         for (let i = 0; i < 20; i++) {
@@ -443,29 +478,130 @@
     }
     createParticles();
 
-    async function loadStats() {
+    // ============================================================
+    // FUNGSI CACHE
+    // ============================================================
+    function getCache(key) {
         try {
-            const response = await fetch(SCRIPT_URL, {
-                method: 'POST',
-                body: JSON.stringify({
-                    action: 'get_stats',
-                    id: user.id
-                })
-            });
-            const data = await response.json();
-
-            if (data.result === 'success' && data.data) {
-                renderStats(data.data);
-            } else {
-                showToast('Gagal memuat statistik', 'error');
+            const raw = localStorage.getItem(key);
+            if (!raw) return null;
+            const data = JSON.parse(raw);
+            if (Date.now() - data.timestamp > data.duration) {
+                localStorage.removeItem(key);
+                return null;
             }
+            return data.value;
+        } catch(e) { return null; }
+    }
+
+    function setCache(key, value, duration) {
+        try {
+            localStorage.setItem(key, JSON.stringify({
+                timestamp: Date.now(),
+                duration: duration,
+                value: value
+            }));
+        } catch(e) {}
+    }
+
+    // ============================================================
+    // LOAD STATS DARI SUPABASE
+    // ============================================================
+    async function loadStats(forceRefresh = false) {
+        const cacheKey = 'cache_stats_' + user.id;
+        
+        if (!forceRefresh) {
+            const cached = getCache(cacheKey);
+            if (cached) {
+                console.log('📦 Stats from cache');
+                renderStats(cached);
+                updateLastUpdate();
+                return;
+            }
+        }
+
+        console.log('🌐 Stats from Supabase');
+        try {
+            const response = await fetch(
+                `${SUPABASE_URL}/rest/v1/absensi?select=*&karyawan_id=eq.${user.id}&order=tanggal.desc&limit=30`,
+                {
+                    headers: {
+                        'apikey': SUPABASE_ANON_KEY,
+                        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
+                    }
+                }
+            );
+            const absensi = await response.json();
+
+            let totalHadir = 0, totalTelat = 0, totalAlfa = 0;
+            const daily = [];
+
+            absensi.forEach(item => {
+                const status = item.jam_pulang ? 'hadir' : (item.jam_masuk ? 'telat' : 'alfa');
+                if (status === 'hadir') totalHadir++;
+                else if (status === 'telat') totalTelat++;
+                else totalAlfa++;
+
+                daily.push({
+                    tanggal: item.tanggal,
+                    jamMasuk: item.jam_masuk || '-',
+                    jamPulang: item.jam_pulang || '-',
+                    status: status,
+                    statusLabel: status === 'hadir' ? 'Hadir' : status === 'telat' ? 'Telat' : 'Alfa'
+                });
+            });
+
+            const total = totalHadir + totalTelat + totalAlfa;
+            const persentase = total > 0 ? ((totalHadir + totalTelat) / total) * 100 : 0;
+
+            // Chart 7 hari terakhir
+            const chart = [];
+            const today = new Date();
+            for (let i = 6; i >= 0; i--) {
+                const d = new Date(today);
+                d.setDate(d.getDate() - i);
+                const tglStr = d.toISOString().split('T')[0];
+                const hari = d.toLocaleDateString('id-ID', { weekday: 'short' });
+                
+                const found = absensi.filter(a => a.tanggal === tglStr);
+                const hadir = found.filter(f => f.jam_masuk).length;
+                const totalHari = found.length || 1;
+                const persen = (hadir / totalHari) * 100;
+                
+                chart.push({
+                    hari: hari,
+                    persen: Math.min(100, persen)
+                });
+            }
+
+            const result = {
+                total: { hadir: totalHadir, telat: totalTelat, alfa: totalAlfa },
+                persentase: persentase,
+                chart: chart,
+                daily: daily
+            };
+
+            setCache(cacheKey, result, 300000);
+            renderStats(result);
+            updateLastUpdate();
+
         } catch(e) {
-            showToast('Gagal koneksi ke server!', 'error');
+            console.error('Load stats error:', e);
+            showToast('Gagal memuat statistik', 'error');
+            // Fallback ke cache expired
+            const oldCache = localStorage.getItem(cacheKey);
+            if (oldCache) {
+                const parsed = JSON.parse(oldCache);
+                renderStats(parsed.value);
+                showToast('📡 Menggunakan data terakhir', 'warning');
+            }
         }
     }
 
+    // ============================================================
+    // RENDER STATS
+    // ============================================================
     function renderStats(data) {
-        // Total
         document.getElementById('totalHadir').textContent = data.total?.hadir || 0;
         document.getElementById('totalTelat').textContent = data.total?.telat || 0;
         document.getElementById('totalAlfa').textContent = data.total?.alfa || 0;
@@ -517,7 +653,7 @@
                     <div class="daily-item">
                         <div class="left">
                             ${item.tanggal}
-                            <div class="date-sub">${item.jamMasuk || '-'} → ${item.jamPulang || '-'}</div>
+                            <div class="date-sub">${item.jamMasuk} → ${item.jamPulang}</div>
                         </div>
                         <div class="right">
                             <div class="status-badge ${statusClass}">${statusLabel}</div>
@@ -529,6 +665,27 @@
         }
     }
 
+    // ============================================================
+    // UPDATE LAST UPDATE
+    // ============================================================
+    function updateLastUpdate() {
+        const now = new Date();
+        const el = document.getElementById('lastUpdate');
+        el.textContent = '🔄 Terakhir: ' + now.toLocaleTimeString();
+    }
+
+    // ============================================================
+    // REFRESH
+    // ============================================================
+    async function refreshStats() {
+        showToast('🔄 Memperbarui data...', 'info');
+        await loadStats(true);
+        showToast('✅ Data diperbarui!', 'success');
+    }
+
+    // ============================================================
+    // LOGOUT
+    // ============================================================
     function doLogout(event) {
         if (event && event.currentTarget) {
             document.querySelectorAll('.bottom-nav .nav-item').forEach(el => el.classList.remove('active'));
@@ -540,8 +697,12 @@
         }
     }
 
-    loadStats();
-    setInterval(loadStats, 60000);
+    // ============================================================
+    // INIT
+    // ============================================================
+    loadStats(false);
+    setTimeout(() => { loadStats(true); }, 500);
+    setInterval(() => { loadStats(true); }, 300000);
 
     console.log('📊 Stats page loaded for:', user.nama);
 </script>
