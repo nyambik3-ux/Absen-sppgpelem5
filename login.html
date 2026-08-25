@@ -146,10 +146,10 @@
 
     <script>
         // ============================================================
-        // KONFIGURASI SUPABASE (FIXED!)
+        // KONFIGURASI SUPABASE (PAKAI YANG BENER DARI DASHBOARD)
         // ============================================================
-        const SUPABASE_URL = 'https://zcaQqgybonpfishwkmffg.supabase.co';
-        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpjYXFneWJvbnBmaXNod2ttZmZnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODc2Mjc2NDgsImV4cCI6MjEwMzIwMzY0OH0.pBk5nwJI3u9n08onTNmvcOFxtCXQvv-ipYIu2f_iAiQ';
+        const SUPABASE_URL = 'https://zcaqqybonpfishwkmffg.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpjYXFxeWJvbnBmaXNod2ttZmZnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODc2Mjc2NDgsImV4cCI6MjEwMzIwMzY0OH0.pBk5nwJI3u9n08onTNmvcOFxtCXQvv-ipYIu2f_iAiQ';
 
         // ============================================================
         // TOAST
@@ -192,7 +192,6 @@
             const btn = document.getElementById('btn');
             const btnText = document.getElementById('btn-text');
 
-            // Validasi
             if (!idInput) { showToast('Masukkan ID Relawan!', true); return; }
             if (idInput.length < 3) { showToast('ID minimal 3 karakter!', true); return; }
             if (!pinInput) { showToast('Masukkan PIN!', true); return; }
@@ -228,7 +227,6 @@
 
                 const user = data[0];
                 
-                // Format user data
                 const userData = {
                     id: user.id,
                     nama: user.nama || user.id,
