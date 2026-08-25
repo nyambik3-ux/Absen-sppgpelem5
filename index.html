@@ -7,8 +7,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
+        /* STYLE SAMA KAYAK PUNYA KAMU, GAK SAYA UBAH */
         * { margin: 0; padding: 0; box-sizing: border-box; }
-
         body {
             font-family: 'Inter', sans-serif;
             background: radial-gradient(circle at 20% 30%, #0f172a, #020617);
@@ -19,7 +19,6 @@
             padding: 20px;
             padding-bottom: 140px;
         }
-
         .aurora-bg {
             position: fixed;
             top: 0; left: 0; right: 0; bottom: 0;
@@ -33,7 +32,6 @@
             50% { background-position: 100% 50%; }
             100% { background-position: 0% 50%; }
         }
-
         .particles {
             position: fixed;
             top: 0; left: 0; right: 0; bottom: 0;
@@ -55,7 +53,6 @@
             90% { opacity: 1; }
             100% { transform: translateY(-10vh) scale(1); opacity: 0; }
         }
-
         .glass-card {
             position: relative;
             z-index: 1;
@@ -68,8 +65,6 @@
             border: 1px solid rgba(255, 255, 255, 0.06);
             box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5), 0 0 80px rgba(168, 85, 247, 0.05);
         }
-
-        /* ===== PROFILE - TANPA KOTAK BIRU ===== */
         .profile {
             display: flex;
             align-items: center;
@@ -81,7 +76,6 @@
             max-height: 85px;
             overflow: hidden;
         }
-
         .avatar-wrapper {
             position: relative;
             width: 75px;
@@ -89,7 +83,6 @@
             flex-shrink: 0;
             cursor: pointer;
         }
-
         .avatar-wrapper img {
             width: 100%;
             height: 100%;
@@ -98,7 +91,6 @@
             display: block;
             background: #0f172a;
         }
-
         .avatar-wrapper .avatar-placeholder {
             width: 100%;
             height: 100%;
@@ -110,7 +102,6 @@
             font-size: 32px;
             color: white;
         }
-
         .avatar-hover {
             position: absolute;
             bottom: 0;
@@ -129,9 +120,7 @@
             font-weight: 600;
             letter-spacing: 0.3px;
         }
-
         .avatar-wrapper:hover .avatar-hover { opacity: 1; }
-
         .profile-info { flex: 1; min-width: 0; }
         .profile-info .name {
             font-size: 18px;
@@ -172,8 +161,6 @@
             0%, 100% { opacity: 1; }
             50% { opacity: 0.3; }
         }
-
-        /* ===== CLOCK ===== */
         .clock-panel {
             background: rgba(0, 0, 0, 0.3);
             border-radius: 28px;
@@ -208,8 +195,6 @@
             justify-content: center;
             gap: 14px;
         }
-
-        /* ===== STATUS HARI INI ===== */
         .status-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -244,8 +229,6 @@
         .status-card.masuk .value { color: #34d399; }
         .status-card.pulang { border-color: rgba(251, 146, 60, 0.2); }
         .status-card.pulang .value { color: #fb923c; }
-
-        /* ===== TARGET PROGRESS ===== */
         .target-section { margin-bottom: 16px; }
         .target-item {
             display: flex;
@@ -285,8 +268,6 @@
         .target-item .status-text.on-time { color: #34d399; }
         .target-item .status-text.late { color: #fb923c; }
         .target-item .status-text.very-late { color: #f87171; }
-
-        /* ===== RANKING ===== */
         .ranking-section {
             background: rgba(0, 0, 0, 0.25);
             border-radius: 20px;
@@ -318,7 +299,6 @@
             font-weight: 600;
             border: 1px solid rgba(168, 85, 247, 0.15);
         }
-
         .ranking-list {
             display: flex;
             flex-direction: column;
@@ -343,7 +323,6 @@
         .ranking-item .rank.silver { color: #94a3b8; }
         .ranking-item .rank.bronze { color: #d97706; }
         .ranking-item .rank.normal { color: #475569; }
-
         .ranking-item .name {
             flex: 1;
             font-size: 13px;
@@ -366,20 +345,17 @@
         .ranking-item .status-badge.late { background: rgba(251,146,60,0.15); color: #fb923c; }
         .ranking-item .status-badge.very-late { background: rgba(239,68,68,0.15); color: #f87171; }
         .ranking-item .status-badge.alfa { background: rgba(239,68,68,0.1); color: #64748b; }
-
         .ranking-item.is-you {
             background: rgba(59, 130, 246, 0.1);
             border: 1px solid rgba(59, 130, 246, 0.15);
         }
         .ranking-item.is-you .name { color: #60a5fa; }
         .ranking-item.is-you .rank { color: #60a5fa; }
-
         .ranking-divider {
             border: none;
             border-top: 1px dashed rgba(255, 255, 255, 0.06);
             margin: 4px 0;
         }
-
         .stats-mini {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
@@ -406,8 +382,6 @@
             letter-spacing: 0.3px;
             margin-top: 2px;
         }
-
-        /* ===== NOTIFICATION ===== */
         .notification {
             background: rgba(0, 0, 0, 0.25);
             border-radius: 14px;
@@ -425,8 +399,6 @@
             line-height: 1.5;
         }
         .notification .text strong { color: white; }
-
-        /* ===== FAB BUTTON ===== */
         .fab-container {
             position: fixed;
             bottom: 90px;
@@ -438,7 +410,6 @@
             padding: 0 20px;
             pointer-events: none;
         }
-
         .fab-btn {
             width: 100%;
             padding: 16px 20px;
@@ -459,14 +430,12 @@
             position: relative;
             overflow: hidden;
         }
-
         .fab-btn:active:not(:disabled) { transform: scale(0.96); }
         .fab-btn:disabled {
             opacity: 0.5;
             cursor: not-allowed;
             transform: scale(0.98);
         }
-
         .fab-btn .spinner {
             display: none;
             width: 20px;
@@ -479,9 +448,7 @@
         .fab-btn.loading .spinner { display: inline-block; }
         .fab-btn.loading .btn-text { display: none; }
         .fab-btn.loading .fab-icon { display: none; }
-
         @keyframes spin { to { transform: rotate(360deg); } }
-
         .fab-btn.btn-datang {
             background: linear-gradient(135deg, #10b981, #059669);
             box-shadow: 0 8px 30px rgba(16, 185, 129, 0.35);
@@ -511,8 +478,6 @@
             opacity: 0.7;
             margin-left: 4px;
         }
-
-        /* ===== BOTTOM NAV ===== */
         .bottom-nav {
             position: fixed;
             bottom: 0;
@@ -557,8 +522,6 @@
             transition: all 0.2s;
         }
         .bottom-nav .nav-item.active .dot { opacity: 1; }
-
-        /* ===== TOAST ===== */
         .toast-container {
             position: fixed;
             bottom: 155px;
@@ -587,13 +550,10 @@
         }
         .toast.error { border-left-color: #ef4444; }
         .toast.warning { border-left-color: #f59e0b; }
-
         @keyframes slideUp {
             from { opacity: 0; transform: translateY(30px) scale(0.95); }
             to { opacity: 1; transform: translateY(0) scale(1); }
         }
-
-        /* ===== RESPONSIVE ===== */
         @media (max-width: 480px) {
             body { padding: 12px; padding-bottom: 130px; }
             .glass-card { padding: 18px 14px 22px; border-radius: 32px; }
@@ -620,7 +580,6 @@
             .fab-container { bottom: 80px; padding: 0 14px; }
             .toast-container { bottom: 140px; }
         }
-
         @media (max-width: 380px) {
             .clock-panel .clock { font-size: 30px; }
             .target-item .progress-bar { width: 50px; }
@@ -762,9 +721,7 @@
 
 </div>
 
-<!-- ============================================================
-     FLOATING ACTION BUTTON
-     ============================================================ -->
+<!-- FAB BUTTON -->
 <div class="fab-container">
     <button class="fab-btn btn-datang" id="fabAbsen" onclick="handleAbsenClick()">
         <span class="spinner"></span>
@@ -774,7 +731,7 @@
     </button>
 </div>
 
-<!-- BOTTOM NAVIGATION -->
+<!-- BOTTOM NAV -->
 <div class="bottom-nav">
     <button class="nav-item active" onclick="navigateTo('home', event)">
         <i class="fas fa-home"></i>
@@ -803,14 +760,14 @@
 
 <script>
     // ============================================================
-    // ==================== KONFIGURASI ==========================
+    // KONFIGURASI SUPABASE
     // ============================================================
     const SUPABASE_URL = 'https://zcaqqybonpfishwkmffg.supabase.co';
-    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpjYXFxeWJvbnBmaXNod2ttZmZnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODc2Mjc2NDgsImV4cCI6MjEwMzIwMzY0OH0.pBk5nwJI3u9n08onTNmvcOFxtCXQvv-ipYIu2f_iAiQ';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpjYXFxeWJvbnBmaXNod2ttZmZnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODc2Mjc2NDgsImV4cCI6MjEwMzIwMzY0OH0.pBk5nwJI3u9n08onTNmvcOFxtCXQvv-ipYIu2f_iAiQ';
     const KANTOR = { lat: -7.749989456709709, lng: 112.17422484608356, rad: 250 };
 
     // ============================================================
-    // ==================== AMBIL DATA USER ======================
+    // AMBIL DATA USER
     // ============================================================
     let user = null;
     try {
@@ -823,84 +780,7 @@
     }
 
     // ============================================================
-    // ==================== CACHE SYSTEM =========================
-    // ============================================================
-    const CACHE_CONFIG = {
-        status: { key: 'cache_status_' + user.id, duration: 60000 },    // 1 menit
-        ranking: { key: 'cache_ranking_' + user.id, duration: 300000 }, // 5 menit
-        stats: { key: 'cache_stats_' + user.id, duration: 300000 },     // 5 menit
-        history: { key: 'cache_history_' + user.id, duration: 300000 }  // 5 menit
-    };
-
-    function getCache(key) {
-        try {
-            const raw = localStorage.getItem(key);
-            if (!raw) return null;
-            const data = JSON.parse(raw);
-            if (Date.now() - data.timestamp > data.duration) {
-                localStorage.removeItem(key);
-                return null;
-            }
-            return data.value;
-        } catch(e) { return null; }
-    }
-
-    function setCache(key, value, duration) {
-        try {
-            localStorage.setItem(key, JSON.stringify({
-                timestamp: Date.now(),
-                duration: duration,
-                value: value
-            }));
-        } catch(e) {}
-    }
-
-    function clearCache() {
-        Object.keys(CACHE_CONFIG).forEach(k => {
-            localStorage.removeItem(CACHE_CONFIG[k].key);
-        });
-        console.log('🗑️ Cache cleared');
-    }
-
-    // ============================================================
-    // ==================== LOAD DENGAN CACHE ====================
-    // ============================================================
-    async function loadWithCache(endpoint, cacheKey, duration, forceRefresh = false) {
-        if (!forceRefresh) {
-            const cached = getCache(cacheKey);
-            if (cached) {
-                console.log(`📦 ${endpoint} from cache`);
-                return cached;
-            }
-        }
-
-        console.log(`🌐 ${endpoint} from server`);
-        try {
-            const response = await fetch(SCRIPT_URL, {
-                method: 'POST',
-                body: JSON.stringify({ action: endpoint, id: user.id })
-            });
-            const data = await response.json();
-
-            if (data.result === 'success') {
-                const result = data.data || data;
-                setCache(cacheKey, result, duration);
-                return result;
-            }
-            return null;
-        } catch(e) {
-            console.warn(`⚠️ ${endpoint} failed:`, e);
-            const oldCache = localStorage.getItem(cacheKey);
-            if (oldCache) {
-                const parsed = JSON.parse(oldCache);
-                return parsed.value;
-            }
-            return null;
-        }
-    }
-
-    // ============================================================
-    // ==================== FUNGSI UTILITY =======================
+    // FUNGSI UTILITY
     // ============================================================
     function formatTime(val) {
         if (!val) return "--:--";
@@ -938,7 +818,7 @@
     }
 
     // ============================================================
-    // ==================== TOAST ================================
+    // TOAST
     // ============================================================
     function showToast(msg, type = 'success') {
         const container = document.getElementById('toastContainer');
@@ -956,7 +836,172 @@
     }
 
     // ============================================================
-    // ==================== PARTICLES ============================
+    // CACHE SYSTEM
+    // ============================================================
+    function getCache(key) {
+        try {
+            const raw = localStorage.getItem(key);
+            if (!raw) return null;
+            const data = JSON.parse(raw);
+            if (Date.now() - data.timestamp > data.duration) {
+                localStorage.removeItem(key);
+                return null;
+            }
+            return data.value;
+        } catch(e) { return null; }
+    }
+
+    function setCache(key, value, duration) {
+        try {
+            localStorage.setItem(key, JSON.stringify({
+                timestamp: Date.now(),
+                duration: duration,
+                value: value
+            }));
+        } catch(e) {}
+    }
+
+    function clearCache() {
+        ['cache_status_', 'cache_ranking_', 'cache_stats_', 'cache_history_'].forEach(prefix => {
+            const key = prefix + user.id;
+            localStorage.removeItem(key);
+        });
+        console.log('🗑️ Cache cleared');
+    }
+
+    // ============================================================
+    // LOAD DENGAN CACHE + SUPABASE
+    // ============================================================
+    async function loadWithCache(endpoint, cacheKey, duration, forceRefresh = false) {
+        if (!forceRefresh) {
+            const cached = getCache(cacheKey);
+            if (cached) {
+                console.log(`📦 ${endpoint} from cache`);
+                return cached;
+            }
+        }
+
+        console.log(`🌐 ${endpoint} from Supabase`);
+        try {
+            let response;
+            
+            if (endpoint === 'cek_status') {
+                const today = new Date().toISOString().split('T')[0];
+                response = await fetch(
+                    `${SUPABASE_URL}/rest/v1/absensi?select=*&karyawan_id=eq.${user.id}&tanggal=eq.${today}`,
+                    {
+                        headers: {
+                            'apikey': SUPABASE_ANON_KEY,
+                            'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
+                        }
+                    }
+                );
+                const data = await response.json();
+                const record = data[0] || {};
+                
+                const result = {
+                    sudahMasuk: !!record.jam_masuk,
+                    sudahPulang: !!record.jam_pulang,
+                    jamMasuk: record.jam_masuk || null,
+                    jamPulang: record.jam_pulang || null,
+                    ranking: [],
+                    statHadir: 0,
+                    statTelat: 0,
+                    statAlfa: 0,
+                    statTercepat: '--:--'
+                };
+                
+                setCache(cacheKey, result, duration);
+                return result;
+            }
+            
+            if (endpoint === 'get_ranking') {
+                // Dapatkan divisi user
+                const userRes = await fetch(
+                    `${SUPABASE_URL}/rest/v1/karyawan?select=divisi&id=eq.${user.id}`,
+                    {
+                        headers: {
+                            'apikey': SUPABASE_ANON_KEY,
+                            'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
+                        }
+                    }
+                );
+                const userData = await userRes.json();
+                const divisi = userData[0]?.divisi;
+                
+                if (!divisi) {
+                    setCache(cacheKey, [], duration);
+                    return [];
+                }
+                
+                // Dapatkan semua anggota divisi
+                const anggotaRes = await fetch(
+                    `${SUPABASE_URL}/rest/v1/karyawan?select=id,nama&divisi=eq.${divisi}`,
+                    {
+                        headers: {
+                            'apikey': SUPABASE_ANON_KEY,
+                            'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
+                        }
+                    }
+                );
+                const anggota = await anggotaRes.json();
+                if (!anggota || anggota.length === 0) {
+                    setCache(cacheKey, [], duration);
+                    return [];
+                }
+                
+                const today = new Date().toISOString().split('T')[0];
+                const ranking = [];
+                
+                for (const ang of anggota) {
+                    const absenRes = await fetch(
+                        `${SUPABASE_URL}/rest/v1/absensi?select=jam_masuk&karyawan_id=eq.${ang.id}&tanggal=eq.${today}`,
+                        {
+                            headers: {
+                                'apikey': SUPABASE_ANON_KEY,
+                                'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
+                            }
+                        }
+                    );
+                    const absen = await absenRes.json();
+                    const record = absen[0] || {};
+                    
+                    ranking.push({
+                        id: ang.id,
+                        nama: ang.nama,
+                        jam: record.jam_masuk || '--:--',
+                        status: record.jam_masuk ? 'hadir' : 'alfa',
+                        selisih: 0
+                    });
+                }
+                
+                ranking.sort((a, b) => {
+                    if (a.status === 'hadir' && b.status !== 'hadir') return -1;
+                    if (a.status !== 'hadir' && b.status === 'hadir') return 1;
+                    if (a.jam !== '--:--' && b.jam !== '--:--') {
+                        return a.jam.localeCompare(b.jam);
+                    }
+                    return 0;
+                });
+                
+                setCache(cacheKey, ranking, duration);
+                return ranking;
+            }
+            
+            return null;
+        } catch(e) {
+            console.warn(`⚠️ ${endpoint} failed:`, e);
+            const oldCache = localStorage.getItem(cacheKey);
+            if (oldCache) {
+                const parsed = JSON.parse(oldCache);
+                return parsed.value;
+            }
+            return null;
+        }
+    }
+
+    // ============================================================
+    // PARTICLES
     // ============================================================
     function createParticles() {
         const container = document.getElementById('particles');
@@ -975,7 +1020,7 @@
     createParticles();
 
     // ============================================================
-    // ==================== CLOCK ================================
+    // CLOCK
     // ============================================================
     function updateClock() {
         const now = new Date();
@@ -990,12 +1035,11 @@
     setInterval(updateClock, 1000);
 
     // ============================================================
-    // ==================== LOAD USER DATA =======================
+    // LOAD USER DATA
     // ============================================================
     function loadUserData() {
         document.getElementById('userName').textContent = user.nama || user.id || 'User';
         
-        // Hapus duplikasi divisi
         let divisi = user.divisi || 'Relawan';
         if (divisi.includes(' - ')) divisi = divisi.split(' - ')[0];
         if (divisi.includes('\n')) divisi = divisi.split('\n')[0];
@@ -1021,7 +1065,7 @@
     }
 
     // ============================================================
-    // ==================== STATUS DATA ==========================
+    // STATUS DATA
     // ============================================================
     let statusData = {
         sudahMasuk: false,
@@ -1036,15 +1080,15 @@
     };
 
     // ============================================================
-    // ==================== LOAD STATUS ==========================
+    // LOAD STATUS
     // ============================================================
+    const CACHE_CONFIG = {
+        status: { key: 'cache_status_' + user.id, duration: 60000 },
+        ranking: { key: 'cache_ranking_' + user.id, duration: 300000 }
+    };
+
     async function loadStatus(force = false) {
-        const data = await loadWithCache(
-            'cek_status',
-            CACHE_CONFIG.status.key,
-            CACHE_CONFIG.status.duration,
-            force
-        );
+        const data = await loadWithCache('cek_status', CACHE_CONFIG.status.key, CACHE_CONFIG.status.duration, force);
         if (data) {
             statusData = data;
             updateUI();
@@ -1055,12 +1099,7 @@
     }
 
     async function loadRanking(force = false) {
-        const data = await loadWithCache(
-            'get_ranking',
-            CACHE_CONFIG.ranking.key,
-            CACHE_CONFIG.ranking.duration,
-            force
-        );
+        const data = await loadWithCache('get_ranking', CACHE_CONFIG.ranking.key, CACHE_CONFIG.ranking.duration, force);
         if (data) {
             statusData.ranking = data;
             renderRanking();
@@ -1070,7 +1109,7 @@
     }
 
     // ============================================================
-    // ==================== UPDATE UI ============================
+    // UPDATE UI
     // ============================================================
     function updateUI() {
         if (statusData.sudahMasuk && statusData.jamMasuk) {
@@ -1163,7 +1202,7 @@
     }
 
     // ============================================================
-    // ==================== RENDER RANKING =======================
+    // RENDER RANKING
     // ============================================================
     function renderRanking() {
         const container = document.getElementById('rankingList');
@@ -1237,14 +1276,12 @@
     }
 
     // ============================================================
-    // ==================== SYNC STATUS ==========================
+    // SYNC STATUS
     // ============================================================
     async function syncStatus() {
-        // 1. Load dari cache dulu (INSTANT)
         const hasStatus = await loadStatus(false);
         const hasRanking = await loadRanking(false);
 
-        // 2. Jika ada cache, update di background
         if (hasStatus && hasRanking) {
             console.log('✅ Data from cache, background refresh...');
             setTimeout(async () => {
@@ -1255,16 +1292,12 @@
             return;
         }
 
-        // 3. Jika tidak ada cache, fetch dari server
         console.log('⏳ No cache, fetching from server...');
         try {
-            const [status, ranking] = await Promise.all([
+            await Promise.all([
                 loadStatus(true),
                 loadRanking(true)
             ]);
-            if (!status || !ranking) {
-                showToast('Gagal memuat data', 'error');
-            }
         } catch(e) {
             console.error('Sync error:', e);
             showToast('Gagal koneksi ke server', 'error');
@@ -1272,7 +1305,7 @@
     }
 
     // ============================================================
-    // ==================== FAB BUTTON ===========================
+    // FAB BUTTON
     // ============================================================
     function updateFabButton() {
         const btn = document.getElementById('fabAbsen');
@@ -1305,7 +1338,7 @@
     }
 
     // ============================================================
-    // ==================== HANDLE ABSEN =========================
+    // HANDLE ABSEN - PAKAI SUPABASE!
     // ============================================================
     let isProcessing = false;
 
@@ -1356,33 +1389,104 @@
         showToast('Mengirim absen...', 'info');
 
         try {
-            const response = await fetch(SCRIPT_URL, {
-                method: 'POST',
-                body: JSON.stringify({
-                    action: action,
-                    id: user.id,
-                    nama: user.nama || user.id,
-                    lat: lat,
-                    lng: lng
-                })
-            });
-            const data = await response.json();
+            const today = new Date().toISOString().split('T')[0];
+            const jam = new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
 
-            if (data.result === 'success') {
-                const label = action === 'DATANG' ? 'Masuk' : 'Pulang';
-                showToast('✅ Absen ' + label + ' berhasil!', 'success');
+            // Cek data hari ini
+            const checkRes = await fetch(
+                `${SUPABASE_URL}/rest/v1/absensi?select=*&karyawan_id=eq.${user.id}&tanggal=eq.${today}`,
+                {
+                    headers: {
+                        'apikey': SUPABASE_ANON_KEY,
+                        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
+                    }
+                }
+            );
+            const existing = await checkRes.json();
+            const record = existing[0] || null;
+
+            if (action === 'DATANG') {
+                if (record?.jam_masuk) {
+                    showToast('Anda sudah absen masuk hari ini!', 'warning');
+                    btn.classList.remove('loading');
+                    btn.disabled = false;
+                    isProcessing = false;
+                    return;
+                }
+
+                const payload = {
+                    karyawan_id: user.id,
+                    tanggal: today,
+                    jam_masuk: jam,
+                    lat: lat,
+                    lng: lng,
+                    status: 'hadir'
+                };
+
+                if (record) {
+                    await fetch(`${SUPABASE_URL}/rest/v1/absensi?karyawan_id=eq.${user.id}&tanggal=eq.${today}`, {
+                        method: 'PATCH',
+                        headers: {
+                            'apikey': SUPABASE_ANON_KEY,
+                            'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(payload)
+                    });
+                } else {
+                    await fetch(`${SUPABASE_URL}/rest/v1/absensi`, {
+                        method: 'POST',
+                        headers: {
+                            'apikey': SUPABASE_ANON_KEY,
+                            'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(payload)
+                    });
+                }
+
+                showToast('✅ Absen masuk berhasil!', 'success');
                 if (navigator.vibrate) navigator.vibrate(50);
 
-                // Clear cache dulu biar refresh
-                clearCache();
+            } else if (action === 'PULANG') {
+                if (!record?.jam_masuk) {
+                    showToast('Anda belum absen masuk!', 'error');
+                    btn.classList.remove('loading');
+                    btn.disabled = false;
+                    isProcessing = false;
+                    return;
+                }
+                if (record?.jam_pulang) {
+                    showToast('Anda sudah absen pulang!', 'warning');
+                    btn.classList.remove('loading');
+                    btn.disabled = false;
+                    isProcessing = false;
+                    return;
+                }
 
-                // Reload status
-                await syncStatus();
-                updateFabButton();
-            } else {
-                showToast('❌ Gagal: ' + (data.message || 'Coba lagi'), 'error');
+                await fetch(`${SUPABASE_URL}/rest/v1/absensi?karyawan_id=eq.${user.id}&tanggal=eq.${today}`, {
+                    method: 'PATCH',
+                    headers: {
+                        'apikey': SUPABASE_ANON_KEY,
+                        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        jam_pulang: jam,
+                        status: 'pulang'
+                    })
+                });
+
+                showToast('✅ Absen pulang berhasil!', 'success');
+                if (navigator.vibrate) navigator.vibrate(50);
             }
+
+            clearCache();
+            await syncStatus();
+            updateFabButton();
+
         } catch(e) {
+            console.error('Absen error:', e);
             showToast('❌ Gagal koneksi ke server!', 'error');
         }
 
@@ -1392,7 +1496,7 @@
     }
 
     // ============================================================
-    // ==================== UPLOAD FOTO ==========================
+    // UPLOAD FOTO - PAKAI SUPABASE?
     // ============================================================
     async function handleFotoUpload(event) {
         const file = event.target.files[0];
@@ -1420,11 +1524,14 @@
         };
         readerPreview.readAsDataURL(file);
 
-        showToast('Mengunggah foto...', 'info');
+        showToast('Mengunggah foto... (belum tersedia di Supabase, hubungi admin)', 'warning');
 
-        const reader = new FileReader();
-        reader.onload = async function(e) {
-            try {
+        // TODO: Upload ke Supabase Storage
+        // Sementara pakai GAS dulu
+        /*
+        try {
+            const reader = new FileReader();
+            reader.onload = async function(e) {
                 const response = await fetch(SCRIPT_URL, {
                     method: 'POST',
                     body: JSON.stringify({
@@ -1434,34 +1541,17 @@
                     })
                 });
                 const data = await response.json();
+                // ...
+            };
+            reader.readAsDataURL(file);
+        } catch(e) {}
+        */
 
-                if (data.result === 'success') {
-                    user.foto = data.url;
-                    localStorage.setItem('user_pelem_5', JSON.stringify(user));
-
-                    const img = document.getElementById('imgAvatar');
-                    const url = getDriveDirectUrl(data.url);
-                    img.src = url;
-                    img.style.display = 'block';
-                    document.getElementById('avatarPlaceholder').style.display = 'none';
-
-                    showToast('✅ Foto profil berhasil diupdate!', 'success');
-                    if (navigator.vibrate) navigator.vibrate(30);
-                } else {
-                    showToast('❌ Gagal: ' + (data.message || 'Coba lagi'), 'error');
-                    loadUserData();
-                }
-            } catch(e) {
-                showToast('❌ Gagal koneksi ke server!', 'error');
-                loadUserData();
-            }
-        };
-        reader.readAsDataURL(file);
         event.target.value = '';
     }
 
     // ============================================================
-    // ==================== NAVIGATION ===========================
+    // NAVIGATION
     // ============================================================
     function navigateTo(page, event) {
         if (event && event.currentTarget) {
@@ -1492,7 +1582,7 @@
     }
 
     // ============================================================
-    // ==================== KEYBOARD SHORTCUT ====================
+    // KEYBOARD SHORTCUT
     // ============================================================
     document.addEventListener('keydown', function(e) {
         if (e.key === 'Enter' && !isProcessing) {
@@ -1505,30 +1595,25 @@
     });
 
     // ============================================================
-    // ==================== INIT =================================
+    // INIT
     // ============================================================
     console.log('🚀 Smart Presence loaded!');
     console.log('👤 User:', user.nama);
+    console.log('🏢 Divisi:', user.divisi);
 
-    // 1. Load user data (cepat)
     loadUserData();
-
-    // 2. Update clock (jalan terus)
     updateClock();
     setInterval(updateClock, 1000);
 
-    // 3. Sync status (prioritas cache dulu)
     setTimeout(() => {
         syncStatus();
     }, 50);
 
-    // 4. Periodic refresh
     setInterval(() => {
         loadStatus(true);
         loadRanking(true);
-    }, 60000); // 1 menit
+    }, 60000);
 
-    // 5. Connection status
     window.addEventListener('online', () => {
         document.getElementById('connectionStatus').textContent = 'Online';
         document.getElementById('connectionStatus').style.color = '#34d399';
