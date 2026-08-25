@@ -154,6 +154,73 @@
         .summary-card .num.liburan { color: #60a5fa; }
         
         /* ============================================
+           SAKLAR TOGGLE (BULK EDIT)
+           ============================================ */
+        .switch-container {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 16px;
+            padding: 10px 18px;
+            background: rgba(0,0,0,0.2);
+            border-radius: 12px;
+            border: 1px solid rgba(255,255,255,0.06);
+            flex-wrap: wrap;
+        }
+        .switch-container label {
+            font-weight: 600;
+            color: #94a3b8;
+            font-size: 13px;
+        }
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 48px;
+            height: 26px;
+            flex-shrink: 0;
+        }
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: #475569;
+            transition: 0.3s;
+            border-radius: 34px;
+        }
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 4px;
+            bottom: 4px;
+            background: white;
+            transition: 0.3s;
+            border-radius: 50%;
+        }
+        .switch input:checked + .slider {
+            background: #10b981;
+        }
+        .switch input:checked + .slider:before {
+            transform: translateX(22px);
+        }
+        .switch-container .status-text {
+            font-size: 12px;
+            font-weight: 700;
+            min-width: 36px;
+        }
+        .switch-container .status-text.on { color: #34d399; }
+        .switch-container .status-text.off { color: #f87171; }
+        
+        /* ============================================
            BULK EDIT SECTION
            ============================================ */
         .bulk-edit-section {
@@ -240,9 +307,20 @@
             padding: 20px 0;
             grid-column: 1 / -1;
         }
+        .bulk-disabled-msg {
+            grid-column: 1 / -1;
+            text-align: center;
+            color: #f59e0b;
+            font-size: 13px;
+            font-weight: 600;
+            padding: 12px 0;
+            background: rgba(245, 158, 11, 0.1);
+            border-radius: 10px;
+            border: 1px solid rgba(245, 158, 11, 0.2);
+        }
         
         /* ============================================
-           TABLE REKAP (tetap)
+           TABLE REKAP
            ============================================ */
         .table-container {
             background: rgba(255,255,255,0.04);
@@ -376,6 +454,7 @@
             .summary-grid { grid-template-columns: 1fr; }
             .bulk-grid { grid-template-columns: repeat(auto-fill, minmax(42px, 1fr)); }
             .bulk-item { font-size: 10px; padding: 4px 2px; }
+            .switch-container { flex-wrap: wrap; gap: 8px; }
         }
     </style>
 </head>
@@ -445,13 +524,23 @@
     </div>
 
     <!-- ==========================================
-         BULK EDIT SECTION 
+         SAKLAR + BULK EDIT SECTION
          ========================================== -->
-    <!-- 
+    <div class="switch-container">
+        <label><i class="fas fa-edit"></i> Bulk Edit:</label>
+        <label class="switch">
+            <input type="checkbox" id="bulkToggle" checked onchange="toggleBulkEdit()">
+            <span class="slider"></span>
+        </label>
+        <span class="status-text on" id="bulkStatus">ON</span>
+        <span style="font-size:11px;color:#64748b;margin-left:4px;">
+            (aktifkan untuk edit cepat absen)
+        </span>
+    </div>
+
     <div class="bulk-edit-section">
         <div class="bulk-header">
-     -->
-            <label><i class="fas fa-user-edit"></i> Edit Cepat:</label>
+            <label><i class="fas fa-user-edit"></i> Pilih Karyawan:</label>
             <select id="bulkKaryawan">
                 <option value="">-- Pilih Karyawan --</option>
             </select>
@@ -588,6 +677,13 @@
     // LOAD BULK GRID
     // ============================================================
     async function loadBulkGrid() {
+        // 🔥 CEK SAKLAR
+        const toggle = document.getElementById('bulkToggle');
+        if (!toggle.checked) {
+            showToast('⛔ Bulk Edit sedang OFF. Aktifkan saklar dulu!', 'warning');
+            return;
+        }
+
         const select = document.getElementById('bulkKaryawan');
         const id = select.value;
         if (!id) {
@@ -660,6 +756,12 @@
     // TOGGLE BULK
     // ============================================================
     function toggleBulk(tanggal) {
+        const toggle = document.getElementById('bulkToggle');
+        if (!toggle.checked) {
+            showToast('⛔ Bulk Edit sedang OFF. Aktifkan saklar dulu!', 'warning');
+            return;
+        }
+
         const el = document.querySelector(`.bulk-item[data-tanggal="${tanggal}"]`);
         if (!el) return;
         
@@ -689,9 +791,73 @@
     }
 
     // ============================================================
+    // SAKLAR BULK EDIT (ENABLED / DISABLED)
+    // ============================================================
+    function toggleBulkEdit() {
+        const toggle = document.getElementById('bulkToggle');
+        const statusText = document.getElementById('bulkStatus');
+        const isEnabled = toggle.checked;
+
+        // 1. Update status text
+        if (isEnabled) {
+            statusText.textContent = 'ON';
+            statusText.className = 'status-text on';
+        } else {
+            statusText.textContent = 'OFF';
+            statusText.className = 'status-text off';
+        }
+
+        // 2. Enable / Disable dropdown
+        const select = document.getElementById('bulkKaryawan');
+        if (select) {
+            select.disabled = !isEnabled;
+            select.style.opacity = isEnabled ? '1' : '0.5';
+            select.style.cursor = isEnabled ? 'pointer' : 'not-allowed';
+        }
+
+        // 3. Enable / Disable tombol
+        const buttons = document.querySelectorAll('.bulk-edit-section .btn-sm');
+        buttons.forEach(btn => {
+            btn.disabled = !isEnabled;
+            btn.style.opacity = isEnabled ? '1' : '0.5';
+            btn.style.cursor = isEnabled ? 'pointer' : 'not-allowed';
+        });
+
+        // 4. Enable / Disable grid items
+        const items = document.querySelectorAll('.bulk-item');
+        items.forEach(el => {
+            el.style.pointerEvents = isEnabled ? 'auto' : 'none';
+            el.style.opacity = isEnabled ? '1' : '0.5';
+            el.style.cursor = isEnabled ? 'pointer' : 'default';
+        });
+
+        // 5. Tampilkan/sembunyikan pesan peringatan
+        const grid = document.getElementById('bulkGrid');
+        let msg = grid?.querySelector('.bulk-disabled-msg');
+        
+        if (!isEnabled) {
+            if (!msg) {
+                msg = document.createElement('div');
+                msg.className = 'bulk-disabled-msg';
+                grid.appendChild(msg);
+            }
+        } else {
+            if (msg) msg.remove();
+        }
+
+        console.log(`🔘 Bulk Edit: ${isEnabled ? 'ENABLED' : 'DISABLED'}`);
+    }
+
+    // ============================================================
     // BULK SIMPAN
     // ============================================================
     async function bulkSimpan() {
+        const toggle = document.getElementById('bulkToggle');
+        if (!toggle.checked) {
+            showToast('⛔ Bulk Edit sedang OFF. Aktifkan saklar dulu!', 'warning');
+            return;
+        }
+
         if (!bulkKaryawanId) { showToast('Pilih karyawan dulu!', 'warning'); return; }
         
         const updates = [];
@@ -777,6 +943,12 @@
     // BULK RESET
     // ============================================================
     function bulkReset() {
+        const toggle = document.getElementById('bulkToggle');
+        if (!toggle.checked) {
+            showToast('⛔ Bulk Edit sedang OFF. Aktifkan saklar dulu!', 'warning');
+            return;
+        }
+
         if (!bulkKaryawanId) { showToast('Pilih karyawan dulu!', 'warning'); return; }
         if (!confirm('Reset semua status ke ALFA untuk karyawan ini?')) return;
         
@@ -794,7 +966,7 @@
     }
 
     // ============================================================
-    // LOAD REKAP (TETAP)
+    // LOAD REKAP
     // ============================================================
     async function loadRekap() {
         const start = document.getElementById('startDate').value;
@@ -969,36 +1141,20 @@
     }
 
     // ============================================================
-    // OPEN QUICK EDIT (TETAP)
-    // ============================================================
-    function openQuickEdit(id) {
-        const karyawan = currentData.find(k => k.id === id);
-        if (!karyawan) { showToast('Data tidak ditemukan', 'error'); return; }
-        
-        const firstDate = karyawan.dates.find(d => !d.isLibur && (d.status === 'alfa' || d.status === 'izin'));
-        if (firstDate) {
-            openQuickEditDate(id, firstDate.tanggal);
-        } else {
-            const lastDate = karyawan.dates.filter(d => !d.isLibur).pop();
-            if (lastDate) {
-                openQuickEditDate(id, lastDate.tanggal);
-            } else {
-                showToast('Tidak ada data untuk diedit', 'warning');
-            }
-        }
-    }
-
-    function openQuickEditDate(id, tanggal) {
-        // ... (sama seperti sebelumnya, tidak diubah)
-        showToast('Gunakan fitur Edit Cepat di atas untuk bulk edit!', 'info');
-    }
-
-    // ============================================================
     // OPEN MODAL LIBUR
     // ============================================================
     function openModalLibur(tanggal) {
-        // ... (sama seperti sebelumnya)
-        showToast('Gunakan fitur Edit Cepat di atas untuk bulk edit!', 'info');
+        // Fungsi untuk tandai libur per divisi (sama seperti sebelumnya)
+        showToast('📌 Klik header tanggal untuk tandai libur per divisi', 'info');
+        // Logika libur bisa ditambahkan di sini
+    }
+
+    function openQuickEdit(id) {
+        showToast('Gunakan fitur Bulk Edit di atas untuk edit cepat!', 'info');
+    }
+
+    function openQuickEditDate(id, tanggal) {
+        showToast('Gunakan fitur Bulk Edit di atas untuk edit cepat!', 'info');
     }
 
     // ============================================================
@@ -1066,6 +1222,11 @@
     // Load semua
     loadBulkKaryawan();
     setTimeout(() => loadRekap(), 100);
+
+    // 🔥 SET SAKLAR DEFAULT ON
+    document.getElementById('bulkToggle').checked = true;
+    toggleBulkEdit();
+
     console.log('🛡️ Admin Dashboard loaded!');
 </script>
 
