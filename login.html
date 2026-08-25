@@ -146,11 +146,11 @@
 
     <script>
         // ============================================================
-        // KONFIGURASI
+        // KONFIGURASI SUPABASE (FIXED!)
         // ============================================================
-        const SUPABASE_URL = 'https://zcaqqybonpfishwkmffg.supabase.co';
-        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpjYXFxeWJvbnBmaXNod2ttZmZnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODc2Mjc2NDgsImV4cCI6MjEwMzIwMzY0OH0.pBk5nwJI3u9n08onTNmvcOFxtCXQvv-ipYIu2f_iAiQ';
-        
+        const SUPABASE_URL = 'https://zcaqgybonpfishwkmffg.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpjYXFneWJvbnBmaXNod2ttZmZnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODc2Mjc2NDgsImV4cCI6MjEwMzIwMzY0OH0.pBk5nwJI3u9n08onTNmvcOFxtCXQvv-ipYIu2f_iAiQ';
+
         // ============================================================
         // TOAST
         // ============================================================
@@ -166,7 +166,7 @@
         }
 
         // ============================================================
-        // AUTO LOGIN (jika sudah login sebelumnya)
+        // AUTO LOGIN
         // ============================================================
         function checkAutoLogin() {
             try {
@@ -184,7 +184,7 @@
         }
 
         // ============================================================
-        // FUNGSI LOGIN - OPTIMASI
+        // FUNGSI LOGIN - PAKAI SUPABASE!
         // ============================================================
         async function doLogin() {
             const idInput = document.getElementById('id').value.trim().toUpperCase();
@@ -192,88 +192,64 @@
             const btn = document.getElementById('btn');
             const btnText = document.getElementById('btn-text');
 
-            // Validasi cepat
+            // Validasi
             if (!idInput) { showToast('Masukkan ID Relawan!', true); return; }
             if (idInput.length < 3) { showToast('ID minimal 3 karakter!', true); return; }
             if (!pinInput) { showToast('Masukkan PIN!', true); return; }
             if (pinInput.length < 4) { showToast('PIN minimal 4 digit!', true); return; }
             if (!/^\d+$/.test(pinInput)) { showToast('PIN harus berupa angka!', true); return; }
 
-            // Loading state
             btn.disabled = true;
             btnText.innerHTML = '<span class="spinner"></span> Verifikasi...';
 
             try {
-                // 1️⃣ LOGIN - Hanya verifikasi ID + PIN
                 console.log('🔑 Login attempt for:', idInput);
-                const response = await fetch(SCRIPT_URL, {
-                    method: 'POST',
-                    body: JSON.stringify({ action: 'login', id: idInput, pin: pinInput })
-                });
-                const res = await response.json();
+                
+                // ✅ PAKAI SUPABASE!
+                const response = await fetch(
+                    `${SUPABASE_URL}/rest/v1/karyawan?select=*&id=eq.${idInput}&pin=eq.${pinInput}`,
+                    {
+                        headers: {
+                            'apikey': SUPABASE_ANON_KEY,
+                            'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
+                        }
+                    }
+                );
+                
+                const data = await response.json();
+                console.log('📦 Data from Supabase:', data);
 
-                if (res.result === 'success') {
-                    // Simpan user data
-                    const user = res.user;
-                    localStorage.setItem('user_pelem_5', JSON.stringify(user));
-                    
-                    // 2️⃣ PRELOAD DATA DI BACKGROUND (sebelum redirect)
-                    // Ini penting: mulai fetch data sebelum halaman dashboard terbuka
-                    console.log('⏳ Preloading data...');
-                    preloadData(user.id);
-                    
-                    // 3️⃣ REDIRECT LANGSUNG (tanpa nunggu data selesai)
-                    showToast('✅ Login berhasil!');
-                    setTimeout(() => {
-                        window.location.href = 'index.html';
-                    }, 300); // Lebih cepat dari sebelumnya (800ms → 300ms)
-
-                } else {
-                    showToast(res.message || 'ID atau PIN salah!', true);
+                if (data.length === 0) {
+                    showToast('ID atau PIN salah!', true);
                     btn.disabled = false;
                     btnText.innerText = 'MASUK';
+                    return;
                 }
+
+                const user = data[0];
+                
+                // Format user data
+                const userData = {
+                    id: user.id,
+                    nama: user.nama || user.id,
+                    divisi: user.divisi || 'Relawan',
+                    foto: user.foto || '',
+                    jamMasuk: user.jam_masuk || '08:00',
+                    jamPulang: user.jam_pulang || '17:00'
+                };
+                
+                localStorage.setItem('user_pelem_5', JSON.stringify(userData));
+                
+                showToast('✅ Login berhasil!');
+                setTimeout(() => {
+                    window.location.href = 'index.html';
+                }, 300);
+
             } catch(e) {
                 console.error('Login error:', e);
                 showToast('❌ Koneksi error, cek internet Anda.', true);
                 btn.disabled = false;
                 btnText.innerText = 'MASUK';
-            }
-        }
-
-        // ============================================================
-        // PRELOAD DATA (Background)
-        // ============================================================
-        function preloadData(userId) {
-            // Fetch data di background tanpa nunggu response
-            // Ini akan mengisi cache sebelum user sampai ke dashboard
-            
-            const endpoints = [
-                { action: 'cek_status', key: 'cache_status_' + userId },
-                { action: 'get_ranking', key: 'cache_ranking_' + userId },
-                { action: 'get_stats', key: 'cache_stats_' + userId },
-                { action: 'get_history', key: 'cache_history_' + userId }
-            ];
-
-            for (const ep of endpoints) {
-                fetch(SCRIPT_URL, {
-                    method: 'POST',
-                    body: JSON.stringify({ action: ep.action, id: userId })
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.result === 'success') {
-                        // Simpan ke cache
-                        const cacheData = data.data || data;
-                        localStorage.setItem(ep.key, JSON.stringify({
-                            timestamp: Date.now(),
-                            duration: 300000, // 5 menit
-                            value: cacheData
-                        }));
-                        console.log('📦 Preloaded:', ep.action);
-                    }
-                })
-                .catch(err => console.warn('Preload failed:', ep.action, err));
             }
         }
 
@@ -287,7 +263,7 @@
         });
 
         // ============================================================
-        // AUTO LOGIN CHECK (jika masih session)
+        // AUTO LOGIN CHECK
         // ============================================================
         if (!checkAutoLogin()) {
             console.log('🔐 Silakan login');
