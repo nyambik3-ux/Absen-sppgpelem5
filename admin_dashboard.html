@@ -7,6 +7,9 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
+        /* ============================================================
+           CSS - SEMUA STYLE (SAMA KAYAK SEBELUMNYA)
+           ============================================================ */
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             font-family: 'Inter', sans-serif;
@@ -242,6 +245,7 @@
         .badge-akum.medium { background: rgba(251,146,60,0.2); color: #fb923c; }
         .badge-akum.low { background: rgba(239,68,68,0.2); color: #f87171; }
         
+        /* ===== MODAL EDIT ===== */
         .modal-overlay {
             position: fixed;
             top: 0; left: 0; right: 0; bottom: 0;
@@ -336,6 +340,64 @@
         body.light-mode .btn-cancel { background: #e2e8f0; color: #64748b; }
         body.light-mode .btn-cancel:hover { background: #cbd5e1; }
         
+        /* ===== MODAL LIBUR (BARU) ===== */
+        #modalLibur {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.7);
+            backdrop-filter: blur(8px);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+        }
+        #modalLibur.active { display: flex; }
+        
+        .modal-libur-card {
+            background: #1e293b;
+            border-radius: 24px;
+            padding: 32px;
+            width: 90%;
+            max-width: 420px;
+            border: 1px solid rgba(255,255,255,0.06);
+            box-shadow: 0 25px 50px rgba(0,0,0,0.5);
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        body.light-mode .modal-libur-card { background: white; border-color: rgba(0,0,0,0.06); }
+        
+        .modal-libur-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+        }
+        .modal-libur-header h3 { font-size: 18px; font-weight: 700; }
+        
+        .libur-divisi-item {
+            padding: 12px 16px;
+            border-radius: 10px;
+            border: 1px solid rgba(255,255,255,0.06);
+            background: rgba(0,0,0,0.2);
+            color: white;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-family: 'Inter', sans-serif;
+            width: 100%;
+            margin-bottom: 8px;
+        }
+        .libur-divisi-item:active { transform: scale(0.98); }
+        .libur-divisi-item .status-libur { font-size: 12px; color: #94a3b8; }
+        .libur-divisi-item.libur { background: rgba(96,165,250,0.15); border-color: rgba(96,165,250,0.3); }
+        .libur-divisi-item.buka { background: rgba(16,185,129,0.1); border-color: rgba(16,185,129,0.2); }
+        
         .loading-text { text-align: center; color: #64748b; padding: 40px 0; font-size: 14px; }
         .empty-text { text-align: center; color: #64748b; padding: 30px 0; font-size: 14px; }
         
@@ -350,7 +412,7 @@
             border-radius: 16px;
             font-weight: 600;
             font-size: 14px;
-            z-index: 9999;
+            z-index: 99999;
             border-left: 4px solid #10b981;
             box-shadow: 0 10px 40px rgba(0,0,0,0.5);
             animation: slideUp 0.3s ease;
@@ -369,6 +431,7 @@
             .filter-card input[type="date"] { width: 100%; }
             .summary-grid { grid-template-columns: 1fr 1fr; }
             .modal-card { padding: 20px; margin: 10px; }
+            .modal-libur-card { padding: 20px; margin: 10px; }
             table { font-size: 11px; }
             th, td { padding: 6px 8px; }
             td .status-icon { font-size: 14px; width: 28px; }
@@ -383,7 +446,9 @@
 </head>
 <body>
 
-<!-- NAVBAR -->
+<!-- ============================================================
+     NAVBAR
+     ============================================================ -->
 <nav class="navbar">
     <div class="logo">
         <h2>📋 RelawanTrack</h2>
@@ -402,7 +467,9 @@
 
 <div class="container">
 
-    <!-- FILTER -->
+    <!-- ============================================================
+         FILTER PERIODE
+         ============================================================ -->
     <div class="filter-card">
         <label><i class="fas fa-calendar-alt"></i> Periode:</label>
         <input type="date" id="startDate">
@@ -422,7 +489,9 @@
         </button>
     </div>
 
-    <!-- SUMMARY -->
+    <!-- ============================================================
+         SUMMARY CARDS
+         ============================================================ -->
     <div class="summary-grid" id="summaryGrid">
         <div class="summary-card">
             <div class="num total" id="totalKaryawan">0</div>
@@ -446,7 +515,9 @@
         </div>
     </div>
 
-    <!-- TABLE -->
+    <!-- ============================================================
+         TABLE
+         ============================================================ -->
     <div class="table-container">
         <h3><i class="fas fa-table" style="color:#a855f7;"></i> Rekapitulasi Absensi</h3>
         <div id="tableWrapper">
@@ -455,7 +526,9 @@
     </div>
 </div>
 
-<!-- QUICK EDIT MODAL -->
+<!-- ============================================================
+     MODAL EDIT ABSENSI
+     ============================================================ -->
 <div class="modal-overlay" id="modalEdit">
     <div class="modal-card">
         <div class="modal-header">
@@ -477,6 +550,27 @@
     </div>
 </div>
 
+<!-- ============================================================
+     MODAL LIBUR PER DIVISI (BARU)
+     ============================================================ -->
+<div id="modalLibur">
+    <div class="modal-libur-card">
+        <div class="modal-libur-header">
+            <h3 id="modalLiburTitle">📌 Pilih Divisi Libur</h3>
+            <button onclick="closeModalLibur()" style="background:none;border:none;color:#94a3b8;font-size:24px;cursor:pointer;">&times;</button>
+        </div>
+        <div id="modalLiburBody">
+            <div class="loading-text"><i class="fas fa-spinner fa-pulse"></i> Memuat divisi...</div>
+        </div>
+        <div style="margin-top:16px;padding-top:12px;border-top:1px solid rgba(255,255,255,0.06);display:flex;justify-content:flex-end;">
+            <button onclick="closeModalLibur()" style="padding:10px 20px;border:none;border-radius:10px;background:#1e293b;color:#94a3b8;cursor:pointer;font-weight:600;font-family:'Inter',sans-serif;font-size:14px;">Tutup</button>
+        </div>
+    </div>
+</div>
+
+<!-- ============================================================
+     JAVASCRIPT
+     ============================================================ -->
 <script>
     // ============================================================
     // KONFIGURASI SUPABASE
@@ -497,7 +591,7 @@
     // ============================================================
     let currentData = [];
     let currentEdit = null;
-    let hariLibur = {};
+    let hariLibur = {}; // Format: { "2026-08-17|Logistik": true }
 
     // ============================================================
     // THEME
@@ -538,12 +632,21 @@
     setDefaultDates();
 
     // ============================================================
-    // LOAD HARI LIBUR DARI SUPABASE
+    // FORMAT TANGGAL
+    // ============================================================
+    function formatTanggal(tgl) {
+        const d = new Date(tgl + 'T00:00:00');
+        const bulan = ['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agu','Sep','Okt','Nov','Des'];
+        return `${d.getDate()} ${bulan[d.getMonth()]} ${d.getFullYear()}`;
+    }
+
+    // ============================================================
+    // FUNGSI LOAD HARI LIBUR (PER DIVISI)
     // ============================================================
     async function loadHariLibur() {
         try {
             const response = await fetch(
-                `${SUPABASE_URL}/rest/v1/hari_libur?select=tanggal`,
+                `${SUPABASE_URL}/rest/v1/hari_libur?select=tanggal,divisi`,
                 {
                     headers: {
                         'apikey': SUPABASE_ANON_KEY,
@@ -554,10 +657,11 @@
             const data = await response.json();
             hariLibur = {};
             data.forEach(item => {
-                hariLibur[item.tanggal] = true;
+                const key = item.tanggal + '|' + item.divisi;
+                hariLibur[key] = true;
             });
             document.getElementById('totalLibur').textContent = Object.keys(hariLibur).length;
-            console.log('🗓️ Hari libur loaded:', Object.keys(hariLibur).length);
+            console.log('🗓️ Hari libur per divisi loaded:', Object.keys(hariLibur).length);
         } catch(e) {
             console.error('Gagal load hari libur:', e);
             hariLibur = {};
@@ -565,57 +669,103 @@
     }
 
     // ============================================================
-    // TOGGLE LIBUR KE SUPABASE
+    // OPEN MODAL LIBUR (DIPANGGIL SAAT KLIK HEADER TANGGAL)
     // ============================================================
-    async function toggleLibur(tanggal) {
-        const isLibur = hariLibur[tanggal] || false;
-        const tglDisplay = formatTanggal(tanggal);
+    function openModalLibur(tanggal) {
+        const modal = document.getElementById('modalLibur');
+        const body = document.getElementById('modalLiburBody');
+        const title = document.getElementById('modalLiburTitle');
         
-        if (isLibur) {
-            if (!confirm(`Batalkan libur untuk ${tglDisplay}?`)) return;
-            
-            await fetch(
-                `${SUPABASE_URL}/rest/v1/hari_libur?tanggal=eq.${tanggal}`,
-                {
-                    method: 'DELETE',
-                    headers: {
-                        'apikey': SUPABASE_ANON_KEY,
-                        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
-                    }
-                }
-            );
-            delete hariLibur[tanggal];
-            showToast(`🗓️ Libur ${tglDisplay} dibatalkan`, 'success');
-        } else {
-            if (!confirm(`Tandai ${tglDisplay} sebagai hari libur?`)) return;
-            
-            await fetch(
-                `${SUPABASE_URL}/rest/v1/hari_libur`,
-                {
-                    method: 'POST',
-                    headers: {
-                        'apikey': SUPABASE_ANON_KEY,
-                        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ 
-                        tanggal: tanggal, 
-                        keterangan: 'Libur' 
-                    })
-                }
-            );
-            hariLibur[tanggal] = true;
-            showToast(`🗓️ ${tglDisplay} ditandai libur!`, 'success');
+        title.textContent = `📌 Pilih Divisi Libur - ${formatTanggal(tanggal)}`;
+        modal.style.display = 'flex';
+        body.innerHTML = '<div class="loading-text"><i class="fas fa-spinner fa-pulse"></i> Memuat divisi...</div>';
+        
+        // Ambil daftar divisi unik dari data
+        const divisiList = [...new Set(currentData.map(row => row.divisi))].filter(d => d && d !== '-');
+        
+        if (divisiList.length === 0) {
+            body.innerHTML = '<div class="empty-text">Tidak ada divisi yang ditemukan</div>';
+            return;
         }
         
-        document.getElementById('totalLibur').textContent = Object.keys(hariLibur).length;
-        loadRekap();
+        let html = '';
+        divisiList.forEach(d => {
+            const key = tanggal + '|' + d;
+            const isLibur = hariLibur[key] || false;
+            const statusText = isLibur ? '🔵 LIBUR' : '✅ BUKA';
+            const cls = isLibur ? 'libur' : 'buka';
+            html += `
+                <button class="libur-divisi-item ${cls}" onclick="toggleLiburDivisi('${tanggal}','${d}')">
+                    <span>${d}</span>
+                    <span class="status-libur">${statusText}</span>
+                </button>
+            `;
+        });
+        
+        body.innerHTML = html;
+        modal.classList.add('active');
     }
 
-    function formatTanggal(tgl) {
-        const d = new Date(tgl + 'T00:00:00');
-        const bulan = ['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agu','Sep','Okt','Nov','Des'];
-        return `${d.getDate()} ${bulan[d.getMonth()]} ${d.getFullYear()}`;
+    // ============================================================
+    // CLOSE MODAL LIBUR
+    // ============================================================
+    function closeModalLibur() {
+        document.getElementById('modalLibur').classList.remove('active');
+        document.getElementById('modalLibur').style.display = 'none';
+    }
+
+    // ============================================================
+    // TOGGLE LIBUR DIVISI (KE SUPABASE)
+    // ============================================================
+    async function toggleLiburDivisi(tanggal, divisi) {
+        const key = tanggal + '|' + divisi;
+        const isLibur = hariLibur[key] || false;
+        
+        try {
+            if (isLibur) {
+                // Batalkan libur
+                await fetch(
+                    `${SUPABASE_URL}/rest/v1/hari_libur?tanggal=eq.${tanggal}&divisi=eq.${divisi}`,
+                    {
+                        method: 'DELETE',
+                        headers: {
+                            'apikey': SUPABASE_ANON_KEY,
+                            'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
+                        }
+                    }
+                );
+                delete hariLibur[key];
+                showToast(`🗓️ Libur dibatalkan untuk ${divisi} pada ${formatTanggal(tanggal)}`, 'success');
+            } else {
+                // Tandai libur
+                await fetch(
+                    `${SUPABASE_URL}/rest/v1/hari_libur`,
+                    {
+                        method: 'POST',
+                        headers: {
+                            'apikey': SUPABASE_ANON_KEY,
+                            'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            tanggal: tanggal,
+                            divisi: divisi,
+                            keterangan: 'Libur'
+                        })
+                    }
+                );
+                hariLibur[key] = true;
+                showToast(`🗓️ ${divisi} diliburkan pada ${formatTanggal(tanggal)}`, 'success');
+            }
+            
+            document.getElementById('totalLibur').textContent = Object.keys(hariLibur).length;
+            closeModalLibur();
+            loadRekap();
+            
+        } catch(e) {
+            console.error('Error:', e);
+            showToast('Gagal menyimpan data libur', 'error');
+        }
     }
 
     // ============================================================
@@ -671,9 +821,11 @@
                 };
 
                 dateList.forEach(tgl => {
-                    const isLibur = hariLibur[tgl] || false;
-                    const key = k.id + '|' + tgl;
-                    const abs = absenMap[key];
+                    const keyLibur = tgl + '|' + row.divisi;
+                    const isLibur = hariLibur[keyLibur] || false;
+                    
+                    const keyAbsen = k.id + '|' + tgl;
+                    const abs = absenMap[keyAbsen];
                     let status = 'alfa';
                     let jamMasuk = '-', jamPulang = '-';
                     let absId = null;
@@ -707,7 +859,8 @@
                         jamPulang, 
                         id: absId,
                         absenId: absId,
-                        isLibur: isLibur
+                        isLibur: isLibur,
+                        divisi: row.divisi
                     });
                 });
 
@@ -737,10 +890,11 @@
         let html = '<table><thead><tr><th>No</th><th>Nama</th><th>Divisi</th>';
         dateList.forEach(tgl => {
             const d = new Date(tgl + 'T00:00:00');
-            const isLibur = hariLibur[tgl] || false;
-            const liburClass = isLibur ? 'libur' : '';
-            const liburBadge = isLibur ? '<span class="libur-badge">🗓️</span>' : '';
-            html += `<th><span class="date-header ${liburClass}" onclick="toggleLibur('${tgl}')" title="Klik untuk tandai libur">
+            // Cek apakah ada divisi yang libur pada tanggal ini
+            const liburDivisi = Object.keys(hariLibur).filter(k => k.startsWith(tgl + '|')).map(k => k.split('|')[1]);
+            const isAnyLibur = liburDivisi.length > 0;
+            const liburBadge = isAnyLibur ? `<span class="libur-badge">${liburDivisi.length}🗓️</span>` : '';
+            html += `<th><span class="date-header" onclick="openModalLibur('${tgl}')" title="Klik untuk tandai libur per divisi">
                 ${d.getDate()}/${d.getMonth()+1} ${liburBadge}
             </span></th>`;
         });
@@ -935,8 +1089,7 @@
         const dateList = currentData[0]?.dates.map(d => d.tanggal) || [];
         dateList.forEach(tgl => {
             const d = new Date(tgl + 'T00:00:00');
-            const isLibur = hariLibur[tgl] || false;
-            csv += `${d.getDate()}/${d.getMonth()+1}${isLibur ? '🔵' : ''},`;
+            csv += `${d.getDate()}/${d.getMonth()+1},`;
         });
         csv += 'Akumulasi\n';
         
