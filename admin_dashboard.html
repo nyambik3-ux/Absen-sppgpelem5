@@ -834,14 +834,6 @@
                 el.classList.remove('quick-edit-disabled');
                 el.classList.add('quick-edit-enabled');
                 el.style.cursor = 'pointer';
-                // Pasang ulang onclick
-                const row = el.closest('tr');
-                if (row) {
-                    const nameCell = row.querySelector('.clickable-name');
-                    if (nameCell && nameCell.onclick) {
-                        // Gunakan fungsi yang ada
-                    }
-                }
             });
         }
     }
@@ -960,34 +952,127 @@
     }
 
     // ============================================================
-    // QUICK EDIT (Mode OFF) - KLIK IKON DI TABEL
+    // QUICK EDIT - MODAL 4 STATUS (Hadir, Telat, Izin, Alfa)
     // ============================================================
-    async function quickEdit(id, tanggal) {
+    function quickEdit(id, tanggal) {
         if (isBulkMode) {
-            showToast('Mode Bulk Edit aktif, gunakan grid di atas!', 'warning');
+            showToast('Mode Bulk aktif, gunakan grid di atas!', 'warning');
             return;
         }
         
-        // Cari data absensi
+        // Cari data karyawan
         const karyawan = currentData.find(k => k.id === id);
         if (!karyawan) { showToast('Data tidak ditemukan', 'error'); return; }
         
         const dateData = karyawan.dates.find(d => d.tanggal === tanggal);
         if (!dateData) { showToast('Data tidak ditemukan', 'error'); return; }
+        if (dateData.isLibur) { showToast('Hari libur tidak bisa diedit', 'warning'); return; }
         
-        // Toggle status
+        const d = new Date(tanggal + 'T00:00:00');
+        const tglDisplay = `${d.getDate()}/${d.getMonth()+1}/${d.getFullYear()}`;
         const currentStatus = dateData.status;
-        const newStatus = currentStatus === 'hadir' ? 'alfa' : 'hadir';
         
+        // Pilihan status
+        const statusOptions = [
+            { value: 'hadir', label: '✅ Hadir', color: '#34d399' },
+            { value: 'telat', label: '⏰ Telat', color: '#fb923c' },
+            { value: 'izin', label: '📝 Izin', color: '#60a5fa' },
+            { value: 'alfa', label: '❌ Alfa', color: '#f87171' }
+        ];
+        
+        let html = `
+            <div style="margin-bottom:12px;font-weight:600;color:white;">
+                <div>👤 ${karyawan.nama}</div>
+                <div style="font-size:13px;color:#94a3b8;font-weight:400;">📅 ${tglDisplay}</div>
+                <div style="font-size:12px;color:#94a3b8;font-weight:400;margin-top:4px;">
+                    Status saat ini: <span style="color:${statusOptions.find(s => s.value === currentStatus)?.color || '#94a3b8'};font-weight:600;">
+                        ${statusOptions.find(s => s.value === currentStatus)?.label || currentStatus}
+                    </span>
+                </div>
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:12px 0;">
+        `;
+        
+        statusOptions.forEach(opt => {
+            const isActive = opt.value === currentStatus;
+            html += `
+                <button onclick="setStatusQuick('${id}','${tanggal}','${opt.value}')" 
+                        style="padding:14px;border-radius:12px;border:2px solid ${isActive ? opt.color : 'rgba(255,255,255,0.1)'};
+                               background:${isActive ? opt.color + '22' : 'rgba(0,0,0,0.2)'};
+                               color:${isActive ? opt.color : '#94a3b8'};
+                               font-size:15px;font-weight:700;cursor:pointer;
+                               transition:all 0.2s;font-family:'Inter',sans-serif;
+                               display:flex;align-items:center;justify-content:center;gap:8px;">
+                    ${opt.label}
+                </button>
+            `;
+        });
+        
+        html += `
+            </div>
+            <div style="display:flex;gap:12px;justify-content:flex-end;margin-top:8px;padding-top:12px;border-top:1px solid rgba(255,255,255,0.06);">
+                <button onclick="closeQuickModal()" style="padding:10px 20px;border:none;border-radius:10px;background:#1e293b;color:#94a3b8;cursor:pointer;font-weight:600;font-family:'Inter',sans-serif;">Batal</button>
+            </div>
+        `;
+        
+        // Tampilkan modal
+        const modal = document.createElement('div');
+        modal.id = 'quickModal';
+        modal.style.cssText = `
+            position:fixed;top:0;left:0;right:0;bottom:0;
+            background:rgba(0,0,0,0.7);backdrop-filter:blur(8px);
+            display:flex;justify-content:center;align-items:center;z-index:9999;
+        `;
+        modal.innerHTML = `
+            <div style="background:#1e293b;border-radius:24px;padding:32px;width:90%;max-width:400px;border:1px solid rgba(255,255,255,0.06);">
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+                    <h3 style="font-size:18px;font-weight:700;color:white;">✏️ Edit Absensi</h3>
+                    <button onclick="closeQuickModal()" style="background:none;border:none;color:#94a3b8;font-size:24px;cursor:pointer;">&times;</button>
+                </div>
+                <div>${html}</div>
+            </div>
+        `;
+        document.body.appendChild(modal);
+    }
+
+    // ============================================================
+    // SET STATUS DARI QUICK MODAL
+    // ============================================================
+    async function setStatusQuick(id, tanggal, status) {
         try {
+            showToast('🔄 Menyimpan...', 'info');
+            
+            const karyawan = currentData.find(k => k.id === id);
+            if (!karyawan) { showToast('Data tidak ditemukan', 'error'); return; }
+            
+            const dateData = karyawan.dates.find(d => d.tanggal === tanggal);
+            if (!dateData) { showToast('Data tidak ditemukan', 'error'); return; }
+            
+            // Tentukan jam berdasarkan status
+            let jamMasuk = null, jamPulang = null;
+            if (status === 'hadir') {
+                jamMasuk = '08:00';
+                jamPulang = '17:00';
+            } else if (status === 'telat') {
+                jamMasuk = '09:00';
+                jamPulang = '17:00';
+            } else if (status === 'izin') {
+                jamMasuk = null;
+                jamPulang = null;
+            } else { // alfa
+                jamMasuk = null;
+                jamPulang = null;
+            }
+            
             const payload = {
-                status: newStatus,
-                jam_masuk: newStatus === 'hadir' ? '08:00' : null,
-                jam_pulang: newStatus === 'hadir' ? '17:00' : null
+                status: status,
+                jam_masuk: jamMasuk,
+                jam_pulang: jamPulang
             };
             
             let res;
             if (dateData.absenId) {
+                // Update
                 res = await fetch(
                     `${SUPABASE_URL}/rest/v1/absensi?id=eq.${dateData.absenId}`,
                     {
@@ -1022,13 +1107,167 @@
             }
             
             if (res.ok) {
-                showToast(`✅ Status diubah menjadi ${newStatus === 'hadir' ? 'Hadir' : 'Alfa'}`, 'success');
+                const statusLabel = { hadir: 'Hadir', telat: 'Telat', izin: 'Izin', alfa: 'Alfa' };
+                showToast(`✅ Status diubah menjadi ${statusLabel[status] || status}!`, 'success');
+                closeQuickModal();
                 loadRekap();
             } else {
                 showToast('❌ Gagal menyimpan data', 'error');
             }
         } catch(e) {
+            console.error('Quick edit error:', e);
             showToast('❌ Gagal koneksi ke server', 'error');
+        }
+    }
+
+    // ============================================================
+    // CLOSE QUICK MODAL
+    // ============================================================
+    function closeQuickModal() {
+        const modal = document.getElementById('quickModal');
+        if (modal) modal.remove();
+    }
+
+    // ============================================================
+    // OPEN MODAL LIBUR
+    // ============================================================
+    function openModalLibur(tanggal) {
+        // Ambil daftar divisi unik dari data
+        const divisiList = [...new Set(currentData.map(row => row.divisi))].filter(d => d && d !== '-');
+        
+        if (divisiList.length === 0) {
+            showToast('Tidak ada divisi untuk diliburkan', 'warning');
+            return;
+        }
+        
+        // Buat modal pilihan divisi
+        let html = `<div style="margin-bottom:12px;font-weight:600;">🗓️ ${formatTanggal(tanggal)}</div>`;
+        html += `<div style="display:flex;flex-direction:column;gap:8px;">`;
+        
+        divisiList.forEach(d => {
+            const isLibur = hariLiburMap[tanggal + '|' + d] || false;
+            const status = isLibur ? '🔵 LIBUR' : '✅ BUKA';
+            const bg = isLibur ? 'rgba(96,165,250,0.2)' : 'rgba(16,185,129,0.1)';
+            html += `
+                <button onclick="toggleLiburDivisi('${tanggal}','${d}')" 
+                        style="padding:12px 16px;border-radius:10px;border:1px solid rgba(255,255,255,0.1);
+                               background:${bg};color:white;font-size:14px;font-weight:600;cursor:pointer;
+                               display:flex;justify-content:space-between;align-items:center;font-family:'Inter',sans-serif;width:100%;">
+                    <span>${d}</span>
+                    <span style="font-size:12px;color:#94a3b8;">${status}</span>
+                </button>
+            `;
+        });
+        html += `</div>`;
+        html += `<div style="margin-top:16px;display:flex;gap:12px;justify-content:flex-end;">
+            <button onclick="closeModalLibur()" style="padding:10px 20px;border:none;border-radius:10px;background:#1e293b;color:#94a3b8;cursor:pointer;font-weight:600;">Tutup</button>
+        </div>`;
+        
+        // Tampilkan modal
+        const modal = document.createElement('div');
+        modal.id = 'modalLibur';
+        modal.style.cssText = `
+            position:fixed;top:0;left:0;right:0;bottom:0;
+            background:rgba(0,0,0,0.7);backdrop-filter:blur(8px);
+            display:flex;justify-content:center;align-items:center;z-index:9999;
+        `;
+        modal.innerHTML = `
+            <div style="background:#1e293b;border-radius:24px;padding:32px;width:90%;max-width:400px;border:1px solid rgba(255,255,255,0.06);max-height:90vh;overflow-y:auto;">
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+                    <h3 style="font-size:18px;font-weight:700;">📌 Pilih Divisi Libur</h3>
+                    <button onclick="closeModalLibur()" style="background:none;border:none;color:#94a3b8;font-size:24px;cursor:pointer;">&times;</button>
+                </div>
+                <div>${html}</div>
+            </div>
+        `;
+        document.body.appendChild(modal);
+    }
+
+    // ============================================================
+    // TOGGLE LIBUR DIVISI
+    // ============================================================
+    async function toggleLiburDivisi(tanggal, divisi) {
+        const key = tanggal + '|' + divisi;
+        const isLibur = hariLiburMap[key] || false;
+        
+        try {
+            if (isLibur) {
+                await fetch(
+                    `${SUPABASE_URL}/rest/v1/hari_libur?tanggal=eq.${tanggal}&divisi=eq.${divisi}`,
+                    {
+                        method: 'DELETE',
+                        headers: {
+                            'apikey': SUPABASE_ANON_KEY,
+                            'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
+                        }
+                    }
+                );
+                delete hariLiburMap[key];
+                showToast(`🗓️ Libur dibatalkan untuk ${divisi}`, 'success');
+            } else {
+                await fetch(
+                    `${SUPABASE_URL}/rest/v1/hari_libur`,
+                    {
+                        method: 'POST',
+                        headers: {
+                            'apikey': SUPABASE_ANON_KEY,
+                            'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            tanggal: tanggal,
+                            divisi: divisi,
+                            keterangan: 'Libur'
+                        })
+                    }
+                );
+                hariLiburMap[key] = true;
+                showToast(`🗓️ ${divisi} diliburkan`, 'success');
+            }
+            
+            closeModalLibur();
+            document.getElementById('totalLibur').textContent = Object.keys(hariLiburMap).length;
+            loadRekap();
+        } catch(e) {
+            showToast('Gagal menyimpan', 'error');
+        }
+    }
+
+    // ============================================================
+    // CLOSE MODAL LIBUR
+    // ============================================================
+    function closeModalLibur() {
+        const modal = document.getElementById('modalLibur');
+        if (modal) modal.remove();
+    }
+
+    // ============================================================
+    // FORMAT TANGGAL
+    // ============================================================
+    function formatTanggal(tgl) {
+        const d = new Date(tgl + 'T00:00:00');
+        const bulan = ['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agu','Sep','Okt','Nov','Des'];
+        return `${d.getDate()} ${bulan[d.getMonth()]} ${d.getFullYear()}`;
+    }
+
+    // ============================================================
+    // OPEN DETAIL (KLIK NAMA)
+    // ============================================================
+    function openDetail(id) {
+        if (isBulkMode) {
+            showToast('Mode Bulk aktif, gunakan grid di atas!', 'info');
+            return;
+        }
+        
+        const karyawan = currentData.find(k => k.id === id);
+        if (!karyawan) { showToast('Data tidak ditemukan', 'error'); return; }
+        
+        // Cari tanggal pertama yang bisa diedit
+        const firstDate = karyawan.dates.find(d => !d.isLibur);
+        if (firstDate) {
+            quickEdit(id, firstDate.tanggal);
+        } else {
+            showToast('✅ Semua hari libur!', 'info');
         }
     }
 
@@ -1182,7 +1421,7 @@
                     // Quick Edit onclick (hanya aktif kalau mode OFF)
                     const onClick = isBulkMode ? '' : `onclick="quickEdit('${row.id}','${d.tanggal}')"`;
                     const disabledClass = isBulkMode ? 'quick-edit-disabled' : 'quick-edit-enabled';
-                    html += `<td><span class="status-icon ${cls} ${disabledClass}" ${onClick} title="${isBulkMode ? 'Mode Bulk aktif' : 'Klik untuk toggle'}">${icon}</span></td>`;
+                    html += `<td><span class="status-icon ${cls} ${disabledClass}" ${onClick} title="${isBulkMode ? 'Mode Bulk aktif' : 'Klik untuk edit'}">${icon}</span></td>`;
                 }
             });
 
@@ -1209,24 +1448,6 @@
         document.getElementById('totalHadir').textContent = hadir;
         document.getElementById('totalTelat').textContent = telat;
         document.getElementById('totalAlfa').textContent = alfa;
-    }
-
-    // ============================================================
-    // OPEN DETAIL (KLIK NAMA)
-    // ============================================================
-    function openDetail(id) {
-        if (isBulkMode) {
-            showToast('Mode Bulk aktif, gunakan grid di atas!', 'info');
-            return;
-        }
-        showToast('📌 Klik ikon ✅/❌ di tabel untuk edit cepat', 'info');
-    }
-
-    // ============================================================
-    // OPEN MODAL LIBUR
-    // ============================================================
-    function openModalLibur(tanggal) {
-        showToast('🗓️ Klik header tanggal untuk tandai libur per divisi', 'info');
     }
 
     // ============================================================
