@@ -499,6 +499,28 @@
     const TELE_CHAT_ID = "8014458366";
 
     // ============================================================
+    // FUNGSI TANGGAL INDONESIA (GMT+7) - 🔥 FIX SHIFT MALAM!
+    // ============================================================
+    function getTodayIndonesia() {
+        const now = new Date();
+        const offset = 7 * 60 * 60 * 1000;
+        return new Date(now.getTime() + offset).toISOString().split('T')[0];
+    }
+
+    function getDateIndonesia(date) {
+        const offset = 7 * 60 * 60 * 1000;
+        return new Date(date.getTime() + offset).toISOString().split('T')[0];
+    }
+
+    function getYesterdayIndonesia() {
+        const now = new Date();
+        const offset = 7 * 60 * 60 * 1000;
+        const yesterday = new Date(now.getTime() + offset);
+        yesterday.setDate(yesterday.getDate() - 1);
+        return yesterday.toISOString().split('T')[0];
+    }
+
+    // ============================================================
     // AMBIL DATA USER - DENGAN FALLBACK
     // ============================================================
     let user = null;
@@ -557,7 +579,7 @@
     }
 
     function isTodayLibur() {
-        const today = getTodayIndonesia()
+        const today = getTodayIndonesia();
         const key = today + '|' + user.divisi;
         return hariLiburMap[key] || false;
     }
@@ -684,7 +706,7 @@
     }
 
     // ============================================================
-    // 6. LOAD DATA
+    // 6. LOAD DATA (PAKAI GMT+7)
     // ============================================================
     async function loadWithCache(endpoint, cacheKey, duration, forceRefresh = false) {
         if (!forceRefresh) {
@@ -698,7 +720,7 @@
         console.log(`🌐 ${endpoint} from Supabase`);
         try {
             if (endpoint === 'cek_status') {
-                const today = new Date().toISOString().split('T')[0];
+                const today = getTodayIndonesia();
                 const response = await fetch(
                     `${SUPABASE_URL}/rest/v1/absensi?select=*&karyawan_id=eq.${user.id}&tanggal=eq.${today}`,
                     {
@@ -760,7 +782,7 @@
                     return [];
                 }
 
-                const today = new Date().toISOString().split('T')[0];
+                const today = getTodayIndonesia();
                 const ranking = [];
 
                 for (const ang of anggota) {
@@ -1168,7 +1190,7 @@
     }
 
     // ============================================================
-    // 14. HANDLE ABSEN
+    // 14. HANDLE ABSEN - 🔥 SUPPORT SHIFT MALAM!
     // ============================================================
     let isProcessing = false;
 
@@ -1224,22 +1246,23 @@
         showToast('Mengirim absen...', 'info');
 
         try {
-            const today = new Date().toISOString().split('T')[0];
+            const today = getTodayIndonesia();
             const jam = new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
 
-            const checkRes = await fetch(
-                `${SUPABASE_URL}/rest/v1/absensi?select=*&karyawan_id=eq.${user.id}&tanggal=eq.${today}`,
-                {
-                    headers: {
-                        'apikey': SUPABASE_ANON_KEY,
-                        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
-                    }
-                }
-            );
-            const existing = await checkRes.json();
-            const record = existing[0] || null;
-
             if (action === 'DATANG') {
+                // Cek absen masuk hari ini
+                const checkRes = await fetch(
+                    `${SUPABASE_URL}/rest/v1/absensi?select=*&karyawan_id=eq.${user.id}&tanggal=eq.${today}`,
+                    {
+                        headers: {
+                            'apikey': SUPABASE_ANON_KEY,
+                            'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
+                        }
+                    }
+                );
+                const existing = await checkRes.json();
+                const record = existing[0] || null;
+
                 if (record?.jam_masuk) {
                     showToast('Anda sudah absen masuk hari ini!', 'warning');
                     btn.classList.remove('loading');
@@ -1282,14 +1305,47 @@
                 showToast('✅ Absen masuk berhasil!', 'success');
                 if (navigator.vibrate) navigator.vibrate(50);
 
+                // Kirim Telegram
+                await sendTelegram(`📢 <b>ABSEN MASUK</b>\n👤 ${user.nama}\n🆔 ${user.id}\n⏰ ${jam}\n📅 ${today}`);
+
             } else if (action === 'PULANG') {
+                // 🔥 CEK HARI INI DULU
+                let checkRes = await fetch(
+                    `${SUPABASE_URL}/rest/v1/absensi?select=*&karyawan_id=eq.${user.id}&tanggal=eq.${today}`,
+                    {
+                        headers: {
+                            'apikey': SUPABASE_ANON_KEY,
+                            'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
+                        }
+                    }
+                );
+                let existing = await checkRes.json();
+                let record = existing[0] || null;
+
+                // 🔥 KALAU GAK ADA, CEK KEMARIN (SHIFT MALAM!)
+                if (!record) {
+                    const yesterdayStr = getYesterdayIndonesia();
+                    checkRes = await fetch(
+                        `${SUPABASE_URL}/rest/v1/absensi?select=*&karyawan_id=eq.${user.id}&tanggal=eq.${yesterdayStr}`,
+                        {
+                            headers: {
+                                'apikey': SUPABASE_ANON_KEY,
+                                'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
+                            }
+                        }
+                    );
+                    existing = await checkRes.json();
+                    record = existing[0] || null;
+                }
+
                 if (!record?.jam_masuk) {
-                    showToast('Anda belum absen masuk!', 'error');
+                    showToast('Anda belum absen masuk! (cek hari ini & kemarin)', 'error');
                     btn.classList.remove('loading');
                     btn.disabled = false;
                     isProcessing = false;
                     return;
                 }
+
                 if (record?.jam_pulang) {
                     showToast('Anda sudah absen pulang!', 'warning');
                     btn.classList.remove('loading');
@@ -1298,7 +1354,8 @@
                     return;
                 }
 
-                await fetch(`${SUPABASE_URL}/rest/v1/absensi?karyawan_id=eq.${user.id}&tanggal=eq.${today}`, {
+                // Update pulang di record yang ditemukan
+                await fetch(`${SUPABASE_URL}/rest/v1/absensi?id=eq.${record.id}`, {
                     method: 'PATCH',
                     headers: {
                         'apikey': SUPABASE_ANON_KEY,
@@ -1313,11 +1370,10 @@
 
                 showToast('✅ Absen pulang berhasil!', 'success');
                 if (navigator.vibrate) navigator.vibrate(50);
-            }
 
-            // 🔥 KIRIM NOTIFIKASI TELEGRAM
-            const label = action === 'DATANG' ? 'MASUK' : 'PULANG';
-            await sendTelegram(`📢 <b>ABSEN ${label}</b>\n👤 ${user.nama}\n🆔 ${user.id}\n⏰ ${jam}\n📅 ${today}`);
+                // Kirim Telegram
+                await sendTelegram(`📢 <b>ABSEN PULANG</b>\n👤 ${user.nama}\n🆔 ${user.id}\n⏰ ${jam}\n📅 ${record.tanggal}`);
+            }
 
             clearCache();
             await syncStatus();
@@ -1440,6 +1496,7 @@
     });
 
     console.log('✅ App ready!');
+    console.log('🗓️ Today (WIB):', getTodayIndonesia());
 </script>
 
 </body>
