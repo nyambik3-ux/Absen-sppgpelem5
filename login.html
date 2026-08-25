@@ -127,7 +127,7 @@
 
         <div class="input-group">
             <i class="fas fa-id-card"></i>
-            <input type="text" id="id" placeholder="ID Karyawan" autocomplete="off">
+            <input type="text" id="id" placeholder="ID Karyawan" autocomplete="off" autofocus>
         </div>
 
         <div class="input-group">
@@ -145,8 +145,14 @@
     </div>
 
     <script>
+        // ============================================================
+        // KONFIGURASI
+        // ============================================================
         const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbziyQlHaWjY4HJsc8CxSUzCghn2N3Wpw_JkoBtgAU0cL6d3JOMyOAjjLWUz_d9g8ylljg/exec";
-
+        
+        // ============================================================
+        // TOAST
+        // ============================================================
         function showToast(msg, isError = false) {
             const existing = document.querySelector('.toast');
             if (existing) existing.remove();
@@ -158,37 +164,47 @@
             setTimeout(() => toast.remove(), 3000);
         }
 
+        // ============================================================
+        // AUTO LOGIN (jika sudah login sebelumnya)
+        // ============================================================
+        function checkAutoLogin() {
+            try {
+                const raw = localStorage.getItem('user_pelem_5');
+                if (raw) {
+                    const user = JSON.parse(raw);
+                    if (user && user.id) {
+                        console.log('🔄 Auto login for:', user.id);
+                        window.location.href = 'index.html';
+                        return true;
+                    }
+                }
+            } catch(e) {}
+            return false;
+        }
+
+        // ============================================================
+        // FUNGSI LOGIN - OPTIMASI
+        // ============================================================
         async function doLogin() {
-            const idInput = document.getElementById('id').value.trim();
+            const idInput = document.getElementById('id').value.trim().toUpperCase();
             const pinInput = document.getElementById('pin').value;
             const btn = document.getElementById('btn');
             const btnText = document.getElementById('btn-text');
 
-            if (!idInput) {
-                showToast('Masukkan ID Karyawan!', true);
-                return;
-            }
-            if (idInput.length < 3) {
-                showToast('ID minimal 3 karakter!', true);
-                return;
-            }
-            if (!pinInput) {
-                showToast('Masukkan PIN!', true);
-                return;
-            }
-            if (pinInput.length < 4) {
-                showToast('PIN minimal 4 digit!', true);
-                return;
-            }
-            if (!/^\d+$/.test(pinInput)) {
-                showToast('PIN harus berupa angka!', true);
-                return;
-            }
+            // Validasi cepat
+            if (!idInput) { showToast('Masukkan ID Relawan!', true); return; }
+            if (idInput.length < 3) { showToast('ID minimal 3 karakter!', true); return; }
+            if (!pinInput) { showToast('Masukkan PIN!', true); return; }
+            if (pinInput.length < 4) { showToast('PIN minimal 4 digit!', true); return; }
+            if (!/^\d+$/.test(pinInput)) { showToast('PIN harus berupa angka!', true); return; }
 
+            // Loading state
             btn.disabled = true;
             btnText.innerHTML = '<span class="spinner"></span> Verifikasi...';
 
             try {
+                // 1️⃣ LOGIN - Hanya verifikasi ID + PIN
+                console.log('🔑 Login attempt for:', idInput);
                 const response = await fetch(SCRIPT_URL, {
                     method: 'POST',
                     body: JSON.stringify({ action: 'login', id: idInput, pin: pinInput })
@@ -196,28 +212,85 @@
                 const res = await response.json();
 
                 if (res.result === 'success') {
-                    localStorage.setItem('user_pelem_5', JSON.stringify(res.user));
-                    showToast('✅ Login berhasil! Mengalihkan...');
+                    // Simpan user data
+                    const user = res.user;
+                    localStorage.setItem('user_pelem_5', JSON.stringify(user));
+                    
+                    // 2️⃣ PRELOAD DATA DI BACKGROUND (sebelum redirect)
+                    // Ini penting: mulai fetch data sebelum halaman dashboard terbuka
+                    console.log('⏳ Preloading data...');
+                    preloadData(user.id);
+                    
+                    // 3️⃣ REDIRECT LANGSUNG (tanpa nunggu data selesai)
+                    showToast('✅ Login berhasil!');
                     setTimeout(() => {
                         window.location.href = 'index.html';
-                    }, 800);
+                    }, 300); // Lebih cepat dari sebelumnya (800ms → 300ms)
+
                 } else {
                     showToast(res.message || 'ID atau PIN salah!', true);
                     btn.disabled = false;
                     btnText.innerText = 'MASUK';
                 }
             } catch(e) {
+                console.error('Login error:', e);
                 showToast('❌ Koneksi error, cek internet Anda.', true);
                 btn.disabled = false;
                 btnText.innerText = 'MASUK';
             }
         }
 
+        // ============================================================
+        // PRELOAD DATA (Background)
+        // ============================================================
+        function preloadData(userId) {
+            // Fetch data di background tanpa nunggu response
+            // Ini akan mengisi cache sebelum user sampai ke dashboard
+            
+            const endpoints = [
+                { action: 'cek_status', key: 'cache_status_' + userId },
+                { action: 'get_ranking', key: 'cache_ranking_' + userId },
+                { action: 'get_stats', key: 'cache_stats_' + userId },
+                { action: 'get_history', key: 'cache_history_' + userId }
+            ];
+
+            for (const ep of endpoints) {
+                fetch(SCRIPT_URL, {
+                    method: 'POST',
+                    body: JSON.stringify({ action: ep.action, id: userId })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.result === 'success') {
+                        // Simpan ke cache
+                        const cacheData = data.data || data;
+                        localStorage.setItem(ep.key, JSON.stringify({
+                            timestamp: Date.now(),
+                            duration: 300000, // 5 menit
+                            value: cacheData
+                        }));
+                        console.log('📦 Preloaded:', ep.action);
+                    }
+                })
+                .catch(err => console.warn('Preload failed:', ep.action, err));
+            }
+        }
+
+        // ============================================================
+        // ENTER KEY
+        // ============================================================
         document.querySelectorAll('input').forEach(input => {
             input.addEventListener('keypress', (e) => {
                 if (e.key === 'Enter') doLogin();
             });
         });
+
+        // ============================================================
+        // AUTO LOGIN CHECK (jika masih session)
+        // ============================================================
+        if (!checkAutoLogin()) {
+            console.log('🔐 Silakan login');
+        }
     </script>
 </body>
 </html>
