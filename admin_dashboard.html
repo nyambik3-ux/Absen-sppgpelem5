@@ -6,7 +6,6 @@
     <title>Admin Dashboard • Smart Presence</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
@@ -16,7 +15,6 @@
             color: #e2e8f0;
             padding: 20px;
         }
-        body.dark-mode { background: #0f172a; color: #e2e8f0; }
         body.light-mode { background: #f1f5f9; color: #1e293b; }
         
         .navbar {
@@ -61,7 +59,6 @@
         
         .container { max-width: 1400px; margin: 0 auto; }
         
-        /* Filter Periode */
         .filter-card {
             background: rgba(255,255,255,0.04);
             border-radius: 16px;
@@ -75,11 +72,7 @@
         }
         body.light-mode .filter-card { background: white; border-color: rgba(0,0,0,0.06); }
         
-        .filter-card label {
-            font-size: 13px;
-            font-weight: 600;
-            color: #94a3b8;
-        }
+        .filter-card label { font-size: 13px; font-weight: 600; color: #94a3b8; }
         .filter-card input[type="date"] {
             padding: 10px 14px;
             border-radius: 10px;
@@ -89,11 +82,7 @@
             font-family: 'Inter', sans-serif;
             font-size: 14px;
         }
-        body.light-mode .filter-card input[type="date"] {
-            background: #f1f5f9;
-            color: #1e293b;
-            border-color: #cbd5e1;
-        }
+        body.light-mode .filter-card input[type="date"] { background: #f1f5f9; color: #1e293b; border-color: #cbd5e1; }
         .filter-card .btn-primary {
             padding: 10px 24px;
             background: linear-gradient(135deg, #a855f7, #3b82f6);
@@ -102,13 +91,10 @@
             color: white;
             font-weight: 700;
             cursor: pointer;
-            transition: all 0.2s;
             font-family: 'Inter', sans-serif;
             font-size: 14px;
         }
         .filter-card .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 4px 15px rgba(168,85,247,0.4); }
-        .filter-card .btn-primary:active { transform: scale(0.95); }
-        
         .filter-card .btn-success {
             padding: 10px 20px;
             background: #10b981;
@@ -120,8 +106,6 @@
             font-family: 'Inter', sans-serif;
             font-size: 13px;
         }
-        .filter-card .btn-success:hover { background: #059669; }
-        
         .filter-card .btn-danger {
             padding: 10px 20px;
             background: #ef4444;
@@ -133,9 +117,18 @@
             font-family: 'Inter', sans-serif;
             font-size: 13px;
         }
-        .filter-card .btn-danger:hover { background: #dc2626; }
+        .filter-card .btn-refresh {
+            padding: 10px 20px;
+            background: #6366f1;
+            border: none;
+            border-radius: 10px;
+            color: white;
+            font-weight: 700;
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+            font-size: 13px;
+        }
         
-        /* Summary Cards */
         .summary-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
@@ -156,7 +149,6 @@
         .summary-card .num.alfa { color: #f87171; }
         .summary-card .num.total { color: #60a5fa; }
         
-        /* Table */
         .table-container {
             background: rgba(255,255,255,0.04);
             border-radius: 16px;
@@ -175,16 +167,8 @@
             gap: 10px;
         }
         
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 13px;
-        }
-        th, td {
-            padding: 10px 12px;
-            text-align: left;
-            border-bottom: 1px solid rgba(255,255,255,0.06);
-        }
+        table { width: 100%; border-collapse: collapse; font-size: 13px; }
+        th, td { padding: 10px 12px; text-align: left; border-bottom: 1px solid rgba(255,255,255,0.06); }
         body.light-mode th, body.light-mode td { border-bottom-color: #e2e8f0; }
         
         th {
@@ -204,10 +188,19 @@
             display: inline-block;
             width: 24px;
             text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            padding: 4px 8px;
+            border-radius: 8px;
+        }
+        td .status-icon:hover {
+            transform: scale(1.2);
+            background: rgba(255,255,255,0.1);
         }
         td .status-icon.hadir { color: #34d399; }
         td .status-icon.telat { color: #fb923c; }
         td .status-icon.alfa { color: #f87171; }
+        td .status-icon.izin { color: #60a5fa; }
         
         .clickable-name {
             color: #60a5fa;
@@ -215,7 +208,6 @@
             font-weight: 600;
         }
         .clickable-name:hover { text-decoration: underline; }
-        body.light-mode .clickable-name { color: #3b82f6; }
         
         .badge-akum {
             display: inline-block;
@@ -228,7 +220,7 @@
         .badge-akum.medium { background: rgba(251,146,60,0.2); color: #fb923c; }
         .badge-akum.low { background: rgba(239,68,68,0.2); color: #f87171; }
         
-        /* Modal */
+        /* Quick Edit Modal */
         .modal-overlay {
             position: fixed;
             top: 0; left: 0; right: 0; bottom: 0;
@@ -246,9 +238,7 @@
             border-radius: 24px;
             padding: 32px;
             width: 90%;
-            max-width: 600px;
-            max-height: 90vh;
-            overflow-y: auto;
+            max-width: 480px;
             border: 1px solid rgba(255,255,255,0.06);
             box-shadow: 0 25px 50px rgba(0,0,0,0.5);
         }
@@ -272,55 +262,42 @@
         }
         .modal-close:hover { color: white; }
         
-        .modal-body .detail-item {
-            display: flex;
-            justify-content: space-between;
-            padding: 10px 0;
-            border-bottom: 1px solid rgba(255,255,255,0.04);
+        .quick-options {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin: 16px 0;
         }
-        .modal-body .detail-item .label { color: #94a3b8; font-size: 13px; }
-        .modal-body .detail-item .value { font-weight: 600; }
-        
-        .modal-body .edit-group {
-            margin-bottom: 16px;
-        }
-        .modal-body .edit-group label {
-            display: block;
-            font-size: 12px;
-            color: #94a3b8;
-            margin-bottom: 4px;
-            font-weight: 600;
-        }
-        .modal-body .edit-group input,
-        .modal-body .edit-group select {
-            width: 100%;
-            padding: 10px 14px;
-            border-radius: 10px;
-            border: 1px solid rgba(255,255,255,0.1);
-            background: rgba(0,0,0,0.3);
+        .quick-options .opt-btn {
+            padding: 16px;
+            border: 2px solid rgba(255,255,255,0.06);
+            border-radius: 14px;
+            background: rgba(0,0,0,0.2);
             color: white;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
             font-family: 'Inter', sans-serif;
-            font-size: 14px;
+            text-align: center;
         }
-        body.light-mode .modal-body .edit-group input,
-        body.light-mode .modal-body .edit-group select {
-            background: #f1f5f9;
-            color: #1e293b;
-            border-color: #cbd5e1;
-        }
-        .modal-body .edit-group input:focus,
-        .modal-body .edit-group select:focus {
-            outline: none;
-            border-color: #a855f7;
-            box-shadow: 0 0 0 3px rgba(168,85,247,0.2);
-        }
+        .quick-options .opt-btn:active { transform: scale(0.95); }
+        .quick-options .opt-btn.hadir { border-color: #34d399; color: #34d399; }
+        .quick-options .opt-btn.hadir:hover { background: rgba(16,185,129,0.2); }
+        .quick-options .opt-btn.telat { border-color: #fb923c; color: #fb923c; }
+        .quick-options .opt-btn.telat:hover { background: rgba(251,146,60,0.2); }
+        .quick-options .opt-btn.alfa { border-color: #f87171; color: #f87171; }
+        .quick-options .opt-btn.alfa:hover { background: rgba(239,68,68,0.2); }
+        .quick-options .opt-btn.izin { border-color: #60a5fa; color: #60a5fa; }
+        .quick-options .opt-btn.izin:hover { background: rgba(96,165,250,0.2); }
         
         .modal-footer {
             display: flex;
             gap: 12px;
-            margin-top: 20px;
+            margin-top: 16px;
             padding-top: 16px;
             border-top: 1px solid rgba(255,255,255,0.06);
+            justify-content: flex-end;
         }
         .modal-footer button {
             padding: 10px 20px;
@@ -333,32 +310,14 @@
             transition: all 0.2s;
         }
         .modal-footer button:active { transform: scale(0.95); }
-        .btn-save { background: #10b981; color: white; }
-        .btn-save:hover { background: #059669; }
-        .btn-delete { background: #ef4444; color: white; }
-        .btn-delete:hover { background: #dc2626; }
         .btn-cancel { background: #1e293b; color: #94a3b8; }
         .btn-cancel:hover { background: #334155; }
         body.light-mode .btn-cancel { background: #e2e8f0; color: #64748b; }
         body.light-mode .btn-cancel:hover { background: #cbd5e1; }
         
-        /* Loading */
-        .loading-text {
-            text-align: center;
-            color: #64748b;
-            padding: 40px 0;
-            font-size: 14px;
-        }
-        .loading-text i { margin-right: 8px; }
+        .loading-text { text-align: center; color: #64748b; padding: 40px 0; font-size: 14px; }
+        .empty-text { text-align: center; color: #64748b; padding: 30px 0; font-size: 14px; }
         
-        .empty-text {
-            text-align: center;
-            color: #64748b;
-            padding: 30px 0;
-            font-size: 14px;
-        }
-        
-        /* Responsive */
         @media (max-width: 768px) {
             .navbar { flex-wrap: wrap; gap: 10px; padding: 12px 16px; }
             .nav-actions { flex-wrap: wrap; }
@@ -369,13 +328,11 @@
             table { font-size: 11px; }
             th, td { padding: 6px 8px; }
             td .status-icon { font-size: 14px; width: 18px; }
+            .quick-options { grid-template-columns: 1fr 1fr; }
         }
         @media (max-width: 480px) {
             .summary-grid { grid-template-columns: 1fr; }
-            .filter-card .btn-primary, .filter-card .btn-success, .filter-card .btn-danger {
-                width: 100%;
-                text-align: center;
-            }
+            .quick-options { grid-template-columns: 1fr; }
         }
     </style>
 </head>
@@ -400,7 +357,7 @@
 
 <div class="container">
 
-    <!-- FILTER PERIODE -->
+    <!-- FILTER -->
     <div class="filter-card">
         <label><i class="fas fa-calendar-alt"></i> Periode:</label>
         <input type="date" id="startDate">
@@ -415,7 +372,7 @@
         <button class="btn-danger" onclick="exportPDF()">
             <i class="fas fa-file-pdf"></i> PDF
         </button>
-        <button class="btn-primary" onclick="refreshData()" style="background:#6366f1;">
+        <button class="btn-refresh" onclick="refreshData()">
             <i class="fas fa-sync-alt"></i>
         </button>
     </div>
@@ -449,24 +406,24 @@
     </div>
 </div>
 
-<!-- MODAL DETAIL & EDIT -->
-<div class="modal-overlay" id="modalAbsen">
+<!-- QUICK EDIT MODAL -->
+<div class="modal-overlay" id="modalEdit">
     <div class="modal-card">
         <div class="modal-header">
-            <h2 id="modalTitle">Detail Absensi</h2>
+            <h2 id="modalTitle">✏️ Edit Absensi</h2>
             <button class="modal-close" onclick="closeModal()">&times;</button>
         </div>
         <div class="modal-body" id="modalBody">
-            <div class="loading-text"><i class="fas fa-spinner fa-pulse"></i> Memuat...</div>
+            <p style="color:#94a3b8;font-size:14px;margin-bottom:12px;" id="modalInfo">Pilih status untuk <strong id="modalNama"></strong> - <span id="modalTanggal"></span></p>
+            <div class="quick-options">
+                <button class="opt-btn hadir" onclick="quickUpdate('hadir')">✅ Hadir</button>
+                <button class="opt-btn telat" onclick="quickUpdate('telat')">⏰ Telat</button>
+                <button class="opt-btn alfa" onclick="quickUpdate('alfa')">❌ Alfa</button>
+                <button class="opt-btn izin" onclick="quickUpdate('izin')">📝 Izin</button>
+            </div>
         </div>
         <div class="modal-footer">
-            <button class="btn-save" onclick="saveEdit()" id="btnSaveEdit">
-                <i class="fas fa-save"></i> Simpan
-            </button>
-            <button class="btn-delete" onclick="deleteAbsen()" id="btnDelete">
-                <i class="fas fa-trash"></i> Hapus
-            </button>
-            <button class="btn-cancel" onclick="closeModal()">Batal</button>
+            <button class="btn-cancel" onclick="closeModal()">Tutup</button>
         </div>
     </div>
 </div>
@@ -479,7 +436,7 @@
     const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpjYXFxeWJvbnBmaXNod2ttZmZnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODc2Mjc2NDgsImV4cCI6MjEwMzIwMzY0OH0.pBk5nwJI3u9n08onTNmvcOFxtCXQvv-ipYIu2f_iAiQ';
 
     // ============================================================
-    // CEK LOGIN ADMIN
+    // CEK LOGIN
     // ============================================================
     if (!localStorage.getItem('admin_logged_in')) {
         window.location.href = 'admin_login.html';
@@ -490,8 +447,7 @@
     // VARIABLES
     // ============================================================
     let currentData = [];
-    let currentEdit = null;
-    let karyawanMap = {};
+    let currentEdit = null; // { id, karyawan_id, tanggal, jam_masuk, jam_pulang, status }
 
     // ============================================================
     // THEME
@@ -499,11 +455,7 @@
     function toggleTheme() {
         document.body.classList.toggle('light-mode');
         const icon = document.getElementById('themeIcon');
-        if (document.body.classList.contains('light-mode')) {
-            icon.className = 'fas fa-sun';
-        } else {
-            icon.className = 'fas fa-moon';
-        }
+        icon.className = document.body.classList.contains('light-mode') ? 'fas fa-sun' : 'fas fa-moon';
     }
 
     // ============================================================
@@ -544,68 +496,40 @@
     setDefaultDates();
 
     // ============================================================
-    // FETCH KARYAWAN MAP
-    // ============================================================
-    async function fetchKaryawanMap() {
-        try {
-            const response = await fetch(`${SUPABASE_URL}/rest/v1/karyawan?select=id,nama,divisi`, {
-                headers: {
-                    'apikey': SUPABASE_ANON_KEY,
-                    'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
-                }
-            });
-            const data = await response.json();
-            data.forEach(k => {
-                karyawanMap[k.id] = { nama: k.nama, divisi: k.divisi };
-            });
-            return data;
-        } catch(e) {
-            console.error('Error fetch karyawan:', e);
-            return [];
-        }
-    }
-
-    // ============================================================
     // LOAD REKAP
     // ============================================================
     async function loadRekap() {
         const start = document.getElementById('startDate').value;
         const end = document.getElementById('endDate').value;
-        if (!start || !end) { showToast('Pilih tanggal mulai dan selesai!', 'warning'); return; }
+        if (!start || !end) { showToast('Pilih tanggal!', 'warning'); return; }
 
         const wrapper = document.getElementById('tableWrapper');
         wrapper.innerHTML = '<div class="loading-text"><i class="fas fa-spinner fa-pulse"></i> Memuat data...</div>';
 
         try {
-            // 1. Ambil semua karyawan
+            // 1. Karyawan
             const karyawanRes = await fetch(`${SUPABASE_URL}/rest/v1/karyawan?select=id,nama,divisi`, {
-                headers: {
-                    'apikey': SUPABASE_ANON_KEY,
-                    'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
-                }
+                headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': `Bearer ${SUPABASE_ANON_KEY}` }
             });
             const karyawan = await karyawanRes.json();
 
-            // 2. Ambil absensi periode
+            // 2. Absensi periode
             const absenRes = await fetch(
                 `${SUPABASE_URL}/rest/v1/absensi?select=*&tanggal=gte.${start}&tanggal=lte.${end}`,
                 {
-                    headers: {
-                        'apikey': SUPABASE_ANON_KEY,
-                        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
-                    }
+                    headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': `Bearer ${SUPABASE_ANON_KEY}` }
                 }
             );
             const absensi = await absenRes.json();
 
-            // 3. Build map absensi per karyawan per tanggal
+            // 3. Build map
             const absenMap = {};
             absensi.forEach(a => {
                 const key = a.karyawan_id + '|' + a.tanggal;
                 absenMap[key] = a;
             });
 
-            // 4. Generate date list
+            // 4. Date list
             const dateList = [];
             const dStart = new Date(start);
             const dEnd = new Date(end);
@@ -613,7 +537,7 @@
                 dateList.push(d.toISOString().split('T')[0]);
             }
 
-            // 5. Build table data
+            // 5. Build data
             currentData = [];
             let totalHadir = 0, totalTelat = 0, totalAlfa = 0;
 
@@ -631,34 +555,44 @@
                     const abs = absenMap[key];
                     let status = 'alfa';
                     let jamMasuk = '-', jamPulang = '-';
+                    let absId = null;
                     
                     if (abs) {
+                        absId = abs.id;
                         jamMasuk = abs.jam_masuk || '-';
                         jamPulang = abs.jam_pulang || '-';
-                        if (abs.jam_pulang && abs.jam_pulang !== '') {
+                        if (abs.status === 'izin') {
+                            status = 'izin';
+                        } else if (abs.jam_pulang && abs.jam_pulang !== '') {
                             status = 'hadir';
                         } else if (abs.jam_masuk && abs.jam_masuk !== '') {
                             status = 'telat';
                         }
                     }
                     
-                    row.dates.push({ tanggal: tgl, status, jamMasuk, jamPulang, id: abs?.id || null });
-                    if (status === 'hadir') row.akumulasi++;
-                    if (status === 'hadir') totalHadir++;
-                    else if (status === 'telat') totalTelat++;
-                    else totalAlfa++;
+                    row.dates.push({ 
+                        tanggal: tgl, 
+                        status, 
+                        jamMasuk, 
+                        jamPulang, 
+                        id: absId,
+                        absenId: absId
+                    });
+                    
+                    if (status === 'hadir') { row.akumulasi++; totalHadir++; }
+                    else if (status === 'telat') { totalTelat++; }
+                    else if (status === 'alfa') { totalAlfa++; }
                 });
 
                 currentData.push(row);
             });
 
-            // 6. Render table
             renderTable(dateList);
             renderSummary(karyawan.length, totalHadir, totalTelat, totalAlfa);
 
         } catch(e) {
-            console.error('Error load rekap:', e);
-            wrapper.innerHTML = '<div class="empty-text"><i class="fas fa-exclamation-triangle"></i> Gagal memuat data. Coba lagi.</div>';
+            console.error('Error:', e);
+            wrapper.innerHTML = '<div class="empty-text"><i class="fas fa-exclamation-triangle"></i> Gagal memuat data</div>';
             showToast('Gagal memuat data!', 'error');
         }
     }
@@ -683,19 +617,24 @@
         currentData.forEach((row, idx) => {
             html += `<tr>
                 <td>${idx + 1}</td>
-                <td><span class="clickable-name" onclick="showDetail('${row.id}')">${row.nama}</span></td>
+                <td><span class="clickable-name" onclick="openQuickEdit('${row.id}')">${row.nama}</span></td>
                 <td>${row.divisi}</td>`;
             
             row.dates.forEach(d => {
-                const icon = d.status === 'hadir' ? '✅' : d.status === 'telat' ? '⏰' : '❌';
-                const cls = d.status === 'hadir' ? 'hadir' : d.status === 'telat' ? 'telat' : 'alfa';
-                html += `<td><span class="status-icon ${cls}">${icon}</span></td>`;
+                let icon, cls;
+                if (d.status === 'hadir') { icon = '✅'; cls = 'hadir'; }
+                else if (d.status === 'telat') { icon = '⏰'; cls = 'telat'; }
+                else if (d.status === 'izin') { icon = '📝'; cls = 'izin'; }
+                else { icon = '❌'; cls = 'alfa'; }
+                
+                // Klik icon untuk edit cepat
+                html += `<td><span class="status-icon ${cls}" onclick="openQuickEditDate('${row.id}','${d.tanggal}')" title="Klik untuk edit">${icon}</span></td>`;
             });
 
             const akum = row.akumulasi;
+            const totalDays = row.dates.length;
+            const pct = (akum / totalDays) * 100;
             let badgeClass = 'low';
-            let totalDays = row.dates.length;
-            let pct = (akum / totalDays) * 100;
             if (pct >= 80) badgeClass = 'high';
             else if (pct >= 50) badgeClass = 'medium';
             
@@ -718,147 +657,129 @@
     }
 
     // ============================================================
-    // SHOW DETAIL MODAL
+    // OPEN QUICK EDIT (klik nama)
     // ============================================================
-    async function showDetail(id) {
-        const modal = document.getElementById('modalAbsen');
-        const body = document.getElementById('modalBody');
-        const title = document.getElementById('modalTitle');
-        
+    function openQuickEdit(id) {
         const karyawan = currentData.find(k => k.id === id);
         if (!karyawan) { showToast('Data tidak ditemukan', 'error'); return; }
-
-        title.textContent = `📋 Detail Absensi - ${karyawan.nama}`;
-        body.innerHTML = '<div class="loading-text"><i class="fas fa-spinner fa-pulse"></i> Memuat detail...</div>';
-        modal.classList.add('active');
-
-        try {
-            const start = document.getElementById('startDate').value;
-            const end = document.getElementById('endDate').value;
-            
-            const response = await fetch(
-                `${SUPABASE_URL}/rest/v1/absensi?select=*&karyawan_id=eq.${id}&tanggal=gte.${start}&tanggal=lte.${end}&order=tanggal.desc`,
-                {
-                    headers: {
-                        'apikey': SUPABASE_ANON_KEY,
-                        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
-                    }
-                }
-            );
-            const absensi = await response.json();
-
-            let html = '';
-            if (absensi.length === 0) {
-                html = '<div class="empty-text">Belum ada data absensi untuk periode ini</div>';
+        
+        // Cari tanggal yang belum diisi atau alfa
+        const firstDate = karyawan.dates.find(d => d.status === 'alfa' || d.status === 'izin');
+        if (firstDate) {
+            openQuickEditDate(id, firstDate.tanggal);
+        } else {
+            // Cari tanggal terakhir
+            const lastDate = karyawan.dates[karyawan.dates.length - 1];
+            if (lastDate) {
+                openQuickEditDate(id, lastDate.tanggal);
             } else {
-                absensi.forEach(a => {
-                    const status = a.jam_pulang ? '✅ Hadir' : (a.jam_masuk ? '⏰ Telat' : '❌ Alfa');
-                    const d = new Date(a.tanggal + 'T00:00:00');
-                    const tgl = `${d.getDate()}/${d.getMonth()+1}/${d.getFullYear()}`;
-                    html += `
-                        <div class="detail-item" onclick="editAbsen('${a.id}')" style="cursor:pointer;hover:background:rgba(255,255,255,0.05);">
-                            <span class="label">${tgl}</span>
-                            <span class="value">${a.jam_masuk || '-'} → ${a.jam_pulang || '-'} ${status}</span>
-                        </div>
-                    `;
-                });
-                html += `<div style="margin-top:12px;font-size:12px;color:#64748b;"><i class="fas fa-info-circle"></i> Klik item untuk edit</div>`;
+                showToast('Tidak ada data untuk diedit', 'warning');
             }
-            body.innerHTML = html;
-
-        } catch(e) {
-            body.innerHTML = '<div class="empty-text">Gagal memuat detail</div>';
-            showToast('Gagal memuat detail', 'error');
         }
     }
 
     // ============================================================
-    // EDIT ABSEN
+    // OPEN QUICK EDIT DATE (klik icon status)
     // ============================================================
-    async function editAbsen(id) {
-        try {
-            const response = await fetch(
-                `${SUPABASE_URL}/rest/v1/absensi?select=*&id=eq.${id}`,
-                {
-                    headers: {
-                        'apikey': SUPABASE_ANON_KEY,
-                        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
-                    }
-                }
-            );
-            const data = await response.json();
-            if (data.length === 0) { showToast('Data tidak ditemukan', 'error'); return; }
-            
-            currentEdit = data[0];
-            const a = currentEdit;
-            const d = new Date(a.tanggal + 'T00:00:00');
-            const tgl = `${d.getDate()}/${d.getMonth()+1}/${d.getFullYear()}`;
-            
-            const statusOptions = ['hadir', 'telat', 'alfa'];
-            let statusOpts = statusOptions.map(s => 
-                `<option value="${s}" ${a.status === s ? 'selected' : ''}>${s.charAt(0).toUpperCase() + s.slice(1)}</option>`
-            ).join('');
-            
-            const body = document.getElementById('modalBody');
-            body.innerHTML = `
-                <div style="margin-bottom:16px;font-size:14px;color:#94a3b8;">Edit absensi untuk <strong style="color:white;">${a.karyawan_id}</strong> - ${tgl}</div>
-                <div class="edit-group">
-                    <label>Jam Masuk</label>
-                    <input type="time" id="editJamMasuk" value="${a.jam_masuk || ''}">
-                </div>
-                <div class="edit-group">
-                    <label>Jam Pulang</label>
-                    <input type="time" id="editJamPulang" value="${a.jam_pulang || ''}">
-                </div>
-                <div class="edit-group">
-                    <label>Status</label>
-                    <select id="editStatus">${statusOpts}</select>
-                </div>
-                <div style="font-size:12px;color:#64748b;margin-top:8px;">
-                    <i class="fas fa-info-circle"></i> Kosongkan jam untuk set status Alfa
-                </div>
-            `;
-            
-            document.getElementById('btnSaveEdit').style.display = 'inline-block';
-            document.getElementById('btnDelete').style.display = 'inline-block';
-            
-        } catch(e) {
-            showToast('Gagal memuat data edit', 'error');
-        }
+    function openQuickEditDate(id, tanggal) {
+        const karyawan = currentData.find(k => k.id === id);
+        if (!karyawan) { showToast('Data tidak ditemukan', 'error'); return; }
+        
+        const dateData = karyawan.dates.find(d => d.tanggal === tanggal);
+        if (!dateData) { showToast('Data tidak ditemukan', 'error'); return; }
+        
+        // Cari absen ID
+        let absenId = dateData.absenId;
+        const d = new Date(tanggal + 'T00:00:00');
+        const tglDisplay = `${d.getDate()}/${d.getMonth()+1}/${d.getFullYear()}`;
+        
+        currentEdit = {
+            id: absenId,
+            karyawan_id: id,
+            tanggal: tanggal,
+            jam_masuk: dateData.jamMasuk !== '-' ? dateData.jamMasuk : '',
+            jam_pulang: dateData.jamPulang !== '-' ? dateData.jamPulang : '',
+            status: dateData.status
+        };
+        
+        document.getElementById('modalNama').textContent = karyawan.nama;
+        document.getElementById('modalTanggal').textContent = tglDisplay;
+        document.getElementById('modalTitle').textContent = `✏️ Edit Absensi - ${karyawan.nama}`;
+        document.getElementById('modalEdit').classList.add('active');
     }
 
     // ============================================================
-    // SAVE EDIT
+    // QUICK UPDATE (langsung simpan)
     // ============================================================
-    async function saveEdit() {
+    async function quickUpdate(newStatus) {
         if (!currentEdit) { showToast('Tidak ada data yang diedit', 'error'); return; }
         
-        const jamMasuk = document.getElementById('editJamMasuk').value;
-        const jamPulang = document.getElementById('editJamPulang').value;
-        const status = document.getElementById('editStatus').value;
+        // Mapping status ke jam
+        let jamMasuk = currentEdit.jam_masuk || null;
+        let jamPulang = currentEdit.jam_pulang || null;
+        
+        if (newStatus === 'hadir') {
+            // Jika belum ada jam, set default 08:00 dan 17:00
+            if (!jamMasuk || jamMasuk === '') jamMasuk = '08:00';
+            if (!jamPulang || jamPulang === '') jamPulang = '17:00';
+        } else if (newStatus === 'telat') {
+            if (!jamMasuk || jamMasuk === '') jamMasuk = '09:00';
+            if (!jamPulang || jamPulang === '') jamPulang = '17:00';
+        } else if (newStatus === 'izin') {
+            jamMasuk = null;
+            jamPulang = null;
+        } else { // alfa
+            jamMasuk = null;
+            jamPulang = null;
+        }
         
         const payload = {
-            jam_masuk: jamMasuk || null,
-            jam_pulang: jamPulang || null,
-            status: status
+            jam_masuk: jamMasuk,
+            jam_pulang: jamPulang,
+            status: newStatus
         };
         
         try {
-            const response = await fetch(
-                `${SUPABASE_URL}/rest/v1/absensi?id=eq.${currentEdit.id}`,
-                {
-                    method: 'PATCH',
-                    headers: {
-                        'apikey': SUPABASE_ANON_KEY,
-                        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(payload)
-                }
-            );
+            let response;
+            
+            if (currentEdit.id) {
+                // Update existing
+                response = await fetch(
+                    `${SUPABASE_URL}/rest/v1/absensi?id=eq.${currentEdit.id}`,
+                    {
+                        method: 'PATCH',
+                        headers: {
+                            'apikey': SUPABASE_ANON_KEY,
+                            'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(payload)
+                    }
+                );
+            } else {
+                // Insert new
+                const insertPayload = {
+                    karyawan_id: currentEdit.karyawan_id,
+                    tanggal: currentEdit.tanggal,
+                    ...payload
+                };
+                response = await fetch(
+                    `${SUPABASE_URL}/rest/v1/absensi`,
+                    {
+                        method: 'POST',
+                        headers: {
+                            'apikey': SUPABASE_ANON_KEY,
+                            'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(insertPayload)
+                    }
+                );
+            }
             
             if (response.ok) {
-                showToast('✅ Data berhasil disimpan!', 'success');
+                const statusLabel = { hadir: 'Hadir', telat: 'Telat', alfa: 'Alfa', izin: 'Izin' };
+                showToast(`✅ Status diubah menjadi ${statusLabel[newStatus] || newStatus}!`, 'success');
                 closeModal();
                 loadRekap();
             } else {
@@ -870,63 +791,21 @@
     }
 
     // ============================================================
-    // DELETE ABSEN
-    // ============================================================
-    async function deleteAbsen() {
-        if (!currentEdit) { showToast('Tidak ada data yang dihapus', 'error'); return; }
-        if (!confirm('Yakin ingin menghapus data absensi ini?')) return;
-        
-        try {
-            const response = await fetch(
-                `${SUPABASE_URL}/rest/v1/absensi?id=eq.${currentEdit.id}`,
-                {
-                    method: 'DELETE',
-                    headers: {
-                        'apikey': SUPABASE_ANON_KEY,
-                        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
-                    }
-                }
-            );
-            
-            if (response.ok) {
-                showToast('🗑️ Data berhasil dihapus!', 'success');
-                closeModal();
-                loadRekap();
-            } else {
-                showToast('❌ Gagal menghapus data', 'error');
-            }
-        } catch(e) {
-            showToast('❌ Gagal koneksi ke server', 'error');
-        }
-    }
-
-    // ============================================================
     // CLOSE MODAL
     // ============================================================
     function closeModal() {
-        document.getElementById('modalAbsen').classList.remove('active');
+        document.getElementById('modalEdit').classList.remove('active');
         currentEdit = null;
     }
 
     // ============================================================
-    // REFRESH
-    // ============================================================
-    function refreshData() {
-        loadRekap();
-        showToast('🔄 Data diperbarui!', 'info');
-    }
-
-    // ============================================================
-    // EXPORT EXCEL (CSV)
+    // EXPORT
     // ============================================================
     function exportExcel() {
-        if (currentData.length === 0) { showToast('Tidak ada data untuk diexport', 'warning'); return; }
-        
+        if (currentData.length === 0) { showToast('Tidak ada data', 'warning'); return; }
         const start = document.getElementById('startDate').value;
         const end = document.getElementById('endDate').value;
-        let csv = `Rekapitulasi Absensi ${start} - ${end}\n\n`;
-        csv += 'No,Nama,Divisi,';
-        
+        let csv = `Rekapitulasi Absensi ${start} - ${end}\n\nNo,Nama,Divisi,`;
         const dateList = currentData[0]?.dates.map(d => d.tanggal) || [];
         dateList.forEach(tgl => {
             const d = new Date(tgl + 'T00:00:00');
@@ -937,7 +816,7 @@
         currentData.forEach((row, idx) => {
             csv += `${idx+1},${row.nama},${row.divisi},`;
             row.dates.forEach(d => {
-                const status = d.status === 'hadir' ? 'Hadir' : d.status === 'telat' ? 'Telat' : 'Alfa';
+                const status = d.status === 'hadir' ? 'Hadir' : d.status === 'telat' ? 'Telat' : d.status === 'izin' ? 'Izin' : 'Alfa';
                 csv += `${status},`;
             });
             csv += `${row.akumulasi}\n`;
@@ -951,17 +830,16 @@
         showToast('📥 Excel berhasil didownload!', 'success');
     }
 
-    // ============================================================
-    // EXPORT PDF (print)
-    // ============================================================
     function exportPDF() {
-        if (currentData.length === 0) { showToast('Tidak ada data untuk diexport', 'warning'); return; }
+        if (currentData.length === 0) { showToast('Tidak ada data', 'warning'); return; }
         window.print();
     }
 
-    // ============================================================
-    // LOGOUT
-    // ============================================================
+    function refreshData() {
+        loadRekap();
+        showToast('🔄 Data diperbarui!', 'info');
+    }
+
     function doLogout() {
         if (confirm('Yakin ingin keluar?')) {
             localStorage.removeItem('admin_logged_in');
@@ -973,11 +851,7 @@
     // ============================================================
     // INIT
     // ============================================================
-    // Load data otomatis saat halaman dibuka
-    setTimeout(() => {
-        loadRekap();
-    }, 100);
-
+    setTimeout(() => loadRekap(), 100);
     console.log('🛡️ Admin Dashboard loaded!');
 </script>
 
