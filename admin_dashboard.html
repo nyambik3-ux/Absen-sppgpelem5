@@ -1035,91 +1035,98 @@
         document.body.appendChild(modal);
     }
 
-    // ============================================================
-    // SET STATUS DARI QUICK MODAL
-    // ============================================================
-    async function setStatusQuick(id, tanggal, status) {
-        try {
-            showToast('🔄 Menyimpan...', 'info');
-            
-            const karyawan = currentData.find(k => k.id === id);
-            if (!karyawan) { showToast('Data tidak ditemukan', 'error'); return; }
-            
-            const dateData = karyawan.dates.find(d => d.tanggal === tanggal);
-            if (!dateData) { showToast('Data tidak ditemukan', 'error'); return; }
-            
-            // Tentukan jam berdasarkan status
-            let jamMasuk = null, jamPulang = null;
-            if (status === 'hadir') {
-                jamMasuk = '08:00';
-                jamPulang = '17:00';
-            } else if (status === 'telat') {
-                jamMasuk = '09:00';
-                jamPulang = '17:00';
-            } else if (status === 'izin') {
-                jamMasuk = null;
-                jamPulang = null;
-            } else { // alfa
-                jamMasuk = null;
-                jamPulang = null;
-            }
-            
-            const payload = {
-                status: status,
-                jam_masuk: jamMasuk,
-                jam_pulang: jamPulang
-            };
-            
-            let res;
-            if (dateData.absenId) {
-                // Update
-                res = await fetch(
-                    `${SUPABASE_URL}/rest/v1/absensi?id=eq.${dateData.absenId}`,
-                    {
-                        method: 'PATCH',
-                        headers: {
-                            'apikey': SUPABASE_ANON_KEY,
-                            'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify(payload)
-                    }
-                );
-            } else {
-                // Insert baru
-                const insertPayload = {
-                    karyawan_id: id,
-                    tanggal: tanggal,
-                    ...payload
-                };
-                res = await fetch(
-                    `${SUPABASE_URL}/rest/v1/absensi`,
-                    {
-                        method: 'POST',
-                        headers: {
-                            'apikey': SUPABASE_ANON_KEY,
-                            'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify(insertPayload)
-                    }
-                );
-            }
-            
-            if (res.ok) {
-                const statusLabel = { hadir: 'Hadir', telat: 'Telat', izin: 'Izin', alfa: 'Alfa' };
-                showToast(`✅ Status diubah menjadi ${statusLabel[status] || status}!`, 'success');
-                closeQuickModal();
-                loadRekap();
-            } else {
-                showToast('❌ Gagal menyimpan data', 'error');
-            }
-        } catch(e) {
-            console.error('Quick edit error:', e);
-            showToast('❌ Gagal koneksi ke server', 'error');
-        }
-    }
+   // ============================================================
+// SET STATUS DARI QUICK MODAL (FIXED!)
+// ============================================================
+async function setStatusQuick(id, tanggal, status) {
+    try {
+        showToast('🔄 Menyimpan...', 'info');
 
+        const karyawan = currentData.find(k => k.id === id);
+        if (!karyawan) { showToast('Data tidak ditemukan', 'error'); return; }
+
+        const dateData = karyawan.dates.find(d => d.tanggal === tanggal);
+        if (!dateData) { showToast('Data tidak ditemukan', 'error'); return; }
+
+        // Tentukan jam berdasarkan status
+        let jamMasuk = null, jamPulang = null;
+        if (status === 'hadir') {
+            jamMasuk = '08:00';
+            jamPulang = '17:00';
+        } else if (status === 'telat') {
+            jamMasuk = '09:00';
+            jamPulang = '17:00';
+        }
+
+        const payload = {
+            status: status,
+            jam_masuk: jamMasuk,
+            jam_pulang: jamPulang
+        };
+
+        let res;
+        
+        // 🔥 CEK: KALAU ADA ABSEN ID → UPDATE, ELSE → INSERT
+        if (dateData.absenId) {
+            // UPDATE
+            console.log('📝 UPDATE absen:', dateData.absenId);
+            res = await fetch(
+                `${SUPABASE_URL}/rest/v1/absensi?id=eq.${dateData.absenId}`,
+                {
+                    method: 'PATCH',
+                    headers: {
+                        'apikey': SUPABASE_ANON_KEY,
+                        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(payload)
+                }
+            );
+        } else {
+            // 🔥 INSERT BARU (PASTIKAN karyawan_id & tanggal DIKIRIM!)
+            console.log('📝 INSERT baru untuk:', id, tanggal);
+            const insertPayload = {
+                karyawan_id: id,
+                tanggal: tanggal,
+                ...payload
+            };
+            res = await fetch(
+                `${SUPABASE_URL}/rest/v1/absensi`,
+                {
+                    method: 'POST',
+                    headers: {
+                        'apikey': SUPABASE_ANON_KEY,
+                        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(insertPayload)
+                }
+            );
+        }
+
+        // 🔥 CEK RESPONSE DARI SUPABASE
+        const responseText = await res.text();
+        console.log('📄 Response:', responseText);
+
+        if (res.ok) {
+            const statusLabel = { hadir: 'Hadir', telat: 'Telat', izin: 'Izin', alfa: 'Alfa' };
+            showToast(`✅ Status diubah menjadi ${statusLabel[status] || status}!`, 'success');
+            closeQuickModal();
+            loadRekap();
+        } else {
+            // 🔥 TAMPILIN ERROR DARI SUPABASE
+            let errorMsg = responseText;
+            try {
+                const json = JSON.parse(responseText);
+                errorMsg = json.message || json.error || responseText;
+            } catch(e) {}
+            showToast('❌ Gagal: ' + errorMsg, 'error');
+        }
+    } catch(e) {
+        console.error('❌ Quick edit error:', e);
+        showToast('❌ Gagal koneksi ke server', 'error');
+    }
+}
     // ============================================================
     // CLOSE QUICK MODAL
     // ============================================================
