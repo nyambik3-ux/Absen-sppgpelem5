@@ -557,7 +557,7 @@
     }
 
     function isTodayLibur() {
-        const today = new Date().toISOString().split('T')[0];
+        const today = getTodayIndonesia()
         const key = today + '|' + user.divisi;
         return hariLiburMap[key] || false;
     }
