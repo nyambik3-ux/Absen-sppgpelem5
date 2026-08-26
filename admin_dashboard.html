@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
         /* ============================================
-           STYLE LENGKAP 
+           STYLE LENGKAP (SAMA KAYAK PUNYA KAMU)
            ============================================ */
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
@@ -62,7 +62,6 @@
         
         .container { max-width: 1400px; margin: 0 auto; }
         
-        /* ===== FILTER CARD ===== */
         .filter-card {
             background: rgba(255,255,255,0.04);
             border-radius: 16px;
@@ -178,7 +177,6 @@
         .btn-stats:hover { background: #7c3aed; transform: translateY(-2px); box-shadow: 0 4px 15px rgba(139,92,246,0.4); }
         .btn-stats:active { transform: scale(0.95); }
         
-        /* ===== SUMMARY CARDS ===== */
         .summary-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
@@ -202,7 +200,6 @@
         .summary-card .num.tepat { color: #10b981; }
         .summary-card .num.terlambat { color: #f59e0b; }
         
-        /* ===== SAKLAR TOGGLE (MODE) ===== */
         .switch-container {
             display: flex;
             align-items: center;
@@ -255,7 +252,6 @@
             border-radius: 20px;
         }
         
-        /* ===== BULK EDIT SECTION ===== */
         .bulk-edit-section {
             background: rgba(0,0,0,0.15);
             border-radius: 16px;
@@ -331,7 +327,6 @@
         }
         .bulk-placeholder { text-align: center; color: #64748b; padding: 20px 0; grid-column: 1 / -1; }
         
-        /* ===== TABLE REKAP ===== */
         .table-container {
             background: rgba(255,255,255,0.04);
             border-radius: 16px;
@@ -418,7 +413,6 @@
         .badge-akum.medium { background: rgba(251,146,60,0.2); color: #fb923c; }
         .badge-akum.low { background: rgba(239,68,68,0.2); color: #f87171; }
         
-        /* ===== STATISTIK KETEPATAN WAKTU (MODAL) ===== */
         .stats-modal {
             position: fixed;
             top: 0; left: 0; right: 0; bottom: 0;
@@ -1482,7 +1476,7 @@
     }
 
     // ============================================================
-    // CETAK LAPORAN (FIXED SCRIPT ESCAPING)
+    // CETAK LAPORAN - FIXED!
     // ============================================================
     function cetakLaporan() {
         const start = document.getElementById('startDate').value;
@@ -1630,11 +1624,12 @@ ${tableHTML}
     </div>
 </div>
 <div class="footer">Laporan ini dibuat secara otomatis oleh sistem Smart Presence</div>
-<script>window.print();<\/script>
+<script>window.print();</script>
 </body>
 </html>
         `;
         
+        // 🔥 FIX: HAPUS SPASI DI WINDOW.OPEN
         const win = window.open('', '_blank', 'width=1000,height=800');
         win.document.write(content);
         win.document.close();
@@ -2045,6 +2040,10 @@ ${tableHTML}
 
     document.getElementById('modeToggle').checked = false;
     toggleMode();
+
+    console.log('🛡️ Admin Dashboard loaded!');
+    console.log('📌 Mode:', isBulkMode ? 'BULK EDIT' : 'QUICK EDIT');
+    console.log('🗓️ Today (WIB):', getTodayIndonesia());
 </script>
 
 </body>
