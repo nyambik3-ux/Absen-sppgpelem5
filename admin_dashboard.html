@@ -132,6 +132,22 @@
             font-size: 13px;
         }
         
+        /* ===== TOMBOL KELOLA KARYAWAN ===== */
+        .btn-crud {
+            padding: 10px 20px;
+            background: #a855f7;
+            border: none;
+            border-radius: 10px;
+            color: white;
+            font-weight: 700;
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+            font-size: 13px;
+            transition: all 0.2s;
+        }
+        .btn-crud:hover { background: #9333ea; transform: translateY(-2px); box-shadow: 0 4px 15px rgba(168,85,247,0.4); }
+        .btn-crud:active { transform: scale(0.95); }
+        
         .summary-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
@@ -492,7 +508,7 @@
 
 <div class="container">
 
-    <!-- FILTER PERIODE -->
+    <!-- FILTER PERIODE + TOMBOL KELOLA KARYAWAN -->
     <div class="filter-card">
         <label><i class="fas fa-calendar-alt"></i> Periode:</label>
         <input type="date" id="startDate">
@@ -509,6 +525,11 @@
         </button>
         <button class="btn-refresh" onclick="refreshData()">
             <i class="fas fa-sync-alt"></i>
+        </button>
+        
+        <!-- 🔥 TOMBOL KELOLA KARYAWAN -->
+        <button class="btn-crud" onclick="window.location.href='admin_crud.html'">
+            <i class="fas fa-users"></i> Kelola Karyawan
         </button>
     </div>
 
