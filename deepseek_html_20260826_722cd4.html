@@ -1,0 +1,938 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Manajemen Karyawan • Smart Presence</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        /* ============================================
+           STYLE LENGKAP
+           ============================================ */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #0f172a;
+            min-height: 100vh;
+            color: #e2e8f0;
+            padding: 20px;
+        }
+        body.light-mode { background: #f1f5f9; color: #1e293b; }
+        
+        .navbar {
+            background: rgba(15, 23, 42, 0.85);
+            backdrop-filter: blur(20px);
+            padding: 12px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-radius: 16px;
+            max-width: 1400px;
+            margin: 0 auto 20px;
+            border: 1px solid rgba(255,255,255,0.06);
+        }
+        body.light-mode .navbar { background: rgba(255,255,255,0.85); border-color: rgba(0,0,0,0.06); }
+        
+        .logo h2 {
+            font-size: 20px;
+            background: linear-gradient(135deg, #a855f7, #3b82f6);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        .logo span { font-size: 12px; color: #64748b; }
+        
+        .nav-actions { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+        .nav-actions button {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 600;
+            transition: all 0.2s;
+            font-family: 'Inter', sans-serif;
+        }
+        .nav-actions button:active { transform: scale(0.95); }
+        .btn-logout { background: #ef4444; color: white; }
+        .btn-logout:hover { background: #dc2626; }
+        .btn-back { background: #6366f1; color: white; }
+        .btn-back:hover { background: #4f46e5; }
+        .btn-theme { background: #1e293b; color: #e2e8f0; }
+        body.light-mode .btn-theme { background: #e2e8f0; color: #1e293b; }
+        
+        .container { max-width: 1400px; margin: 0 auto; }
+        
+        /* ===== HEADER & FILTER ===== */
+        .header-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+        .header-section h1 {
+            font-size: 24px;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .btn-primary {
+            padding: 10px 24px;
+            background: linear-gradient(135deg, #10b981, #059669);
+            border: none;
+            border-radius: 10px;
+            color: white;
+            font-weight: 700;
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 4px 15px rgba(16,185,129,0.4); }
+        .btn-primary:active { transform: scale(0.95); }
+        
+        .filter-bar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            align-items: center;
+            margin-bottom: 20px;
+            padding: 12px 16px;
+            background: rgba(0,0,0,0.15);
+            border-radius: 12px;
+            border: 1px solid rgba(255,255,255,0.06);
+        }
+        body.light-mode .filter-bar { background: rgba(0,0,0,0.04); border-color: rgba(0,0,0,0.06); }
+        
+        .filter-bar input, .filter-bar select {
+            padding: 8px 14px;
+            border-radius: 10px;
+            border: 1px solid rgba(255,255,255,0.1);
+            background: rgba(0,0,0,0.3);
+            color: white;
+            font-family: 'Inter', sans-serif;
+            font-size: 14px;
+        }
+        body.light-mode .filter-bar input, body.light-mode .filter-bar select {
+            background: white;
+            color: #1e293b;
+            border-color: #cbd5e1;
+        }
+        .filter-bar input:focus, .filter-bar select:focus {
+            outline: none;
+            border-color: #a855f7;
+            box-shadow: 0 0 0 3px rgba(168,85,247,0.2);
+        }
+        
+        /* ===== TABLE ===== */
+        .table-container {
+            background: rgba(255,255,255,0.04);
+            border-radius: 16px;
+            padding: 20px;
+            border: 1px solid rgba(255,255,255,0.06);
+            overflow-x: auto;
+        }
+        body.light-mode .table-container { background: white; border-color: rgba(0,0,0,0.06); }
+        
+        table { width: 100%; border-collapse: collapse; font-size: 13px; }
+        th, td { padding: 10px 12px; text-align: left; border-bottom: 1px solid rgba(255,255,255,0.06); }
+        body.light-mode th, body.light-mode td { border-bottom-color: #e2e8f0; }
+        
+        th {
+            font-weight: 600;
+            color: #94a3b8;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            position: sticky;
+            top: 0;
+            background: rgba(15,23,42,0.95);
+        }
+        body.light-mode th { background: #f8fafc; color: #64748b; }
+        
+        .btn-edit {
+            background: #3b82f6;
+            border: none;
+            color: white;
+            padding: 6px 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: all 0.2s;
+            font-family: 'Inter', sans-serif;
+        }
+        .btn-edit:hover { background: #2563eb; }
+        .btn-edit:active { transform: scale(0.95); }
+        
+        .btn-delete {
+            background: #ef4444;
+            border: none;
+            color: white;
+            padding: 6px 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: all 0.2s;
+            font-family: 'Inter', sans-serif;
+            margin-left: 4px;
+        }
+        .btn-delete:hover { background: #dc2626; }
+        .btn-delete:active { transform: scale(0.95); }
+        
+        .btn-reset-pin {
+            background: #f59e0b;
+            border: none;
+            color: white;
+            padding: 6px 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: all 0.2s;
+            font-family: 'Inter', sans-serif;
+            margin-left: 4px;
+        }
+        .btn-reset-pin:hover { background: #d97706; }
+        .btn-reset-pin:active { transform: scale(0.95); }
+        
+        .action-group { display: flex; gap: 4px; flex-wrap: wrap; }
+        
+        .badge-pin {
+            font-size: 11px;
+            background: rgba(168,85,247,0.2);
+            color: #a855f7;
+            padding: 2px 10px;
+            border-radius: 12px;
+            font-weight: 600;
+        }
+        
+        /* ===== MODAL ===== */
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.7);
+            backdrop-filter: blur(8px);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 999;
+        }
+        .modal-overlay.active { display: flex; }
+        
+        .modal-card {
+            background: #1e293b;
+            border-radius: 24px;
+            padding: 32px;
+            width: 90%;
+            max-width: 480px;
+            max-height: 90vh;
+            overflow-y: auto;
+            border: 1px solid rgba(255,255,255,0.06);
+            box-shadow: 0 25px 50px rgba(0,0,0,0.5);
+        }
+        body.light-mode .modal-card { background: white; border-color: rgba(0,0,0,0.06); }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+        }
+        .modal-header h2 { font-size: 20px; font-weight: 700; }
+        .modal-close {
+            background: none;
+            border: none;
+            color: #94a3b8;
+            font-size: 24px;
+            cursor: pointer;
+        }
+        .modal-close:hover { color: white; }
+        
+        .form-group {
+            margin-bottom: 16px;
+        }
+        .form-group label {
+            display: block;
+            font-size: 12px;
+            color: #94a3b8;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 10px 14px;
+            border-radius: 10px;
+            border: 1px solid rgba(255,255,255,0.1);
+            background: rgba(0,0,0,0.3);
+            color: white;
+            font-family: 'Inter', sans-serif;
+            font-size: 14px;
+        }
+        body.light-mode .form-group input, body.light-mode .form-group select {
+            background: #f1f5f9;
+            color: #1e293b;
+            border-color: #cbd5e1;
+        }
+        .form-group input:focus, .form-group select:focus {
+            outline: none;
+            border-color: #a855f7;
+            box-shadow: 0 0 0 3px rgba(168,85,247,0.2);
+        }
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+        .form-hint {
+            font-size: 11px;
+            color: #64748b;
+            margin-top: 4px;
+        }
+        
+        .modal-footer {
+            display: flex;
+            gap: 12px;
+            margin-top: 20px;
+            padding-top: 16px;
+            border-top: 1px solid rgba(255,255,255,0.06);
+            justify-content: flex-end;
+        }
+        .modal-footer button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 10px;
+            font-weight: 700;
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+        .modal-footer button:active { transform: scale(0.95); }
+        .btn-save { background: #10b981; color: white; }
+        .btn-save:hover { background: #059669; }
+        .btn-cancel { background: #1e293b; color: #94a3b8; }
+        .btn-cancel:hover { background: #334155; }
+        body.light-mode .btn-cancel { background: #e2e8f0; color: #64748b; }
+        body.light-mode .btn-cancel:hover { background: #cbd5e1; }
+        .btn-danger-modal { background: #ef4444; color: white; }
+        .btn-danger-modal:hover { background: #dc2626; }
+        
+        .loading-text { text-align: center; color: #64748b; padding: 40px 0; font-size: 14px; }
+        .empty-text { text-align: center; color: #64748b; padding: 30px 0; font-size: 14px; }
+        
+        .toast-custom {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #1e293b;
+            color: white;
+            padding: 14px 28px;
+            border-radius: 16px;
+            font-weight: 600;
+            font-size: 14px;
+            z-index: 9999;
+            border-left: 4px solid #10b981;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+            animation: slideUp 0.3s ease;
+            max-width: 90%;
+            font-family: 'Inter', sans-serif;
+        }
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateX(-50%) translateY(30px); }
+            to { opacity: 1; transform: translateX(-50%) translateY(0); }
+        }
+        
+        .total-badge {
+            display: inline-block;
+            padding: 4px 16px;
+            background: rgba(168,85,247,0.15);
+            color: #a855f7;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+        }
+        
+        @media (max-width: 768px) {
+            .navbar { flex-wrap: wrap; gap: 10px; padding: 12px 16px; }
+            .header-section { flex-direction: column; align-items: stretch; }
+            .header-section h1 { font-size: 20px; }
+            .filter-bar { flex-direction: column; align-items: stretch; }
+            .form-row { grid-template-columns: 1fr; }
+            .modal-card { padding: 20px; margin: 10px; }
+            table { font-size: 11px; }
+            th, td { padding: 6px 8px; }
+            .action-group { flex-direction: column; }
+            .btn-edit, .btn-delete, .btn-reset-pin { font-size: 10px; padding: 4px 8px; }
+        }
+        @media (max-width: 480px) {
+            .modal-card { padding: 16px; }
+            .nav-actions { flex-wrap: wrap; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar">
+    <div class="logo">
+        <h2>📋 RelawanTrack</h2>
+        <span>Manajemen Karyawan</span>
+    </div>
+    <div class="nav-actions">
+        <button class="btn-back" onclick="window.location.href='admin_dashboard.html'">
+            <i class="fas fa-arrow-left"></i> Dashboard
+        </button>
+        <button class="btn-theme" onclick="toggleTheme()">
+            <i class="fas fa-moon" id="themeIcon"></i>
+        </button>
+        <span id="adminName" style="font-weight:600;font-size:14px;">Admin</span>
+        <button class="btn-logout" onclick="doLogout()">
+            <i class="fas fa-sign-out-alt"></i> Keluar
+        </button>
+    </div>
+</nav>
+
+<div class="container">
+
+    <!-- HEADER -->
+    <div class="header-section">
+        <h1><i class="fas fa-users" style="color:#a855f7;"></i> Manajemen Karyawan</h1>
+        <button class="btn-primary" onclick="openAddModal()">
+            <i class="fas fa-plus"></i> Tambah Karyawan
+        </button>
+    </div>
+
+    <!-- FILTER -->
+    <div class="filter-bar">
+        <input type="text" id="searchInput" placeholder="🔍 Cari nama atau ID..." oninput="filterTable()" style="flex:1;min-width:150px;">
+        <select id="divisiFilter" onchange="filterTable()">
+            <option value="">Semua Divisi</option>
+        </select>
+        <span class="total-badge" id="totalKaryawan">Total: 0</span>
+    </div>
+
+    <!-- TABLE -->
+    <div class="table-container">
+        <div id="tableWrapper">
+            <div class="loading-text"><i class="fas fa-spinner fa-pulse"></i> Memuat data...</div>
+        </div>
+    </div>
+</div>
+
+<!-- ============================================================
+     MODAL TAMBAH / EDIT KARYAWAN
+     ============================================================ -->
+<div class="modal-overlay" id="modalKaryawan">
+    <div class="modal-card">
+        <div class="modal-header">
+            <h2 id="modalTitle">Tambah Karyawan</h2>
+            <button class="modal-close" onclick="closeModal()">&times;</button>
+        </div>
+        <div class="modal-body">
+            <input type="hidden" id="editId">
+            
+            <div class="form-group">
+                <label>ID Karyawan <span style="color:#ef4444;">*</span></label>
+                <input type="text" id="formId" placeholder="Contoh: P-123" required>
+                <div class="form-hint">Harus unik, tidak bisa diubah setelah dibuat</div>
+            </div>
+            
+            <div class="form-group">
+                <label>Nama Lengkap <span style="color:#ef4444;">*</span></label>
+                <input type="text" id="formNama" placeholder="Nama karyawan" required>
+            </div>
+            
+            <div class="form-group">
+                <label>Divisi <span style="color:#ef4444;">*</span></label>
+                <select id="formDivisi" required>
+                    <option value="">Pilih Divisi</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label>PIN (4 digit) <span style="color:#ef4444;">*</span></label>
+                <input type="password" id="formPin" placeholder="1234" maxlength="4" pattern="[0-9]{4}" required>
+                <div class="form-hint">PIN default: 1234</div>
+            </div>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Jam Masuk</label>
+                    <input type="time" id="formJamMasuk" value="08:00">
+                </div>
+                <div class="form-group">
+                    <label>Jam Pulang</label>
+                    <input type="time" id="formJamPulang" value="17:00">
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn-cancel" onclick="closeModal()">Batal</button>
+            <button class="btn-save" onclick="saveKaryawan()">
+                <i class="fas fa-save"></i> <span id="btnSaveText">Simpan</span>
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- ============================================================
+     MODAL KONFIRMASI HAPUS
+     ============================================================ -->
+<div class="modal-overlay" id="modalHapus">
+    <div class="modal-card" style="max-width:400px;">
+        <div class="modal-header">
+            <h2 style="color:#ef4444;"><i class="fas fa-exclamation-triangle"></i> Hapus Karyawan</h2>
+            <button class="modal-close" onclick="closeModalHapus()">&times;</button>
+        </div>
+        <div class="modal-body">
+            <p style="margin-bottom:8px;">Yakin ingin menghapus karyawan:</p>
+            <p style="font-size:18px;font-weight:700;color:white;margin-bottom:12px;" id="hapusNama"></p>
+            <p style="font-size:13px;color:#f87171;">
+                <i class="fas fa-info-circle"></i> Semua riwayat absensi karyawan ini akan ikut terhapus!
+            </p>
+        </div>
+        <div class="modal-footer">
+            <button class="btn-cancel" onclick="closeModalHapus()">Batal</button>
+            <button class="btn-danger-modal" onclick="confirmHapus()">
+                <i class="fas fa-trash"></i> Hapus
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- ============================================================
+     TOAST CONTAINER
+     ============================================================ -->
+<div id="toastContainer"></div>
+
+<script>
+    // ============================================================
+    // KONFIGURASI SUPABASE
+    // ============================================================
+    const SUPABASE_URL = 'https://zcaqqybonpfishwkmffg.supabase.co';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpjYXFxeWJvbnBmaXNod2ttZmZnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODc2Mjc2NDgsImV4cCI6MjEwMzIwMzY0OH0.pBk5nwJI3u9n08onTNmvcOFxtCXQvv-ipYIu2f_iAiQ';
+
+    // ============================================================
+    // CEK LOGIN
+    // ============================================================
+    if (!localStorage.getItem('admin_logged_in')) {
+        window.location.href = 'admin_login.html';
+    }
+    document.getElementById('adminName').textContent = localStorage.getItem('admin_username') || 'Admin';
+
+    // ============================================================
+    // VARIABLES
+    // ============================================================
+    let allKaryawan = [];
+    let selectedId = null;
+
+    // ============================================================
+    // THEME
+    // ============================================================
+    function toggleTheme() {
+        document.body.classList.toggle('light-mode');
+        const icon = document.getElementById('themeIcon');
+        icon.className = document.body.classList.contains('light-mode') ? 'fas fa-sun' : 'fas fa-moon';
+    }
+
+    // ============================================================
+    // TOAST
+    // ============================================================
+    function showToast(msg, type = 'success') {
+        const container = document.getElementById('toastContainer');
+        const toast = document.createElement('div');
+        toast.className = 'toast-custom';
+        const colors = { success: '#10b981', error: '#ef4444', warning: '#f59e0b', info: '#3b82f6' };
+        toast.style.borderLeftColor = colors[type] || '#10b981';
+        const icons = { success: '✅', error: '❌', warning: '⚠️', info: 'ℹ️' };
+        toast.innerHTML = `${icons[type] || 'ℹ️'} ${msg}`;
+        container.appendChild(toast);
+        setTimeout(() => {
+            toast.style.opacity = '0';
+            toast.style.transform = 'translateX(-50%) translateY(20px)';
+            setTimeout(() => toast.remove(), 300);
+        }, 3000);
+    }
+
+    // ============================================================
+    // LOAD DATA
+    // ============================================================
+    async function loadData() {
+        const wrapper = document.getElementById('tableWrapper');
+        wrapper.innerHTML = '<div class="loading-text"><i class="fas fa-spinner fa-pulse"></i> Memuat data...</div>';
+
+        try {
+            // 1. Load karyawan
+            const response = await fetch(`${SUPABASE_URL}/rest/v1/karyawan?select=*&order=id`, {
+                headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': `Bearer ${SUPABASE_ANON_KEY}` }
+            });
+            allKaryawan = await response.json();
+
+            // 2. Load divisi untuk filter
+            const divisiSet = new Set();
+            allKaryawan.forEach(k => { if (k.divisi) divisiSet.add(k.divisi); });
+            
+            const filterSelect = document.getElementById('divisiFilter');
+            const currentValue = filterSelect.value;
+            filterSelect.innerHTML = '<option value="">Semua Divisi</option>';
+            divisiSet.forEach(d => {
+                filterSelect.innerHTML += `<option value="${d}">${d}</option>`;
+            });
+            filterSelect.value = currentValue;
+
+            document.getElementById('totalKaryawan').textContent = `Total: ${allKaryawan.length}`;
+            
+            // 3. Load divisi untuk form
+            loadDivisiOptions();
+
+            renderTable(allKaryawan);
+
+        } catch(e) {
+            console.error('Error:', e);
+            wrapper.innerHTML = '<div class="empty-text"><i class="fas fa-exclamation-triangle"></i> Gagal memuat data</div>';
+            showToast('Gagal memuat data!', 'error');
+        }
+    }
+
+    function loadDivisiOptions() {
+        const divisiSet = new Set();
+        allKaryawan.forEach(k => { if (k.divisi) divisiSet.add(k.divisi); });
+        
+        const select = document.getElementById('formDivisi');
+        select.innerHTML = '<option value="">Pilih Divisi</option>';
+        divisiSet.forEach(d => {
+            select.innerHTML += `<option value="${d}">${d}</option>`;
+        });
+        // Tambah opsi "Lainnya" biar admin bisa input manual
+        select.innerHTML += `<option value="__custom__">+ Divisi Baru</option>`;
+    }
+
+    // ============================================================
+    // RENDER TABLE
+    // ============================================================
+    function renderTable(data) {
+        const wrapper = document.getElementById('tableWrapper');
+        if (data.length === 0) {
+            wrapper.innerHTML = '<div class="empty-text"><i class="fas fa-inbox"></i> Tidak ada karyawan</div>';
+            return;
+        }
+
+        let html = `
+            <table>
+                <thead>
+                    <tr>
+                        <th>No</th>
+                        <th>ID</th>
+                        <th>Nama</th>
+                        <th>Divisi</th>
+                        <th>Jam Masuk</th>
+                        <th>Jam Pulang</th>
+                        <th>PIN</th>
+                        <th>Aksi</th>
+                    </tr>
+                </thead>
+                <tbody>
+        `;
+
+        data.forEach((k, idx) => {
+            html += `
+                <tr>
+                    <td>${idx + 1}</td>
+                    <td><strong>${k.id}</strong></td>
+                    <td>${k.nama || '-'}</td>
+                    <td>${k.divisi || '-'}</td>
+                    <td>${k.jam_masuk || '08:00'}</td>
+                    <td>${k.jam_pulang || '17:00'}</td>
+                    <td><span class="badge-pin">●●●●</span></td>
+                    <td>
+                        <div class="action-group">
+                            <button class="btn-edit" onclick="openEditModal('${k.id}')">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="btn-reset-pin" onclick="resetPin('${k.id}')" title="Reset PIN ke 1234">
+                                <i class="fas fa-key"></i>
+                            </button>
+                            <button class="btn-delete" onclick="openDeleteModal('${k.id}')">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            `;
+        });
+
+        html += '</tbody></table>';
+        wrapper.innerHTML = html;
+    }
+
+    // ============================================================
+    // FILTER TABLE
+    // ============================================================
+    function filterTable() {
+        const search = document.getElementById('searchInput').value.toLowerCase();
+        const divisi = document.getElementById('divisiFilter').value;
+
+        let filtered = allKaryawan.filter(k => {
+            const matchSearch = k.nama?.toLowerCase().includes(search) || k.id?.toLowerCase().includes(search);
+            const matchDivisi = !divisi || k.divisi === divisi;
+            return matchSearch && matchDivisi;
+        });
+
+        renderTable(filtered);
+        document.getElementById('totalKaryawan').textContent = `Total: ${filtered.length}`;
+    }
+
+    // ============================================================
+    // CRUD FUNCTIONS
+    // ============================================================
+
+    // ---- OPEN ADD MODAL ----
+    function openAddModal() {
+        document.getElementById('modalTitle').textContent = '➕ Tambah Karyawan';
+        document.getElementById('btnSaveText').textContent = 'Simpan';
+        document.getElementById('editId').value = '';
+        document.getElementById('formId').value = '';
+        document.getElementById('formId').disabled = false;
+        document.getElementById('formNama').value = '';
+        document.getElementById('formPin').value = '1234';
+        document.getElementById('formJamMasuk').value = '08:00';
+        document.getElementById('formJamPulang').value = '17:00';
+        document.getElementById('formDivisi').value = '';
+        document.getElementById('modalKaryawan').classList.add('active');
+    }
+
+    // ---- OPEN EDIT MODAL ----
+    function openEditModal(id) {
+        const karyawan = allKaryawan.find(k => k.id === id);
+        if (!karyawan) { showToast('Data tidak ditemukan', 'error'); return; }
+
+        document.getElementById('modalTitle').textContent = '✏️ Edit Karyawan';
+        document.getElementById('btnSaveText').textContent = 'Update';
+        document.getElementById('editId').value = id;
+        document.getElementById('formId').value = karyawan.id;
+        document.getElementById('formId').disabled = true; // ID tidak bisa diubah
+        document.getElementById('formNama').value = karyawan.nama || '';
+        document.getElementById('formPin').value = karyawan.pin || '1234';
+        document.getElementById('formJamMasuk').value = karyawan.jam_masuk || '08:00';
+        document.getElementById('formJamPulang').value = karyawan.jam_pulang || '17:00';
+        
+        // Set divisi
+        const select = document.getElementById('formDivisi');
+        if (karyawan.divisi) {
+            // Cek apakah divisi ada di list
+            let exists = false;
+            for (let opt of select.options) {
+                if (opt.value === karyawan.divisi) { exists = true; break; }
+            }
+            if (exists) {
+                select.value = karyawan.divisi;
+            } else {
+                // Tambah opsi baru
+                select.innerHTML += `<option value="${karyawan.divisi}" selected>${karyawan.divisi}</option>`;
+                select.value = karyawan.divisi;
+            }
+        } else {
+            select.value = '';
+        }
+
+        document.getElementById('modalKaryawan').classList.add('active');
+    }
+
+    // ---- OPEN DELETE MODAL ----
+    function openDeleteModal(id) {
+        const karyawan = allKaryawan.find(k => k.id === id);
+        if (!karyawan) { showToast('Data tidak ditemukan', 'error'); return; }
+        selectedId = id;
+        document.getElementById('hapusNama').textContent = `${karyawan.nama} (${karyawan.id})`;
+        document.getElementById('modalHapus').classList.add('active');
+    }
+
+    // ---- CLOSE MODAL ----
+    function closeModal() {
+        document.getElementById('modalKaryawan').classList.remove('active');
+    }
+
+    function closeModalHapus() {
+        document.getElementById('modalHapus').classList.remove('active');
+        selectedId = null;
+    }
+
+    // ---- SAVE KARYAWAN ----
+    async function saveKaryawan() {
+        const id = document.getElementById('formId').value.trim();
+        const nama = document.getElementById('formNama').value.trim();
+        const divisi = document.getElementById('formDivisi').value;
+        const pin = document.getElementById('formPin').value.trim();
+        const jamMasuk = document.getElementById('formJamMasuk').value;
+        const jamPulang = document.getElementById('formJamPulang').value;
+        const editId = document.getElementById('editId').value;
+
+        // Validasi
+        if (!id) { showToast('ID harus diisi!', 'error'); return; }
+        if (id.length < 3) { showToast('ID minimal 3 karakter!', 'error'); return; }
+        if (!nama) { showToast('Nama harus diisi!', 'error'); return; }
+        if (!divisi) { showToast('Divisi harus dipilih!', 'error'); return; }
+        if (!pin || pin.length < 4) { showToast('PIN minimal 4 digit!', 'error'); return; }
+        if (!/^\d+$/.test(pin)) { showToast('PIN harus berupa angka!', 'error'); return; }
+
+        const payload = {
+            id: id,
+            nama: nama,
+            divisi: divisi,
+            pin: pin,
+            jam_masuk: jamMasuk || '08:00',
+            jam_pulang: jamPulang || '17:00'
+        };
+
+        try {
+            if (editId) {
+                // UPDATE
+                const response = await fetch(`${SUPABASE_URL}/rest/v1/karyawan?id=eq.${editId}`, {
+                    method: 'PATCH',
+                    headers: {
+                        'apikey': SUPABASE_ANON_KEY,
+                        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(payload)
+                });
+
+                if (response.ok) {
+                    showToast('✅ Karyawan berhasil diupdate!', 'success');
+                    closeModal();
+                    loadData();
+                } else {
+                    const error = await response.text();
+                    showToast('❌ Gagal update: ' + error, 'error');
+                }
+            } else {
+                // INSERT
+                const response = await fetch(`${SUPABASE_URL}/rest/v1/karyawan`, {
+                    method: 'POST',
+                    headers: {
+                        'apikey': SUPABASE_ANON_KEY,
+                        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(payload)
+                });
+
+                if (response.ok) {
+                    showToast('✅ Karyawan berhasil ditambahkan!', 'success');
+                    closeModal();
+                    loadData();
+                } else {
+                    const error = await response.text();
+                    showToast('❌ Gagal tambah: ' + error, 'error');
+                }
+            }
+        } catch(e) {
+            console.error('Save error:', e);
+            showToast('❌ Gagal koneksi ke server', 'error');
+        }
+    }
+
+    // ---- CONFIRM DELETE ----
+    async function confirmHapus() {
+        if (!selectedId) return;
+
+        try {
+            // 1. Hapus absensi karyawan
+            await fetch(`${SUPABASE_URL}/rest/v1/absensi?karyawan_id=eq.${selectedId}`, {
+                method: 'DELETE',
+                headers: {
+                    'apikey': SUPABASE_ANON_KEY,
+                    'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
+                }
+            });
+
+            // 2. Hapus karyawan
+            const response = await fetch(`${SUPABASE_URL}/rest/v1/karyawan?id=eq.${selectedId}`, {
+                method: 'DELETE',
+                headers: {
+                    'apikey': SUPABASE_ANON_KEY,
+                    'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
+                }
+            });
+
+            if (response.ok) {
+                showToast('🗑️ Karyawan berhasil dihapus!', 'success');
+                closeModalHapus();
+                loadData();
+            } else {
+                const error = await response.text();
+                showToast('❌ Gagal hapus: ' + error, 'error');
+            }
+        } catch(e) {
+            console.error('Delete error:', e);
+            showToast('❌ Gagal koneksi ke server', 'error');
+        }
+    }
+
+    // ---- RESET PIN ----
+    async function resetPin(id) {
+        if (!confirm(`Reset PIN karyawan ${id} ke 1234?`)) return;
+
+        try {
+            const response = await fetch(`${SUPABASE_URL}/rest/v1/karyawan?id=eq.${id}`, {
+                method: 'PATCH',
+                headers: {
+                    'apikey': SUPABASE_ANON_KEY,
+                    'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ pin: '1234' })
+            });
+
+            if (response.ok) {
+                showToast('✅ PIN berhasil direset ke 1234', 'success');
+                loadData();
+            } else {
+                showToast('❌ Gagal reset PIN', 'error');
+            }
+        } catch(e) {
+            showToast('❌ Gagal koneksi ke server', 'error');
+        }
+    }
+
+    // ---- DIVISI CUSTOM (Handle "Lainnya") ----
+    document.getElementById('formDivisi').addEventListener('change', function() {
+        if (this.value === '__custom__') {
+            const customDivisi = prompt('Masukkan nama divisi baru:');
+            if (customDivisi && customDivisi.trim()) {
+                const newDivisi = customDivisi.trim();
+                // Tambah ke option
+                this.innerHTML += `<option value="${newDivisi}" selected>${newDivisi}</option>`;
+                this.value = newDivisi;
+            } else {
+                this.value = '';
+            }
+        }
+    });
+
+    // ============================================================
+    // LOGOUT
+    // ============================================================
+    function doLogout() {
+        if (confirm('Yakin ingin keluar?')) {
+            localStorage.removeItem('admin_logged_in');
+            localStorage.removeItem('admin_username');
+            window.location.href = 'admin_login.html';
+        }
+    }
+
+    // ============================================================
+    // INIT
+    // ============================================================
+    loadData();
+    console.log('👥 Manajemen Karyawan loaded!');
+</script>
+
+</body>
+</html>
