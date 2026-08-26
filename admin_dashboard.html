@@ -132,7 +132,7 @@
             font-size: 13px;
         }
         
-        /* ===== TOMBOL KELOLA KARYAWAN ===== */
+        /* ===== TOMBOL KELOLA KARYAWAN & CETAK ===== */
         .btn-crud {
             padding: 10px 20px;
             background: #a855f7;
@@ -147,6 +147,21 @@
         }
         .btn-crud:hover { background: #9333ea; transform: translateY(-2px); box-shadow: 0 4px 15px rgba(168,85,247,0.4); }
         .btn-crud:active { transform: scale(0.95); }
+        
+        .btn-print {
+            padding: 10px 20px;
+            background: #f59e0b;
+            border: none;
+            border-radius: 10px;
+            color: white;
+            font-weight: 700;
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+            font-size: 13px;
+            transition: all 0.2s;
+        }
+        .btn-print:hover { background: #d97706; transform: translateY(-2px); box-shadow: 0 4px 15px rgba(245,158,11,0.4); }
+        .btn-print:active { transform: scale(0.95); }
         
         .summary-grid {
             display: grid;
@@ -508,7 +523,7 @@
 
 <div class="container">
 
-    <!-- FILTER PERIODE + TOMBOL KELOLA KARYAWAN -->
+    <!-- FILTER PERIODE + TOMBOL AKSI -->
     <div class="filter-card">
         <label><i class="fas fa-calendar-alt"></i> Periode:</label>
         <input type="date" id="startDate">
@@ -530,6 +545,11 @@
         <!-- 🔥 TOMBOL KELOLA KARYAWAN -->
         <button class="btn-crud" onclick="window.location.href='admin_crud.html'">
             <i class="fas fa-users"></i> Kelola Karyawan
+        </button>
+        
+        <!-- 🔥 TOMBOL CETAK LAPORAN -->
+        <button class="btn-print" onclick="cetakLaporan()">
+            <i class="fas fa-print"></i> Cetak Laporan
         </button>
     </div>
 
@@ -1020,7 +1040,6 @@
         
         const statusOptions = [
             { value: 'hadir', label: '✅ Hadir', color: '#34d399' },
-            { value: 'telat', label: '⏰ Telat', color: '#fb923c' },
             { value: 'izin', label: '📝 Izin', color: '#60a5fa' },
             { value: 'alfa', label: '❌ Alfa', color: '#f87171' }
         ];
@@ -1038,7 +1057,7 @@
                     </span>
                 </div>
             </div>
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:12px 0;">
+            <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin:12px 0;">
         `;
         
         statusOptions.forEach(opt => {
@@ -1114,8 +1133,7 @@
             let jamPulang = jamPulangInput;
             
             if (!jamMasuk && status === 'hadir') jamMasuk = '08:00';
-            if (!jamMasuk && status === 'telat') jamMasuk = '09:00';
-            if (!jamPulang && (status === 'hadir' || status === 'telat')) jamPulang = '17:00';
+            if (!jamPulang && status === 'hadir') jamPulang = '17:00';
             if (status === 'izin' || status === 'alfa') {
                 jamMasuk = null;
                 jamPulang = null;
@@ -1165,7 +1183,7 @@
             console.log('📄 Response:', responseText);
             
             if (res.ok) {
-                const statusLabel = { hadir: 'Hadir', telat: 'Telat', izin: 'Izin', alfa: 'Alfa' };
+                const statusLabel = { hadir: 'Hadir', izin: 'Izin', alfa: 'Alfa' };
                 showToast(`✅ Status diubah menjadi ${statusLabel[status] || status}!`, 'success');
                 closeQuickModal();
                 loadRekap();
@@ -1336,6 +1354,384 @@
     }
 
     // ============================================================
+    // CETAK LAPORAN - FULL PRINTOUT A4
+    // ============================================================
+    function cetakLaporan() {
+        const start = document.getElementById('startDate').value;
+        const end = document.getElementById('endDate').value;
+        if (!start || !end) { showToast('Pilih periode dulu!', 'warning'); return; }
+        
+        // Format tanggal
+        const dStart = new Date(start + 'T00:00:00');
+        const dEnd = new Date(end + 'T00:00:00');
+        const bulan = ['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
+        const periode = `${dStart.getDate()} ${bulan[dStart.getMonth()]} ${dStart.getFullYear()} - ${dEnd.getDate()} ${bulan[dEnd.getMonth()]} ${dEnd.getFullYear()}`;
+        
+        const now = new Date();
+        const tglCetak = `${now.getDate()} ${bulan[now.getMonth()]} ${now.getFullYear()}`;
+        
+        // Ambil data dari dashboard
+        const totalKaryawan = document.getElementById('totalKaryawan').textContent || '0';
+        const totalHadir = document.getElementById('totalHadir').textContent || '0';
+        const totalAlfa = document.getElementById('totalAlfa').textContent || '0';
+        const totalLibur = document.getElementById('totalLibur').textContent || '0';
+        
+        // Ambil tabel
+        const table = document.querySelector('.table-container table');
+        if (!table) { showToast('Tidak ada data untuk dicetak', 'warning'); return; }
+        
+        // Clone tabel dan modifikasi status
+        const tableClone = table.cloneNode(true);
+        const cells = tableClone.querySelectorAll('td .status-icon');
+        cells.forEach(el => {
+            const parent = el.parentElement;
+            const text = el.textContent.trim();
+            let status = 'kosong';
+            let icon = '';
+            
+            if (text === '✅') status = 'hadir';
+            else if (text === '❌') status = 'alfa';
+            else if (text === '📝') status = 'izin';
+            else if (text === '🔵' || text === '🗓️') status = 'libur';
+            else if (text === '⏰') status = 'kosong';
+            
+            const statusMap = {
+                hadir: { label: 'Hadir', icon: '✅', cls: 'hadir' },
+                alfa: { label: 'Alfa', icon: '❌', cls: 'alfa' },
+                izin: { label: 'Izin', icon: '📝', cls: 'izin' },
+                libur: { label: 'Libur', icon: '🗓️', cls: 'libur' },
+                kosong: { label: '-', icon: '', cls: 'kosong' }
+            };
+            
+            const info = statusMap[status] || statusMap.kosong;
+            parent.innerHTML = `<span class="status ${info.cls}"><span class="icon">${info.icon}</span> ${info.label}</span>`;
+        });
+        
+        const tableHTML = tableClone.outerHTML;
+        
+        // Buat konten laporan
+        const content = `
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Laporan Absensi</title>
+    <style>
+        /* ===== RESET ===== */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        @page {
+            size: A4;
+            margin: 15mm 20mm;
+        }
+        body {
+            font-family: 'Times New Roman', Times, serif;
+            background: white;
+            color: #1e293b;
+            padding: 30px 35px;
+            font-size: 12px;
+        }
+        
+        /* ===== KOP ===== */
+        .kop {
+            text-align: center;
+            padding-bottom: 16px;
+            border-bottom: 3px double #1e293b;
+            margin-bottom: 20px;
+        }
+        .kop .instansi {
+            font-size: 14px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            color: #0f172a;
+        }
+        .kop .instansi-2 {
+            font-size: 18px;
+            font-weight: 800;
+            letter-spacing: 2px;
+            color: #0f172a;
+            margin-top: 2px;
+        }
+        .kop .yayasan {
+            font-size: 13px;
+            font-weight: 500;
+            color: #475569;
+            margin-top: 2px;
+        }
+        .kop .alamat {
+            font-size: 11px;
+            color: #64748b;
+            margin-top: 4px;
+        }
+        .kop .email {
+            font-size: 11px;
+            color: #64748b;
+        }
+        .kop .judul {
+            font-size: 22px;
+            font-weight: 800;
+            letter-spacing: 3px;
+            color: #0f172a;
+            margin-top: 14px;
+        }
+        .kop .periode {
+            font-size: 14px;
+            color: #475569;
+            margin-top: 4px;
+        }
+        .kop .tgl-cetak {
+            font-size: 11px;
+            color: #94a3b8;
+            margin-top: 2px;
+        }
+        
+        /* ===== RINGKASAN ===== */
+        .summary {
+            display: flex;
+            gap: 16px;
+            justify-content: center;
+            margin: 16px 0 20px;
+            flex-wrap: wrap;
+        }
+        .summary-item {
+            padding: 10px 20px;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            text-align: center;
+            min-width: 90px;
+            background: #f8fafc;
+        }
+        .summary-item .num {
+            font-size: 22px;
+            font-weight: 700;
+        }
+        .summary-item .label {
+            font-size: 10px;
+            color: #64748b;
+        }
+        .summary-item .num.hadir { color: #059669; }
+        .summary-item .num.alfa { color: #b91c1c; }
+        .summary-item .num.libur { color: #2563eb; }
+        .summary-item .num.izin { color: #7c3aed; }
+        .summary-item .num.total { color: #0f172a; }
+        
+        /* ===== TABEL ===== */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 12px 0 16px;
+            font-size: 10px;
+        }
+        th, td {
+            padding: 4px 6px;
+            border: 1px solid #cbd5e1;
+            text-align: center;
+            vertical-align: middle;
+        }
+        th {
+            background: #f1f5f9;
+            font-weight: 700;
+            font-size: 9px;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+        th.nama-col { text-align: left; }
+        td.nama-col { text-align: left; font-weight: 600; font-size: 10px; }
+        td.divisi-col { font-size: 9px; color: #475569; }
+        
+        /* ===== STATUS WARNA ===== */
+        td .status {
+            display: inline-block;
+            padding: 1px 6px;
+            border-radius: 3px;
+            font-weight: 600;
+            font-size: 9px;
+            min-width: 22px;
+        }
+        td .status .icon { font-size: 10px; margin-right: 1px; }
+        td .status.hadir { background: #d1fae5; color: #059669; }
+        td .status.alfa { background: #fee2e2; color: #b91c1c; }
+        td .status.izin { background: #ede9fe; color: #7c3aed; }
+        td .status.libur { background: #dbeafe; color: #2563eb; }
+        td .status.kosong { background: #f1f5f9; color: #94a3b8; }
+        
+        /* ===== AKUMULASI ===== */
+        .badge-akum {
+            display: inline-block;
+            padding: 1px 8px;
+            border-radius: 10px;
+            font-weight: 700;
+            font-size: 10px;
+        }
+        .badge-akum.high { background: #d1fae5; color: #059669; }
+        .badge-akum.medium { background: #fef3c7; color: #d97706; }
+        .badge-akum.low { background: #fee2e2; color: #b91c1c; }
+        
+        /* ===== LEGENDA ===== */
+        .legenda {
+            display: flex;
+            gap: 16px;
+            justify-content: center;
+            margin: 10px 0 16px;
+            flex-wrap: wrap;
+            padding: 8px 14px;
+            background: #f8fafc;
+            border-radius: 6px;
+            border: 1px solid #e2e8f0;
+        }
+        .legenda-item {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 10px;
+            font-weight: 600;
+        }
+        .legenda-item .dot {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 3px;
+        }
+        .legenda-item .dot.hadir { background: #059669; }
+        .legenda-item .dot.alfa { background: #b91c1c; }
+        .legenda-item .dot.izin { background: #7c3aed; }
+        .legenda-item .dot.libur { background: #2563eb; }
+        
+        /* ===== TTD ===== */
+        .ttd {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 24px;
+            padding-top: 16px;
+            border-top: 1px solid #cbd5e1;
+        }
+        .ttd-box {
+            text-align: center;
+            width: 45%;
+        }
+        .ttd-box .label {
+            font-size: 10px;
+            color: #64748b;
+            margin-bottom: 2px;
+        }
+        .ttd-box .nama {
+            font-size: 12px;
+            font-weight: 700;
+            margin-top: 2px;
+        }
+        .ttd-box .jabatan {
+            font-size: 10px;
+            color: #475569;
+        }
+        .ttd-box .line {
+            width: 180px;
+            border-bottom: 1px solid #1e293b;
+            margin: 32px auto 2px;
+            max-width: 100%;
+        }
+        
+        /* ===== FOOTER ===== */
+        .footer {
+            text-align: center;
+            font-size: 9px;
+            color: #94a3b8;
+            margin-top: 12px;
+            padding-top: 10px;
+            border-top: 1px solid #e2e8f0;
+        }
+    </style>
+</head>
+<body>
+
+   <!-- ===== KOP LAPORAN ===== -->
+<div class="kop">
+    <!-- 🔥 LOGO + NAMA INSTANSI -->
+    <div style="display:flex;align-items:center;justify-content:center;gap:16px;margin-bottom:4px;flex-wrap:wrap;">
+        <img src="https://drive.google.com/uc?export=view&id=1HCIoFvovm4rUimNL03oX86tMGI_s7cEx" 
+             alt="Logo SPPG" 
+             style="height:60px;width:auto;object-fit:contain;">
+        <div style="text-align:left;">
+            <div class="instansi">SATUAN PELAYANAN PEMENUHAN GIZI (SPPG)</div>
+            <div class="instansi-2">SPPG KEDIRI PELEM 5</div>
+            <div class="yayasan">YAYASAN RIHLAH CAHAYA BANGSA</div>
+        </div>
+    </div>
+    <div class="alamat">Jl. Langkat, Singgahan Pelem Kec. Pare, Kab. Kediri, Jawa Timur 64213</div>
+    <div class="email">E-mail : sppgpelem10@gmail.com</div>
+    
+    <div class="judul">LAPORAN ABSENSI KARYAWAN</div>
+    <div class="periode">Periode : ${periode}</div>
+    <div class="tgl-cetak">Dicetak : ${tglCetak}</div>
+</div>
+
+    <!-- ===== RINGKASAN ===== -->
+    <div class="summary">
+        <div class="summary-item">
+            <div class="num total">${totalKaryawan}</div>
+            <div class="label">👥 Total Karyawan</div>
+        </div>
+        <div class="summary-item">
+            <div class="num hadir">${totalHadir}</div>
+            <div class="label">✅ Total Hadir</div>
+        </div>
+        <div class="summary-item">
+            <div class="num alfa">${totalAlfa}</div>
+            <div class="label">❌ Total Alfa</div>
+        </div>
+        <div class="summary-item">
+            <div class="num izin">0</div>
+            <div class="label">📝 Total Izin</div>
+        </div>
+        <div class="summary-item">
+            <div class="num libur">${totalLibur}</div>
+            <div class="label">🗓️ Hari Libur</div>
+        </div>
+    </div>
+
+    <!-- ===== TABEL ===== -->
+    ${tableHTML}
+
+    <!-- ===== LEGENDA ===== -->
+    <div class="legenda">
+        <div class="legenda-item"><span class="dot hadir"></span> Hadir</div>
+        <div class="legenda-item"><span class="dot alfa"></span> Alfa</div>
+        <div class="legenda-item"><span class="dot izin"></span> Izin</div>
+        <div class="legenda-item"><span class="dot libur"></span> Libur</div>
+    </div>
+
+    <!-- ===== TANDA TANGAN ===== -->
+    <div class="ttd">
+        <div class="ttd-box">
+            <div class="label">Mengetahui,</div>
+            <div class="line"></div>
+            <div class="nama">Ikhwanul Muchlisin</div>
+            <div class="jabatan">Asisten Lapangan II</div>
+        </div>
+        <div class="ttd-box">
+            <div class="label">Kepala SPPG,</div>
+            <div class="line"></div>
+            <div class="nama">Faisal Eko Cahyono</div>
+            <div class="jabatan">Kepala SPPG Pelem 5</div>
+        </div>
+    </div>
+
+    <!-- ===== FOOTER ===== -->
+    <div class="footer">
+        Laporan ini dibuat secara otomatis oleh sistem Smart Presence
+    </div>
+
+    <script>
+        window.print();
+    </script>
+</body>
+</html>
+        `;
+        
+        const win = window.open('', '_blank', 'width=1000,height=800');
+        win.document.write(content);
+        win.document.close();
+    }
+
+    // ============================================================
     // LOAD REKAP
     // ============================================================
     async function loadRekap() {
@@ -1376,7 +1772,7 @@
             }
 
             currentData = [];
-            let totalHadir = 0, totalTelat = 0, totalAlfa = 0;
+            let totalHadir = 0, totalAlfa = 0;
 
             karyawan.forEach(k => {
                 const row = {
@@ -1409,9 +1805,6 @@
                             status = 'hadir';
                             row.akumulasi++;
                             totalHadir++;
-                        } else if (abs.jam_masuk && abs.jam_masuk !== '') {
-                            status = 'telat';
-                            totalTelat++;
                         } else {
                             totalAlfa++;
                         }
@@ -1435,7 +1828,7 @@
             });
 
             renderTable(dateList);
-            renderSummary(karyawan.length, totalHadir, totalTelat, totalAlfa);
+            renderSummary(karyawan.length, totalHadir, totalAlfa);
 
         } catch(e) {
             console.error('Error:', e);
@@ -1478,7 +1871,6 @@
                 } else {
                     let icon, cls;
                     if (d.status === 'hadir') { icon = '✅'; cls = 'hadir'; }
-                    else if (d.status === 'telat') { icon = '⏰'; cls = 'telat'; }
                     else if (d.status === 'izin') { icon = '📝'; cls = 'izin'; }
                     else { icon = '❌'; cls = 'alfa'; }
                     
@@ -1506,11 +1898,11 @@
     // ============================================================
     // RENDER SUMMARY
     // ============================================================
-    function renderSummary(total, hadir, telat, alfa) {
+    function renderSummary(total, hadir, alfa) {
         document.getElementById('totalKaryawan').textContent = total;
         document.getElementById('totalHadir').textContent = hadir;
-        document.getElementById('totalTelat').textContent = telat;
         document.getElementById('totalAlfa').textContent = alfa;
+        document.getElementById('totalTelat').textContent = 0;
     }
 
     // ============================================================
@@ -1534,7 +1926,7 @@
                 if (d.isLibur) {
                     csv += `Libur,`;
                 } else {
-                    const status = d.status === 'hadir' ? 'Hadir' : d.status === 'telat' ? 'Telat' : d.status === 'izin' ? 'Izin' : 'Alfa';
+                    const status = d.status === 'hadir' ? 'Hadir' : d.status === 'izin' ? 'Izin' : 'Alfa';
                     csv += `${status},`;
                 }
             });
