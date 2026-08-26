@@ -133,7 +133,6 @@
             font-size: 13px;
         }
         
-        /* ===== TOMBOL KELOLA KARYAWAN & CETAK ===== */
         .btn-crud {
             padding: 10px 20px;
             background: #a855f7;
@@ -203,9 +202,7 @@
         .summary-card .num.tepat { color: #10b981; }
         .summary-card .num.terlambat { color: #f59e0b; }
         
-        /* ============================================
-           SAKLAR TOGGLE (MODE)
-           ============================================ */
+        /* ===== SAKLAR TOGGLE (MODE) ===== */
         .switch-container {
             display: flex;
             align-items: center;
@@ -217,11 +214,7 @@
             border: 1px solid rgba(255,255,255,0.06);
             flex-wrap: wrap;
         }
-        .switch-container label {
-            font-weight: 600;
-            color: #94a3b8;
-            font-size: 13px;
-        }
+        .switch-container label { font-weight: 600; color: #94a3b8; font-size: 13px; }
         .switch {
             position: relative;
             display: inline-block;
@@ -229,18 +222,11 @@
             height: 26px;
             flex-shrink: 0;
         }
-        .switch input {
-            opacity: 0;
-            width: 0;
-            height: 0;
-        }
+        .switch input { opacity: 0; width: 0; height: 0; }
         .slider {
             position: absolute;
             cursor: pointer;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
+            top: 0; left: 0; right: 0; bottom: 0;
             background: #475569;
             transition: 0.3s;
             border-radius: 34px;
@@ -256,17 +242,9 @@
             transition: 0.3s;
             border-radius: 50%;
         }
-        .switch input:checked + .slider {
-            background: #10b981;
-        }
-        .switch input:checked + .slider:before {
-            transform: translateX(22px);
-        }
-        .switch-container .status-text {
-            font-size: 12px;
-            font-weight: 700;
-            min-width: 36px;
-        }
+        .switch input:checked + .slider { background: #10b981; }
+        .switch input:checked + .slider:before { transform: translateX(22px); }
+        .switch-container .status-text { font-size: 12px; font-weight: 700; min-width: 36px; }
         .switch-container .status-text.on { color: #34d399; }
         .switch-container .status-text.off { color: #f87171; }
         .mode-label {
@@ -277,9 +255,7 @@
             border-radius: 20px;
         }
         
-        /* ============================================
-           BULK EDIT SECTION
-           ============================================ */
+        /* ===== BULK EDIT SECTION ===== */
         .bulk-edit-section {
             background: rgba(0,0,0,0.15);
             border-radius: 16px;
@@ -288,9 +264,7 @@
             border: 1px solid rgba(255,255,255,0.06);
             display: block;
         }
-        .bulk-edit-section.hidden {
-            display: none;
-        }
+        .bulk-edit-section.hidden { display: none; }
         .bulk-edit-section .bulk-header {
             display: flex;
             flex-wrap: wrap;
@@ -298,10 +272,7 @@
             align-items: center;
             margin-bottom: 16px;
         }
-        .bulk-edit-section .bulk-header label {
-            font-weight: 600;
-            color: #94a3b8;
-        }
+        .bulk-edit-section .bulk-header label { font-weight: 600; color: #94a3b8; }
         .bulk-edit-section .bulk-header select {
             padding: 10px 16px;
             border-radius: 10px;
@@ -312,11 +283,7 @@
             flex: 1;
             min-width: 200px;
         }
-        body.light-mode .bulk-edit-section .bulk-header select {
-            background: #f1f5f9;
-            color: #1e293b;
-            border-color: #cbd5e1;
-        }
+        body.light-mode .bulk-edit-section .bulk-header select { background: #f1f5f9; color: #1e293b; border-color: #cbd5e1; }
         .bulk-edit-section .bulk-header .btn-sm {
             padding: 10px 20px;
             border: none;
@@ -362,16 +329,9 @@
             padding-top: 8px;
             border-top: 1px solid rgba(255,255,255,0.06);
         }
-        .bulk-placeholder {
-            text-align: center;
-            color: #64748b;
-            padding: 20px 0;
-            grid-column: 1 / -1;
-        }
+        .bulk-placeholder { text-align: center; color: #64748b; padding: 20px 0; grid-column: 1 / -1; }
         
-        /* ============================================
-           TABLE REKAP
-           ============================================ */
+        /* ===== TABLE REKAP ===== */
         .table-container {
             background: rgba(255,255,255,0.04);
             border-radius: 16px;
@@ -432,10 +392,7 @@
             padding: 4px 4px;
             border-radius: 8px;
         }
-        td .status-icon:hover {
-            transform: scale(1.2);
-            background: rgba(255,255,255,0.1);
-        }
+        td .status-icon:hover { transform: scale(1.2); background: rgba(255,255,255,0.1); }
         td .status-icon.hadir { color: #34d399; }
         td .status-icon.telat { color: #fb923c; }
         td .status-icon.alfa { color: #f87171; }
@@ -443,23 +400,11 @@
         td .status-icon.libur { color: #60a5fa; cursor: default; }
         td .status-icon.libur:hover { transform: none; background: none; }
         
-        .status-icon.quick-edit-enabled {
-            cursor: pointer;
-        }
-        .status-icon.quick-edit-disabled {
-            cursor: default;
-            opacity: 0.5;
-        }
-        .status-icon.quick-edit-disabled:hover {
-            transform: none !important;
-            background: none !important;
-        }
+        .status-icon.quick-edit-enabled { cursor: pointer; }
+        .status-icon.quick-edit-disabled { cursor: default; opacity: 0.5; }
+        .status-icon.quick-edit-disabled:hover { transform: none !important; background: none !important; }
         
-        .clickable-name {
-            color: #60a5fa;
-            cursor: pointer;
-            font-weight: 600;
-        }
+        .clickable-name { color: #60a5fa; cursor: pointer; font-weight: 600; }
         .clickable-name:hover { text-decoration: underline; }
         
         .badge-akum {
@@ -473,15 +418,10 @@
         .badge-akum.medium { background: rgba(251,146,60,0.2); color: #fb923c; }
         .badge-akum.low { background: rgba(239,68,68,0.2); color: #f87171; }
         
-        /* ============================================
-           STATISTIK KETEPATAN WAKTU (MODAL)
-           ============================================ */
+        /* ===== STATISTIK KETEPATAN WAKTU (MODAL) ===== */
         .stats-modal {
             position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
+            top: 0; left: 0; right: 0; bottom: 0;
             background: rgba(0,0,0,0.7);
             backdrop-filter: blur(8px);
             display: none;
@@ -536,31 +476,15 @@
             text-align: center;
             border: 1px solid rgba(255,255,255,0.06);
         }
-        .stats-summary-card .num {
-            font-size: 28px;
-            font-weight: 800;
-        }
-        .stats-summary-card .label {
-            font-size: 11px;
-            color: #94a3b8;
-            margin-top: 2px;
-        }
+        .stats-summary-card .num { font-size: 28px; font-weight: 800; }
+        .stats-summary-card .label { font-size: 11px; color: #94a3b8; margin-top: 2px; }
         .stats-summary-card .num.tepat { color: #10b981; }
         .stats-summary-card .num.terlambat { color: #f59e0b; }
         .stats-summary-card .num.persen { color: #60a5fa; }
         
-        .stats-table-container {
-            overflow-x: auto;
-            margin-top: 12px;
-        }
-        .stats-table-container table {
-            font-size: 12px;
-        }
-        .stats-table-container th {
-            background: rgba(168,85,247,0.15);
-            color: #a855f7;
-            font-size: 10px;
-        }
+        .stats-table-container { overflow-x: auto; margin-top: 12px; }
+        .stats-table-container table { font-size: 12px; }
+        .stats-table-container th { background: rgba(168,85,247,0.15); color: #a855f7; font-size: 10px; }
         .stats-table-container td .badge-tepat {
             display: inline-block;
             padding: 2px 12px;
@@ -588,15 +512,8 @@
             font-family: 'Inter', sans-serif;
             font-size: 13px;
         }
-        body.light-mode .stats-filter select, body.light-mode .stats-filter input {
-            background: #f1f5f9;
-            color: #1e293b;
-            border-color: #cbd5e1;
-        }
-        .stats-filter select:focus, .stats-filter input:focus {
-            outline: none;
-            border-color: #a855f7;
-        }
+        body.light-mode .stats-filter select, body.light-mode .stats-filter input { background: #f1f5f9; color: #1e293b; border-color: #cbd5e1; }
+        .stats-filter select:focus, .stats-filter input:focus { outline: none; border-color: #a855f7; }
         
         .loading-text { text-align: center; color: #64748b; padding: 40px 0; font-size: 14px; }
         .empty-text { text-align: center; color: #64748b; padding: 30px 0; font-size: 14px; }
@@ -688,17 +605,14 @@
             <i class="fas fa-sync-alt"></i>
         </button>
         
-        <!-- TOMBOL KELOLA KARYAWAN -->
         <button class="btn-crud" onclick="window.location.href='admin_crud.html'">
             <i class="fas fa-users"></i> Kelola Karyawan
         </button>
         
-        <!-- TOMBOL CETAK LAPORAN -->
         <button class="btn-print" onclick="cetakLaporan()">
             <i class="fas fa-print"></i> Cetak Laporan
         </button>
         
-        <!-- 🔥 TOMBOL STATISTIK KETEPATAN WAKTU -->
         <button class="btn-stats" onclick="openStatsModal()">
             <i class="fas fa-clock"></i> Statistik Ketepatan
         </button>
@@ -778,9 +692,7 @@
     </div>
 </div>
 
-<!-- ============================================================
-     MODAL STATISTIK KETEPATAN WAKTU
-     ============================================================ -->
+<!-- MODAL STATISTIK KETEPATAN WAKTU -->
 <div class="stats-modal" id="statsModal">
     <div class="stats-modal-content">
         <div class="stats-modal-header">
@@ -894,12 +806,18 @@
     }
 
     // ============================================================
-    // CEK LOGIN
+    // CEK LOGIN & LOGOUT
     // ============================================================
     if (!localStorage.getItem('admin_logged_in')) {
         window.location.href = 'admin_login.html';
     }
     document.getElementById('adminName').textContent = localStorage.getItem('admin_username') || 'Admin';
+
+    function doLogout() {
+        localStorage.removeItem('admin_logged_in');
+        localStorage.removeItem('admin_username');
+        window.location.href = 'admin_login.html';
+    }
 
     // ============================================================
     // VARIABLES
@@ -909,7 +827,7 @@
     let bulkKaryawanId = '';
     let bulkData = {};
     let isBulkMode = false;
-    let statsData = [];
+    let allStatsData = [];
 
     // ============================================================
     // THEME
@@ -936,9 +854,6 @@
         setTimeout(() => { toast.style.opacity = '0'; toast.style.transform = 'translateX(-50%) translateY(20px)'; setTimeout(() => toast.remove(), 300); }, 3000);
     }
 
-    // ============================================================
-    // SET DEFAULT DATE
-    // ============================================================
     setDefaultDates();
 
     // ============================================================
@@ -1054,7 +969,7 @@
             
         } catch(e) {
             console.error('Error load grid:', e);
-            grid.innerHTML = '<div class="bulk-placeholder" style="color:#ef4444;">Gagal memuat数据</div>';
+            grid.innerHTML = '<div class="bulk-placeholder" style="color:#ef4444;">Gagal memuat data</div>';
         }
     }
 
@@ -1409,7 +1324,6 @@
             }
             
             const responseText = await res.text();
-            console.log('📄 Response:', responseText);
             
             if (res.ok) {
                 const statusLabel = { hadir: 'Hadir', izin: 'Izin', alfa: 'Alfa' };
@@ -1430,16 +1344,13 @@
         }
     }
 
-    // ============================================================
-    // CLOSE QUICK MODAL
-    // ============================================================
     function closeQuickModal() {
         const modal = document.getElementById('quickModal');
         if (modal) modal.remove();
     }
 
     // ============================================================
-    // OPEN MODAL LIBUR
+    // MODAL HARI LIBUR
     // ============================================================
     function openModalLibur(tanggal) {
         const divisiList = [...new Set(currentData.map(row => row.divisi))].filter(d => d && d !== '-');
@@ -1490,9 +1401,6 @@
         document.body.appendChild(modal);
     }
 
-    // ============================================================
-    // TOGGLE LIBUR DIVISI
-    // ============================================================
     async function toggleLiburDivisi(tanggal, divisi) {
         if (!divisi || divisi === '') {
             showToast('❌ Divisi tidak valid!', 'error');
@@ -1545,26 +1453,17 @@
         }
     }
 
-    // ============================================================
-    // CLOSE MODAL LIBUR
-    // ============================================================
     function closeModalLibur() {
         const modal = document.getElementById('modalLibur');
         if (modal) modal.remove();
     }
 
-    // ============================================================
-    // FORMAT TANGGAL
-    // ============================================================
     function formatTanggal(tgl) {
         const d = parseDateIndonesia(tgl);
         const bulan = ['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agu','Sep','Okt','Nov','Des'];
         return `${d.getDate()} ${bulan[d.getMonth()]} ${d.getFullYear()}`;
     }
 
-    // ============================================================
-    // OPEN DETAIL (KLIK NAMA)
-    // ============================================================
     function openDetail(id) {
         if (isBulkMode) {
             showToast('Mode Bulk aktif, gunakan grid di atas!', 'info');
@@ -1583,7 +1482,7 @@
     }
 
     // ============================================================
-    // CETAK LAPORAN
+    // CETAK LAPORAN (FIXED SCRIPT ESCAPING)
     // ============================================================
     function cetakLaporan() {
         const start = document.getElementById('startDate').value;
@@ -1612,7 +1511,6 @@
             const parent = el.parentElement;
             const text = el.textContent.trim();
             let status = 'kosong';
-            let icon = '';
             
             if (text === '✅') status = 'hadir';
             else if (text === '❌') status = 'alfa';
@@ -1643,19 +1541,8 @@
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         @page { size: A4; margin: 15mm 20mm; }
-        body {
-            font-family: 'Times New Roman', Times, serif;
-            background: white;
-            color: #1e293b;
-            padding: 30px 35px;
-            font-size: 12px;
-        }
-        .kop {
-            text-align: center;
-            padding-bottom: 16px;
-            border-bottom: 3px double #1e293b;
-            margin-bottom: 20px;
-        }
+        body { font-family: 'Times New Roman', Times, serif; background: white; color: #1e293b; padding: 30px 35px; font-size: 12px; }
+        .kop { text-align: center; padding-bottom: 16px; border-bottom: 3px double #1e293b; margin-bottom: 20px; }
         .kop .instansi { font-size: 14px; font-weight: 700; letter-spacing: 1px; color: #0f172a; }
         .kop .instansi-2 { font-size: 18px; font-weight: 800; letter-spacing: 2px; color: #0f172a; margin-top: 2px; }
         .kop .yayasan { font-size: 13px; font-weight: 500; color: #475569; margin-top: 2px; }
@@ -1664,7 +1551,6 @@
         .kop .judul { font-size: 22px; font-weight: 800; letter-spacing: 3px; color: #0f172a; margin-top: 14px; }
         .kop .periode { font-size: 14px; color: #475569; margin-top: 4px; }
         .kop .tgl-cetak { font-size: 11px; color: #94a3b8; margin-top: 2px; }
-        
         .summary { display: flex; gap: 16px; justify-content: center; margin: 16px 0 20px; flex-wrap: wrap; }
         .summary-item { padding: 10px 20px; border: 1px solid #cbd5e1; border-radius: 8px; text-align: center; min-width: 90px; background: #f8fafc; }
         .summary-item .num { font-size: 22px; font-weight: 700; }
@@ -1674,27 +1560,15 @@
         .summary-item .num.libur { color: #2563eb; }
         .summary-item .num.izin { color: #7c3aed; }
         .summary-item .num.total { color: #0f172a; }
-        
         table { width: 100%; border-collapse: collapse; margin: 12px 0 16px; font-size: 10px; }
         th, td { padding: 4px 6px; border: 1px solid #cbd5e1; text-align: center; vertical-align: middle; }
         th { background: #f1f5f9; font-weight: 700; font-size: 9px; text-transform: uppercase; letter-spacing: 0.3px; }
-        th.nama-col { text-align: left; }
-        td.nama-col { text-align: left; font-weight: 600; font-size: 10px; }
-        td.divisi-col { font-size: 9px; color: #475569; }
-        
         td .status { display: inline-block; padding: 1px 6px; border-radius: 3px; font-weight: 600; font-size: 9px; min-width: 22px; }
-        td .status .icon { font-size: 10px; margin-right: 1px; }
         td .status.hadir { background: #d1fae5; color: #059669; }
         td .status.alfa { background: #fee2e2; color: #b91c1c; }
         td .status.izin { background: #ede9fe; color: #7c3aed; }
         td .status.libur { background: #dbeafe; color: #2563eb; }
         td .status.kosong { background: #f1f5f9; color: #94a3b8; }
-        
-        .badge-akum { display: inline-block; padding: 1px 8px; border-radius: 10px; font-weight: 700; font-size: 10px; }
-        .badge-akum.high { background: #d1fae5; color: #059669; }
-        .badge-akum.medium { background: #fef3c7; color: #d97706; }
-        .badge-akum.low { background: #fee2e2; color: #b91c1c; }
-        
         .legenda { display: flex; gap: 16px; justify-content: center; margin: 10px 0 16px; flex-wrap: wrap; padding: 8px 14px; background: #f8fafc; border-radius: 6px; border: 1px solid #e2e8f0; }
         .legenda-item { display: flex; align-items: center; gap: 4px; font-size: 10px; font-weight: 600; }
         .legenda-item .dot { display: inline-block; width: 12px; height: 12px; border-radius: 3px; }
@@ -1702,7 +1576,6 @@
         .legenda-item .dot.alfa { background: #b91c1c; }
         .legenda-item .dot.izin { background: #7c3aed; }
         .legenda-item .dot.libur { background: #2563eb; }
-        
         .ttd { display: flex; justify-content: space-between; margin-top: 24px; padding-top: 16px; border-top: 1px solid #cbd5e1; }
         .ttd-box { text-align: center; width: 45%; }
         .ttd-box .label { font-size: 10px; color: #64748b; margin-bottom: 2px; }
@@ -1713,12 +1586,9 @@
     </style>
 </head>
 <body>
-
 <div class="kop">
     <div style="display:flex;align-items:center;justify-content:center;gap:16px;margin-bottom:4px;flex-wrap:wrap;">
-        <img src="https://drive.google.com/uc?export=view&id=1HCIoFvovm4rUimNL03oX86tMGI_s7cEx" 
-             alt="Logo SPPG" 
-             style="height:60px;width:auto;object-fit:contain;">
+        <img src="https://drive.google.com/uc?export=view&id=1HCIoFvovm4rUimNL03oX86tMGI_s7cEx" alt="Logo SPPG" style="height:60px;width:auto;object-fit:contain;">
         <div style="text-align:left;">
             <div class="instansi">SATUAN PELAYANAN PEMENUHAN GIZI (SPPG)</div>
             <div class="instansi-2">SPPG KEDIRI PELEM 5</div>
@@ -1731,7 +1601,6 @@
     <div class="periode">Periode : ${periode}</div>
     <div class="tgl-cetak">Dicetak : ${tglCetak}</div>
 </div>
-
 <div class="summary">
     <div class="summary-item"><div class="num total">${totalKaryawan}</div><div class="label">👥 Total Karyawan</div></div>
     <div class="summary-item"><div class="num hadir">${totalHadir}</div><div class="label">✅ Total Hadir</div></div>
@@ -1739,16 +1608,13 @@
     <div class="summary-item"><div class="num izin">0</div><div class="label">📝 Total Izin</div></div>
     <div class="summary-item"><div class="num libur">${totalLibur}</div><div class="label">🗓️ Hari Libur</div></div>
 </div>
-
 ${tableHTML}
-
 <div class="legenda">
     <div class="legenda-item"><span class="dot hadir"></span> Hadir</div>
     <div class="legenda-item"><span class="dot alfa"></span> Alfa</div>
     <div class="legenda-item"><span class="dot izin"></span> Izin</div>
     <div class="legenda-item"><span class="dot libur"></span> Libur</div>
 </div>
-
 <div class="ttd">
     <div class="ttd-box">
         <div class="label">Mengetahui,</div>
@@ -1763,10 +1629,8 @@ ${tableHTML}
         <div class="jabatan">Kepala SPPG Pelem 5</div>
     </div>
 </div>
-
 <div class="footer">Laporan ini dibuat secara otomatis oleh sistem Smart Presence</div>
-
-<script>window.print();</script>
+<script>window.print();<\/script>
 </body>
 </html>
         `;
@@ -1777,7 +1641,7 @@ ${tableHTML}
     }
 
     // ============================================================
-    // LOAD REKAP - FIXED!
+    // LOAD REKAP
     // ============================================================
     async function loadRekap() {
         const start = document.getElementById('startDate').value;
@@ -1852,16 +1716,13 @@ ${tableHTML}
                         jamMasuk = abs.jam_masuk || '-';
                         jamPulang = abs.jam_pulang || '-';
                         
-                        // Hitung ketepatan waktu
                         if (jamMasuk !== '-') {
                             const targetJam = k.jam_masuk || '08:00';
                             if (jamMasuk <= targetJam) {
                                 isTepat = true;
-                                totalTepat++;
                                 row.tepatWaktu++;
                             } else {
                                 isTerlambat = true;
-                                totalTerlambat++;
                                 row.terlambat++;
                             }
                         }
@@ -1971,9 +1832,6 @@ ${tableHTML}
         wrapper.innerHTML = html;
     }
 
-    // ============================================================
-    // RENDER SUMMARY
-    // ============================================================
     function renderSummary(total, hadir, telat, alfa, tepat, terlambat) {
         document.getElementById('totalKaryawan').textContent = total;
         document.getElementById('totalHadir').textContent = hadir;
@@ -2034,8 +1892,6 @@ ${tableHTML}
     // ============================================================
     // STATISTIK KETEPATAN WAKTU - MODAL
     // ============================================================
-    let allStatsData = [];
-
     async function openStatsModal() {
         document.getElementById('statsModal').classList.add('active');
         document.body.style.overflow = 'hidden';
@@ -2052,19 +1908,16 @@ ${tableHTML}
         tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;padding:30px;color:#64748b;"><i class="fas fa-spinner fa-pulse"></i> Memuat data...</td></tr>';
 
         try {
-            // Ambil semua karyawan
             const karyawanRes = await fetch(`${SUPABASE_URL}/rest/v1/karyawan?select=id,nama,divisi,jam_masuk`, {
                 headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': `Bearer ${SUPABASE_ANON_KEY}` }
             });
             const karyawan = await karyawanRes.json();
 
-            // Ambil semua absensi
             const absenRes = await fetch(`${SUPABASE_URL}/rest/v1/absensi?select=*`, {
                 headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': `Bearer ${SUPABASE_ANON_KEY}` }
             });
             const absensi = await absenRes.json();
 
-            // Hitung statistik per karyawan
             const stats = {};
             karyawan.forEach(k => {
                 stats[k.id] = {
@@ -2089,10 +1942,8 @@ ${tableHTML}
                 }
             });
 
-            // Konversi ke array
             allStatsData = Object.values(stats);
             
-            // Populate divisi filter
             const divisiSet = new Set();
             allStatsData.forEach(s => { if (s.divisi) divisiSet.add(s.divisi); });
             const filterSelect = document.getElementById('statsDivisiFilter');
@@ -2124,7 +1975,6 @@ ${tableHTML}
             return;
         }
 
-        // Sort by persentase
         const sorted = [...data].sort((a, b) => {
             const pA = a.totalAbsen > 0 ? (a.tepatWaktu / a.totalAbsen) * 100 : 0;
             const pB = b.totalAbsen > 0 ? (b.tepatWaktu / b.totalAbsen) * 100 : 0;
@@ -2164,7 +2014,6 @@ ${tableHTML}
 
         tbody.innerHTML = html;
 
-        // Update summary
         const total = totalTepat + totalTerlambat;
         const persenTotal = total > 0 ? Math.round((totalTepat / total) * 100) : 0;
         document.getElementById('statsTotalTepat').textContent = totalTepat;
@@ -2175,16 +2024,13 @@ ${tableHTML}
 
     function filterStats() {
         const divisi = document.getElementById('statsDivisiFilter').value;
-        
         let filtered = allStatsData;
         if (divisi) {
             filtered = filtered.filter(s => s.divisi === divisi);
         }
-        
         renderStats(filtered);
     }
 
-    // Close modal when clicking outside
     document.getElementById('statsModal').addEventListener('click', function(e) {
         if (e.target === this) closeStatsModal();
     });
@@ -2199,10 +2045,6 @@ ${tableHTML}
 
     document.getElementById('modeToggle').checked = false;
     toggleMode();
-
-    console.log('🛡️ Admin Dashboard loaded!');
-    console.log('📌 Mode:', isBulkMode ? 'BULK EDIT' : 'QUICK EDIT');
-    console.log('🗓️ Today (WIB):', getTodayIndonesia());
 </script>
 
 </body>
