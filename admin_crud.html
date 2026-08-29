@@ -689,7 +689,7 @@
     function setSelectedHari(hariArray) {
         var labels = document.querySelectorAll('#hariGrid label');
         labels.forEach(function(label) {
-            var checkbox = label.querySelector('input[type="checkbox"]);
+            var checkbox = label.querySelector('input[type="checkbox"]');
             var hari = label.dataset.hari;
             var isChecked = hariArray && hariArray.indexOf(hari) !== -1;
             checkbox.checked = isChecked;
