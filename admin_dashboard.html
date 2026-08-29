@@ -59,446 +59,190 @@
         
         .container { max-width: 1400px; margin: 0 auto; }
         
-        .filter-card {
+        /* ===== DATE DISPLAY ===== */
+        .date-display {
             background: rgba(255,255,255,0.04);
             border-radius: 16px;
-            padding: 20px 24px;
+            padding: 16px 24px;
             margin-bottom: 20px;
             border: 1px solid rgba(255,255,255,0.06);
             display: flex;
-            flex-wrap: wrap;
+            justify-content: space-between;
             align-items: center;
-            gap: 16px;
+            flex-wrap: wrap;
+            gap: 12px;
         }
-        body.light-mode .filter-card { background: white; border-color: rgba(0,0,0,0.06); }
-        
-        .filter-card label { font-size: 13px; font-weight: 600; color: #94a3b8; }
-        .filter-card input[type="date"] {
-            padding: 10px 14px;
-            border-radius: 10px;
-            border: 1px solid rgba(255,255,255,0.1);
-            background: rgba(0,0,0,0.3);
+        body.light-mode .date-display { background: white; border-color: rgba(0,0,0,0.06); }
+        .date-display .hari {
+            font-size: 18px;
+            font-weight: 700;
             color: white;
-            font-family: 'Inter', sans-serif;
+        }
+        .date-display .hari .tgl {
             font-size: 14px;
+            font-weight: 400;
+            color: #94a3b8;
         }
-        body.light-mode .filter-card input[type="date"] { background: #f1f5f9; color: #1e293b; border-color: #cbd5e1; }
-        .filter-card .btn-primary {
-            padding: 10px 24px;
-            background: linear-gradient(135deg, #a855f7, #3b82f6);
-            border: none;
-            border-radius: 10px;
-            color: white;
-            font-weight: 700;
-            cursor: pointer;
-            font-family: 'Inter', sans-serif;
-            font-size: 14px;
-        }
-        .filter-card .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 4px 15px rgba(168,85,247,0.4); }
-        .filter-card .btn-success {
-            padding: 10px 20px;
-            background: #10b981;
-            border: none;
-            border-radius: 10px;
-            color: white;
-            font-weight: 700;
-            cursor: pointer;
-            font-family: 'Inter', sans-serif;
+        .date-display .badge-hari {
+            padding: 6px 16px;
+            border-radius: 20px;
             font-size: 13px;
+            font-weight: 600;
         }
-        .filter-card .btn-danger {
-            padding: 10px 20px;
-            background: #ef4444;
-            border: none;
-            border-radius: 10px;
-            color: white;
-            font-weight: 700;
-            cursor: pointer;
-            font-family: 'Inter', sans-serif;
-            font-size: 13px;
-        }
-        .filter-card .btn-refresh {
-            padding: 10px 20px;
+        .date-display .badge-hari.kerja { background: rgba(16,185,129,0.2); color: #34d399; }
+        .date-display .badge-hari.libur { background: rgba(251,146,60,0.2); color: #fb923c; }
+        .date-display .btn-refresh {
+            padding: 8px 16px;
             background: #6366f1;
             border: none;
             border-radius: 10px;
             color: white;
-            font-weight: 700;
+            font-weight: 600;
             cursor: pointer;
             font-family: 'Inter', sans-serif;
             font-size: 13px;
         }
-        .filter-card .btn-crud {
-            padding: 10px 20px;
-            background: #a855f7;
-            border: none;
-            border-radius: 10px;
-            color: white;
-            font-weight: 700;
-            cursor: pointer;
-            font-family: 'Inter', sans-serif;
-            font-size: 13px;
-        }
-        .filter-card .btn-crud:hover { background: #9333ea; }
-        .filter-card .btn-print {
-            padding: 10px 20px;
-            background: #f59e0b;
-            border: none;
-            border-radius: 10px;
-            color: white;
-            font-weight: 700;
-            cursor: pointer;
-            font-family: 'Inter', sans-serif;
-            font-size: 13px;
-        }
-        .filter-card .btn-print:hover { background: #d97706; }
-        .filter-card .btn-stats {
-            padding: 10px 20px;
-            background: #8b5cf6;
-            border: none;
-            border-radius: 10px;
-            color: white;
-            font-weight: 700;
-            cursor: pointer;
-            font-family: 'Inter', sans-serif;
-            font-size: 13px;
-        }
-        .filter-card .btn-stats:hover { background: #7c3aed; }
+        .date-display .btn-refresh:hover { background: #4f46e5; }
         
+        /* ===== SUMMARY CARDS ===== */
         .summary-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
             gap: 16px;
-            margin-bottom: 20px;
+            margin-bottom: 24px;
         }
         .summary-card {
             background: rgba(255,255,255,0.04);
-            border-radius: 14px;
-            padding: 16px 20px;
+            border-radius: 16px;
+            padding: 20px 18px;
             border: 1px solid rgba(255,255,255,0.06);
+            text-align: center;
         }
         body.light-mode .summary-card { background: white; border-color: rgba(0,0,0,0.06); }
-        .summary-card .num { font-size: 28px; font-weight: 800; }
-        .summary-card .label { font-size: 12px; color: #64748b; font-weight: 500; margin-top: 2px; }
+        .summary-card .num {
+            font-size: 32px;
+            font-weight: 800;
+        }
+        .summary-card .label {
+            font-size: 12px;
+            color: #64748b;
+            font-weight: 500;
+            margin-top: 4px;
+        }
+        .summary-card .num.total { color: #60a5fa; }
         .summary-card .num.hadir { color: #34d399; }
         .summary-card .num.telat { color: #fb923c; }
         .summary-card .num.alfa { color: #f87171; }
-        .summary-card .num.total { color: #60a5fa; }
-        .summary-card .num.liburan { color: #60a5fa; }
-        .summary-card .num.tepat { color: #10b981; }
-        .summary-card .num.terlambat { color: #f59e0b; }
-        
-        .switch-container {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            margin-bottom: 16px;
-            padding: 10px 18px;
-            background: rgba(0,0,0,0.2);
-            border-radius: 12px;
-            border: 1px solid rgba(255,255,255,0.06);
-            flex-wrap: wrap;
-        }
-        .switch-container label { font-weight: 600; color: #94a3b8; font-size: 13px; }
-        .switch {
-            position: relative;
-            display: inline-block;
-            width: 48px;
-            height: 26px;
-            flex-shrink: 0;
-        }
-        .switch input { opacity: 0; width: 0; height: 0; }
-        .slider {
-            position: absolute;
-            cursor: pointer;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: #475569;
-            transition: 0.3s;
-            border-radius: 34px;
-        }
-        .slider:before {
-            position: absolute;
-            content: "";
-            height: 18px;
-            width: 18px;
-            left: 4px;
-            bottom: 4px;
-            background: white;
-            transition: 0.3s;
-            border-radius: 50%;
-        }
-        .switch input:checked + .slider { background: #10b981; }
-        .switch input:checked + .slider:before { transform: translateX(22px); }
-        .switch-container .status-text { font-size: 12px; font-weight: 700; min-width: 36px; }
-        .switch-container .status-text.on { color: #34d399; }
-        .switch-container .status-text.off { color: #f87171; }
-        .mode-label {
-            font-size: 12px;
-            color: #94a3b8;
-            background: rgba(0,0,0,0.2);
-            padding: 4px 12px;
-            border-radius: 20px;
-        }
-        
-        .bulk-edit-section {
-            background: rgba(0,0,0,0.15);
-            border-radius: 16px;
-            padding: 20px;
-            margin-bottom: 20px;
-            border: 1px solid rgba(255,255,255,0.06);
-            display: block;
-        }
-        .bulk-edit-section.hidden { display: none; }
-        .bulk-edit-section .bulk-header {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 16px;
-            align-items: center;
-            margin-bottom: 16px;
-        }
-        .bulk-edit-section .bulk-header label { font-weight: 600; color: #94a3b8; }
-        .bulk-edit-section .bulk-header select {
-            padding: 10px 16px;
-            border-radius: 10px;
-            background: rgba(0,0,0,0.3);
-            color: white;
-            border: 1px solid rgba(255,255,255,0.1);
-            font-family: 'Inter', sans-serif;
-            flex: 1;
-            min-width: 200px;
-        }
-        body.light-mode .bulk-edit-section .bulk-header select { background: #f1f5f9; color: #1e293b; border-color: #cbd5e1; }
-        .bulk-edit-section .bulk-header .btn-sm {
-            padding: 10px 20px;
-            border: none;
-            border-radius: 10px;
-            font-weight: 700;
-            cursor: pointer;
-            font-family: 'Inter', sans-serif;
-            font-size: 13px;
-            transition: all 0.2s;
-        }
-        .bulk-edit-section .bulk-header .btn-sm:active { transform: scale(0.95); }
-        .bulk-edit-section .bulk-header .btn-save { background: #10b981; color: white; }
-        .bulk-edit-section .bulk-header .btn-save:hover { background: #059669; }
-        .bulk-edit-section .bulk-header .btn-reset { background: #ef4444; color: white; }
-        .bulk-edit-section .bulk-header .btn-reset:hover { background: #dc2626; }
-
-        .bulk-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(56px, 1fr));
-            gap: 6px;
-        }
-        .bulk-item {
-            background: rgba(0,0,0,0.2);
-            border-radius: 10px;
-            padding: 6px 4px;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.2s;
-            border: 1px solid rgba(255,255,255,0.06);
-            font-size: 12px;
-            font-weight: 600;
-            user-select: none;
-        }
-        .bulk-item:hover { transform: scale(1.05); background: rgba(255,255,255,0.05); }
-        .bulk-item.hadir { border-color: #34d399; color: #34d399; background: rgba(16,185,129,0.1); }
-        .bulk-item.alfa { border-color: #f87171; color: #f87171; background: rgba(239,68,68,0.05); }
-        .bulk-item .tgl { font-size: 10px; color: #94a3b8; display: block; margin-top: 2px; }
-        .bulk-footer {
-            grid-column: 1 / -1;
-            text-align: center;
-            color: #94a3b8;
-            font-size: 12px;
-            padding-top: 8px;
-            border-top: 1px solid rgba(255,255,255,0.06);
-        }
-        .bulk-placeholder { text-align: center; color: #64748b; padding: 20px 0; grid-column: 1 / -1; }
-        
-        .table-container {
-            background: rgba(255,255,255,0.04);
-            border-radius: 16px;
-            padding: 20px;
-            border: 1px solid rgba(255,255,255,0.06);
-            overflow-x: auto;
-        }
-        body.light-mode .table-container { background: white; border-color: rgba(0,0,0,0.06); }
-        .table-container h3 {
-            font-size: 16px;
-            font-weight: 700;
-            margin-bottom: 16px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        table { width: 100%; border-collapse: collapse; font-size: 13px; }
-        th, td { padding: 10px 12px; text-align: left; border-bottom: 1px solid rgba(255,255,255,0.06); }
-        body.light-mode th, body.light-mode td { border-bottom-color: #e2e8f0; }
-        th {
-            font-weight: 600;
-            color: #94a3b8;
-            font-size: 11px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            position: sticky;
-            top: 0;
-            background: rgba(15,23,42,0.95);
-        }
-        body.light-mode th { background: #f8fafc; color: #64748b; }
-        
-        th .date-header {
-            cursor: pointer;
-            padding: 4px 8px;
-            border-radius: 8px;
-            transition: all 0.2s;
-            display: inline-block;
-            font-size: 11px;
-        }
-        th .date-header:hover { background: rgba(168,85,247,0.2); }
-        th .date-header.libur { color: #60a5fa; }
-        th .date-header .libur-badge {
+        .summary-card .num.liburan { color: #a855f7; }
+        .summary-card .sub {
             font-size: 10px;
-            background: rgba(96,165,250,0.2);
-            color: #60a5fa;
-            padding: 1px 8px;
-            border-radius: 10px;
-            margin-left: 4px;
+            color: #475569;
+            margin-top: 2px;
         }
         
-        td .status-icon {
-            font-size: 18px;
-            display: inline-block;
-            width: 32px;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.2s;
-            padding: 4px 4px;
-            border-radius: 8px;
+        /* ===== DIVISI SUMMARY ===== */
+        .divisi-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 12px;
+            margin-bottom: 24px;
         }
-        td .status-icon:hover { transform: scale(1.2); background: rgba(255,255,255,0.1); }
-        td .status-icon.hadir { color: #34d399; }
-        td .status-icon.telat { color: #fb923c; }
-        td .status-icon.alfa { color: #f87171; }
-        td .status-icon.izin { color: #60a5fa; }
-        td .status-icon.libur { color: #60a5fa; cursor: default; }
-        td .status-icon.libur:hover { transform: none; background: none; }
-        
-        .status-icon.quick-edit-enabled { cursor: pointer; }
-        .status-icon.quick-edit-disabled { cursor: default; opacity: 0.5; }
-        .status-icon.quick-edit-disabled:hover { transform: none !important; background: none !important; }
-        
-        .clickable-name { color: #60a5fa; cursor: pointer; font-weight: 600; }
-        .clickable-name:hover { text-decoration: underline; }
-        
-        .badge-akum {
-            display: inline-block;
-            padding: 2px 12px;
+        .divisi-card {
+            background: rgba(255,255,255,0.03);
             border-radius: 12px;
-            font-weight: 700;
-            font-size: 13px;
-        }
-        .badge-akum.high { background: rgba(16,185,129,0.2); color: #34d399; }
-        .badge-akum.medium { background: rgba(251,146,60,0.2); color: #fb923c; }
-        .badge-akum.low { background: rgba(239,68,68,0.2); color: #f87171; }
-        
-        .stats-modal {
-            position: fixed;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(0,0,0,0.7);
-            backdrop-filter: blur(8px);
-            display: none;
-            justify-content: center;
-            align-items: center;
-            z-index: 9999;
-            padding: 20px;
-        }
-        .stats-modal.active { display: flex; }
-        
-        .stats-modal-content {
-            background: #1e293b;
-            border-radius: 24px;
-            padding: 32px;
-            width: 95%;
-            max-width: 900px;
-            max-height: 90vh;
-            overflow-y: auto;
+            padding: 14px 16px;
             border: 1px solid rgba(255,255,255,0.06);
-            box-shadow: 0 25px 50px rgba(0,0,0,0.5);
         }
-        body.light-mode .stats-modal-content { background: white; border-color: rgba(0,0,0,0.06); }
-        
-        .stats-modal-header {
+        body.light-mode .divisi-card { background: rgba(0,0,0,0.02); border-color: rgba(0,0,0,0.06); }
+        .divisi-card .nama {
+            font-size: 14px;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 6px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 20px;
-            padding-bottom: 12px;
-            border-bottom: 1px solid rgba(255,255,255,0.06);
         }
-        .stats-modal-header h2 { font-size: 20px; font-weight: 700; }
-        .stats-modal-close {
-            background: none;
-            border: none;
-            color: #94a3b8;
-            font-size: 28px;
-            cursor: pointer;
-        }
-        .stats-modal-close:hover { color: white; }
-        
-        .stats-summary-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-            gap: 12px;
-            margin-bottom: 20px;
-        }
-        .stats-summary-card {
-            background: rgba(0,0,0,0.2);
-            border-radius: 12px;
-            padding: 14px 18px;
-            text-align: center;
-            border: 1px solid rgba(255,255,255,0.06);
-        }
-        .stats-summary-card .num { font-size: 28px; font-weight: 800; }
-        .stats-summary-card .label { font-size: 11px; color: #94a3b8; margin-top: 2px; }
-        .stats-summary-card .num.tepat { color: #10b981; }
-        .stats-summary-card .num.terlambat { color: #f59e0b; }
-        .stats-summary-card .num.persen { color: #60a5fa; }
-        
-        .stats-table-container { overflow-x: auto; margin-top: 12px; }
-        .stats-table-container table { font-size: 12px; }
-        .stats-table-container th { background: rgba(168,85,247,0.15); color: #a855f7; font-size: 10px; }
-        .stats-table-container td .badge-tepat {
-            display: inline-block;
+        body.light-mode .divisi-card .nama { color: #1e293b; }
+        .divisi-card .nama .status-libur {
+            font-size: 10px;
+            background: rgba(168,85,247,0.2);
+            color: #a855f7;
             padding: 2px 12px;
             border-radius: 12px;
-            font-weight: 600;
-            font-size: 11px;
         }
-        .stats-table-container td .badge-tepat.on-time { background: rgba(16,185,129,0.15); color: #34d399; }
-        .stats-table-container td .badge-tepat.late { background: rgba(245,158,11,0.15); color: #fbbf24; }
-        .stats-table-container td .badge-tepat.very-late { background: rgba(239,68,68,0.15); color: #f87171; }
-        
-        .stats-filter {
+        .divisi-card .stats {
             display: flex;
-            flex-wrap: wrap;
             gap: 12px;
-            align-items: center;
-            margin-bottom: 16px;
-        }
-        .stats-filter select, .stats-filter input {
-            padding: 8px 14px;
-            border-radius: 10px;
-            border: 1px solid rgba(255,255,255,0.1);
-            background: rgba(0,0,0,0.3);
-            color: white;
-            font-family: 'Inter', sans-serif;
             font-size: 13px;
         }
-        body.light-mode .stats-filter select, body.light-mode .stats-filter input { background: #f1f5f9; color: #1e293b; border-color: #cbd5e1; }
-        .stats-filter select:focus, .stats-filter input:focus { outline: none; border-color: #a855f7; }
+        .divisi-card .stats .item { display: flex; align-items: center; gap: 4px; }
+        .divisi-card .stats .item .dot {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+        }
+        .divisi-card .stats .item .dot.hadir { background: #34d399; }
+        .divisi-card .stats .item .dot.telat { background: #fb923c; }
+        .divisi-card .stats .item .dot.alfa { background: #f87171; }
+        .divisi-card .stats .item .dot.libur { background: #a855f7; }
+        .divisi-card .stats .item .num { font-weight: 700; }
+        .divisi-card .stats .item .num.hadir { color: #34d399; }
+        .divisi-card .stats .item .num.telat { color: #fb923c; }
+        .divisi-card .stats .item .num.alfa { color: #f87171; }
         
-        .loading-text { text-align: center; color: #64748b; padding: 40px 0; font-size: 14px; }
-        .empty-text { text-align: center; color: #64748b; padding: 30px 0; font-size: 14px; }
+        /* ===== MENU GRID ===== */
+        .menu-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+        .menu-card {
+            background: rgba(255,255,255,0.04);
+            border-radius: 16px;
+            padding: 24px 20px;
+            border: 1px solid rgba(255,255,255,0.06);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+            text-decoration: none;
+            color: inherit;
+            display: block;
+        }
+        body.light-mode .menu-card { background: white; border-color: rgba(0,0,0,0.06); }
+        .menu-card:hover {
+            transform: translateY(-4px);
+            border-color: #a855f7;
+            box-shadow: 0 8px 30px rgba(168,85,247,0.15);
+        }
+        .menu-card .icon {
+            font-size: 32px;
+            margin-bottom: 10px;
+            display: block;
+        }
+        .menu-card .title {
+            font-size: 16px;
+            font-weight: 700;
+            color: white;
+        }
+        body.light-mode .menu-card .title { color: #1e293b; }
+        .menu-card .desc {
+            font-size: 12px;
+            color: #64748b;
+            margin-top: 4px;
+        }
+        .menu-card .badge-count {
+            display: inline-block;
+            background: #a855f7;
+            color: white;
+            font-size: 10px;
+            font-weight: 700;
+            padding: 2px 10px;
+            border-radius: 12px;
+            margin-top: 6px;
+        }
         
         .toast-custom {
             position: fixed;
@@ -523,27 +267,22 @@
             to { opacity: 1; transform: translateX(-50%) translateY(0); }
         }
         
+        .loading-text { text-align: center; color: #64748b; padding: 20px 0; font-size: 14px; }
+        .empty-text { text-align: center; color: #64748b; padding: 20px 0; font-size: 14px; }
+        
         @media (max-width: 768px) {
             .navbar { flex-wrap: wrap; gap: 10px; padding: 12px 16px; }
-            .nav-actions { flex-wrap: wrap; }
-            .filter-card { flex-direction: column; align-items: stretch; }
-            .filter-card input[type="date"] { width: 100%; }
+            .date-display { flex-direction: column; align-items: stretch; text-align: center; }
             .summary-grid { grid-template-columns: 1fr 1fr; }
-            .bulk-edit-section .bulk-header { flex-direction: column; align-items: stretch; }
-            .bulk-grid { grid-template-columns: repeat(auto-fill, minmax(48px, 1fr)); }
-            table { font-size: 11px; }
-            th, td { padding: 6px 8px; }
-            td .status-icon { font-size: 14px; width: 28px; }
-            th .date-header { font-size: 10px; padding: 2px 4px; }
-            .stats-modal-content { padding: 20px; margin: 10px; }
-            .stats-summary-grid { grid-template-columns: 1fr 1fr; }
+            .divisi-grid { grid-template-columns: 1fr 1fr; }
+            .menu-grid { grid-template-columns: 1fr 1fr; }
         }
         @media (max-width: 480px) {
             .summary-grid { grid-template-columns: 1fr; }
-            .bulk-grid { grid-template-columns: repeat(auto-fill, minmax(42px, 1fr)); }
-            .bulk-item { font-size: 10px; padding: 4px 2px; }
-            .switch-container { flex-wrap: wrap; gap: 8px; }
-            .stats-summary-grid { grid-template-columns: 1fr; }
+            .divisi-grid { grid-template-columns: 1fr; }
+            .menu-grid { grid-template-columns: 1fr; }
+            .nav-actions { flex-wrap: wrap; }
+            .menu-card { padding: 18px 14px; }
         }
     </style>
 </head>
@@ -568,33 +307,18 @@
 
 <div class="container">
 
-    <!-- FILTER PERIODE + TOMBOL AKSI -->
-    <div class="filter-card">
-        <label><i class="fas fa-calendar-alt"></i> Periode:</label>
-        <input type="date" id="startDate">
-        <span style="color:#64748b;">s/d</span>
-        <input type="date" id="endDate">
-        <button class="btn-primary" onclick="loadRekap()">
-            <i class="fas fa-search"></i> Tampilkan
-        </button>
-        <button class="btn-success" onclick="exportExcel()">
-            <i class="fas fa-file-excel"></i> Excel
-        </button>
-        <button class="btn-danger" onclick="exportPDF()">
-            <i class="fas fa-file-pdf"></i> PDF
-        </button>
-        <button class="btn-refresh" onclick="refreshData()">
-            <i class="fas fa-sync-alt"></i>
-        </button>
-        <button class="btn-crud" onclick="window.location.href='admin_crud.html'">
-            <i class="fas fa-users"></i> Kelola Karyawan
-        </button>
-        <button class="btn-print" onclick="cetakLaporan()">
-            <i class="fas fa-print"></i> Cetak Laporan
-        </button>
-        <button class="btn-stats" onclick="openStatsModal()">
-            <i class="fas fa-clock"></i> Statistik Ketepatan
-        </button>
+    <!-- DATE DISPLAY -->
+    <div class="date-display">
+        <div class="hari">
+            📅 <span id="hariNama">Senin</span>, <span id="hariTanggal">26 Agustus 2026</span>
+            <span class="tgl" id="hariStatus">(Hari Kerja)</span>
+        </div>
+        <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
+            <span class="badge-hari kerja" id="badgeHari">🟢 Hari Kerja</span>
+            <button class="btn-refresh" onclick="refreshData()">
+                <i class="fas fa-sync-alt"></i> Refresh
+            </button>
+        </div>
     </div>
 
     <!-- SUMMARY CARDS -->
@@ -602,142 +326,64 @@
         <div class="summary-card">
             <div class="num total" id="totalKaryawan">0</div>
             <div class="label">👥 Total Karyawan</div>
+            <div class="sub">Semua divisi</div>
         </div>
         <div class="summary-card">
             <div class="num hadir" id="totalHadir">0</div>
-            <div class="label">✅ Total Hadir</div>
+            <div class="label">✅ Hadir Hari Ini</div>
+            <div class="sub" id="subHadir">Sudah absen masuk</div>
         </div>
         <div class="summary-card">
             <div class="num telat" id="totalTelat">0</div>
-            <div class="label">⏰ Total Telat</div>
+            <div class="label">⏰ Terlambat</div>
+            <div class="sub" id="subTelat">Masuk > target jam</div>
         </div>
         <div class="summary-card">
             <div class="num alfa" id="totalAlfa">0</div>
-            <div class="label">❌ Total Alfa</div>
-        </div>
-        <div class="summary-card">
-            <div class="num liburan" id="totalLibur">0</div>
-            <div class="label">🗓️ Hari Libur</div>
-        </div>
-        <div class="summary-card">
-            <div class="num tepat" id="totalTepat">0</div>
-            <div class="label">✅ Tepat Waktu</div>
-        </div>
-        <div class="summary-card">
-            <div class="num terlambat" id="totalTerlambat">0</div>
-            <div class="label">⏰ Terlambat</div>
+            <div class="label">❌ Alfa</div>
+            <div class="sub" id="subAlfa">Belum absen masuk</div>
         </div>
     </div>
 
-    <!-- SAKLAR MODE + BULK EDIT SECTION -->
-    <div class="switch-container">
-        <label><i class="fas fa-exchange-alt"></i> Mode:</label>
-        <label class="switch">
-            <input type="checkbox" id="modeToggle" onchange="toggleMode()">
-            <span class="slider"></span>
-        </label>
-        <span class="status-text off" id="modeStatus">OFF</span>
-        <span class="mode-label" id="modeLabel">⚡ Edit Manual (Klik Ikon di Tabel)</span>
+    <!-- DIVISI SUMMARY -->
+    <div style="margin-bottom:8px;">
+        <h3 style="font-size:14px;font-weight:700;color:#94a3b8;margin-bottom:12px;">
+            <i class="fas fa-layer-group" style="color:#a855f7;"></i> Ringkasan per Divisi
+        </h3>
+    </div>
+    <div class="divisi-grid" id="divisiGrid">
+        <div class="loading-text"><i class="fas fa-spinner fa-pulse"></i> Memuat divisi...</div>
     </div>
 
-    <div class="bulk-edit-section hidden" id="bulkSection">
-        <div class="bulk-header">
-            <label><i class="fas fa-user-edit"></i> Pilih Karyawan:</label>
-            <select id="bulkKaryawan">
-                <option value="">-- Pilih Karyawan --</option>
-            </select>
-            <button class="btn-sm btn-save" onclick="bulkSimpan()">
-                <i class="fas fa-save"></i> Simpan Semua
-            </button>
-            <button class="btn-sm btn-reset" onclick="bulkReset()">
-                <i class="fas fa-undo"></i> Reset Alfa
-            </button>
-        </div>
-        <div class="bulk-grid" id="bulkGrid">
-            <div class="bulk-placeholder">Pilih karyawan untuk mulai edit</div>
-        </div>
-        <div style="margin-top:10px;font-size:11px;color:#64748b;">
-            💡 Klik kotak untuk toggle status (✅ Hadir / ❌ Alfa) &bull; 
-            📌 Setelah selesai, klik <strong>"Simpan Semua"</strong>
-        </div>
+    <!-- MENU GRID -->
+    <div style="margin:24px 0 12px;">
+        <h3 style="font-size:14px;font-weight:700;color:#94a3b8;margin-bottom:12px;">
+            <i class="fas fa-bars" style="color:#a855f7;"></i> Menu Utama
+        </h3>
+    </div>
+    <div class="menu-grid">
+        <a href="admin_crud.html" class="menu-card">
+            <span class="icon">👥</span>
+            <div class="title">Kelola Karyawan</div>
+            <div class="desc">Tambah, edit, hapus karyawan</div>
+        </a>
+        <a href="admin_rekap.html" class="menu-card">
+            <span class="icon">📊</span>
+            <div class="title">Rekap Absensi</div>
+            <div class="desc">Lihat rekap per periode</div>
+        </a>
+        <a href="admin_edit_absensi.html" class="menu-card">
+            <span class="icon">✏️</span>
+            <div class="title">Edit Absensi</div>
+            <div class="desc">Edit status absen karyawan</div>
+        </a>
+        <a href="admin_riwayat.html" class="menu-card">
+            <span class="icon">📋</span>
+            <div class="title">Riwayat Absensi</div>
+            <div class="desc">Lihat riwayat semua karyawan</div>
+        </a>
     </div>
 
-    <!-- TABLE REKAP -->
-    <div class="table-container">
-        <h3><i class="fas fa-table" style="color:#a855f7;"></i> Rekapitulasi Absensi</h3>
-        <div id="tableWrapper">
-            <div class="loading-text"><i class="fas fa-spinner fa-pulse"></i> Memuat data...</div>
-        </div>
-    </div>
-</div>
-
-<!-- MODAL STATISTIK KETEPATAN WAKTU -->
-<div class="stats-modal" id="statsModal">
-    <div class="stats-modal-content">
-        <div class="stats-modal-header">
-            <h2><i class="fas fa-clock" style="color:#8b5cf6;"></i> Statistik Ketepatan Waktu</h2>
-            <button class="stats-modal-close" onclick="closeStatsModal()">&times;</button>
-        </div>
-        
-        <div class="stats-filter">
-            <select id="statsDivisiFilter" onchange="filterStats()">
-                <option value="">Semua Divisi</option>
-            </select>
-            <select id="statsBulanFilter" onchange="filterStats()">
-                <option value="0">Bulan Ini</option>
-                <option value="1">1 Bulan Lalu</option>
-                <option value="2">2 Bulan Lalu</option>
-                <option value="3">3 Bulan Lalu</option>
-            </select>
-            <input type="date" id="statsStartDate" onchange="filterStats()" placeholder="Mulai">
-            <span style="color:#64748b;">s/d</span>
-            <input type="date" id="statsEndDate" onchange="filterStats()" placeholder="Selesai">
-            <button class="btn-primary" onclick="loadStatsData()" style="padding:8px 16px;font-size:13px;">
-                <i class="fas fa-search"></i> Terapkan
-            </button>
-        </div>
-        
-        <div class="stats-summary-grid" id="statsSummaryGrid">
-            <div class="stats-summary-card">
-                <div class="num tepat" id="statsTotalTepat">0</div>
-                <div class="label">✅ Tepat Waktu</div>
-            </div>
-            <div class="stats-summary-card">
-                <div class="num terlambat" id="statsTotalTerlambat">0</div>
-                <div class="label">⏰ Terlambat</div>
-            </div>
-            <div class="stats-summary-card">
-                <div class="num persen" id="statsPersentase">0%</div>
-                <div class="label">📊 Persentase Tepat Waktu</div>
-            </div>
-            <div class="stats-summary-card">
-                <div class="num persen" id="statsTotalKaryawan">0</div>
-                <div class="label">👥 Total Relawan</div>
-            </div>
-        </div>
-        
-        <div class="stats-table-container">
-            <table>
-                <thead>
-                    <tr>
-                        <th>No</th>
-                        <th>Nama</th>
-                        <th>Divisi</th>
-                        <th>Total Absen</th>
-                        <th>Tepat Waktu</th>
-                        <th>Terlambat</th>
-                        <th>Persentase</th>
-                        <th>Kategori</th>
-                    </tr>
-                </thead>
-                <tbody id="statsTableBody">
-                    <tr><td colspan="8" style="text-align:center;padding:30px;color:#64748b;">
-                        <i class="fas fa-spinner fa-pulse"></i> Memuat data...
-                    </td></tr>
-                </tbody>
-            </table>
-        </div>
-    </div>
 </div>
 
 <script>
@@ -756,7 +402,7 @@
     document.getElementById('adminName').textContent = localStorage.getItem('admin_username') || 'Admin';
 
     // ============================================================
-    // FUNGSI TANGGAL INDONESIA (GMT+7)
+    // FUNGSI TANGGAL
     // ============================================================
     function getTodayIndonesia() {
         var now = new Date();
@@ -764,39 +410,32 @@
         return new Date(now.getTime() + offset).toISOString().split('T')[0];
     }
 
-    function getDateIndonesia(date) {
-        var offset = 7 * 60 * 60 * 1000;
-        return new Date(date.getTime() + offset).toISOString().split('T')[0];
+    function getDayName(dateStr) {
+        var d = new Date(dateStr + 'T00:00:00');
+        var days = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
+        return days[d.getDay()];
     }
 
-    function parseDateIndonesia(dateStr) {
-        var parts = dateStr.split('-');
-        return new Date(parts[0], parts[1] - 1, parts[2]);
+    function getDayIndex(dateStr) {
+        var d = new Date(dateStr + 'T00:00:00');
+        return d.getDay(); // 0=Minggu, 1=Senin, dst
     }
 
-    function setDefaultDates() {
-        var todayStr = getTodayIndonesia();
-        var end = todayStr;
-        var today = new Date();
-        var offset = 7 * 60 * 60 * 1000;
-        var localToday = new Date(today.getTime() + offset);
-        var startDate = new Date(localToday);
-        startDate.setDate(startDate.getDate() - 6);
-        var start = getDateIndonesia(startDate);
-        document.getElementById('startDate').value = start;
-        document.getElementById('endDate').value = end;
+    function formatTanggal(dateStr) {
+        var d = new Date(dateStr + 'T00:00:00');
+        var bulan = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
+        return d.getDate() + ' ' + bulan[d.getMonth()] + ' ' + d.getFullYear();
     }
-    setDefaultDates();
 
-    // ============================================================
-    // VARIABLES
-    // ============================================================
-    var currentData = [];
-    var hariLiburMap = {};
-    var bulkKaryawanId = '';
-    var bulkData = {};
-    var isBulkMode = false;
-    var allStatsData = [];
+    var hariMap = {
+        0: 'minggu',
+        1: 'senin',
+        2: 'selasa',
+        3: 'rabu',
+        4: 'kamis',
+        5: 'jumat',
+        6: 'sabtu'
+    };
 
     // ============================================================
     // THEME
@@ -840,1177 +479,195 @@
     }
 
     // ============================================================
-    // LOAD HARI LIBUR
+    // LOAD DASHBOARD DATA
     // ============================================================
-    async function loadHariLibur() {
-        try {
-            var response = await fetch(
-                SUPABASE_URL + '/rest/v1/hari_libur?select=tanggal,divisi',
-                {
-                    headers: {
-                        'apikey': SUPABASE_ANON_KEY,
-                        'Authorization': 'Bearer ' + SUPABASE_ANON_KEY
-                    }
-                }
-            );
-            var data = await response.json();
-            hariLiburMap = {};
-            data.forEach(function(item) {
-                var key = item.tanggal + '|' + item.divisi;
-                hariLiburMap[key] = true;
-            });
-            document.getElementById('totalLibur').textContent = Object.keys(hariLiburMap).length;
-        } catch(e) {
-            hariLiburMap = {};
-        }
-    }
+    async function loadDashboard() {
+        var today = getTodayIndonesia();
+        var dayIndex = getDayIndex(today);
+        var dayName = getDayName(today);
+        var dayKey = hariMap[dayIndex];
 
-    // ============================================================
-    // LOAD BULK KARYAWAN
-    // ============================================================
-    async function loadBulkKaryawan() {
-        var select = document.getElementById('bulkKaryawan');
-        try {
-            var response = await fetch(SUPABASE_URL + '/rest/v1/karyawan?select=id,nama&order=nama', {
-                headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': 'Bearer ' + SUPABASE_ANON_KEY }
-            });
-            var data = await response.json();
-            select.innerHTML = '<option value="">-- Pilih Karyawan --</option>';
-            data.forEach(function(k) {
-                select.innerHTML += '<option value="' + k.id + '">' + k.nama + '</option>';
-            });
-        } catch(e) {
-            console.error('Gagal load karyawan:', e);
-        }
-    }
-
-    // ============================================================
-    // LOAD BULK GRID
-    // ============================================================
-    async function loadBulkGrid() {
-        if (!isBulkMode) return;
-
-        var select = document.getElementById('bulkKaryawan');
-        var id = select.value;
-        if (!id) {
-            document.getElementById('bulkGrid').innerHTML = '<div class="bulk-placeholder">Pilih karyawan untuk mulai edit</div>';
-            return;
-        }
-        bulkKaryawanId = id;
-        
-        var start = document.getElementById('startDate').value;
-        var end = document.getElementById('endDate').value;
-        if (!start || !end) { showToast('Pilih periode dulu!', 'warning'); return; }
-        
-        var grid = document.getElementById('bulkGrid');
-        grid.innerHTML = '<div class="bulk-placeholder"><i class="fas fa-spinner fa-pulse"></i> Memuat...</div>';
-        
-        try {
-            var response = await fetch(
-                SUPABASE_URL + '/rest/v1/absensi?select=tanggal,status&karyawan_id=eq.' + id + '&tanggal=gte.' + start + '&tanggal=lte.' + end,
-                {
-                    headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': 'Bearer ' + SUPABASE_ANON_KEY }
-                }
-            );
-            var absensi = await response.json();
-            
-            var statusMap = {};
-            absensi.forEach(function(a) { statusMap[a.tanggal] = a.status || 'hadir'; });
-            
-            var html = '';
-            var dStart = parseDateIndonesia(start);
-            var dEnd = parseDateIndonesia(end);
-            var total = 0, hadir = 0;
-            
-            for (var d = new Date(dStart); d <= dEnd; d.setDate(d.getDate() + 1)) {
-                var tglStr = getDateIndonesia(d);
-                var status = statusMap[tglStr] || 'alfa';
-                if (status === 'hadir') hadir++;
-                total++;
-                
-                var cls = status === 'hadir' ? 'hadir' : 'alfa';
-                var icon = status === 'hadir' ? '✅' : '❌';
-                var hari = d.getDate();
-                
-                html += '<div class="bulk-item ' + cls + '" onclick="toggleBulk(\'' + tglStr + '\')" data-tanggal="' + tglStr + '" data-status="' + status + '">';
-                html += icon;
-                html += '<span class="tgl">' + hari + '</span>';
-                html += '</div>';
-            }
-            
-            html += '<div class="bulk-footer">Total: ' + total + ' hari | ✅ Hadir: ' + hadir + ' | ❌ Alfa: ' + (total - hadir) + '</div>';
-            grid.innerHTML = html;
-            
-            document.querySelectorAll('.bulk-item').forEach(function(el) {
-                var tgl = el.dataset.tanggal;
-                var status = el.dataset.status;
-                bulkData[tgl] = status;
-            });
-            
-        } catch(e) {
-            console.error('Error load grid:', e);
-            grid.innerHTML = '<div class="bulk-placeholder" style="color:#ef4444;">Gagal memuat data</div>';
-        }
-    }
-
-    // ============================================================
-    // TOGGLE BULK
-    // ============================================================
-    function toggleBulk(tanggal) {
-        if (!isBulkMode) return;
-
-        var el = document.querySelector('.bulk-item[data-tanggal="' + tanggal + '"]');
-        if (!el) return;
-        
-        var current = el.dataset.status;
-        var newStatus = current === 'hadir' ? 'alfa' : 'hadir';
-        el.dataset.status = newStatus;
-        bulkData[tanggal] = newStatus;
-        
-        el.className = 'bulk-item ' + newStatus;
-        var parts = tanggal.split('-');
-        var hari = parts[2];
-        el.innerHTML = (newStatus === 'hadir' ? '✅' : '❌') + ' <span class="tgl">' + hari + '</span>';
-        
-        updateBulkCounter();
-    }
-
-    function updateBulkCounter() {
-        var items = document.querySelectorAll('.bulk-item');
-        var hadir = 0, total = 0;
-        items.forEach(function(el) {
-            total++;
-            if (el.dataset.status === 'hadir') hadir++;
-        });
-        var footer = document.querySelector('.bulk-footer');
-        if (footer) {
-            footer.textContent = 'Total: ' + total + ' hari | ✅ Hadir: ' + hadir + ' | ❌ Alfa: ' + (total - hadir);
-        }
-    }
-
-    // ============================================================
-    // SAKLAR MODE
-    // ============================================================
-    function toggleMode() {
-        var toggle = document.getElementById('modeToggle');
-        var statusText = document.getElementById('modeStatus');
-        var label = document.getElementById('modeLabel');
-        var bulkSection = document.getElementById('bulkSection');
-        
-        isBulkMode = toggle.checked;
-
-        if (isBulkMode) {
-            statusText.textContent = 'ON';
-            statusText.className = 'status-text on';
-            label.textContent = '📊 Bulk Edit (Edit Banyak Hari Sekaligus)';
-            bulkSection.classList.remove('hidden');
-            
-            document.querySelectorAll('.status-icon').forEach(function(el) {
-                el.classList.add('quick-edit-disabled');
-                el.classList.remove('quick-edit-enabled');
-                el.style.cursor = 'default';
-                el.onclick = null;
-            });
-            
-            loadBulkGrid();
-            
-        } else {
-            statusText.textContent = 'OFF';
-            statusText.className = 'status-text off';
-            label.textContent = '⚡ Edit Manual (Klik Ikon di Tabel)';
-            bulkSection.classList.add('hidden');
-            
-            document.querySelectorAll('.status-icon').forEach(function(el) {
-                el.classList.remove('quick-edit-disabled');
-                el.classList.add('quick-edit-enabled');
-                el.style.cursor = 'pointer';
-            });
-        }
-    }
-
-    // ============================================================
-    // BULK SIMPAN
-    // ============================================================
-    async function bulkSimpan() {
-        if (!isBulkMode) {
-            showToast('Mode Bulk Edit tidak aktif!', 'warning');
-            return;
-        }
-        if (!bulkKaryawanId) { showToast('Pilih karyawan dulu!', 'warning'); return; }
-        
-        var updates = [];
-        document.querySelectorAll('.bulk-item').forEach(function(el) {
-            var tanggal = el.dataset.tanggal;
-            var status = el.dataset.status;
-            updates.push({ tanggal: tanggal, status: status });
-        });
-        
-        if (updates.length === 0) { showToast('Tidak ada data', 'warning'); return; }
-        
-        var nama = document.getElementById('bulkKaryawan').selectedOptions[0]?.text || 'Karyawan';
-        if (!confirm('Simpan ' + updates.length + ' data untuk ' + nama + '?')) return;
-        
-        showToast('🔄 Menyimpan data...', 'info');
-        
-        try {
-            var success = 0, failed = 0;
-            
-            for (var i = 0; i < updates.length; i++) {
-                var item = updates[i];
-                var checkRes = await fetch(
-                    SUPABASE_URL + '/rest/v1/absensi?select=id&karyawan_id=eq.' + bulkKaryawanId + '&tanggal=eq.' + item.tanggal,
-                    {
-                        headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': 'Bearer ' + SUPABASE_ANON_KEY }
-                    }
-                );
-                var existing = await checkRes.json();
-                
-                var payload = {
-                    karyawan_id: bulkKaryawanId,
-                    tanggal: item.tanggal,
-                    status: item.status,
-                    jam_masuk: item.status === 'hadir' ? '08:00' : null,
-                    jam_pulang: item.status === 'hadir' ? '17:00' : null
-                };
-                
-                var res;
-                if (existing.length > 0) {
-                    res = await fetch(
-                        SUPABASE_URL + '/rest/v1/absensi?id=eq.' + existing[0].id,
-                        {
-                            method: 'PATCH',
-                            headers: {
-                                'apikey': SUPABASE_ANON_KEY,
-                                'Authorization': 'Bearer ' + SUPABASE_ANON_KEY,
-                                'Content-Type': 'application/json'
-                            },
-                            body: JSON.stringify(payload)
-                        }
-                    );
-                } else {
-                    res = await fetch(
-                        SUPABASE_URL + '/rest/v1/absensi',
-                        {
-                            method: 'POST',
-                            headers: {
-                                'apikey': SUPABASE_ANON_KEY,
-                                'Authorization': 'Bearer ' + SUPABASE_ANON_KEY,
-                                'Content-Type': 'application/json'
-                            },
-                            body: JSON.stringify(payload)
-                        }
-                    );
-                }
-                
-                if (res.ok) success++;
-                else failed++;
-            }
-            
-            showToast((success > 0 ? '✅ ' + success + ' data tersimpan' : '') + (failed > 0 ? ', ' + failed + ' gagal' : ''), failed > 0 ? 'warning' : 'success');
-            if (success > 0) {
-                loadBulkGrid();
-                loadRekap();
-            }
-            
-        } catch(e) {
-            console.error('Bulk save error:', e);
-            showToast('❌ Gagal menyimpan data', 'error');
-        }
-    }
-
-    // ============================================================
-    // BULK RESET
-    // ============================================================
-    function bulkReset() {
-        if (!isBulkMode) {
-            showToast('Mode Bulk Edit tidak aktif!', 'warning');
-            return;
-        }
-        if (!bulkKaryawanId) { showToast('Pilih karyawan dulu!', 'warning'); return; }
-        if (!confirm('Reset semua status ke ALFA untuk karyawan ini?')) return;
-        
-        document.querySelectorAll('.bulk-item').forEach(function(el) {
-            var tgl = el.dataset.tanggal;
-            el.dataset.status = 'alfa';
-            bulkData[tgl] = 'alfa';
-            el.className = 'bulk-item alfa';
-            var parts = tgl.split('-');
-            var hari = parts[2];
-            el.innerHTML = '❌ <span class="tgl">' + hari + '</span>';
-        });
-        
-        updateBulkCounter();
-        showToast('🔄 Semua direset ke Alfa. Klik Simpan untuk menyimpan.', 'info');
-    }
-
-    // ============================================================
-    // QUICK EDIT - MODAL
-    // ============================================================
-    function quickEdit(id, tanggal) {
-        if (isBulkMode) {
-            showToast('Mode Bulk aktif, gunakan grid di atas!', 'warning');
-            return;
-        }
-        
-        var karyawan = currentData.find(function(k) { return k.id === id; });
-        if (!karyawan) { showToast('Data tidak ditemukan', 'error'); return; }
-        
-        var dateData = karyawan.dates.find(function(d) { return d.tanggal === tanggal; });
-        if (!dateData) { showToast('Data tidak ditemukan', 'error'); return; }
-        if (dateData.isLibur) { showToast('Hari libur tidak bisa diedit', 'warning'); return; }
-        
-        var d = parseDateIndonesia(tanggal);
-        var tglDisplay = d.getDate() + '/' + (d.getMonth()+1) + '/' + d.getFullYear();
-        var currentStatus = dateData.status;
-        
-        var statusOptions = [
-            { value: 'hadir', label: '✅ Hadir', color: '#34d399' },
-            { value: 'izin', label: '📝 Izin', color: '#60a5fa' },
-            { value: 'alfa', label: '❌ Alfa', color: '#f87171' }
-        ];
-        
-        var currentJamMasuk = dateData.jamMasuk !== '-' ? dateData.jamMasuk : '';
-        var currentJamPulang = dateData.jamPulang !== '-' ? dateData.jamPulang : '';
-        
-        var html = '';
-        html += '<div style="margin-bottom:12px;font-weight:600;color:white;">';
-        html += '<div>👤 ' + karyawan.nama + '</div>';
-        html += '<div style="font-size:13px;color:#94a3b8;font-weight:400;">📅 ' + tglDisplay + '</div>';
-        html += '<div style="font-size:12px;color:#94a3b8;font-weight:400;margin-top:4px;">Status saat ini: <span style="color:' + (statusOptions.find(function(s) { return s.value === currentStatus; })?.color || '#94a3b8') + ';font-weight:600;">';
-        var found = statusOptions.find(function(s) { return s.value === currentStatus; });
-        html += (found ? found.label : currentStatus);
-        html += '</span></div></div>';
-        
-        html += '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin:12px 0;">';
-        
-        statusOptions.forEach(function(opt) {
-            var isActive = opt.value === currentStatus;
-            html += '<button onclick="setStatusQuick(\'' + id + '\',\'' + tanggal + '\',\'' + opt.value + '\')" style="padding:14px;border-radius:12px;border:2px solid ' + (isActive ? opt.color : 'rgba(255,255,255,0.1)') + ';background:' + (isActive ? opt.color + '22' : 'rgba(0,0,0,0.2)') + ';color:' + (isActive ? opt.color : '#94a3b8') + ';font-size:15px;font-weight:700;cursor:pointer;transition:all 0.2s;font-family:Inter,sans-serif;display:flex;align-items:center;justify-content:center;gap:8px;">';
-            html += opt.label;
-            html += '</button>';
-        });
-        
-        html += '</div>';
-        html += '<div style="grid-column:1/-1;display:flex;gap:10px;margin-top:8px;">';
-        html += '<div style="flex:1;"><label style="font-size:11px;color:#94a3b8;">Jam Masuk</label>';
-        html += '<input type="time" id="editJamMasuk" value="' + currentJamMasuk + '" style="width:100%;padding:8px 12px;border-radius:8px;background:rgba(0,0,0,0.3);color:white;border:1px solid rgba(255,255,255,0.1);font-family:Inter,sans-serif;">';
-        html += '</div>';
-        html += '<div style="flex:1;"><label style="font-size:11px;color:#94a3b8;">Jam Pulang</label>';
-        html += '<input type="time" id="editJamPulang" value="' + currentJamPulang + '" style="width:100%;padding:8px 12px;border-radius:8px;background:rgba(0,0,0,0.3);color:white;border:1px solid rgba(255,255,255,0.1);font-family:Inter,sans-serif;">';
-        html += '</div></div>';
-        html += '<div style="display:flex;gap:12px;justify-content:flex-end;margin-top:12px;padding-top:12px;border-top:1px solid rgba(255,255,255,0.06);">';
-        html += '<button onclick="closeQuickModal()" style="padding:10px 20px;border:none;border-radius:10px;background:#1e293b;color:#94a3b8;cursor:pointer;font-weight:600;font-family:Inter,sans-serif;">Batal</button>';
-        html += '</div>';
-        
-        var modal = document.createElement('div');
-        modal.id = 'quickModal';
-        modal.style.cssText = 'position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.7);backdrop-filter:blur(8px);display:flex;justify-content:center;align-items:center;z-index:9999;';
-        modal.innerHTML = '<div style="background:#1e293b;border-radius:24px;padding:32px;width:90%;max-width:400px;border:1px solid rgba(255,255,255,0.06);">' +
-            '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">' +
-            '<h3 style="font-size:18px;font-weight:700;color:white;">✏️ Edit Absensi</h3>' +
-            '<button onclick="closeQuickModal()" style="background:none;border:none;color:#94a3b8;font-size:24px;cursor:pointer;">&times;</button>' +
-            '</div><div>' + html + '</div></div>';
-        document.body.appendChild(modal);
-    }
-
-    // ============================================================
-    // SET STATUS DARI QUICK MODAL
-    // ============================================================
-    async function setStatusQuick(id, tanggal, status) {
-        try {
-            showToast('🔄 Menyimpan...', 'info');
-            
-            var karyawan = currentData.find(function(k) { return k.id === id; });
-            if (!karyawan) { showToast('Data tidak ditemukan', 'error'); return; }
-            
-            var dateData = karyawan.dates.find(function(d) { return d.tanggal === tanggal; });
-            if (!dateData) { showToast('Data tidak ditemukan', 'error'); return; }
-            
-            var jamMasukInput = document.getElementById('editJamMasuk')?.value || null;
-            var jamPulangInput = document.getElementById('editJamPulang')?.value || null;
-            
-            var jamMasuk = jamMasukInput;
-            var jamPulang = jamPulangInput;
-            
-            if (!jamMasuk && status === 'hadir') jamMasuk = '08:00';
-            if (!jamPulang && status === 'hadir') jamPulang = '17:00';
-            if (status === 'izin' || status === 'alfa') {
-                jamMasuk = null;
-                jamPulang = null;
-            }
-            
-            var payload = {
-                status: status,
-                jam_masuk: jamMasuk,
-                jam_pulang: jamPulang
-            };
-            
-            var res;
-            if (dateData.absenId) {
-                res = await fetch(
-                    SUPABASE_URL + '/rest/v1/absensi?id=eq.' + dateData.absenId,
-                    {
-                        method: 'PATCH',
-                        headers: {
-                            'apikey': SUPABASE_ANON_KEY,
-                            'Authorization': 'Bearer ' + SUPABASE_ANON_KEY,
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify(payload)
-                    }
-                );
-            } else {
-                var insertPayload = {
-                    karyawan_id: id,
-                    tanggal: tanggal,
-                    status: status,
-                    jam_masuk: jamMasuk,
-                    jam_pulang: jamPulang
-                };
-                res = await fetch(
-                    SUPABASE_URL + '/rest/v1/absensi',
-                    {
-                        method: 'POST',
-                        headers: {
-                            'apikey': SUPABASE_ANON_KEY,
-                            'Authorization': 'Bearer ' + SUPABASE_ANON_KEY,
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify(insertPayload)
-                    }
-                );
-            }
-            
-            var responseText = await res.text();
-            
-            if (res.ok) {
-                var statusLabel = { hadir: 'Hadir', izin: 'Izin', alfa: 'Alfa' };
-                showToast('✅ Status diubah menjadi ' + (statusLabel[status] || status) + '!', 'success');
-                closeQuickModal();
-                loadRekap();
-            } else {
-                var errorMsg = responseText;
-                try {
-                    var json = JSON.parse(responseText);
-                    errorMsg = json.message || json.error || responseText;
-                } catch(e) {}
-                showToast('❌ Gagal: ' + errorMsg, 'error');
-            }
-        } catch(e) {
-            console.error('Quick edit error:', e);
-            showToast('❌ Gagal koneksi ke server', 'error');
-        }
-    }
-
-    function closeQuickModal() {
-        var modal = document.getElementById('quickModal');
-        if (modal) modal.remove();
-    }
-
-    // ============================================================
-    // MODAL HARI LIBUR
-    // ============================================================
-    function openModalLibur(tanggal) {
-        var divisiList = [];
-        currentData.forEach(function(row) {
-            if (row.divisi && row.divisi !== '-' && divisiList.indexOf(row.divisi) === -1) {
-                divisiList.push(row.divisi);
-            }
-        });
-        
-        if (divisiList.length === 0) {
-            showToast('Tidak ada divisi untuk diliburkan', 'warning');
-            return;
-        }
-        
-        var html = '<div style="margin-bottom:12px;font-weight:600;">🗓️ ' + formatTanggal(tanggal) + '</div>';
-        html += '<div style="display:flex;flex-direction:column;gap:8px;">';
-        
-        divisiList.forEach(function(d) {
-            var isLibur = hariLiburMap[tanggal + '|' + d] || false;
-            var status = isLibur ? '🔵 LIBUR' : '✅ BUKA';
-            var bg = isLibur ? 'rgba(96,165,250,0.2)' : 'rgba(16,185,129,0.1)';
-            html += '<button onclick="toggleLiburDivisi(\'' + tanggal + '\',\'' + d + '\')" style="padding:12px 16px;border-radius:10px;border:1px solid rgba(255,255,255,0.1);background:' + bg + ';color:white;font-size:14px;font-weight:600;cursor:pointer;display:flex;justify-content:space-between;align-items:center;font-family:Inter,sans-serif;width:100%;">';
-            html += '<span>' + d + '</span>';
-            html += '<span style="font-size:12px;color:#94a3b8;">' + status + '</span>';
-            html += '</button>';
-        });
-        html += '</div>';
-        html += '<div style="margin-top:16px;display:flex;gap:12px;justify-content:flex-end;">';
-        html += '<button onclick="closeModalLibur()" style="padding:10px 20px;border:none;border-radius:10px;background:#1e293b;color:#94a3b8;cursor:pointer;font-weight:600;">Tutup</button>';
-        html += '</div>';
-        
-        var modal = document.createElement('div');
-        modal.id = 'modalLibur';
-        modal.style.cssText = 'position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.7);backdrop-filter:blur(8px);display:flex;justify-content:center;align-items:center;z-index:9999;';
-        modal.innerHTML = '<div style="background:#1e293b;border-radius:24px;padding:32px;width:90%;max-width:400px;border:1px solid rgba(255,255,255,0.06);max-height:90vh;overflow-y:auto;">' +
-            '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">' +
-            '<h3 style="font-size:18px;font-weight:700;">📌 Pilih Divisi Libur</h3>' +
-            '<button onclick="closeModalLibur()" style="background:none;border:none;color:#94a3b8;font-size:24px;cursor:pointer;">&times;</button>' +
-            '</div><div>' + html + '</div></div>';
-        document.body.appendChild(modal);
-    }
-
-    async function toggleLiburDivisi(tanggal, divisi) {
-        if (!divisi || divisi === '') {
-            showToast('❌ Divisi tidak valid!', 'error');
-            return;
-        }
-        
-        var key = tanggal + '|' + divisi;
-        var isLibur = hariLiburMap[key] || false;
-        
-        try {
-            if (isLibur) {
-                await fetch(
-                    SUPABASE_URL + '/rest/v1/hari_libur?tanggal=eq.' + tanggal + '&divisi=eq.' + divisi,
-                    {
-                        method: 'DELETE',
-                        headers: {
-                            'apikey': SUPABASE_ANON_KEY,
-                            'Authorization': 'Bearer ' + SUPABASE_ANON_KEY
-                        }
-                    }
-                );
-                delete hariLiburMap[key];
-                showToast('🗓️ Libur dibatalkan untuk ' + divisi, 'success');
-            } else {
-                await fetch(
-                    SUPABASE_URL + '/rest/v1/hari_libur',
-                    {
-                        method: 'POST',
-                        headers: {
-                            'apikey': SUPABASE_ANON_KEY,
-                            'Authorization': 'Bearer ' + SUPABASE_ANON_KEY,
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify({
-                            tanggal: tanggal,
-                            divisi: divisi,
-                            keterangan: 'Libur'
-                        })
-                    }
-                );
-                hariLiburMap[key] = true;
-                showToast('🗓️ ' + divisi + ' diliburkan', 'success');
-            }
-            
-            closeModalLibur();
-            document.getElementById('totalLibur').textContent = Object.keys(hariLiburMap).length;
-            loadRekap();
-        } catch(e) {
-            showToast('Gagal menyimpan', 'error');
-        }
-    }
-
-    function closeModalLibur() {
-        var modal = document.getElementById('modalLibur');
-        if (modal) modal.remove();
-    }
-
-    function formatTanggal(tgl) {
-        var d = parseDateIndonesia(tgl);
-        var bulan = ['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agu','Sep','Okt','Nov','Des'];
-        return d.getDate() + ' ' + bulan[d.getMonth()] + ' ' + d.getFullYear();
-    }
-
-    function openDetail(id) {
-        if (isBulkMode) {
-            showToast('Mode Bulk aktif, gunakan grid di atas!', 'info');
-            return;
-        }
-        
-        var karyawan = currentData.find(function(k) { return k.id === id; });
-        if (!karyawan) { showToast('Data tidak ditemukan', 'error'); return; }
-        
-        var firstDate = karyawan.dates.find(function(d) { return !d.isLibur; });
-        if (firstDate) {
-            quickEdit(id, firstDate.tanggal);
-        } else {
-            showToast('✅ Semua hari libur!', 'info');
-        }
-    }
-
-    // ============================================================
-    // CETAK LAPORAN - FIXED!
-    // ============================================================
-    function cetakLaporan() {
-        var start = document.getElementById('startDate').value;
-        var end = document.getElementById('endDate').value;
-        if (!start || !end) { 
-            showToast('Pilih periode dulu!', 'warning'); 
-            return; 
-        }
-        
-        var dStart = new Date(start + 'T00:00:00');
-        var dEnd = new Date(end + 'T00:00:00');
-        var bulan = ['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
-        var periode = dStart.getDate() + ' ' + bulan[dStart.getMonth()] + ' ' + dStart.getFullYear() + ' - ' + dEnd.getDate() + ' ' + bulan[dEnd.getMonth()] + ' ' + dEnd.getFullYear();
-        
-        var now = new Date();
-        var tglCetak = now.getDate() + ' ' + bulan[now.getMonth()] + ' ' + now.getFullYear();
-        
-        var totalKaryawan = document.getElementById('totalKaryawan').textContent || '0';
-        var totalHadir = document.getElementById('totalHadir').textContent || '0';
-        var totalAlfa = document.getElementById('totalAlfa').textContent || '0';
-        var totalLibur = document.getElementById('totalLibur').textContent || '0';
-        
-        var table = document.querySelector('.table-container table');
-        if (!table) { 
-            showToast('Tidak ada data untuk dicetak', 'warning'); 
-            return; 
-        }
-        
-        var tableClone = table.cloneNode(true);
-        var cells = tableClone.querySelectorAll('td .status-icon');
-        cells.forEach(function(el) {
-            var parent = el.parentElement;
-            var text = el.textContent.trim();
-            var status = 'kosong';
-            
-            if (text === '✅') status = 'hadir';
-            else if (text === '❌') status = 'alfa';
-            else if (text === '📝') status = 'izin';
-            else if (text === '🔵' || text === '🗓️') status = 'libur';
-            else if (text === '⏰') status = 'kosong';
-            
-            var statusMap = {
-                hadir: { label: 'Hadir', icon: '✅', cls: 'hadir' },
-                alfa: { label: 'Alfa', icon: '❌', cls: 'alfa' },
-                izin: { label: 'Izin', icon: '📝', cls: 'izin' },
-                libur: { label: 'Libur', icon: '🗓️', cls: 'libur' },
-                kosong: { label: '-', icon: '', cls: 'kosong' }
-            };
-            
-            var info = statusMap[status] || statusMap.kosong;
-            parent.innerHTML = '<span class="status ' + info.cls + '"><span class="icon">' + info.icon + '</span> ' + info.label + '</span>';
-        });
-        
-        var tableHTML = tableClone.outerHTML;
-        
-        var cssStyles = '* { margin: 0; padding: 0; box-sizing: border-box; } ' +
-            '@page { size: A4; margin: 15mm 20mm; } ' +
-            'body { font-family: Times New Roman, Times, serif; background: white; color: #1e293b; padding: 30px 35px; font-size: 12px; } ' +
-            '.kop { text-align: center; padding-bottom: 16px; border-bottom: 3px double #1e293b; margin-bottom: 20px; } ' +
-            '.kop .instansi { font-size: 14px; font-weight: 700; letter-spacing: 1px; color: #0f172a; } ' +
-            '.kop .instansi-2 { font-size: 18px; font-weight: 800; letter-spacing: 2px; color: #0f172a; margin-top: 2px; } ' +
-            '.kop .yayasan { font-size: 13px; font-weight: 500; color: #475569; margin-top: 2px; } ' +
-            '.kop .alamat { font-size: 11px; color: #64748b; margin-top: 4px; } ' +
-            '.kop .email { font-size: 11px; color: #64748b; } ' +
-            '.kop .judul { font-size: 22px; font-weight: 800; letter-spacing: 3px; color: #0f172a; margin-top: 14px; } ' +
-            '.kop .periode { font-size: 14px; color: #475569; margin-top: 4px; } ' +
-            '.kop .tgl-cetak { font-size: 11px; color: #94a3b8; margin-top: 2px; } ' +
-            '.summary { display: flex; gap: 16px; justify-content: center; margin: 16px 0 20px; flex-wrap: wrap; } ' +
-            '.summary-item { padding: 10px 20px; border: 1px solid #cbd5e1; border-radius: 8px; text-align: center; min-width: 90px; background: #f8fafc; } ' +
-            '.summary-item .num { font-size: 22px; font-weight: 700; } ' +
-            '.summary-item .label { font-size: 10px; color: #64748b; } ' +
-            '.summary-item .num.hadir { color: #059669; } ' +
-            '.summary-item .num.alfa { color: #b91c1c; } ' +
-            '.summary-item .num.libur { color: #2563eb; } ' +
-            '.summary-item .num.izin { color: #7c3aed; } ' +
-            '.summary-item .num.total { color: #0f172a; } ' +
-            'table { width: 100%; border-collapse: collapse; margin: 12px 0 16px; font-size: 10px; } ' +
-            'th, td { padding: 4px 6px; border: 1px solid #cbd5e1; text-align: center; vertical-align: middle; } ' +
-            'th { background: #f1f5f9; font-weight: 700; font-size: 9px; text-transform: uppercase; letter-spacing: 0.3px; } ' +
-            'td .status { display: inline-block; padding: 1px 6px; border-radius: 3px; font-weight: 600; font-size: 9px; min-width: 22px; } ' +
-            'td .status.hadir { background: #d1fae5; color: #059669; } ' +
-            'td .status.alfa { background: #fee2e2; color: #b91c1c; } ' +
-            'td .status.izin { background: #ede9fe; color: #7c3aed; } ' +
-            'td .status.libur { background: #dbeafe; color: #2563eb; } ' +
-            'td .status.kosong { background: #f1f5f9; color: #94a3b8; } ' +
-            '.legenda { display: flex; gap: 16px; justify-content: center; margin: 10px 0 16px; flex-wrap: wrap; padding: 8px 14px; background: #f8fafc; border-radius: 6px; border: 1px solid #e2e8f0; } ' +
-            '.legenda-item { display: flex; align-items: center; gap: 4px; font-size: 10px; font-weight: 600; } ' +
-            '.legenda-item .dot { display: inline-block; width: 12px; height: 12px; border-radius: 3px; } ' +
-            '.legenda-item .dot.hadir { background: #059669; } ' +
-            '.legenda-item .dot.alfa { background: #b91c1c; } ' +
-            '.legenda-item .dot.izin { background: #7c3aed; } ' +
-            '.legenda-item .dot.libur { background: #2563eb; } ' +
-            '.ttd { display: flex; justify-content: space-between; margin-top: 24px; padding-top: 16px; border-top: 1px solid #cbd5e1; } ' +
-            '.ttd-box { text-align: center; width: 45%; } ' +
-            '.ttd-box .label { font-size: 10px; color: #64748b; margin-bottom: 2px; } ' +
-            '.ttd-box .nama { font-size: 12px; font-weight: 700; margin-top: 2px; } ' +
-            '.ttd-box .jabatan { font-size: 10px; color: #475569; } ' +
-            '.ttd-box .line { width: 180px; border-bottom: 1px solid #1e293b; margin: 32px auto 2px; max-width: 100%; } ' +
-            '.footer { text-align: center; font-size: 9px; color: #94a3b8; margin-top: 12px; padding-top: 10px; border-top: 1px solid #e2e8f0; }';
-
-        var content = '';
-        content += '<!DOCTYPE html>\n';
-        content += '<html>\n';
-        content += '<head>\n';
-        content += '<meta charset="UTF-8">\n';
-        content += '<title>Laporan Absensi</title>\n';
-        content += '<style>' + cssStyles + '</style>\n';
-        content += '</head>\n';
-        content += '<body>\n';
-        
-        content += '<div class="kop">\n';
-        content += '<div style="display:flex;align-items:center;justify-content:center;gap:16px;margin-bottom:4px;flex-wrap:wrap;">\n';
-        content += '<img src="https://drive.google.com/uc?export=view&id=1HCIoFvovm4rUimNL03oX86tMGI_s7cEx" alt="Logo SPPG" style="height:60px;width:auto;object-fit:contain;">\n';
-        content += '<div style="text-align:left;">\n';
-        content += '<div class="instansi">SATUAN PELAYANAN PEMENUHAN GIZI (SPPG)</div>\n';
-        content += '<div class="instansi-2">SPPG KEDIRI PELEM 5</div>\n';
-        content += '<div class="yayasan">YAYASAN RIHLAH CAHAYA BANGSA</div>\n';
-        content += '</div>\n</div>\n';
-        content += '<div class="alamat">Jl. Langkat, Singgahan Pelem Kec. Pare, Kab. Kediri, Jawa Timur 64213</div>\n';
-        content += '<div class="email">E-mail : sppgpelem10@gmail.com</div>\n';
-        content += '<div class="judul">LAPORAN ABSENSI KARYAWAN</div>\n';
-        content += '<div class="periode">Periode : ' + periode + '</div>\n';
-        content += '<div class="tgl-cetak">Dicetak : ' + tglCetak + '</div>\n';
-        content += '</div>\n';
-        
-        content += '<div class="summary">\n';
-        content += '<div class="summary-item"><div class="num total">' + totalKaryawan + '</div><div class="label">👥 Total Karyawan</div></div>\n';
-        content += '<div class="summary-item"><div class="num hadir">' + totalHadir + '</div><div class="label">✅ Total Hadir</div></div>\n';
-        content += '<div class="summary-item"><div class="num alfa">' + totalAlfa + '</div><div class="label">❌ Total Alfa</div></div>\n';
-        content += '<div class="summary-item"><div class="num izin">0</div><div class="label">📝 Total Izin</div></div>\n';
-        content += '<div class="summary-item"><div class="num libur">' + totalLibur + '</div><div class="label">🗓️ Hari Libur</div></div>\n';
-        content += '</div>\n';
-        
-        content += tableHTML + '\n';
-        
-        content += '<div class="legenda">\n';
-        content += '<div class="legenda-item"><span class="dot hadir"></span> Hadir</div>\n';
-        content += '<div class="legenda-item"><span class="dot alfa"></span> Alfa</div>\n';
-        content += '<div class="legenda-item"><span class="dot izin"></span> Izin</div>\n';
-        content += '<div class="legenda-item"><span class="dot libur"></span> Libur</div>\n';
-        content += '</div>\n';
-        
-        content += '<div class="ttd">\n';
-        content += '<div class="ttd-box"><div class="label">Mengetahui,</div><div class="line"></div><div class="nama">Ikhwanul Muchlisin</div><div class="jabatan">Asisten Lapangan II</div></div>\n';
-        content += '<div class="ttd-box"><div class="label">Kepala SPPG,</div><div class="line"></div><div class="nama">Faisal Eko Cahyono</div><div class="jabatan">Kepala SPPG Pelem 5</div></div>\n';
-        content += '</div>\n';
-        
-        content += '<div class="footer">Laporan ini dibuat secara otomatis oleh sistem Smart Presence</div>\n';
-        content += '<script>window.print();<\/script>\n';
-        content += '</body>\n';
-        content += '</html>';
-
-        var win = window.open('', '_blank', 'width=1000,height=800');
-        if (win) {
-            win.document.write(content);
-            win.document.close();
-        } else {
-            showToast('❌ Popup diblokir! Izinkan popup untuk mencetak.', 'error');
-        }
-    }
-
-    // ============================================================
-    // LOAD REKAP
-    // ============================================================
-    async function loadRekap() {
-        var start = document.getElementById('startDate').value;
-        var end = document.getElementById('endDate').value;
-        if (!start || !end) {
-            showToast('Pilih tanggal dulu!', 'warning');
-            return;
-        }
-
-        var wrapper = document.getElementById('tableWrapper');
-        wrapper.innerHTML = '<div class="loading-text"><i class="fas fa-spinner fa-pulse"></i> Memuat data...</div>';
+        // Update header
+        document.getElementById('hariNama').textContent = dayName;
+        document.getElementById('hariTanggal').textContent = formatTanggal(today);
 
         try {
-            await loadHariLibur();
-
-            var karyawanRes = await fetch(SUPABASE_URL + '/rest/v1/karyawan?select=id,nama,divisi', {
+            // 1. Get all karyawan
+            var karyawanRes = await fetch(SUPABASE_URL + '/rest/v1/karyawan?select=id,nama,divisi,jam_masuk,hari_masuk', {
                 headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': 'Bearer ' + SUPABASE_ANON_KEY }
             });
             var karyawan = await karyawanRes.json();
 
             if (!karyawan || karyawan.length === 0) {
-                wrapper.innerHTML = '<div class="empty-text"><i class="fas fa-inbox"></i> Belum ada data karyawan</div>';
                 document.getElementById('totalKaryawan').textContent = '0';
-                document.getElementById('totalHadir').textContent = '0';
-                document.getElementById('totalAlfa').textContent = '0';
-                document.getElementById('totalLibur').textContent = '0';
+                document.getElementById('divisiGrid').innerHTML = '<div class="empty-text">Belum ada data karyawan</div>';
                 return;
             }
 
+            // 2. Get today's absensi
             var absenRes = await fetch(
-                SUPABASE_URL + '/rest/v1/absensi?select=*&tanggal=gte.' + start + '&tanggal=lte.' + end,
+                SUPABASE_URL + '/rest/v1/absensi?select=*&tanggal=eq.' + today,
                 {
                     headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': 'Bearer ' + SUPABASE_ANON_KEY }
                 }
             );
             var absensi = await absenRes.json();
 
+            // Map absensi by karyawan_id
             var absenMap = {};
             absensi.forEach(function(a) {
-                var key = a.karyawan_id + '|' + a.tanggal;
-                absenMap[key] = a;
+                absenMap[a.karyawan_id] = a;
             });
 
-            var dateList = [];
-            var dStart = parseDateIndonesia(start);
-            var dEnd = parseDateIndonesia(end);
-            for (var d = new Date(dStart); d <= dEnd; d.setDate(d.getDate() + 1)) {
-                dateList.push(getDateIndonesia(d));
-            }
+            // 3. Process data
+            var totalKaryawan = karyawan.length;
+            var totalHadir = 0;
+            var totalTelat = 0;
+            var totalAlfa = 0;
+            var totalLibur = 0;
 
-            currentData = [];
-            var totalHadir = 0, totalAlfa = 0, totalTelat = 0, totalTepat = 0, totalTerlambat = 0;
+            var divisiData = {};
 
             karyawan.forEach(function(k) {
-                var row = {
-                    id: k.id,
-                    nama: k.nama || k.id,
-                    divisi: k.divisi || '-',
-                    dates: [],
-                    akumulasi: 0,
-                    tepatWaktu: 0,
-                    terlambat: 0
-                };
+                var divisi = k.divisi || 'Tanpa Divisi';
+                if (!divisiData[divisi]) {
+                    divisiData[divisi] = { total: 0, hadir: 0, telat: 0, alfa: 0, libur: 0 };
+                }
+                divisiData[divisi].total++;
 
-                dateList.forEach(function(tgl) {
-                    var keyLibur = tgl + '|' + row.divisi;
-                    var isLibur = hariLiburMap[keyLibur] || false;
-                    
-                    var keyAbsen = k.id + '|' + tgl;
-                    var abs = absenMap[keyAbsen];
-                    var status = 'alfa';
-                    var jamMasuk = '-', jamPulang = '-';
-                    var absId = null;
-                    var isTepat = false;
-                    var isTerlambat = false;
-                    
-                    if (isLibur) {
-                        status = 'libur';
-                    } else if (abs) {
-                        absId = abs.id;
-                        jamMasuk = abs.jam_masuk || '-';
-                        jamPulang = abs.jam_pulang || '-';
-                        
-                        if (jamMasuk !== '-') {
-                            var targetJam = k.jam_masuk || '08:00';
-                            if (jamMasuk <= targetJam) {
-                                isTepat = true;
-                                row.tepatWaktu++;
-                            } else {
-                                isTerlambat = true;
-                                row.terlambat++;
-                            }
+                // Cek hari masuk
+                var hariMasuk = k.hari_masuk;
+                var isMasukHariIni = true;
+
+                if (hariMasuk) {
+                    try {
+                        var hariArray = typeof hariMasuk === 'string' ? JSON.parse(hariMasuk) : hariMasuk;
+                        if (Array.isArray(hariArray) && hariArray.length > 0) {
+                            isMasukHariIni = hariArray.indexOf(dayKey) !== -1;
                         }
-                        
-                        if (abs.status === 'izin') {
-                            status = 'izin';
-                        } else if (abs.jam_pulang && abs.jam_pulang !== '') {
-                            status = 'hadir';
-                            row.akumulasi++;
-                            totalHadir++;
-                            if (isTepat) totalTepat++;
-                            else if (isTerlambat) totalTerlambat++;
-                        } else {
-                            totalAlfa++;
-                        }
-                    } else {
-                        totalAlfa++;
+                    } catch(e) {
+                        // Jika gagal parse, anggap masuk
                     }
-                    
-                    row.dates.push({ 
-                        tanggal: tgl, 
-                        status: status, 
-                        jamMasuk: jamMasuk, 
-                        jamPulang: jamPulang, 
-                        id: absId,
-                        absenId: absId,
-                        isLibur: isLibur,
-                        divisi: row.divisi,
-                        isTepat: isTepat,
-                        isTerlambat: isTerlambat
-                    });
-                });
+                }
 
-                currentData.push(row);
+                if (!isMasukHariIni) {
+                    divisiData[divisi].libur++;
+                    totalLibur++;
+                    return;
+                }
+
+                var abs = absenMap[k.id];
+                var targetJam = k.jam_masuk || '08:00';
+
+                if (abs && abs.jam_masuk) {
+                    if (abs.jam_masuk <= targetJam) {
+                        divisiData[divisi].hadir++;
+                        totalHadir++;
+                    } else {
+                        divisiData[divisi].telat++;
+                        totalTelat++;
+                    }
+                } else {
+                    divisiData[divisi].alfa++;
+                    totalAlfa++;
+                }
             });
 
-            renderTable(dateList);
-            renderSummary(karyawan.length, totalHadir, totalTelat, totalAlfa, totalTepat, totalTerlambat);
+            // Update summary
+            document.getElementById('totalKaryawan').textContent = totalKaryawan;
+            document.getElementById('totalHadir').textContent = totalHadir;
+            document.getElementById('totalTelat').textContent = totalTelat;
+            document.getElementById('totalAlfa').textContent = totalAlfa;
+
+            // Update badge hari
+            var badge = document.getElementById('badgeHari');
+            if (totalLibur === totalKaryawan) {
+                badge.textContent = '🔵 Hari Libur (Semua Divisi)';
+                badge.className = 'badge-hari libur';
+                document.getElementById('hariStatus').textContent = '(Hari Libur)';
+            } else {
+                badge.textContent = '🟢 Hari Kerja';
+                badge.className = 'badge-hari kerja';
+                document.getElementById('hariStatus').textContent = '(Hari Kerja)';
+            }
+
+            // Render divisi
+            renderDivisi(divisiData);
 
         } catch(e) {
-            console.error('Error:', e);
-            wrapper.innerHTML = '<div class="empty-text"><i class="fas fa-exclamation-triangle"></i> Gagal memuat data</div>';
+            console.error('Error load dashboard:', e);
             showToast('Gagal memuat data!', 'error');
+            document.getElementById('divisiGrid').innerHTML = '<div class="empty-text"><i class="fas fa-exclamation-triangle"></i> Gagal memuat data</div>';
         }
     }
 
     // ============================================================
-    // RENDER TABLE
+    // RENDER DIVISI
     // ============================================================
-    function renderTable(dateList) {
-        var wrapper = document.getElementById('tableWrapper');
-        if (!wrapper) return;
-        
-        if (!currentData || currentData.length === 0) {
-            wrapper.innerHTML = '<div class="empty-text"><i class="fas fa-inbox"></i> Tidak ada data</div>';
+    function renderDivisi(divisiData) {
+        var grid = document.getElementById('divisiGrid');
+        var keys = Object.keys(divisiData);
+
+        if (keys.length === 0) {
+            grid.innerHTML = '<div class="empty-text">Belum ada divisi</div>';
             return;
         }
-
-        var html = '<table><thead><tr><th>No</th><th>Nama</th><th>Divisi</th>';
-        dateList.forEach(function(tgl) {
-            var d = parseDateIndonesia(tgl);
-            var liburDivisi = [];
-            var keys = Object.keys(hariLiburMap);
-            for (var i = 0; i < keys.length; i++) {
-                if (keys[i].startsWith(tgl + '|')) {
-                    liburDivisi.push(keys[i].split('|')[1]);
-                }
-            }
-            var isAnyLibur = liburDivisi.length > 0;
-            var liburBadge = isAnyLibur ? '<span class="libur-badge">' + liburDivisi.length + '🗓️</span>' : '';
-            html += '<th><span class="date-header" onclick="openModalLibur(\'' + tgl + '\')" title="Klik untuk tandai libur per divisi">';
-            html += d.getDate() + '/' + (d.getMonth()+1) + ' ' + liburBadge;
-            html += '</span></th>';
-        });
-        html += '<th>Akumulasi</th></tr></thead><tbody>';
-
-        currentData.forEach(function(row, idx) {
-            html += '<tr><td>' + (idx + 1) + '</td>';
-            html += '<td><span class="clickable-name" onclick="openDetail(\'' + row.id + '\')">' + row.nama + '</span></td>';
-            html += '<td>' + row.divisi + '</td>';
-            
-            row.dates.forEach(function(d) {
-                if (d.isLibur) {
-                    html += '<td><span class="status-icon libur">🔵</span></td>';
-                } else {
-                    var icon, cls;
-                    if (d.status === 'hadir') { 
-                        if (d.isTepat) { icon = '✅'; cls = 'hadir'; }
-                        else if (d.isTerlambat) { icon = '⏰'; cls = 'telat'; }
-                        else { icon = '✅'; cls = 'hadir'; }
-                    } else if (d.status === 'izin') { icon = '📝'; cls = 'izin'; }
-                    else { icon = '❌'; cls = 'alfa'; }
-                    
-                    var onClick = isBulkMode ? '' : 'onclick="quickEdit(\'' + row.id + '\',\'' + d.tanggal + '\')"';
-                    var disabledClass = isBulkMode ? 'quick-edit-disabled' : 'quick-edit-enabled';
-                    html += '<td><span class="status-icon ' + cls + ' ' + disabledClass + '" ' + onClick + ' title="' + (isBulkMode ? 'Mode Bulk aktif' : 'Klik untuk edit') + '">' + icon + '</span></td>';
-                }
-            });
-
-            var totalDays = row.dates.filter(function(d) { return !d.isLibur; }).length;
-            var akum = row.akumulasi;
-            var pct = totalDays > 0 ? (akum / totalDays) * 100 : 0;
-            var badgeClass = 'low';
-            if (pct >= 80) badgeClass = 'high';
-            else if (pct >= 50) badgeClass = 'medium';
-            
-            html += '<td><span class="badge-akum ' + badgeClass + '">' + akum + '/' + totalDays + '</span></td>';
-            html += '</tr>';
-        });
-
-        html += '</tbody></table>';
-        wrapper.innerHTML = html;
-    }
-
-    function renderSummary(total, hadir, telat, alfa, tepat, terlambat) {
-        document.getElementById('totalKaryawan').textContent = total;
-        document.getElementById('totalHadir').textContent = hadir;
-        document.getElementById('totalTelat').textContent = telat;
-        document.getElementById('totalAlfa').textContent = alfa;
-        document.getElementById('totalTepat').textContent = tepat || 0;
-        document.getElementById('totalTerlambat').textContent = terlambat || 0;
-    }
-
-    // ============================================================
-    // EXPORT
-    // ============================================================
-    function exportExcel() {
-        if (currentData.length === 0) { showToast('Tidak ada data', 'warning'); return; }
-        var start = document.getElementById('startDate').value;
-        var end = document.getElementById('endDate').value;
-        var csv = 'Rekapitulasi Absensi ' + start + ' - ' + end + '\n\nNo,Nama,Divisi,';
-        var dateList = currentData[0]?.dates.map(function(d) { return d.tanggal; }) || [];
-        dateList.forEach(function(tgl) {
-            var d = parseDateIndonesia(tgl);
-            csv += d.getDate() + '/' + (d.getMonth()+1) + ',';
-        });
-        csv += 'Akumulasi\n';
-        
-        currentData.forEach(function(row, idx) {
-            csv += (idx+1) + ',' + row.nama + ',' + row.divisi + ',';
-            row.dates.forEach(function(d) {
-                if (d.isLibur) {
-                    csv += 'Libur,';
-                } else {
-                    var status = d.status === 'hadir' ? 'Hadir' : d.status === 'izin' ? 'Izin' : 'Alfa';
-                    csv += status + ',';
-                }
-            });
-            var totalDays = row.dates.filter(function(d) { return !d.isLibur; }).length;
-            csv += row.akumulasi + '/' + totalDays + '\n';
-        });
-        
-        var blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-        var link = document.createElement('a');
-        link.href = URL.createObjectURL(blob);
-        link.download = 'Rekap_Absensi_' + start + '_' + end + '.csv';
-        link.click();
-        showToast('📥 Excel berhasil didownload!', 'success');
-    }
-
-    function exportPDF() {
-        if (currentData.length === 0) { showToast('Tidak ada data', 'warning'); return; }
-        window.print();
-    }
-
-    function refreshData() {
-        loadRekap();
-        if (isBulkMode) loadBulkGrid();
-        showToast('🔄 Data diperbarui!', 'info');
-    }
-
-    // ============================================================
-    // STATISTIK KETEPATAN WAKTU - MODAL
-    // ============================================================
-    async function openStatsModal() {
-        document.getElementById('statsModal').classList.add('active');
-        document.body.style.overflow = 'hidden';
-        await loadStatsData();
-    }
-
-    function closeStatsModal() {
-        document.getElementById('statsModal').classList.remove('active');
-        document.body.style.overflow = '';
-    }
-
-    async function loadStatsData() {
-        var tbody = document.getElementById('statsTableBody');
-        tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;padding:30px;color:#64748b;"><i class="fas fa-spinner fa-pulse"></i> Memuat data...</td></tr>';
-
-        try {
-            var karyawanRes = await fetch(SUPABASE_URL + '/rest/v1/karyawan?select=id,nama,divisi,jam_masuk', {
-                headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': 'Bearer ' + SUPABASE_ANON_KEY }
-            });
-            var karyawan = await karyawanRes.json();
-
-            var absenRes = await fetch(SUPABASE_URL + '/rest/v1/absensi?select=*', {
-                headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': 'Bearer ' + SUPABASE_ANON_KEY }
-            });
-            var absensi = await absenRes.json();
-
-            var stats = {};
-            karyawan.forEach(function(k) {
-                stats[k.id] = {
-                    nama: k.nama || k.id,
-                    divisi: k.divisi || '-',
-                    totalAbsen: 0,
-                    tepatWaktu: 0,
-                    terlambat: 0,
-                    targetJam: k.jam_masuk || '08:00'
-                };
-            });
-
-            absensi.forEach(function(a) {
-                if (stats[a.karyawan_id] && a.jam_masuk && a.jam_masuk !== '') {
-                    stats[a.karyawan_id].totalAbsen++;
-                    var target = stats[a.karyawan_id].targetJam;
-                    if (a.jam_masuk <= target) {
-                        stats[a.karyawan_id].tepatWaktu++;
-                    } else {
-                        stats[a.karyawan_id].terlambat++;
-                    }
-                }
-            });
-
-            allStatsData = Object.values(stats);
-            
-            var divisiSet = new Set();
-            allStatsData.forEach(function(s) { if (s.divisi) divisiSet.add(s.divisi); });
-            var filterSelect = document.getElementById('statsDivisiFilter');
-            var currentVal = filterSelect.value;
-            filterSelect.innerHTML = '<option value="">Semua Divisi</option>';
-            divisiSet.forEach(function(d) {
-                filterSelect.innerHTML += '<option value="' + d + '">' + d + '</option>';
-            });
-            filterSelect.value = currentVal;
-
-            renderStats(allStatsData);
-
-        } catch(e) {
-            console.error('Error stats:', e);
-            tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;padding:30px;color:#ef4444;">Gagal memuat data statistik</td></tr>';
-        }
-    }
-
-    function renderStats(data) {
-        var tbody = document.getElementById('statsTableBody');
-        var totalTepat = 0, totalTerlambat = 0, totalKaryawan = data.length;
-
-        if (!data || data.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;padding:30px;color:#64748b;">Belum ada data</td></tr>';
-            document.getElementById('statsTotalTepat').textContent = '0';
-            document.getElementById('statsTotalTerlambat').textContent = '0';
-            document.getElementById('statsPersentase').textContent = '0%';
-            document.getElementById('statsTotalKaryawan').textContent = '0';
-            return;
-        }
-
-        var sorted = data.slice().sort(function(a, b) {
-            var pA = a.totalAbsen > 0 ? (a.tepatWaktu / a.totalAbsen) * 100 : 0;
-            var pB = b.totalAbsen > 0 ? (b.tepatWaktu / b.totalAbsen) * 100 : 0;
-            return pB - pA;
-        });
 
         var html = '';
-        sorted.forEach(function(s, idx) {
-            var total = s.totalAbsen;
-            var tepat = s.tepatWaktu;
-            var terlambat = s.terlambat;
-            var persen = total > 0 ? Math.round((tepat / total) * 100) : 0;
-            
-            var kategori = '';
-            var badgeClass = '';
-            if (persen >= 90) { kategori = '⭐ Sangat Disiplin'; badgeClass = 'on-time'; }
-            else if (persen >= 70) { kategori = '✅ Disiplin'; badgeClass = 'on-time'; }
-            else if (persen >= 50) { kategori = '⚠️ Cukup'; badgeClass = 'late'; }
-            else { kategori = '❌ Perlu Perbaikan'; badgeClass = 'very-late'; }
+        keys.forEach(function(key) {
+            var d = divisiData[key];
+            var total = d.total;
+            var hadir = d.hadir;
+            var telat = d.telat;
+            var alfa = d.alfa;
+            var libur = d.libur;
 
-            totalTepat += tepat;
-            totalTerlambat += terlambat;
+            var statusLibur = libur === total ? '🔵 Libur' : '';
 
-            html += '<tr><td>' + (idx + 1) + '</td>';
-            html += '<td><strong>' + s.nama + '</strong></td>';
-            html += '<td>' + s.divisi + '</td>';
-            html += '<td>' + total + '</td>';
-            html += '<td style="color:#34d399;">' + tepat + '</td>';
-            html += '<td style="color:#fb923c;">' + terlambat + '</td>';
-            html += '<td><strong>' + persen + '%</strong></td>';
-            html += '<td><span class="badge-tepat ' + badgeClass + '">' + kategori + '</span></td></tr>';
+            html += '<div class="divisi-card">';
+            html += '<div class="nama">' + key + ' <span class="status-libur">' + statusLibur + '</span></div>';
+            html += '<div class="stats">';
+            html += '<span class="item"><span class="dot hadir"></span> <span class="num hadir">' + hadir + '</span></span>';
+            if (telat > 0) {
+                html += '<span class="item"><span class="dot telat"></span> <span class="num telat">' + telat + '</span></span>';
+            }
+            if (alfa > 0) {
+                html += '<span class="item"><span class="dot alfa"></span> <span class="num alfa">' + alfa + '</span></span>';
+            }
+            if (libur > 0) {
+                html += '<span class="item"><span class="dot libur"></span> <span class="num libur">' + libur + '</span></span>';
+            }
+            html += '<span style="color:#64748b;font-size:11px;">/ ' + total + '</span>';
+            html += '</div></div>';
         });
 
-        tbody.innerHTML = html;
-
-        var total = totalTepat + totalTerlambat;
-        var persenTotal = total > 0 ? Math.round((totalTepat / total) * 100) : 0;
-        document.getElementById('statsTotalTepat').textContent = totalTepat;
-        document.getElementById('statsTotalTerlambat').textContent = totalTerlambat;
-        document.getElementById('statsPersentase').textContent = persenTotal + '%';
-        document.getElementById('statsTotalKaryawan').textContent = totalKaryawan;
+        grid.innerHTML = html;
     }
 
-    function filterStats() {
-        var divisi = document.getElementById('statsDivisiFilter').value;
-        var filtered = allStatsData;
-        if (divisi) {
-            filtered = filtered.filter(function(s) { return s.divisi === divisi; });
-        }
-        renderStats(filtered);
+    // ============================================================
+    // REFRESH
+    // ============================================================
+    function refreshData() {
+        showToast('🔄 Memperbarui data...', 'info');
+        loadDashboard();
+        setTimeout(function() {
+            showToast('✅ Data diperbarui!', 'success');
+        }, 500);
     }
 
-    document.getElementById('statsModal').addEventListener('click', function(e) {
-        if (e.target === this) closeStatsModal();
-    });
+    // ============================================================
+    // AUTO REFRESH EVERY 5 MINUTES
+    // ============================================================
+    setInterval(function() {
+        loadDashboard();
+    }, 300000);
 
     // ============================================================
     // INIT
     // ============================================================
-    document.getElementById('bulkKaryawan').addEventListener('change', loadBulkGrid);
-
-    loadBulkKaryawan();
-    setTimeout(function() { loadRekap(); }, 100);
-
-    document.getElementById('modeToggle').checked = false;
-    toggleMode();
-
+    loadDashboard();
     console.log('🛡️ Admin Dashboard loaded!');
+    console.log('📅 Today:', getTodayIndonesia());
 </script>
 
 </body>
