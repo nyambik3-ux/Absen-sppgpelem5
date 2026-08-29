@@ -1,0 +1,844 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Rekap Absensi • Smart Presence</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #0f172a;
+            min-height: 100vh;
+            color: #e2e8f0;
+            padding: 20px;
+        }
+        body.light-mode { background: #f1f5f9; color: #1e293b; }
+        
+        .navbar {
+            background: rgba(15, 23, 42, 0.85);
+            backdrop-filter: blur(20px);
+            padding: 12px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-radius: 16px;
+            max-width: 1400px;
+            margin: 0 auto 20px;
+            border: 1px solid rgba(255,255,255,0.06);
+        }
+        body.light-mode .navbar { background: rgba(255,255,255,0.85); border-color: rgba(0,0,0,0.06); }
+        
+        .logo h2 {
+            font-size: 20px;
+            background: linear-gradient(135deg, #a855f7, #3b82f6);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        .logo span { font-size: 12px; color: #64748b; }
+        
+        .nav-actions { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+        .nav-actions button {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 600;
+            transition: all 0.2s;
+            font-family: 'Inter', sans-serif;
+        }
+        .nav-actions button:active { transform: scale(0.95); }
+        .btn-logout { background: #ef4444; color: white; }
+        .btn-logout:hover { background: #dc2626; }
+        .btn-back { background: #6366f1; color: white; }
+        .btn-back:hover { background: #4f46e5; }
+        .btn-theme { background: #1e293b; color: #e2e8f0; }
+        body.light-mode .btn-theme { background: #e2e8f0; color: #1e293b; }
+        
+        .container { max-width: 1400px; margin: 0 auto; }
+        
+        .filter-card {
+            background: rgba(255,255,255,0.04);
+            border-radius: 16px;
+            padding: 20px 24px;
+            margin-bottom: 20px;
+            border: 1px solid rgba(255,255,255,0.06);
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 14px;
+        }
+        body.light-mode .filter-card { background: white; border-color: rgba(0,0,0,0.06); }
+        
+        .filter-card label { font-size: 13px; font-weight: 600; color: #94a3b8; }
+        .filter-card input[type="date"],
+        .filter-card select {
+            padding: 10px 14px;
+            border-radius: 10px;
+            border: 1px solid rgba(255,255,255,0.1);
+            background: rgba(0,0,0,0.3);
+            color: white;
+            font-family: 'Inter', sans-serif;
+            font-size: 14px;
+            min-width: 150px;
+        }
+        body.light-mode .filter-card input[type="date"],
+        body.light-mode .filter-card select { background: #f1f5f9; color: #1e293b; border-color: #cbd5e1; }
+        .filter-card input:focus, .filter-card select:focus {
+            outline: none;
+            border-color: #a855f7;
+        }
+        
+        .filter-card .btn-primary {
+            padding: 10px 24px;
+            background: linear-gradient(135deg, #a855f7, #3b82f6);
+            border: none;
+            border-radius: 10px;
+            color: white;
+            font-weight: 700;
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+            font-size: 14px;
+        }
+        .filter-card .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 4px 15px rgba(168,85,247,0.4); }
+        .filter-card .btn-success {
+            padding: 10px 20px;
+            background: #10b981;
+            border: none;
+            border-radius: 10px;
+            color: white;
+            font-weight: 700;
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+            font-size: 13px;
+        }
+        .filter-card .btn-success:hover { background: #059669; }
+        .filter-card .btn-danger {
+            padding: 10px 20px;
+            background: #ef4444;
+            border: none;
+            border-radius: 10px;
+            color: white;
+            font-weight: 700;
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+            font-size: 13px;
+        }
+        .filter-card .btn-danger:hover { background: #dc2626; }
+        .filter-card .btn-refresh {
+            padding: 10px 20px;
+            background: #6366f1;
+            border: none;
+            border-radius: 10px;
+            color: white;
+            font-weight: 700;
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+            font-size: 13px;
+        }
+        .filter-card .btn-refresh:hover { background: #4f46e5; }
+        
+        .summary-bar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+        .summary-item {
+            background: rgba(255,255,255,0.04);
+            border-radius: 12px;
+            padding: 12px 20px;
+            border: 1px solid rgba(255,255,255,0.06);
+            flex: 1;
+            min-width: 120px;
+            text-align: center;
+        }
+        body.light-mode .summary-item { background: white; border-color: rgba(0,0,0,0.06); }
+        .summary-item .num { font-size: 24px; font-weight: 800; }
+        .summary-item .label { font-size: 11px; color: #64748b; font-weight: 500; }
+        .summary-item .num.hadir { color: #34d399; }
+        .summary-item .num.telat { color: #fb923c; }
+        .summary-item .num.alfa { color: #f87171; }
+        .summary-item .num.izin { color: #60a5fa; }
+        .summary-item .num.total { color: #a855f7; }
+        
+        .table-container {
+            background: rgba(255,255,255,0.04);
+            border-radius: 16px;
+            padding: 20px;
+            border: 1px solid rgba(255,255,255,0.06);
+            overflow-x: auto;
+        }
+        body.light-mode .table-container { background: white; border-color: rgba(0,0,0,0.06); }
+        
+        .table-container h3 {
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        table { width: 100%; border-collapse: collapse; font-size: 13px; }
+        th, td { padding: 8px 10px; text-align: center; border-bottom: 1px solid rgba(255,255,255,0.06); }
+        body.light-mode th, body.light-mode td { border-bottom-color: #e2e8f0; }
+        
+        th {
+            font-weight: 600;
+            color: #94a3b8;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            position: sticky;
+            top: 0;
+            background: rgba(15,23,42,0.95);
+            padding: 10px 6px;
+        }
+        body.light-mode th { background: #f8fafc; color: #64748b; }
+        
+        td .status-cell {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            min-width: 40px;
+        }
+        td .status-cell.hadir { background: rgba(16,185,129,0.25); color: #34d399; }
+        td .status-cell.telat { background: rgba(251,146,60,0.25); color: #fb923c; }
+        td .status-cell.alfa { background: rgba(239,68,68,0.2); color: #f87171; }
+        td .status-cell.izin { background: rgba(96,165,250,0.25); color: #60a5fa; }
+        td .status-cell.libur { background: rgba(168,85,247,0.2); color: #a855f7; }
+        
+        td .status-cell .icon { margin-right: 4px; }
+        
+        .badge-akum {
+            display: inline-block;
+            padding: 2px 12px;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 13px;
+        }
+        .badge-akum.high { background: rgba(16,185,129,0.2); color: #34d399; }
+        .badge-akum.medium { background: rgba(251,146,60,0.2); color: #fb923c; }
+        .badge-akum.low { background: rgba(239,68,68,0.2); color: #f87171; }
+        
+        .legend {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 16px;
+            padding: 12px 16px;
+            background: rgba(0,0,0,0.15);
+            border-radius: 10px;
+            margin-top: 16px;
+            border: 1px solid rgba(255,255,255,0.06);
+        }
+        body.light-mode .legend { background: rgba(0,0,0,0.04); border-color: rgba(0,0,0,0.06); }
+        .legend-item { font-size: 12px; font-weight: 600; display: flex; align-items: center; gap: 6px; }
+        .legend-item .dot {
+            display: inline-block;
+            width: 14px;
+            height: 14px;
+            border-radius: 4px;
+        }
+        .legend-item .dot.hadir { background: #34d399; }
+        .legend-item .dot.telat { background: #fb923c; }
+        .legend-item .dot.alfa { background: #f87171; }
+        .legend-item .dot.izin { background: #60a5fa; }
+        .legend-item .dot.libur { background: #a855f7; }
+        
+        .loading-text { text-align: center; color: #64748b; padding: 40px 0; font-size: 14px; }
+        .empty-text { text-align: center; color: #64748b; padding: 30px 0; font-size: 14px; }
+        
+        .toast-custom {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #1e293b;
+            color: white;
+            padding: 14px 28px;
+            border-radius: 16px;
+            font-weight: 600;
+            font-size: 14px;
+            z-index: 9999;
+            border-left: 4px solid #10b981;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+            animation: slideUp 0.3s ease;
+            max-width: 90%;
+            font-family: 'Inter', sans-serif;
+        }
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateX(-50%) translateY(30px); }
+            to { opacity: 1; transform: translateX(-50%) translateY(0); }
+        }
+        
+        @media (max-width: 768px) {
+            .navbar { flex-wrap: wrap; gap: 10px; padding: 12px 16px; }
+            .filter-card { flex-direction: column; align-items: stretch; }
+            .filter-card input[type="date"], .filter-card select { width: 100%; min-width: auto; }
+            table { font-size: 11px; }
+            th, td { padding: 4px 4px; }
+            td .status-cell { font-size: 10px; padding: 2px 4px; min-width: 30px; }
+            .summary-item .num { font-size: 18px; }
+        }
+        @media (max-width: 480px) {
+            .summary-bar { flex-direction: column; }
+            .nav-actions { flex-wrap: wrap; }
+            .legend { flex-direction: column; gap: 6px; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar">
+    <div class="logo">
+        <h2>📋 RelawanTrack</h2>
+        <span>Rekap Absensi</span>
+    </div>
+    <div class="nav-actions">
+        <button class="btn-back" onclick="window.location.href='admin_dashboard.html'">
+            <i class="fas fa-arrow-left"></i> Dashboard
+        </button>
+        <button class="btn-theme" onclick="toggleTheme()">
+            <i class="fas fa-moon" id="themeIcon"></i>
+        </button>
+        <span id="adminName" style="font-weight:600;font-size:14px;">Admin</span>
+        <button class="btn-logout" onclick="doLogout()">
+            <i class="fas fa-sign-out-alt"></i> Keluar
+        </button>
+    </div>
+</nav>
+
+<div class="container">
+
+    <!-- FILTER -->
+    <div class="filter-card">
+        <label><i class="fas fa-calendar-alt"></i> Periode:</label>
+        <input type="date" id="startDate">
+        <span style="color:#64748b;">s/d</span>
+        <input type="date" id="endDate">
+        
+        <label><i class="fas fa-users"></i> Divisi:</label>
+        <select id="filterDivisi">
+            <option value="">Semua Divisi</option>
+        </select>
+        
+        <label><i class="fas fa-user"></i> Karyawan:</label>
+        <select id="filterKaryawan">
+            <option value="">Semua Karyawan</option>
+        </select>
+        
+        <button class="btn-primary" onclick="loadRekap()">
+            <i class="fas fa-search"></i> Tampilkan
+        </button>
+        <button class="btn-success" onclick="exportExcel()">
+            <i class="fas fa-file-excel"></i> Excel
+        </button>
+        <button class="btn-danger" onclick="exportPDF()">
+            <i class="fas fa-file-pdf"></i> PDF
+        </button>
+        <button class="btn-refresh" onclick="refreshData()">
+            <i class="fas fa-sync-alt"></i>
+        </button>
+    </div>
+
+    <!-- SUMMARY -->
+    <div class="summary-bar" id="summaryBar">
+        <div class="summary-item">
+            <div class="num total" id="sumTotal">0</div>
+            <div class="label">👥 Total Karyawan</div>
+        </div>
+        <div class="summary-item">
+            <div class="num hadir" id="sumHadir">0</div>
+            <div class="label">✅ Tepat Waktu</div>
+        </div>
+        <div class="summary-item">
+            <div class="num telat" id="sumTelat">0</div>
+            <div class="label">⏰ Terlambat</div>
+        </div>
+        <div class="summary-item">
+            <div class="num alfa" id="sumAlfa">0</div>
+            <div class="label">❌ Alfa</div>
+        </div>
+        <div class="summary-item">
+            <div class="num izin" id="sumIzin">0</div>
+            <div class="label">📝 Izin</div>
+        </div>
+    </div>
+
+    <!-- TABLE -->
+    <div class="table-container">
+        <h3><i class="fas fa-table" style="color:#a855f7;"></i> Rekapitulasi Absensi</h3>
+        <div id="tableWrapper">
+            <div class="loading-text"><i class="fas fa-spinner fa-pulse"></i> Memuat data...</div>
+        </div>
+        
+        <!-- LEGEND -->
+        <div class="legend">
+            <span class="legend-item"><span class="dot hadir"></span> 🟢 Tepat Waktu</span>
+            <span class="legend-item"><span class="dot telat"></span> 🟡 Terlambat</span>
+            <span class="legend-item"><span class="dot alfa"></span> 🔴 Alfa</span>
+            <span class="legend-item"><span class="dot izin"></span> 🔵 Izin</span>
+            <span class="legend-item"><span class="dot libur"></span> 🟣 Libur</span>
+        </div>
+    </div>
+</div>
+
+<script>
+    // ============================================================
+    // KONFIGURASI SUPABASE
+    // ============================================================
+    var SUPABASE_URL = 'https://zcaqqybonpfishwkmffg.supabase.co';
+    var SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpjYXFxeWJvbnBmaXNod2ttZmZnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODc2Mjc2NDgsImV4cCI6MjEwMzIwMzY0OH0.pBk5nwJI3u9n08onTNmvcOFxtCXQvv-ipYIu2f_iAiQ';
+
+    // ============================================================
+    // CEK LOGIN
+    // ============================================================
+    if (!localStorage.getItem('admin_logged_in')) {
+        window.location.href = 'admin_login.html';
+    }
+    document.getElementById('adminName').textContent = localStorage.getItem('admin_username') || 'Admin';
+
+    // ============================================================
+    // FUNGSI TANGGAL
+    // ============================================================
+    function getTodayIndonesia() {
+        var now = new Date();
+        var offset = 7 * 60 * 60 * 1000;
+        return new Date(now.getTime() + offset).toISOString().split('T')[0];
+    }
+
+    function getDateIndonesia(date) {
+        var offset = 7 * 60 * 60 * 1000;
+        return new Date(date.getTime() + offset).toISOString().split('T')[0];
+    }
+
+    function parseDateIndonesia(dateStr) {
+        var parts = dateStr.split('-');
+        return new Date(parts[0], parts[1] - 1, parts[2]);
+    }
+
+    function setDefaultDates() {
+        var todayStr = getTodayIndonesia();
+        var end = todayStr;
+        var today = new Date();
+        var offset = 7 * 60 * 60 * 1000;
+        var localToday = new Date(today.getTime() + offset);
+        var startDate = new Date(localToday);
+        startDate.setDate(startDate.getDate() - 29);
+        var start = getDateIndonesia(startDate);
+        document.getElementById('startDate').value = start;
+        document.getElementById('endDate').value = end;
+    }
+    setDefaultDates();
+
+    // ============================================================
+    // VARIABLES
+    // ============================================================
+    var allData = [];
+    var dateList = [];
+    var hariLiburMap = {};
+
+    // ============================================================
+    // THEME
+    // ============================================================
+    function toggleTheme() {
+        document.body.classList.toggle('light-mode');
+        var icon = document.getElementById('themeIcon');
+        icon.className = document.body.classList.contains('light-mode') ? 'fas fa-sun' : 'fas fa-moon';
+    }
+
+    // ============================================================
+    // TOAST
+    // ============================================================
+    function showToast(msg, type) {
+        type = type || 'success';
+        var existing = document.querySelector('.toast-custom');
+        if (existing) existing.remove();
+        var toast = document.createElement('div');
+        toast.className = 'toast-custom';
+        var colors = { success: '#10b981', error: '#ef4444', warning: '#f59e0b', info: '#3b82f6' };
+        toast.style.borderLeftColor = colors[type] || '#10b981';
+        var icons = { success: '✅', error: '❌', warning: '⚠️', info: 'ℹ️' };
+        toast.innerHTML = (icons[type] || 'ℹ️') + ' ' + msg;
+        document.body.appendChild(toast);
+        setTimeout(function() {
+            toast.style.opacity = '0';
+            toast.style.transform = 'translateX(-50%) translateY(20px)';
+            setTimeout(function() { toast.remove(); }, 300);
+        }, 3000);
+    }
+
+    // ============================================================
+    // LOGOUT
+    // ============================================================
+    function doLogout() {
+        if (confirm('Yakin ingin keluar?')) {
+            localStorage.removeItem('admin_logged_in');
+            localStorage.removeItem('admin_username');
+            window.location.href = 'admin_login.html';
+        }
+    }
+
+    // ============================================================
+    // LOAD HARI LIBUR
+    // ============================================================
+    async function loadHariLibur() {
+        try {
+            var response = await fetch(
+                SUPABASE_URL + '/rest/v1/hari_libur?select=tanggal,divisi',
+                {
+                    headers: {
+                        'apikey': SUPABASE_ANON_KEY,
+                        'Authorization': 'Bearer ' + SUPABASE_ANON_KEY
+                    }
+                }
+            );
+            var data = await response.json();
+            hariLiburMap = {};
+            data.forEach(function(item) {
+                var key = item.tanggal + '|' + item.divisi;
+                hariLiburMap[key] = true;
+            });
+        } catch(e) {
+            hariLiburMap = {};
+        }
+    }
+
+    function isTanggalLibur(tanggal, divisi) {
+        var key = tanggal + '|' + divisi;
+        return hariLiburMap[key] || false;
+    }
+
+    // ============================================================
+    // LOAD FILTER OPTIONS
+    // ============================================================
+    async function loadFilterOptions() {
+        try {
+            var response = await fetch(SUPABASE_URL + '/rest/v1/karyawan?select=id,nama,divisi&order=nama', {
+                headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': 'Bearer ' + SUPABASE_ANON_KEY }
+            });
+            var karyawan = await response.json();
+
+            // Divisi
+            var divisiSet = new Set();
+            karyawan.forEach(function(k) { if (k.divisi) divisiSet.add(k.divisi); });
+            var selectDivisi = document.getElementById('filterDivisi');
+            var currentDivisi = selectDivisi.value;
+            selectDivisi.innerHTML = '<option value="">Semua Divisi</option>';
+            divisiSet.forEach(function(d) {
+                selectDivisi.innerHTML += '<option value="' + d + '">' + d + '</option>';
+            });
+            selectDivisi.value = currentDivisi;
+
+            // Karyawan
+            var selectKaryawan = document.getElementById('filterKaryawan');
+            var currentKaryawan = selectKaryawan.value;
+            selectKaryawan.innerHTML = '<option value="">Semua Karyawan</option>';
+            karyawan.forEach(function(k) {
+                selectKaryawan.innerHTML += '<option value="' + k.id + '">' + k.nama + '</option>';
+            });
+            selectKaryawan.value = currentKaryawan;
+
+        } catch(e) {
+            console.error('Gagal load filter:', e);
+        }
+    }
+
+    // ============================================================
+    // LOAD REKAP
+    // ============================================================
+    async function loadRekap() {
+        var start = document.getElementById('startDate').value;
+        var end = document.getElementById('endDate').value;
+        if (!start || !end) {
+            showToast('Pilih tanggal dulu!', 'warning');
+            return;
+        }
+
+        var wrapper = document.getElementById('tableWrapper');
+        wrapper.innerHTML = '<div class="loading-text"><i class="fas fa-spinner fa-pulse"></i> Memuat data...</div>';
+
+        try {
+            await loadHariLibur();
+
+            var divisiFilter = document.getElementById('filterDivisi').value;
+            var karyawanFilter = document.getElementById('filterKaryawan').value;
+
+            // Build query karyawan
+            var karyawanQuery = SUPABASE_URL + '/rest/v1/karyawan?select=id,nama,divisi,jam_masuk,jam_pulang';
+            if (divisiFilter) {
+                karyawanQuery += '&divisi=eq.' + encodeURIComponent(divisiFilter);
+            }
+            if (karyawanFilter) {
+                karyawanQuery += '&id=eq.' + encodeURIComponent(karyawanFilter);
+            }
+            karyawanQuery += '&order=nama';
+
+            var karyawanRes = await fetch(karyawanQuery, {
+                headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': 'Bearer ' + SUPABASE_ANON_KEY }
+            });
+            var karyawan = await karyawanRes.json();
+
+            if (!karyawan || karyawan.length === 0) {
+                wrapper.innerHTML = '<div class="empty-text"><i class="fas fa-inbox"></i> Tidak ada karyawan</div>';
+                resetSummary();
+                return;
+            }
+
+            // Load absensi
+            var absenRes = await fetch(
+                SUPABASE_URL + '/rest/v1/absensi?select=*&tanggal=gte.' + start + '&tanggal=lte.' + end,
+                {
+                    headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': 'Bearer ' + SUPABASE_ANON_KEY }
+                }
+            );
+            var absensi = await absenRes.json();
+
+            // Map absensi
+            var absenMap = {};
+            absensi.forEach(function(a) {
+                var key = a.karyawan_id + '|' + a.tanggal;
+                absenMap[key] = a;
+            });
+
+            // Generate date list
+            dateList = [];
+            var dStart = parseDateIndonesia(start);
+            var dEnd = parseDateIndonesia(end);
+            for (var d = new Date(dStart); d <= dEnd; d.setDate(d.getDate() + 1)) {
+                dateList.push(getDateIndonesia(d));
+            }
+
+            // Build data
+            allData = [];
+            var totalHadir = 0, totalTelat = 0, totalAlfa = 0, totalIzin = 0;
+
+            karyawan.forEach(function(k) {
+                var row = {
+                    id: k.id,
+                    nama: k.nama || k.id,
+                    divisi: k.divisi || '-',
+                    targetMasuk: k.jam_masuk || '08:00',
+                    targetPulang: k.jam_pulang || '17:00',
+                    dates: [],
+                    hadir: 0,
+                    telat: 0,
+                    alfa: 0,
+                    izin: 0
+                };
+
+                dateList.forEach(function(tgl) {
+                    var isLibur = isTanggalLibur(tgl, row.divisi);
+                    var key = k.id + '|' + tgl;
+                    var abs = absenMap[key];
+                    
+                    var status = 'alfa';
+                    var jamMasuk = '-';
+                    var jamPulang = '-';
+
+                    if (isLibur) {
+                        status = 'libur';
+                    } else if (abs) {
+                        jamMasuk = abs.jam_masuk || '-';
+                        jamPulang = abs.jam_pulang || '-';
+                        
+                        if (abs.status === 'izin') {
+                            status = 'izin';
+                            row.izin++;
+                            totalIzin++;
+                        } else if (jamMasuk !== '-') {
+                            // Cek tepat waktu atau telat
+                            if (jamMasuk <= row.targetMasuk) {
+                                status = 'hadir';
+                                row.hadir++;
+                                totalHadir++;
+                            } else {
+                                status = 'telat';
+                                row.telat++;
+                                totalTelat++;
+                            }
+                        } else {
+                            status = 'alfa';
+                            row.alfa++;
+                            totalAlfa++;
+                        }
+                    } else {
+                        status = 'alfa';
+                        row.alfa++;
+                        totalAlfa++;
+                    }
+                    
+                    row.dates.push({
+                        tanggal: tgl,
+                        status: status,
+                        jamMasuk: jamMasuk,
+                        jamPulang: jamPulang,
+                        isLibur: isLibur
+                    });
+                });
+
+                allData.push(row);
+            });
+
+            renderTable();
+            renderSummary(totalHadir, totalTelat, totalAlfa, totalIzin);
+
+        } catch(e) {
+            console.error('Error:', e);
+            wrapper.innerHTML = '<div class="empty-text"><i class="fas fa-exclamation-triangle"></i> Gagal memuat data</div>';
+            showToast('Gagal memuat data!', 'error');
+        }
+    }
+
+    // ============================================================
+    // RENDER TABLE
+    // ============================================================
+    function renderTable() {
+        var wrapper = document.getElementById('tableWrapper');
+        
+        if (!allData || allData.length === 0) {
+            wrapper.innerHTML = '<div class="empty-text"><i class="fas fa-inbox"></i> Tidak ada data</div>';
+            return;
+        }
+
+        var html = '<table><thead><tr>';
+        html += '<th>No</th><th>Nama</th><th>Divisi</th>';
+        
+        dateList.forEach(function(tgl) {
+            var d = parseDateIndonesia(tgl);
+            html += '<th>' + d.getDate() + '/' + (d.getMonth()+1) + '</th>';
+        });
+        
+        html += '<th>Total</th></tr></thead><tbody>';
+
+        allData.forEach(function(row, idx) {
+            html += '<tr>';
+            html += '<td>' + (idx + 1) + '</td>';
+            html += '<td style="text-align:left;font-weight:600;">' + row.nama + '</td>';
+            html += '<td>' + row.divisi + '</td>';
+            
+            row.dates.forEach(function(d) {
+                var statusMap = {
+                    hadir: { label: '🟢', cls: 'hadir' },
+                    telat: { label: '🟡', cls: 'telat' },
+                    alfa: { label: '🔴', cls: 'alfa' },
+                    izin: { label: '🔵', cls: 'izin' },
+                    libur: { label: '🟣', cls: 'libur' }
+                };
+                var info = statusMap[d.status] || statusMap.alfa;
+                html += '<td><span class="status-cell ' + info.cls + '">' + info.label + '</span></td>';
+            });
+
+            var total = row.hadir + row.telat + row.izin;
+            var totalHari = row.dates.filter(function(d) { return !d.isLibur; }).length;
+            var pct = totalHari > 0 ? (total / totalHari) * 100 : 0;
+            var badgeClass = 'low';
+            if (pct >= 80) badgeClass = 'high';
+            else if (pct >= 50) badgeClass = 'medium';
+            
+            html += '<td><span class="badge-akum ' + badgeClass + '">' + total + '/' + totalHari + '</span></td>';
+            html += '</tr>';
+        });
+
+        html += '</tbody></table>';
+        wrapper.innerHTML = html;
+    }
+
+    // ============================================================
+    // RENDER SUMMARY
+    // ============================================================
+    function renderSummary(hadir, telat, alfa, izin) {
+        var total = allData.length;
+        document.getElementById('sumTotal').textContent = total;
+        document.getElementById('sumHadir').textContent = hadir;
+        document.getElementById('sumTelat').textContent = telat;
+        document.getElementById('sumAlfa').textContent = alfa;
+        document.getElementById('sumIzin').textContent = izin;
+    }
+
+    function resetSummary() {
+        document.getElementById('sumTotal').textContent = '0';
+        document.getElementById('sumHadir').textContent = '0';
+        document.getElementById('sumTelat').textContent = '0';
+        document.getElementById('sumAlfa').textContent = '0';
+        document.getElementById('sumIzin').textContent = '0';
+    }
+
+    // ============================================================
+    // EXPORT EXCEL
+    // ============================================================
+    function exportExcel() {
+        if (allData.length === 0) { showToast('Tidak ada data', 'warning'); return; }
+        var start = document.getElementById('startDate').value;
+        var end = document.getElementById('endDate').value;
+        
+        var csv = 'Rekapitulasi Absensi ' + start + ' - ' + end + '\n\n';
+        csv += 'No,Nama,Divisi,';
+        dateList.forEach(function(tgl) {
+            var d = parseDateIndonesia(tgl);
+            csv += d.getDate() + '/' + (d.getMonth()+1) + ',';
+        });
+        csv += 'Total\n';
+        
+        allData.forEach(function(row, idx) {
+            csv += (idx+1) + ',' + row.nama + ',' + row.divisi + ',';
+            row.dates.forEach(function(d) {
+                var statusMap = {
+                    hadir: 'Tepat Waktu',
+                    telat: 'Terlambat',
+                    alfa: 'Alfa',
+                    izin: 'Izin',
+                    libur: 'Libur'
+                };
+                csv += (statusMap[d.status] || 'Alfa') + ',';
+            });
+            var total = row.hadir + row.telat + row.izin;
+            var totalHari = row.dates.filter(function(d) { return !d.isLibur; }).length;
+            csv += total + '/' + totalHari + '\n';
+        });
+        
+        var blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+        var link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = 'Rekap_Absensi_' + start + '_' + end + '.csv';
+        link.click();
+        showToast('📥 Excel berhasil didownload!', 'success');
+    }
+
+    // ============================================================
+    // EXPORT PDF
+    // ============================================================
+    function exportPDF() {
+        if (allData.length === 0) { showToast('Tidak ada data', 'warning'); return; }
+        window.print();
+    }
+
+    // ============================================================
+    // REFRESH
+    // ============================================================
+    function refreshData() {
+        showToast('🔄 Memperbarui data...', 'info');
+        loadRekap();
+        setTimeout(function() {
+            showToast('✅ Data diperbarui!', 'success');
+        }, 500);
+    }
+
+    // ============================================================
+    // INIT
+    // ============================================================
+    loadFilterOptions();
+    setTimeout(function() { loadRekap(); }, 200);
+    console.log('📊 Rekap Absensi loaded!');
+</script>
+
+</body>
+</html>
