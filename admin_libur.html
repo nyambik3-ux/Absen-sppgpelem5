@@ -1,0 +1,1226 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Manajemen Libur & Hari Kerja • Smart Presence</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #0f172a;
+            min-height: 100vh;
+            color: #e2e8f0;
+            padding: 20px;
+        }
+        body.light-mode { background: #f1f5f9; color: #1e293b; }
+        
+        .navbar {
+            background: rgba(15, 23, 42, 0.85);
+            backdrop-filter: blur(20px);
+            padding: 12px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-radius: 16px;
+            max-width: 1400px;
+            margin: 0 auto 20px;
+            border: 1px solid rgba(255,255,255,0.06);
+        }
+        body.light-mode .navbar { background: rgba(255,255,255,0.85); border-color: rgba(0,0,0,0.06); }
+        
+        .logo h2 {
+            font-size: 20px;
+            background: linear-gradient(135deg, #a855f7, #3b82f6);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        .logo span { font-size: 12px; color: #64748b; }
+        
+        .nav-actions { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+        .nav-actions button {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 600;
+            transition: all 0.2s;
+            font-family: 'Inter', sans-serif;
+        }
+        .nav-actions button:active { transform: scale(0.95); }
+        .btn-logout { background: #ef4444; color: white; }
+        .btn-logout:hover { background: #dc2626; }
+        .btn-back { background: #6366f1; color: white; }
+        .btn-back:hover { background: #4f46e5; }
+        .btn-theme { background: #1e293b; color: #e2e8f0; }
+        body.light-mode .btn-theme { background: #e2e8f0; color: #1e293b; }
+        
+        .container { max-width: 1100px; margin: 0 auto; }
+        
+        /* TABS */
+        .tabs {
+            display: flex;
+            gap: 4px;
+            margin-bottom: 20px;
+            background: rgba(255,255,255,0.04);
+            border-radius: 14px;
+            padding: 4px;
+            border: 1px solid rgba(255,255,255,0.06);
+        }
+        body.light-mode .tabs { background: #f1f5f9; border-color: #e2e8f0; }
+        .tabs button {
+            flex: 1;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 10px;
+            background: transparent;
+            color: #94a3b8;
+            font-weight: 700;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-family: 'Inter', sans-serif;
+        }
+        .tabs button:hover { color: white; }
+        body.light-mode .tabs button:hover { color: #1e293b; }
+        .tabs button.active {
+            background: #a855f7;
+            color: white;
+            box-shadow: 0 4px 15px rgba(168,85,247,0.3);
+        }
+        body.light-mode .tabs button.active { background: #a855f7; color: white; }
+        
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        
+        /* FORM CARD */
+        .form-card {
+            background: rgba(255,255,255,0.04);
+            border-radius: 16px;
+            padding: 24px;
+            border: 1px solid rgba(255,255,255,0.06);
+            margin-bottom: 20px;
+        }
+        body.light-mode .form-card { background: white; border-color: rgba(0,0,0,0.06); }
+        
+        .form-card h3 {
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .form-group {
+            margin-bottom: 16px;
+        }
+        .form-group label {
+            display: block;
+            font-size: 12px;
+            color: #94a3b8;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+        .form-group select, .form-group input {
+            width: 100%;
+            padding: 10px 14px;
+            border-radius: 10px;
+            border: 1px solid rgba(255,255,255,0.1);
+            background: rgba(0,0,0,0.3);
+            color: white;
+            font-family: 'Inter', sans-serif;
+            font-size: 14px;
+        }
+        body.light-mode .form-group select, body.light-mode .form-group input {
+            background: #f1f5f9;
+            color: #1e293b;
+            border-color: #cbd5e1;
+        }
+        .form-group select:focus, .form-group input:focus {
+            outline: none;
+            border-color: #a855f7;
+            box-shadow: 0 0 0 3px rgba(168,85,247,0.2);
+        }
+        .form-group .form-hint {
+            font-size: 11px;
+            color: #64748b;
+            margin-top: 4px;
+        }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 12px;
+        }
+        .form-row-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+        
+        .radio-group {
+            display: flex;
+            gap: 16px;
+            flex-wrap: wrap;
+            padding: 8px 0;
+        }
+        .radio-group label {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 13px;
+            font-weight: 600;
+            color: #94a3b8;
+            cursor: pointer;
+        }
+        .radio-group label.active { color: white; }
+        body.light-mode .radio-group label.active { color: #1e293b; }
+        .radio-group input[type="radio"] {
+            accent-color: #a855f7;
+            width: 16px;
+            height: 16px;
+            cursor: pointer;
+        }
+        
+        /* HARI KERJA CHECKBOX */
+        .hari-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 8px;
+            margin: 8px 0 12px;
+        }
+        .hari-grid label {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            font-size: 12px;
+            font-weight: 600;
+            color: #94a3b8;
+            cursor: pointer;
+            padding: 10px 8px;
+            border-radius: 10px;
+            border: 2px solid rgba(255,255,255,0.06);
+            transition: all 0.2s;
+            background: rgba(0,0,0,0.15);
+        }
+        body.light-mode .hari-grid label { border-color: #e2e8f0; background: #f8fafc; }
+        .hari-grid label:hover { border-color: #a855f7; }
+        .hari-grid label.active {
+            border-color: #10b981;
+            background: rgba(16,185,129,0.12);
+            color: #34d399;
+        }
+        body.light-mode .hari-grid label.active { background: rgba(16,185,129,0.08); }
+        .hari-grid label input[type="checkbox"] { display: none; }
+        .hari-grid label .icon { font-size: 20px; }
+        .hari-grid label .text { font-size: 10px; text-transform: uppercase; }
+        
+        .btn-primary {
+            padding: 10px 24px;
+            background: linear-gradient(135deg, #10b981, #059669);
+            border: none;
+            border-radius: 10px;
+            color: white;
+            font-weight: 700;
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 4px 15px rgba(16,185,129,0.4); }
+        .btn-primary:active { transform: scale(0.95); }
+        
+        .btn-danger {
+            padding: 10px 24px;
+            background: #ef4444;
+            border: none;
+            border-radius: 10px;
+            color: white;
+            font-weight: 700;
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+        .btn-danger:hover { background: #dc2626; }
+        .btn-danger:active { transform: scale(0.95); }
+        
+        .btn-refresh {
+            padding: 10px 20px;
+            background: #6366f1;
+            border: none;
+            border-radius: 10px;
+            color: white;
+            font-weight: 700;
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+            font-size: 13px;
+        }
+        .btn-refresh:hover { background: #4f46e5; }
+        
+        .btn-warning {
+            padding: 10px 20px;
+            background: #f59e0b;
+            border: none;
+            border-radius: 10px;
+            color: white;
+            font-weight: 700;
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+            font-size: 13px;
+        }
+        .btn-warning:hover { background: #d97706; }
+        
+        .btn-actions {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-top: 8px;
+        }
+        
+        .table-container {
+            background: rgba(255,255,255,0.04);
+            border-radius: 16px;
+            padding: 20px;
+            border: 1px solid rgba(255,255,255,0.06);
+            overflow-x: auto;
+        }
+        body.light-mode .table-container { background: white; border-color: rgba(0,0,0,0.06); }
+        
+        .table-container h3 {
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        table { width: 100%; border-collapse: collapse; font-size: 13px; }
+        th, td { padding: 10px 12px; text-align: left; border-bottom: 1px solid rgba(255,255,255,0.06); }
+        body.light-mode th, body.light-mode td { border-bottom-color: #e2e8f0; }
+        
+        th {
+            font-weight: 600;
+            color: #94a3b8;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            position: sticky;
+            top: 0;
+            background: rgba(15,23,42,0.95);
+        }
+        body.light-mode th { background: #f8fafc; color: #64748b; }
+        
+        td .btn-delete-small {
+            padding: 4px 12px;
+            background: #ef4444;
+            border: none;
+            border-radius: 8px;
+            color: white;
+            font-size: 11px;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+            transition: all 0.2s;
+        }
+        td .btn-delete-small:hover { background: #dc2626; }
+        td .btn-delete-small:active { transform: scale(0.95); }
+        
+        .badge-divisi {
+            display: inline-block;
+            padding: 2px 10px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+            background: rgba(168,85,247,0.15);
+            color: #a855f7;
+        }
+        
+        .hari-badge {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 10px;
+            font-weight: 600;
+            margin: 1px 2px;
+            background: rgba(16,185,129,0.15);
+            color: #34d399;
+        }
+        .hari-badge.off { background: rgba(100,116,139,0.15); color: #64748b; }
+        
+        .loading-text { text-align: center; color: #64748b; padding: 30px 0; font-size: 14px; }
+        .empty-text { text-align: center; color: #64748b; padding: 30px 0; font-size: 14px; }
+        
+        .toast-custom {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #1e293b;
+            color: white;
+            padding: 14px 28px;
+            border-radius: 16px;
+            font-weight: 600;
+            font-size: 14px;
+            z-index: 9999;
+            border-left: 4px solid #10b981;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+            animation: slideUp 0.3s ease;
+            max-width: 90%;
+            font-family: 'Inter', sans-serif;
+        }
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateX(-50%) translateY(30px); }
+            to { opacity: 1; transform: translateX(-50%) translateY(0); }
+        }
+        
+        .hidden { display: none; }
+        .info-box {
+            background: rgba(59,130,246,0.1);
+            border-left: 3px solid #3b82f6;
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin-bottom: 16px;
+            font-size: 13px;
+            color: #94a3b8;
+        }
+        .info-box strong { color: white; }
+        body.light-mode .info-box strong { color: #1e293b; }
+        
+        @media (max-width: 768px) {
+            .navbar { flex-wrap: wrap; gap: 10px; padding: 12px 16px; }
+            .form-row { grid-template-columns: 1fr; }
+            .form-row-2 { grid-template-columns: 1fr; }
+            .btn-actions { flex-direction: column; }
+            .btn-actions button { width: 100%; }
+            .nav-actions { flex-wrap: wrap; }
+            .tabs { flex-direction: column; }
+            .tabs button { text-align: center; }
+            .hari-grid { grid-template-columns: repeat(7, 1fr); gap: 4px; }
+            .hari-grid label { padding: 6px 4px; }
+            .hari-grid label .icon { font-size: 14px; }
+            .hari-grid label .text { font-size: 8px; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar">
+    <div class="logo">
+        <h2>📋 RelawanTrack</h2>
+        <span>Manajemen Libur & Hari Kerja</span>
+    </div>
+    <div class="nav-actions">
+        <button class="btn-back" onclick="window.location.href='admin_dashboard.html'">
+            <i class="fas fa-arrow-left"></i> Dashboard
+        </button>
+        <button class="btn-theme" onclick="toggleTheme()">
+            <i class="fas fa-moon" id="themeIcon"></i>
+        </button>
+        <span id="adminName" style="font-weight:600;font-size:14px;">Admin</span>
+        <button class="btn-logout" onclick="doLogout()">
+            <i class="fas fa-sign-out-alt"></i> Keluar
+        </button>
+    </div>
+</nav>
+
+<div class="container">
+
+    <!-- TABS -->
+    <div class="tabs">
+        <button class="active" onclick="switchTab('tabLibur', this)">📅 Atur Libur</button>
+        <button onclick="switchTab('tabHariKerja', this)">📋 Atur Hari Kerja</button>
+    </div>
+
+    <!-- ============================================================
+         TAB 1: ATUR LIBUR
+         ============================================================ -->
+    <div class="tab-content active" id="tabLibur">
+
+        <div class="form-card">
+            <h3><i class="fas fa-calendar-plus" style="color:#a855f7;"></i> Tambah Libur</h3>
+
+            <div class="form-group">
+                <label>Pilih Divisi</label>
+                <select id="pilihDivisiLibur">
+                    <option value="__semua">Semua Divisi</option>
+                </select>
+                <div class="form-hint">Pilih divisi yang diliburkan, atau "Semua Divisi" untuk semua</div>
+            </div>
+
+            <div class="form-group">
+                <label>Jenis Periode</label>
+                <div class="radio-group" id="radioPeriode">
+                    <label class="active">
+                        <input type="radio" name="periode" value="tanggal" checked> Satu Tanggal
+                    </label>
+                    <label>
+                        <input type="radio" name="periode" value="rentang"> Rentang Tanggal
+                    </label>
+                    <label>
+                        <input type="radio" name="periode" value="bulan"> Satu Bulan
+                    </label>
+                </div>
+            </div>
+
+            <!-- Opsi: Satu Tanggal -->
+            <div id="opsiTanggal">
+                <div class="form-group">
+                    <label>Tanggal</label>
+                    <input type="date" id="inputTanggal">
+                </div>
+            </div>
+
+            <!-- Opsi: Rentang Tanggal -->
+            <div id="opsiRentang" class="hidden">
+                <div class="form-row-2">
+                    <div class="form-group">
+                        <label>Tanggal Mulai</label>
+                        <input type="date" id="inputTanggalMulai">
+                    </div>
+                    <div class="form-group">
+                        <label>Tanggal Selesai</label>
+                        <input type="date" id="inputTanggalSelesai">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Opsi: Satu Bulan -->
+            <div id="opsiBulan" class="hidden">
+                <div class="form-row-2">
+                    <div class="form-group">
+                        <label>Bulan</label>
+                        <select id="inputBulan">
+                            <option value="1">Januari</option>
+                            <option value="2">Februari</option>
+                            <option value="3">Maret</option>
+                            <option value="4">April</option>
+                            <option value="5">Mei</option>
+                            <option value="6">Juni</option>
+                            <option value="7">Juli</option>
+                            <option value="8" selected>Agustus</option>
+                            <option value="9">September</option>
+                            <option value="10">Oktober</option>
+                            <option value="11">November</option>
+                            <option value="12">Desember</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Tahun</label>
+                        <select id="inputTahun"></select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Keterangan (Opsional)</label>
+                <input type="text" id="inputKeterangan" placeholder="Contoh: Libur 17 Agustus">
+                <div class="form-hint">Keterangan akan muncul di daftar libur</div>
+            </div>
+
+            <div class="btn-actions">
+                <button class="btn-primary" onclick="tambahLibur()">
+                    <i class="fas fa-plus"></i> Tambahkan Libur
+                </button>
+                <button class="btn-danger" onclick="hapusSemuaLibur()">
+                    <i class="fas fa-trash"></i> Hapus Semua Libur
+                </button>
+                <button class="btn-refresh" onclick="loadLibur()">
+                    <i class="fas fa-sync-alt"></i> Refresh
+                </button>
+            </div>
+        </div>
+
+        <div class="table-container">
+            <h3><i class="fas fa-list" style="color:#a855f7;"></i> Daftar Libur <span id="divisiLabelLibur" style="font-size:13px;color:#94a3b8;font-weight:400;">- Semua Divisi</span></h3>
+            <div id="tableWrapperLibur">
+                <div class="loading-text"><i class="fas fa-spinner fa-pulse"></i> Memuat data...</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================================
+         TAB 2: ATUR HARI KERJA
+         ============================================================ -->
+    <div class="tab-content" id="tabHariKerja">
+
+        <div class="form-card">
+            <h3><i class="fas fa-calendar-check" style="color:#10b981;"></i> Atur Hari Kerja Per Divisi</h3>
+
+            <div class="info-box">
+                💡 <strong>Hari Kerja</strong> adalah hari dimana divisi WAJIB masuk. 
+                Hari yang TIDAK dicentang akan dianggap <strong>LIBUR</strong> dan tidak dihitung dalam absensi.
+            </div>
+
+            <div class="form-group">
+                <label>Pilih Divisi</label>
+                <select id="pilihDivisiHariKerja" onchange="loadHariKerjaDivisi()">
+                    <option value="">-- Pilih Divisi --</option>
+                </select>
+                <div class="form-hint">Pilih divisi untuk mengatur hari kerjanya</div>
+            </div>
+
+            <div id="hariKerjaContainer">
+                <div class="empty-text" style="padding:20px 0;">
+                    <i class="fas fa-arrow-up" style="font-size:24px;display:block;margin-bottom:8px;"></i>
+                    Pilih divisi di atas untuk mulai mengatur hari kerja
+                </div>
+            </div>
+        </div>
+
+        <div class="table-container">
+            <h3><i class="fas fa-list" style="color:#10b981;"></i> Daftar Hari Kerja Semua Divisi</h3>
+            <div id="tableWrapperHariKerja">
+                <div class="loading-text"><i class="fas fa-spinner fa-pulse"></i> Memuat data...</div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    // ============================================================
+    // KONFIGURASI SUPABASE
+    // ============================================================
+    var SUPABASE_URL = 'https://zcaqqybonpfishwkmffg.supabase.co';
+    var SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpjYXFxeWJvbnBmaXNod2ttZmZnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODc2Mjc2NDgsImV4cCI6MjEwMzIwMzY0OH0.pBk5nwJI3u9n08onTNmvcOFxtCXQvv-ipYIu2f_iAiQ';
+
+    // ============================================================
+    // CEK LOGIN
+    // ============================================================
+    if (!localStorage.getItem('admin_logged_in')) {
+        window.location.href = 'admin_login.html';
+    }
+    document.getElementById('adminName').textContent = localStorage.getItem('admin_username') || 'Admin';
+
+    // ============================================================
+    // VARIABLES
+    // ============================================================
+    var allLibur = [];
+    var divisiList = [];
+    var hariList = ['senin', 'selasa', 'rabu', 'kamis', 'jumat', 'sabtu', 'minggu'];
+    var hariLabel = {'senin':'Sen','selasa':'Sel','rabu':'Rab','kamis':'Kam','jumat':'Jum','sabtu':'Sab','minggu':'Min'};
+    var hariIcon = {'senin':'🌙','selasa':'🌙','rabu':'🌙','kamis':'🌙','jumat':'🌙','sabtu':'☀️','minggu':'☀️'};
+    var currentDivisiHariKerja = '';
+
+    // ============================================================
+    // THEME
+    // ============================================================
+    function toggleTheme() {
+        document.body.classList.toggle('light-mode');
+        var icon = document.getElementById('themeIcon');
+        icon.className = document.body.classList.contains('light-mode') ? 'fas fa-sun' : 'fas fa-moon';
+    }
+
+    // ============================================================
+    // TOAST
+    // ============================================================
+    function showToast(msg, type) {
+        type = type || 'success';
+        var existing = document.querySelector('.toast-custom');
+        if (existing) existing.remove();
+        var toast = document.createElement('div');
+        toast.className = 'toast-custom';
+        var colors = { success: '#10b981', error: '#ef4444', warning: '#f59e0b', info: '#3b82f6' };
+        toast.style.borderLeftColor = colors[type] || '#10b981';
+        var icons = { success: '✅', error: '❌', warning: '⚠️', info: 'ℹ️' };
+        toast.innerHTML = (icons[type] || 'ℹ️') + ' ' + msg;
+        document.body.appendChild(toast);
+        setTimeout(function() {
+            toast.style.opacity = '0';
+            toast.style.transform = 'translateX(-50%) translateY(20px)';
+            setTimeout(function() { toast.remove(); }, 300);
+        }, 3000);
+    }
+
+    // ============================================================
+    // LOGOUT
+    // ============================================================
+    function doLogout() {
+        if (confirm('Yakin ingin keluar?')) {
+            localStorage.removeItem('admin_logged_in');
+            localStorage.removeItem('admin_username');
+            window.location.href = 'admin_login.html';
+        }
+    }
+
+    // ============================================================
+    // TABS
+    // ============================================================
+    function switchTab(tabId, btn) {
+        document.querySelectorAll('.tab-content').forEach(function(el) {
+            el.classList.remove('active');
+        });
+        document.querySelectorAll('.tabs button').forEach(function(el) {
+            el.classList.remove('active');
+        });
+        document.getElementById(tabId).classList.add('active');
+        btn.classList.add('active');
+
+        if (tabId === 'tabHariKerja') {
+            loadHariKerjaAll();
+        }
+    }
+
+    // ============================================================
+    // DATE HELPERS
+    // ============================================================
+    function getTodayIndonesia() {
+        var now = new Date();
+        var offset = 7 * 60 * 60 * 1000;
+        return new Date(now.getTime() + offset).toISOString().split('T')[0];
+    }
+
+    function formatTanggalDisplay(dateStr) {
+        var d = new Date(dateStr + 'T00:00:00');
+        var bulan = ['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agu','Sep','Okt','Nov','Des'];
+        return d.getDate() + ' ' + bulan[d.getMonth()] + ' ' + d.getFullYear();
+    }
+
+    function getDaysInMonth(month, year) {
+        return new Date(year, month, 0).getDate();
+    }
+
+    function padZero(num) {
+        return String(num).padStart(2, '0');
+    }
+
+    // ============================================================
+    // RADIO PERIODE - Toggle
+    // ============================================================
+    document.querySelectorAll('input[name="periode"]').forEach(function(radio) {
+        radio.addEventListener('change', function() {
+            var labels = document.querySelectorAll('.radio-group label');
+            labels.forEach(function(label) {
+                label.classList.toggle('active', label.querySelector('input').checked);
+            });
+
+            var val = document.querySelector('input[name="periode"]:checked').value;
+            document.getElementById('opsiTanggal').classList.toggle('hidden', val !== 'tanggal');
+            document.getElementById('opsiRentang').classList.toggle('hidden', val !== 'rentang');
+            document.getElementById('opsiBulan').classList.toggle('hidden', val !== 'bulan');
+        });
+    });
+
+    // ============================================================
+    // LOAD DIVISI
+    // ============================================================
+    async function loadDivisi() {
+        try {
+            var response = await fetch(SUPABASE_URL + '/rest/v1/karyawan?select=divisi', {
+                headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': 'Bearer ' + SUPABASE_ANON_KEY }
+            });
+            var data = await response.json();
+
+            var divisiSet = new Set();
+            data.forEach(function(k) {
+                if (k.divisi) divisiSet.add(k.divisi);
+            });
+            divisiList = Array.from(divisiSet).sort();
+
+            // Update dropdown libur
+            var selectLibur = document.getElementById('pilihDivisiLibur');
+            var currentLibur = selectLibur.value;
+            selectLibur.innerHTML = '<option value="__semua">Semua Divisi</option>';
+            divisiList.forEach(function(d) {
+                selectLibur.innerHTML += '<option value="' + d + '">' + d + '</option>';
+            });
+            selectLibur.value = currentLibur;
+
+            // Update dropdown hari kerja
+            var selectHariKerja = document.getElementById('pilihDivisiHariKerja');
+            var currentHariKerja = selectHariKerja.value;
+            selectHariKerja.innerHTML = '<option value="">-- Pilih Divisi --</option>';
+            divisiList.forEach(function(d) {
+                selectHariKerja.innerHTML += '<option value="' + d + '">' + d + '</option>';
+            });
+            selectHariKerja.value = currentHariKerja;
+
+        } catch(e) {
+            console.error('Gagal load divisi:', e);
+        }
+    }
+
+    // ============================================================
+    // TAHUN OPTIONS
+    // ============================================================
+    function populateTahun() {
+        var select = document.getElementById('inputTahun');
+        var currentYear = new Date().getFullYear();
+        for (var y = currentYear - 2; y <= currentYear + 1; y++) {
+            select.innerHTML += '<option value="' + y + '" ' + (y === currentYear ? 'selected' : '') + '>' + y + '</option>';
+        }
+    }
+    populateTahun();
+
+    // ============================================================
+    // TAB 1: LOAD LIBUR
+    // ============================================================
+    async function loadLibur() {
+        var wrapper = document.getElementById('tableWrapperLibur');
+        wrapper.innerHTML = '<div class="loading-text"><i class="fas fa-spinner fa-pulse"></i> Memuat data...</div>';
+
+        var divisi = document.getElementById('pilihDivisiLibur').value;
+
+        try {
+            var query = SUPABASE_URL + '/rest/v1/hari_libur?select=*&order=tanggal.desc';
+            if (divisi !== '__semua') {
+                query += '&divisi=eq.' + encodeURIComponent(divisi);
+            }
+
+            var response = await fetch(query, {
+                headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': 'Bearer ' + SUPABASE_ANON_KEY }
+            });
+            allLibur = await response.json();
+
+            var label = document.getElementById('divisiLabelLibur');
+            if (divisi === '__semua') {
+                label.textContent = '- Semua Divisi';
+            } else {
+                label.textContent = '- ' + divisi;
+            }
+
+            renderLibur();
+
+        } catch(e) {
+            console.error('Error:', e);
+            wrapper.innerHTML = '<div class="empty-text"><i class="fas fa-exclamation-triangle"></i> Gagal memuat data</div>';
+            showToast('Gagal memuat data!', 'error');
+        }
+    }
+
+    function renderLibur() {
+        var wrapper = document.getElementById('tableWrapperLibur');
+
+        if (!allLibur || allLibur.length === 0) {
+            wrapper.innerHTML = '<div class="empty-text"><i class="fas fa-calendar-times"></i> Belum ada data libur</div>';
+            return;
+        }
+
+        var html = '<table><thead><tr>';
+        html += '<th>No</th><th>Tanggal</th><th>Divisi</th><th>Keterangan</th><th>Aksi</th>';
+        html += '</tr></thead><tbody>';
+
+        allLibur.forEach(function(item, idx) {
+            html += '<tr>';
+            html += '<td>' + (idx + 1) + '</td>';
+            html += '<td>' + formatTanggalDisplay(item.tanggal) + '</td>';
+            html += '<td><span class="badge-divisi">' + item.divisi + '</span></td>';
+            html += '<td>' + (item.keterangan || '-') + '</td>';
+            html += '<td><button class="btn-delete-small" onclick="hapusLibur(' + item.id + ')"><i class="fas fa-trash"></i> Hapus</button></td>';
+            html += '</tr>';
+        });
+
+        html += '</tbody></table>';
+        wrapper.innerHTML = html;
+    }
+
+    // ============================================================
+    // TAB 1: TAMBAH LIBUR
+    // ============================================================
+    async function tambahLibur() {
+        var divisi = document.getElementById('pilihDivisiLibur').value;
+        var periode = document.querySelector('input[name="periode"]:checked').value;
+        var keterangan = document.getElementById('inputKeterangan').value.trim() || 'Libur';
+        var tanggalList = [];
+
+        if (periode === 'tanggal') {
+            var tanggal = document.getElementById('inputTanggal').value;
+            if (!tanggal) { showToast('Pilih tanggal!', 'error'); return; }
+            tanggalList.push(tanggal);
+        } else if (periode === 'rentang') {
+            var mulai = document.getElementById('inputTanggalMulai').value;
+            var selesai = document.getElementById('inputTanggalSelesai').value;
+            if (!mulai || !selesai) { showToast('Pilih rentang tanggal!', 'error'); return; }
+            if (mulai > selesai) { showToast('Tanggal mulai harus sebelum selesai!', 'error'); return; }
+
+            var d = new Date(mulai + 'T00:00:00');
+            var end = new Date(selesai + 'T00:00:00');
+            while (d <= end) {
+                tanggalList.push(d.toISOString().split('T')[0]);
+                d.setDate(d.getDate() + 1);
+            }
+        } else if (periode === 'bulan') {
+            var bulan = parseInt(document.getElementById('inputBulan').value);
+            var tahun = parseInt(document.getElementById('inputTahun').value);
+            var days = getDaysInMonth(bulan, tahun);
+            for (var i = 1; i <= days; i++) {
+                var tgl = tahun + '-' + padZero(bulan) + '-' + padZero(i);
+                tanggalList.push(tgl);
+            }
+        }
+
+        if (tanggalList.length === 0) {
+            showToast('Tidak ada tanggal yang dipilih!', 'error');
+            return;
+        }
+
+        var divisiTarget = divisi === '__semua' ? divisiList : [divisi];
+
+        if (divisiTarget.length === 0) {
+            showToast('Tidak ada divisi yang dipilih!', 'error');
+            return;
+        }
+
+        var totalInsert = 0;
+        var totalError = 0;
+
+        showToast('🔄 Menambahkan ' + (tanggalList.length * divisiTarget.length) + ' data...', 'info');
+
+        try {
+            for (var dIdx = 0; dIdx < divisiTarget.length; dIdx++) {
+                var dName = divisiTarget[dIdx];
+                for (var tIdx = 0; tIdx < tanggalList.length; tIdx++) {
+                    var tgl = tanggalList[tIdx];
+                    var payload = {
+                        tanggal: tgl,
+                        divisi: dName,
+                        keterangan: keterangan
+                    };
+
+                    var response = await fetch(SUPABASE_URL + '/rest/v1/hari_libur', {
+                        method: 'POST',
+                        headers: {
+                            'apikey': SUPABASE_ANON_KEY,
+                            'Authorization': 'Bearer ' + SUPABASE_ANON_KEY,
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(payload)
+                    });
+
+                    if (response.ok) {
+                        totalInsert++;
+                    } else {
+                        totalError++;
+                    }
+                }
+            }
+
+            showToast('✅ ' + totalInsert + ' data libur berhasil ditambahkan' + (totalError > 0 ? ', ' + totalError + ' gagal (mungkin sudah ada)' : ''), totalError > 0 ? 'warning' : 'success');
+            loadLibur();
+
+        } catch(e) {
+            console.error('Error:', e);
+            showToast('❌ Gagal menambahkan libur!', 'error');
+        }
+    }
+
+    // ============================================================
+    // TAB 1: HAPUS LIBUR
+    // ============================================================
+    async function hapusLibur(id) {
+        if (!confirm('Yakin ingin menghapus libur ini?')) return;
+
+        try {
+            var response = await fetch(SUPABASE_URL + '/rest/v1/hari_libur?id=eq.' + id, {
+                method: 'DELETE',
+                headers: {
+                    'apikey': SUPABASE_ANON_KEY,
+                    'Authorization': 'Bearer ' + SUPABASE_ANON_KEY
+                }
+            });
+
+            if (response.ok) {
+                showToast('🗑️ Libur berhasil dihapus!', 'success');
+                loadLibur();
+            } else {
+                showToast('❌ Gagal menghapus!', 'error');
+            }
+        } catch(e) {
+            showToast('❌ Gagal koneksi!', 'error');
+        }
+    }
+
+    // ============================================================
+    // TAB 1: HAPUS SEMUA LIBUR
+    // ============================================================
+    async function hapusSemuaLibur() {
+        var divisi = document.getElementById('pilihDivisiLibur').value;
+        var divisiLabel = divisi === '__semua' ? 'Semua Divisi' : divisi;
+
+        if (!confirm('Yakin ingin menghapus SEMUA data libur untuk ' + divisiLabel + '?')) return;
+
+        try {
+            var query = SUPABASE_URL + '/rest/v1/hari_libur';
+            if (divisi !== '__semua') {
+                query += '?divisi=eq.' + encodeURIComponent(divisi);
+            }
+
+            var response = await fetch(query, {
+                method: 'DELETE',
+                headers: {
+                    'apikey': SUPABASE_ANON_KEY,
+                    'Authorization': 'Bearer ' + SUPABASE_ANON_KEY
+                }
+            });
+
+            if (response.ok) {
+                showToast('🗑️ Semua libur untuk ' + divisiLabel + ' berhasil dihapus!', 'success');
+                loadLibur();
+            } else {
+                showToast('❌ Gagal menghapus!', 'error');
+            }
+        } catch(e) {
+            showToast('❌ Gagal koneksi!', 'error');
+        }
+    }
+
+    // ============================================================
+    // TAB 2: LOAD HARI KERJA PER DIVISI
+    // ============================================================
+    async function loadHariKerjaDivisi() {
+        var divisi = document.getElementById('pilihDivisiHariKerja').value;
+        if (!divisi) {
+            document.getElementById('hariKerjaContainer').innerHTML = '<div class="empty-text" style="padding:20px 0;"><i class="fas fa-arrow-up" style="font-size:24px;display:block;margin-bottom:8px;"></i>Pilih divisi di atas untuk mulai mengatur hari kerja</div>';
+            return;
+        }
+
+        currentDivisiHariKerja = divisi;
+
+        try {
+            var response = await fetch(SUPABASE_URL + '/rest/v1/karyawan?select=hari_masuk&divisi=eq.' + encodeURIComponent(divisi) + '&limit=1', {
+                headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': 'Bearer ' + SUPABASE_ANON_KEY }
+            });
+            var data = await response.json();
+
+            var hariArray = [];
+            if (data && data.length > 0 && data[0].hari_masuk) {
+                try {
+                    hariArray = typeof data[0].hari_masuk === 'string' ? JSON.parse(data[0].hari_masuk) : data[0].hari_masuk;
+                } catch(e) { hariArray = []; }
+            }
+
+            if (!Array.isArray(hariArray) || hariArray.length === 0) {
+                hariArray = ['senin', 'selasa', 'rabu', 'kamis', 'jumat', 'sabtu', 'minggu'];
+            }
+
+            renderHariKerjaForm(divisi, hariArray);
+
+        } catch(e) {
+            console.error('Error:', e);
+            showToast('Gagal memuat data hari kerja!', 'error');
+        }
+    }
+
+    function renderHariKerjaForm(divisi, hariArray) {
+        var container = document.getElementById('hariKerjaContainer');
+
+        var html = '';
+        html += '<div class="form-group">';
+        html += '<label>📅 Hari Kerja untuk: <strong>' + divisi + '</strong></label>';
+        html += '<div class="hari-grid" id="hariKerjaGrid">';
+
+        hariList.forEach(function(h) {
+            var isChecked = hariArray.indexOf(h) !== -1;
+            html += '<label class="' + (isChecked ? 'active' : '') + '" data-hari="' + h + '">';
+            html += '<input type="checkbox" ' + (isChecked ? 'checked' : '') + '>';
+            html += '<span class="icon">' + hariIcon[h] + '</span>';
+            html += '<span class="text">' + hariLabel[h] + '</span>';
+            html += '</label>';
+        });
+
+        html += '</div>';
+        html += '<div class="form-hint">Centang hari kerja untuk divisi ' + divisi + '</div>';
+        html += '</div>';
+
+        html += '<div class="btn-actions">';
+        html += '<button class="btn-primary" onclick="simpanHariKerja()"><i class="fas fa-save"></i> Simpan</button>';
+        html += '<button class="btn-warning" onclick="resetHariKerja()"><i class="fas fa-undo"></i> Reset ke Default (7 hari)</button>';
+        html += '</div>';
+
+        container.innerHTML = html;
+
+        // Event listener untuk toggle checkbox
+        document.querySelectorAll('#hariKerjaGrid label').forEach(function(label) {
+            label.addEventListener('click', function(e) {
+                var checkbox = this.querySelector('input[type="checkbox"]');
+                checkbox.checked = !checkbox.checked;
+                this.classList.toggle('active', checkbox.checked);
+            });
+        });
+    }
+
+    // ============================================================
+    // TAB 2: SIMPAN HARI KERJA
+    // ============================================================
+    async function simpanHariKerja() {
+        var divisi = document.getElementById('pilihDivisiHariKerja').value;
+        if (!divisi) { showToast('Pilih divisi dulu!', 'warning'); return; }
+
+        var labels = document.querySelectorAll('#hariKerjaGrid label');
+        var hariArray = [];
+        labels.forEach(function(label) {
+            var checkbox = label.querySelector('input[type="checkbox"]');
+            if (checkbox && checkbox.checked) {
+                hariArray.push(label.dataset.hari);
+            }
+        });
+
+        if (hariArray.length === 0) {
+            showToast('Minimal 1 hari kerja harus dipilih!', 'error');
+            return;
+        }
+
+        try {
+            // Update semua karyawan di divisi itu
+            var response = await fetch(SUPABASE_URL + '/rest/v1/karyawan?divisi=eq.' + encodeURIComponent(divisi), {
+                method: 'PATCH',
+                headers: {
+                    'apikey': SUPABASE_ANON_KEY,
+                    'Authorization': 'Bearer ' + SUPABASE_ANON_KEY,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ hari_masuk: hariArray })
+            });
+
+            if (response.ok) {
+                showToast('✅ Hari kerja untuk ' + divisi + ' berhasil disimpan!', 'success');
+                loadHariKerjaAll();
+                loadHariKerjaDivisi();
+            } else {
+                var error = await response.text();
+                showToast('❌ Gagal menyimpan: ' + error, 'error');
+            }
+        } catch(e) {
+            showToast('❌ Gagal koneksi!', 'error');
+        }
+    }
+
+    // ============================================================
+    // TAB 2: RESET HARI KERJA KE DEFAULT (7 HARI)
+    // ============================================================
+    async function resetHariKerja() {
+        var divisi = document.getElementById('pilihDivisiHariKerja').value;
+        if (!divisi) { showToast('Pilih divisi dulu!', 'warning'); return; }
+
+        if (!confirm('Reset hari kerja untuk ' + divisi + ' ke default (Senin-Minggu)?')) return;
+
+        var defaultHari = ['senin', 'selasa', 'rabu', 'kamis', 'jumat', 'sabtu', 'minggu'];
+
+        try {
+            var response = await fetch(SUPABASE_URL + '/rest/v1/karyawan?divisi=eq.' + encodeURIComponent(divisi), {
+                method: 'PATCH',
+                headers: {
+                    'apikey': SUPABASE_ANON_KEY,
+                    'Authorization': 'Bearer ' + SUPABASE_ANON_KEY,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ hari_masuk: defaultHari })
+            });
+
+            if (response.ok) {
+                showToast('🔄 Hari kerja untuk ' + divisi + ' direset ke default!', 'success');
+                loadHariKerjaAll();
+                loadHariKerjaDivisi();
+            } else {
+                showToast('❌ Gagal reset!', 'error');
+            }
+        } catch(e) {
+            showToast('❌ Gagal koneksi!', 'error');
+        }
+    }
+
+    // ============================================================
+    // TAB 2: LOAD HARI KERJA SEMUA DIVISI
+    // ============================================================
+    async function loadHariKerjaAll() {
+        var wrapper = document.getElementById('tableWrapperHariKerja');
+        wrapper.innerHTML = '<div class="loading-text"><i class="fas fa-spinner fa-pulse"></i> Memuat data...</div>';
+
+        try {
+            var response = await fetch(SUPABASE_URL + '/rest/v1/karyawan?select=divisi,hari_masuk', {
+                headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': 'Bearer ' + SUPABASE_ANON_KEY }
+            });
+            var data = await response.json();
+
+            // Group by divisi
+            var divisiMap = {};
+            data.forEach(function(k) {
+                if (!k.divisi) return;
+                if (!divisiMap[k.divisi]) {
+                    divisiMap[k.divisi] = [];
+                }
+                var hariArray = [];
+                try {
+                    hariArray = typeof k.hari_masuk === 'string' ? JSON.parse(k.hari_masuk) : (k.hari_masuk || []);
+                } catch(e) { hariArray = []; }
+                divisiMap[k.divisi].push(hariArray);
+            });
+
+            var html = '<table><thead><tr>';
+            html += '<th>No</th><th>Divisi</th><th>Hari Kerja</th><th>Jumlah</th>';
+            html += '</tr></thead><tbody>';
+
+            var keys = Object.keys(divisiMap).sort();
+            if (keys.length === 0) {
+                html += '<tr><td colspan="4" style="text-align:center;padding:20px;color:#64748b;">Belum ada data divisi</td></tr>';
+            }
+
+            keys.forEach(function(divisi, idx) {
+                // Ambil hari kerja paling umum untuk divisi ini
+                var hariCount = {};
+                divisiMap[divisi].forEach(function(arr) {
+                    arr.forEach(function(h) {
+                        hariCount[h] = (hariCount[h] || 0) + 1;
+                    });
+                });
+
+                var totalKaryawan = divisiMap[divisi].length;
+                var hariKerja = [];
+                hariList.forEach(function(h) {
+                    var count = hariCount[h] || 0;
+                    var pct = Math.round((count / totalKaryawan) * 100);
+                    if (pct > 50) {
+                        hariKerja.push(h);
+                    }
+                });
+
+                if (hariKerja.length === 0) {
+                    hariKerja = ['senin', 'selasa', 'rabu', 'kamis', 'jumat', 'sabtu', 'minggu'];
+                }
+
+                var hariHtml = '';
+                hariList.forEach(function(h) {
+                    var active = hariKerja.indexOf(h) !== -1;
+                    hariHtml += '<span class="hari-badge' + (active ? '' : ' off') + '">' + hariLabel[h] + '</span>';
+                });
+
+                html += '<tr>';
+                html += '<td>' + (idx + 1) + '</td>';
+                html += '<td><span class="badge-divisi">' + divisi + '</span></td>';
+                html += '<td style="font-size:11px;">' + hariHtml + '</td>';
+                html += '<td>' + totalKaryawan + ' karyawan</td>';
+                html += '</tr>';
+            });
+
+            html += '</tbody></table>';
+            wrapper.innerHTML = html;
+
+        } catch(e) {
+            console.error('Error:', e);
+            wrapper.innerHTML = '<div class="empty-text"><i class="fas fa-exclamation-triangle"></i> Gagal memuat data</div>';
+        }
+    }
+
+    // ============================================================
+    // INIT
+    // ============================================================
+    loadDivisi();
+    setTimeout(function() {
+        loadLibur();
+        loadHariKerjaAll();
+    }, 300);
+
+    console.log('📅 Manajemen Libur & Hari Kerja loaded!');
+</script>
+
+</body>
+</html>
