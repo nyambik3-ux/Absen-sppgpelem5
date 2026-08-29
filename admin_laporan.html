@@ -1,0 +1,963 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Laporan Formal • Smart Presence</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #0f172a;
+            min-height: 100vh;
+            color: #e2e8f0;
+            padding: 20px;
+        }
+        body.light-mode { background: #f1f5f9; color: #1e293b; }
+        
+        .navbar {
+            background: rgba(15, 23, 42, 0.85);
+            backdrop-filter: blur(20px);
+            padding: 12px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-radius: 16px;
+            max-width: 1400px;
+            margin: 0 auto 20px;
+            border: 1px solid rgba(255,255,255,0.06);
+        }
+        body.light-mode .navbar { background: rgba(255,255,255,0.85); border-color: rgba(0,0,0,0.06); }
+        
+        .logo h2 {
+            font-size: 20px;
+            background: linear-gradient(135deg, #a855f7, #3b82f6);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        .logo span { font-size: 12px; color: #64748b; }
+        
+        .nav-actions { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+        .nav-actions button {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 600;
+            transition: all 0.2s;
+            font-family: 'Inter', sans-serif;
+        }
+        .nav-actions button:active { transform: scale(0.95); }
+        .btn-logout { background: #ef4444; color: white; }
+        .btn-logout:hover { background: #dc2626; }
+        .btn-back { background: #6366f1; color: white; }
+        .btn-back:hover { background: #4f46e5; }
+        .btn-theme { background: #1e293b; color: #e2e8f0; }
+        body.light-mode .btn-theme { background: #e2e8f0; color: #1e293b; }
+        
+        .container { max-width: 1200px; margin: 0 auto; }
+        
+        .filter-card {
+            background: rgba(255,255,255,0.04);
+            border-radius: 16px;
+            padding: 20px 24px;
+            margin-bottom: 20px;
+            border: 1px solid rgba(255,255,255,0.06);
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 14px;
+        }
+        body.light-mode .filter-card { background: white; border-color: rgba(0,0,0,0.06); }
+        
+        .filter-card label { font-size: 13px; font-weight: 600; color: #94a3b8; }
+        .filter-card input[type="date"],
+        .filter-card select {
+            padding: 10px 14px;
+            border-radius: 10px;
+            border: 1px solid rgba(255,255,255,0.1);
+            background: rgba(0,0,0,0.3);
+            color: white;
+            font-family: 'Inter', sans-serif;
+            font-size: 14px;
+            min-width: 150px;
+        }
+        body.light-mode .filter-card input[type="date"],
+        body.light-mode .filter-card select { background: #f1f5f9; color: #1e293b; border-color: #cbd5e1; }
+        .filter-card input:focus, .filter-card select:focus {
+            outline: none;
+            border-color: #a855f7;
+        }
+        
+        .filter-card .btn-primary {
+            padding: 10px 24px;
+            background: linear-gradient(135deg, #a855f7, #3b82f6);
+            border: none;
+            border-radius: 10px;
+            color: white;
+            font-weight: 700;
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+            font-size: 14px;
+        }
+        .filter-card .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 4px 15px rgba(168,85,247,0.4); }
+        .filter-card .btn-success {
+            padding: 10px 20px;
+            background: #10b981;
+            border: none;
+            border-radius: 10px;
+            color: white;
+            font-weight: 700;
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+            font-size: 13px;
+        }
+        .filter-card .btn-success:hover { background: #059669; }
+        .filter-card .btn-print {
+            padding: 10px 20px;
+            background: #f59e0b;
+            border: none;
+            border-radius: 10px;
+            color: white;
+            font-weight: 700;
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+            font-size: 13px;
+        }
+        .filter-card .btn-print:hover { background: #d97706; }
+        .filter-card .btn-refresh {
+            padding: 10px 20px;
+            background: #6366f1;
+            border: none;
+            border-radius: 10px;
+            color: white;
+            font-weight: 700;
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+            font-size: 13px;
+        }
+        .filter-card .btn-refresh:hover { background: #4f46e5; }
+        
+        /* PREVIEW LAPORAN */
+        .laporan-preview {
+            background: white;
+            color: #1e293b;
+            border-radius: 16px;
+            padding: 40px;
+            max-width: 1100px;
+            margin: 0 auto;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+            font-family: 'Times New Roman', Times, serif;
+        }
+        body.light-mode .laporan-preview { box-shadow: 0 10px 40px rgba(0,0,0,0.1); }
+        
+        .laporan-preview .kop {
+            text-align: center;
+            padding-bottom: 16px;
+            border-bottom: 3px double #1e293b;
+            margin-bottom: 20px;
+        }
+        .laporan-preview .kop .instansi {
+            font-size: 14px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            color: #0f172a;
+        }
+        .laporan-preview .kop .instansi-2 {
+            font-size: 20px;
+            font-weight: 800;
+            letter-spacing: 2px;
+            color: #0f172a;
+            margin-top: 2px;
+        }
+        .laporan-preview .kop .yayasan {
+            font-size: 13px;
+            font-weight: 500;
+            color: #475569;
+            margin-top: 2px;
+        }
+        .laporan-preview .kop .alamat {
+            font-size: 12px;
+            color: #64748b;
+            margin-top: 4px;
+        }
+        .laporan-preview .kop .email {
+            font-size: 12px;
+            color: #64748b;
+        }
+        .laporan-preview .kop .judul {
+            font-size: 24px;
+            font-weight: 800;
+            letter-spacing: 3px;
+            color: #0f172a;
+            margin-top: 14px;
+        }
+        .laporan-preview .kop .periode {
+            font-size: 14px;
+            color: #475569;
+            margin-top: 4px;
+        }
+        .laporan-preview .kop .tgl-cetak {
+            font-size: 12px;
+            color: #94a3b8;
+            margin-top: 2px;
+        }
+        
+        .laporan-preview .summary {
+            display: flex;
+            gap: 16px;
+            justify-content: center;
+            margin: 16px 0 20px;
+            flex-wrap: wrap;
+        }
+        .laporan-preview .summary-item {
+            padding: 8px 16px;
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
+            text-align: center;
+            min-width: 80px;
+            background: #f8fafc;
+        }
+        .laporan-preview .summary-item .num {
+            font-size: 20px;
+            font-weight: 700;
+        }
+        .laporan-preview .summary-item .label {
+            font-size: 10px;
+            color: #64748b;
+        }
+        .laporan-preview .summary-item .num.hadir { color: #059669; }
+        .laporan-preview .summary-item .num.alfa { color: #b91c1c; }
+        .laporan-preview .summary-item .num.libur { color: #2563eb; }
+        .laporan-preview .summary-item .num.izin { color: #7c3aed; }
+        .laporan-preview .summary-item .num.total { color: #0f172a; }
+        .laporan-preview .summary-item .num.telat { color: #d97706; }
+        
+        .laporan-preview table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 12px 0 16px;
+            font-size: 11px;
+        }
+        .laporan-preview th, .laporan-preview td {
+            padding: 4px 6px;
+            border: 1px solid #cbd5e1;
+            text-align: center;
+            vertical-align: middle;
+        }
+        .laporan-preview th {
+            background: #f1f5f9;
+            font-weight: 700;
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+        .laporan-preview td .status-label {
+            display: inline-block;
+            padding: 1px 6px;
+            border-radius: 3px;
+            font-weight: 600;
+            font-size: 9px;
+            min-width: 22px;
+        }
+        .laporan-preview td .status-label.hadir { background: #d1fae5; color: #059669; }
+        .laporan-preview td .status-label.alfa { background: #fee2e2; color: #b91c1c; }
+        .laporan-preview td .status-label.izin { background: #ede9fe; color: #7c3aed; }
+        .laporan-preview td .status-label.libur { background: #dbeafe; color: #2563eb; }
+        .laporan-preview td .status-label.telat { background: #fef3c7; color: #d97706; }
+        
+        .laporan-preview .legenda {
+            display: flex;
+            gap: 16px;
+            justify-content: center;
+            margin: 10px 0 16px;
+            flex-wrap: wrap;
+            padding: 8px 14px;
+            background: #f8fafc;
+            border-radius: 6px;
+            border: 1px solid #e2e8f0;
+        }
+        .laporan-preview .legenda-item {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 10px;
+            font-weight: 600;
+        }
+        .laporan-preview .legenda-item .dot {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 3px;
+        }
+        .laporan-preview .legenda-item .dot.hadir { background: #059669; }
+        .laporan-preview .legenda-item .dot.alfa { background: #b91c1c; }
+        .laporan-preview .legenda-item .dot.izin { background: #7c3aed; }
+        .laporan-preview .legenda-item .dot.libur { background: #2563eb; }
+        .laporan-preview .legenda-item .dot.telat { background: #d97706; }
+        
+        .laporan-preview .ttd {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 24px;
+            padding-top: 16px;
+            border-top: 1px solid #cbd5e1;
+        }
+        .laporan-preview .ttd-box {
+            text-align: center;
+            width: 45%;
+        }
+        .laporan-preview .ttd-box .label {
+            font-size: 10px;
+            color: #64748b;
+            margin-bottom: 2px;
+        }
+        .laporan-preview .ttd-box .nama {
+            font-size: 12px;
+            font-weight: 700;
+            margin-top: 2px;
+        }
+        .laporan-preview .ttd-box .jabatan {
+            font-size: 10px;
+            color: #475569;
+        }
+        .laporan-preview .ttd-box .line {
+            width: 180px;
+            border-bottom: 1px solid #1e293b;
+            margin: 32px auto 2px;
+            max-width: 100%;
+        }
+        .laporan-preview .footer {
+            text-align: center;
+            font-size: 9px;
+            color: #94a3b8;
+            margin-top: 12px;
+            padding-top: 10px;
+            border-top: 1px solid #e2e8f0;
+        }
+        
+        .laporan-preview .logo-img {
+            height: 60px;
+            width: auto;
+            object-fit: contain;
+        }
+        
+        .loading-text { text-align: center; color: #64748b; padding: 40px 0; font-size: 14px; }
+        .empty-text { text-align: center; color: #64748b; padding: 30px 0; font-size: 14px; }
+        
+        .toast-custom {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #1e293b;
+            color: white;
+            padding: 14px 28px;
+            border-radius: 16px;
+            font-weight: 600;
+            font-size: 14px;
+            z-index: 9999;
+            border-left: 4px solid #10b981;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+            animation: slideUp 0.3s ease;
+            max-width: 90%;
+            font-family: 'Inter', sans-serif;
+        }
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateX(-50%) translateY(30px); }
+            to { opacity: 1; transform: translateX(-50%) translateY(0); }
+        }
+        
+        @media (max-width: 768px) {
+            .navbar { flex-wrap: wrap; gap: 10px; padding: 12px 16px; }
+            .filter-card { flex-direction: column; align-items: stretch; }
+            .filter-card input[type="date"], .filter-card select { width: 100%; min-width: auto; }
+            .laporan-preview { padding: 20px; }
+            .laporan-preview table { font-size: 9px; }
+            .laporan-preview th, .laporan-preview td { padding: 2px 3px; }
+            .laporan-preview .kop .instansi-2 { font-size: 16px; }
+            .laporan-preview .kop .judul { font-size: 18px; }
+            .laporan-preview .summary-item { min-width: 60px; padding: 4px 10px; }
+            .laporan-preview .summary-item .num { font-size: 16px; }
+            .nav-actions { flex-wrap: wrap; }
+            .laporan-preview .ttd { flex-direction: column; gap: 20px; align-items: center; }
+            .laporan-preview .ttd-box { width: 100%; }
+        }
+        
+        @media print {
+            body { background: white; padding: 0; }
+            .navbar { display: none; }
+            .filter-card { display: none; }
+            .laporan-preview { box-shadow: none; padding: 20px 30px; border-radius: 0; }
+            .laporan-preview .ttd-box .line { margin: 32px auto 2px; }
+            .toast-custom { display: none; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar">
+    <div class="logo">
+        <h2>📋 RelawanTrack</h2>
+        <span>Laporan Formal</span>
+    </div>
+    <div class="nav-actions">
+        <button class="btn-back" onclick="window.location.href='admin_dashboard.html'">
+            <i class="fas fa-arrow-left"></i> Dashboard
+        </button>
+        <button class="btn-theme" onclick="toggleTheme()">
+            <i class="fas fa-moon" id="themeIcon"></i>
+        </button>
+        <span id="adminName" style="font-weight:600;font-size:14px;">Admin</span>
+        <button class="btn-logout" onclick="doLogout()">
+            <i class="fas fa-sign-out-alt"></i> Keluar
+        </button>
+    </div>
+</nav>
+
+<div class="container">
+
+    <!-- FILTER -->
+    <div class="filter-card">
+        <label><i class="fas fa-calendar-alt"></i> Periode:</label>
+        <input type="date" id="startDate">
+        <span style="color:#64748b;">s/d</span>
+        <input type="date" id="endDate">
+        
+        <label><i class="fas fa-users"></i> Divisi:</label>
+        <select id="filterDivisi">
+            <option value="">Semua Divisi</option>
+        </select>
+        
+        <button class="btn-primary" onclick="loadLaporan()">
+            <i class="fas fa-search"></i> Tampilkan
+        </button>
+        <button class="btn-print" onclick="cetakLaporan()">
+            <i class="fas fa-print"></i> Cetak / PDF
+        </button>
+        <button class="btn-refresh" onclick="refreshData()">
+            <i class="fas fa-sync-alt"></i>
+        </button>
+    </div>
+
+    <!-- PREVIEW LAPORAN -->
+    <div id="laporanContainer">
+        <div class="loading-text"><i class="fas fa-spinner fa-pulse"></i> Silakan pilih periode dan klik Tampilkan</div>
+    </div>
+
+</div>
+
+<script>
+    // ============================================================
+    // KONFIGURASI SUPABASE
+    // ============================================================
+    var SUPABASE_URL = 'https://zcaqqybonpfishwkmffg.supabase.co';
+    var SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpjYXFxeWJvbnBmaXNod2ttZmZnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODc2Mjc2NDgsImV4cCI6MjEwMzIwMzY0OH0.pBk5nwJI3u9n08onTNmvcOFxtCXQvv-ipYIu2f_iAiQ';
+
+    // ============================================================
+    // CEK LOGIN
+    // ============================================================
+    if (!localStorage.getItem('admin_logged_in')) {
+        window.location.href = 'admin_login.html';
+    }
+    document.getElementById('adminName').textContent = localStorage.getItem('admin_username') || 'Admin';
+
+    // ============================================================
+    // VARIABLES
+    // ============================================================
+    var allData = [];
+    var dateList = [];
+    var hariLiburMap = {};
+
+    // ============================================================
+    // FUNGSI TANGGAL
+    // ============================================================
+    function getTodayIndonesia() {
+        var now = new Date();
+        var offset = 7 * 60 * 60 * 1000;
+        return new Date(now.getTime() + offset).toISOString().split('T')[0];
+    }
+
+    function getDateIndonesia(date) {
+        var offset = 7 * 60 * 60 * 1000;
+        return new Date(date.getTime() + offset).toISOString().split('T')[0];
+    }
+
+    function parseDateIndonesia(dateStr) {
+        var parts = dateStr.split('-');
+        return new Date(parts[0], parts[1] - 1, parts[2]);
+    }
+
+    function formatTanggalDisplay(dateStr) {
+        var d = new Date(dateStr + 'T00:00:00');
+        var bulan = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
+        return d.getDate() + ' ' + bulan[d.getMonth()] + ' ' + d.getFullYear();
+    }
+
+    function setDefaultDates() {
+        var todayStr = getTodayIndonesia();
+        var end = todayStr;
+        var today = new Date();
+        var offset = 7 * 60 * 60 * 1000;
+        var localToday = new Date(today.getTime() + offset);
+        var startDate = new Date(localToday);
+        startDate.setDate(startDate.getDate() - 29);
+        var start = getDateIndonesia(startDate);
+        document.getElementById('startDate').value = start;
+        document.getElementById('endDate').value = end;
+    }
+    setDefaultDates();
+
+    // ============================================================
+    // THEME
+    // ============================================================
+    function toggleTheme() {
+        document.body.classList.toggle('light-mode');
+        var icon = document.getElementById('themeIcon');
+        icon.className = document.body.classList.contains('light-mode') ? 'fas fa-sun' : 'fas fa-moon';
+    }
+
+    // ============================================================
+    // TOAST
+    // ============================================================
+    function showToast(msg, type) {
+        type = type || 'success';
+        var existing = document.querySelector('.toast-custom');
+        if (existing) existing.remove();
+        var toast = document.createElement('div');
+        toast.className = 'toast-custom';
+        var colors = { success: '#10b981', error: '#ef4444', warning: '#f59e0b', info: '#3b82f6' };
+        toast.style.borderLeftColor = colors[type] || '#10b981';
+        var icons = { success: '✅', error: '❌', warning: '⚠️', info: 'ℹ️' };
+        toast.innerHTML = (icons[type] || 'ℹ️') + ' ' + msg;
+        document.body.appendChild(toast);
+        setTimeout(function() {
+            toast.style.opacity = '0';
+            toast.style.transform = 'translateX(-50%) translateY(20px)';
+            setTimeout(function() { toast.remove(); }, 300);
+        }, 3000);
+    }
+
+    // ============================================================
+    // LOGOUT
+    // ============================================================
+    function doLogout() {
+        if (confirm('Yakin ingin keluar?')) {
+            localStorage.removeItem('admin_logged_in');
+            localStorage.removeItem('admin_username');
+            window.location.href = 'admin_login.html';
+        }
+    }
+
+    // ============================================================
+    // LOAD HARI LIBUR
+    // ============================================================
+    async function loadHariLibur() {
+        try {
+            var response = await fetch(
+                SUPABASE_URL + '/rest/v1/hari_libur?select=tanggal,divisi',
+                {
+                    headers: {
+                        'apikey': SUPABASE_ANON_KEY,
+                        'Authorization': 'Bearer ' + SUPABASE_ANON_KEY
+                    }
+                }
+            );
+            var data = await response.json();
+            hariLiburMap = {};
+            data.forEach(function(item) {
+                var key = item.tanggal + '|' + item.divisi;
+                hariLiburMap[key] = true;
+            });
+        } catch(e) {
+            hariLiburMap = {};
+        }
+    }
+
+    function isTanggalLibur(tanggal, divisi) {
+        var key = tanggal + '|' + divisi;
+        return hariLiburMap[key] || false;
+    }
+
+    // ============================================================
+    // LOAD FILTER OPTIONS
+    // ============================================================
+    async function loadFilterOptions() {
+        try {
+            var response = await fetch(SUPABASE_URL + '/rest/v1/karyawan?select=divisi', {
+                headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': 'Bearer ' + SUPABASE_ANON_KEY }
+            });
+            var karyawan = await response.json();
+
+            var divisiSet = new Set();
+            karyawan.forEach(function(k) { if (k.divisi) divisiSet.add(k.divisi); });
+
+            var select = document.getElementById('filterDivisi');
+            select.innerHTML = '<option value="">Semua Divisi</option>';
+            divisiSet.forEach(function(d) {
+                select.innerHTML += '<option value="' + d + '">' + d + '</option>';
+            });
+
+        } catch(e) {
+            console.error('Gagal load filter:', e);
+        }
+    }
+
+    // ============================================================
+    // LOAD LAPORAN
+    // ============================================================
+    async function loadLaporan() {
+        var start = document.getElementById('startDate').value;
+        var end = document.getElementById('endDate').value;
+        var divisiFilter = document.getElementById('filterDivisi').value;
+
+        if (!start || !end) {
+            showToast('Pilih tanggal dulu!', 'warning');
+            return;
+        }
+
+        var container = document.getElementById('laporanContainer');
+        container.innerHTML = '<div class="loading-text"><i class="fas fa-spinner fa-pulse"></i> Memuat data...</div>';
+
+        try {
+            await loadHariLibur();
+
+            // Build query karyawan
+            var karyawanQuery = SUPABASE_URL + '/rest/v1/karyawan?select=id,nama,divisi,jam_masuk,jam_pulang';
+            if (divisiFilter) {
+                karyawanQuery += '&divisi=eq.' + encodeURIComponent(divisiFilter);
+            }
+            karyawanQuery += '&order=nama';
+
+            var karyawanRes = await fetch(karyawanQuery, {
+                headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': 'Bearer ' + SUPABASE_ANON_KEY }
+            });
+            var karyawan = await karyawanRes.json();
+
+            if (!karyawan || karyawan.length === 0) {
+                container.innerHTML = '<div class="empty-text"><i class="fas fa-inbox"></i> Tidak ada karyawan</div>';
+                return;
+            }
+
+            // Load absensi
+            var absenRes = await fetch(
+                SUPABASE_URL + '/rest/v1/absensi?select=*&tanggal=gte.' + start + '&tanggal=lte.' + end,
+                {
+                    headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': 'Bearer ' + SUPABASE_ANON_KEY }
+                }
+            );
+            var absensi = await absenRes.json();
+
+            // Map absensi
+            var absenMap = {};
+            absensi.forEach(function(a) {
+                var key = a.karyawan_id + '|' + a.tanggal;
+                absenMap[key] = a;
+            });
+
+            // Generate date list
+            dateList = [];
+            var dStart = parseDateIndonesia(start);
+            var dEnd = parseDateIndonesia(end);
+            for (var d = new Date(dStart); d <= dEnd; d.setDate(d.getDate() + 1)) {
+                dateList.push(getDateIndonesia(d));
+            }
+
+            // Build data
+            allData = [];
+            var totalHadir = 0, totalTelat = 0, totalAlfa = 0, totalIzin = 0;
+
+            karyawan.forEach(function(k) {
+                var row = {
+                    id: k.id,
+                    nama: k.nama || k.id,
+                    divisi: k.divisi || '-',
+                    targetMasuk: k.jam_masuk || '08:00',
+                    targetPulang: k.jam_pulang || '17:00',
+                    dates: [],
+                    hadir: 0,
+                    telat: 0,
+                    alfa: 0,
+                    izin: 0
+                };
+
+                dateList.forEach(function(tgl) {
+                    var isLibur = isTanggalLibur(tgl, row.divisi);
+                    var key = k.id + '|' + tgl;
+                    var abs = absenMap[key];
+                    
+                    var status = 'alfa';
+                    var statusLabel = '❌';
+                    var jamMasuk = '-';
+                    var jamPulang = '-';
+
+                    if (isLibur) {
+                        status = 'libur';
+                        statusLabel = '🔵';
+                    } else if (abs) {
+                        jamMasuk = abs.jam_masuk || '-';
+                        jamPulang = abs.jam_pulang || '-';
+                        
+                        if (abs.status === 'izin') {
+                            status = 'izin';
+                            statusLabel = '📝';
+                            row.izin++;
+                            totalIzin++;
+                        } else if (jamMasuk !== '-') {
+                            if (jamMasuk <= row.targetMasuk) {
+                                status = 'hadir';
+                                statusLabel = '✅';
+                                row.hadir++;
+                                totalHadir++;
+                            } else {
+                                status = 'telat';
+                                statusLabel = '⏰';
+                                row.telat++;
+                                totalTelat++;
+                            }
+                        } else {
+                            status = 'alfa';
+                            statusLabel = '❌';
+                            row.alfa++;
+                            totalAlfa++;
+                        }
+                    } else {
+                        status = 'alfa';
+                        statusLabel = '❌';
+                        row.alfa++;
+                        totalAlfa++;
+                    }
+                    
+                    row.dates.push({
+                        tanggal: tgl,
+                        status: status,
+                        statusLabel: statusLabel,
+                        jamMasuk: jamMasuk,
+                        jamPulang: jamPulang,
+                        isLibur: isLibur
+                    });
+                });
+
+                allData.push(row);
+            });
+
+            renderLaporan(totalHadir, totalTelat, totalAlfa, totalIzin);
+
+        } catch(e) {
+            console.error('Error:', e);
+            container.innerHTML = '<div class="empty-text"><i class="fas fa-exclamation-triangle"></i> Gagal memuat data</div>';
+            showToast('Gagal memuat data!', 'error');
+        }
+    }
+
+    // ============================================================
+    // RENDER LAPORAN
+    // ============================================================
+    function renderLaporan(totalHadir, totalTelat, totalAlfa, totalIzin) {
+        var container = document.getElementById('laporanContainer');
+
+        var start = document.getElementById('startDate').value;
+        var end = document.getElementById('endDate').value;
+        var divisiFilter = document.getElementById('filterDivisi').value;
+
+        var dStart = parseDateIndonesia(start);
+        var dEnd = parseDateIndonesia(end);
+        var bulan = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
+        var periode = dStart.getDate() + ' ' + bulan[dStart.getMonth()] + ' ' + dStart.getFullYear() + ' - ' + dEnd.getDate() + ' ' + bulan[dEnd.getMonth()] + ' ' + dEnd.getFullYear();
+
+        var now = new Date();
+        var tglCetak = now.getDate() + ' ' + bulan[now.getMonth()] + ' ' + now.getFullYear();
+
+        var totalKaryawan = allData.length;
+
+        // Build table HTML
+        var tableHtml = '<table><thead><tr>';
+        tableHtml += '<th>No</th><th>Nama</th><th>Divisi</th>';
+
+        dateList.forEach(function(tgl) {
+            var d = parseDateIndonesia(tgl);
+            tableHtml += '<th>' + d.getDate() + '/' + (d.getMonth()+1) + '</th>';
+        });
+
+        tableHtml += '<th>Total</th></tr></thead><tbody>';
+
+        allData.forEach(function(row, idx) {
+            tableHtml += '<tr>';
+            tableHtml += '<td>' + (idx + 1) + '</td>';
+            tableHtml += '<td style="text-align:left;font-weight:600;">' + row.nama + '</td>';
+            tableHtml += '<td>' + row.divisi + '</td>';
+
+            row.dates.forEach(function(d) {
+                var cls = d.status;
+                var label = d.statusLabel;
+                tableHtml += '<td><span class="status-label ' + cls + '">' + label + '</span></td>';
+            });
+
+            var total = row.hadir + row.telat + row.izin;
+            var totalHari = row.dates.filter(function(d) { return !d.isLibur; }).length;
+            tableHtml += '<td><strong>' + total + '/' + totalHari + '</strong></td>';
+            tableHtml += '</tr>';
+        });
+
+        tableHtml += '</tbody></table>';
+
+        // Build full laporan
+        var html = '';
+        html += '<div class="laporan-preview" id="laporanContent">';
+
+        // KOP
+        html += '<div class="kop">';
+        html += '<div style="display:flex;align-items:center;justify-content:center;gap:16px;margin-bottom:4px;flex-wrap:wrap;">';
+        html += '<img src="https://drive.google.com/uc?export=view&id=1HCIoFvovm4rUimNL03oX86tMGI_s7cEx" alt="Logo SPPG" class="logo-img">';
+        html += '<div style="text-align:left;">';
+        html += '<div class="instansi">SATUAN PELAYANAN PEMENUHAN GIZI (SPPG)</div>';
+        html += '<div class="instansi-2">SPPG KEDIRI PELEM 5</div>';
+        html += '<div class="yayasan">YAYASAN RIHLAH CAHAYA BANGSA</div>';
+        html += '</div></div>';
+        html += '<div class="alamat">Jl. Langkat, Singgahan Pelem Kec. Pare, Kab. Kediri, Jawa Timur 64213</div>';
+        html += '<div class="email">E-mail : sppgpelem10@gmail.com</div>';
+        html += '<div class="judul">LAPORAN ABSENSI KARYAWAN</div>';
+        html += '<div class="periode">Periode : ' + periode + '</div>';
+        html += '<div class="tgl-cetak">Dicetak : ' + tglCetak + '</div>';
+        if (divisiFilter) {
+            html += '<div style="font-size:12px;color:#475569;margin-top:4px;">Divisi : ' + divisiFilter + '</div>';
+        }
+        html += '</div>';
+
+        // SUMMARY
+        html += '<div class="summary">';
+        html += '<div class="summary-item"><div class="num total">' + totalKaryawan + '</div><div class="label">👥 Total Karyawan</div></div>';
+        html += '<div class="summary-item"><div class="num hadir">' + totalHadir + '</div><div class="label">✅ Tepat Waktu</div></div>';
+        html += '<div class="summary-item"><div class="num telat">' + totalTelat + '</div><div class="label">⏰ Terlambat</div></div>';
+        html += '<div class="summary-item"><div class="num alfa">' + totalAlfa + '</div><div class="label">❌ Alfa</div></div>';
+        html += '<div class="summary-item"><div class="num izin">' + totalIzin + '</div><div class="label">📝 Izin</div></div>';
+        html += '</div>';
+
+        // TABLE
+        html += tableHtml;
+
+        // LEGENDA
+        html += '<div class="legenda">';
+        html += '<div class="legenda-item"><span class="dot hadir"></span> Tepat Waktu</div>';
+        html += '<div class="legenda-item"><span class="dot telat"></span> Terlambat</div>';
+        html += '<div class="legenda-item"><span class="dot alfa"></span> Alfa</div>';
+        html += '<div class="legenda-item"><span class="dot izin"></span> Izin</div>';
+        html += '<div class="legenda-item"><span class="dot libur"></span> Libur</div>';
+        html += '</div>';
+
+        // TTD
+        html += '<div class="ttd">';
+        html += '<div class="ttd-box"><div class="label">Mengetahui,</div><div class="line"></div><div class="nama">Ikhwanul Muchlisin</div><div class="jabatan">Asisten Lapangan II</div></div>';
+        html += '<div class="ttd-box"><div class="label">Kepala SPPG,</div><div class="line"></div><div class="nama">Faisal Eko Cahyono</div><div class="jabatan">Kepala SPPG Pelem 5</div></div>';
+        html += '</div>';
+
+        html += '<div class="footer">Laporan ini dibuat secara otomatis oleh sistem Smart Presence</div>';
+
+        html += '</div>';
+
+        container.innerHTML = html;
+    }
+
+    // ============================================================
+    // CETAK LAPORAN
+    // ============================================================
+    function cetakLaporan() {
+        var content = document.getElementById('laporanContent');
+        if (!content) {
+            showToast('Tidak ada data untuk dicetak!', 'warning');
+            return;
+        }
+
+        var win = window.open('', '_blank', 'width=1000,height=800');
+        if (!win) {
+            showToast('❌ Popup diblokir! Izinkan popup untuk mencetak.', 'error');
+            return;
+        }
+
+        var html = '<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Laporan Absensi</title>';
+        html += '<style>';
+        html += '* { margin: 0; padding: 0; box-sizing: border-box; } ';
+        html += '@page { size: A4; margin: 15mm 20mm; } ';
+        html += 'body { font-family: Times New Roman, Times, serif; background: white; color: #1e293b; padding: 20px 30px; font-size: 12px; } ';
+        html += '.kop { text-align: center; padding-bottom: 16px; border-bottom: 3px double #1e293b; margin-bottom: 20px; } ';
+        html += '.kop .instansi { font-size: 14px; font-weight: 700; letter-spacing: 1px; color: #0f172a; } ';
+        html += '.kop .instansi-2 { font-size: 20px; font-weight: 800; letter-spacing: 2px; color: #0f172a; margin-top: 2px; } ';
+        html += '.kop .yayasan { font-size: 13px; font-weight: 500; color: #475569; margin-top: 2px; } ';
+        html += '.kop .alamat { font-size: 12px; color: #64748b; margin-top: 4px; } ';
+        html += '.kop .email { font-size: 12px; color: #64748b; } ';
+        html += '.kop .judul { font-size: 24px; font-weight: 800; letter-spacing: 3px; color: #0f172a; margin-top: 14px; } ';
+        html += '.kop .periode { font-size: 14px; color: #475569; margin-top: 4px; } ';
+        html += '.kop .tgl-cetak { font-size: 12px; color: #94a3b8; margin-top: 2px; } ';
+        html += '.summary { display: flex; gap: 16px; justify-content: center; margin: 16px 0 20px; flex-wrap: wrap; } ';
+        html += '.summary-item { padding: 8px 16px; border: 1px solid #cbd5e1; border-radius: 6px; text-align: center; min-width: 80px; background: #f8fafc; } ';
+        html += '.summary-item .num { font-size: 20px; font-weight: 700; } ';
+        html += '.summary-item .label { font-size: 10px; color: #64748b; } ';
+        html += '.summary-item .num.hadir { color: #059669; } ';
+        html += '.summary-item .num.alfa { color: #b91c1c; } ';
+        html += '.summary-item .num.libur { color: #2563eb; } ';
+        html += '.summary-item .num.izin { color: #7c3aed; } ';
+        html += '.summary-item .num.total { color: #0f172a; } ';
+        html += '.summary-item .num.telat { color: #d97706; } ';
+        html += 'table { width: 100%; border-collapse: collapse; margin: 12px 0 16px; font-size: 10px; } ';
+        html += 'th, td { padding: 4px 6px; border: 1px solid #cbd5e1; text-align: center; vertical-align: middle; } ';
+        html += 'th { background: #f1f5f9; font-weight: 700; font-size: 9px; text-transform: uppercase; letter-spacing: 0.3px; } ';
+        html += 'td .status-label { display: inline-block; padding: 1px 6px; border-radius: 3px; font-weight: 600; font-size: 9px; min-width: 22px; } ';
+        html += 'td .status-label.hadir { background: #d1fae5; color: #059669; } ';
+        html += 'td .status-label.alfa { background: #fee2e2; color: #b91c1c; } ';
+        html += 'td .status-label.izin { background: #ede9fe; color: #7c3aed; } ';
+        html += 'td .status-label.libur { background: #dbeafe; color: #2563eb; } ';
+        html += 'td .status-label.telat { background: #fef3c7; color: #d97706; } ';
+        html += '.legenda { display: flex; gap: 16px; justify-content: center; margin: 10px 0 16px; flex-wrap: wrap; padding: 8px 14px; background: #f8fafc; border-radius: 6px; border: 1px solid #e2e8f0; } ';
+        html += '.legenda-item { display: flex; align-items: center; gap: 4px; font-size: 10px; font-weight: 600; } ';
+        html += '.legenda-item .dot { display: inline-block; width: 12px; height: 12px; border-radius: 3px; } ';
+        html += '.legenda-item .dot.hadir { background: #059669; } ';
+        html += '.legenda-item .dot.alfa { background: #b91c1c; } ';
+        html += '.legenda-item .dot.izin { background: #7c3aed; } ';
+        html += '.legenda-item .dot.libur { background: #2563eb; } ';
+        html += '.legenda-item .dot.telat { background: #d97706; } ';
+        html += '.ttd { display: flex; justify-content: space-between; margin-top: 24px; padding-top: 16px; border-top: 1px solid #cbd5e1; } ';
+        html += '.ttd-box { text-align: center; width: 45%; } ';
+        html += '.ttd-box .label { font-size: 10px; color: #64748b; margin-bottom: 2px; } ';
+        html += '.ttd-box .nama { font-size: 12px; font-weight: 700; margin-top: 2px; } ';
+        html += '.ttd-box .jabatan { font-size: 10px; color: #475569; } ';
+        html += '.ttd-box .line { width: 180px; border-bottom: 1px solid #1e293b; margin: 32px auto 2px; max-width: 100%; } ';
+        html += '.footer { text-align: center; font-size: 9px; color: #94a3b8; margin-top: 12px; padding-top: 10px; border-top: 1px solid #e2e8f0; } ';
+        html += '.logo-img { height: 60px; width: auto; object-fit: contain; } ';
+        html += '@media print { body { padding: 0; } } ';
+        html += '</style></head><body>';
+
+        // Copy content dari preview
+        html += content.innerHTML;
+
+        html += '<script>window.print();<\/script>';
+        html += '</body></html>';
+
+        win.document.write(html);
+        win.document.close();
+    }
+
+    // ============================================================
+    // REFRESH
+    // ============================================================
+    function refreshData() {
+        showToast('🔄 Memperbarui data...', 'info');
+        loadLaporan();
+        setTimeout(function() {
+            showToast('✅ Data diperbarui!', 'success');
+        }, 500);
+    }
+
+    // ============================================================
+    // INIT
+    // ============================================================
+    loadFilterOptions();
+    console.log('📄 Laporan Formal loaded!');
+</script>
+
+</body>
+</html>
