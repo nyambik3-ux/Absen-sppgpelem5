@@ -444,6 +444,53 @@
             <div class="stat-item"><div class="num tercepat" id="statTercepat">--:--</div><div class="label">Tercepat</div></div>
         </div>
     </div>
+    <!-- ===== FORM IZIN ===== -->
+<div class="izin-section" style="background:rgba(0,0,0,0.25);border-radius:20px;padding:16px;margin-bottom:16px;border:1px solid rgba(255,255,255,0.04);">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+        <h4 style="font-size:14px;font-weight:700;color:white;display:flex;align-items:center;gap:8px;">
+            <i class="fas fa-file-pen" style="color:#f59e0b;"></i> Ajukan Izin
+            <span style="font-size:10px;font-weight:400;color:#94a3b8;margin-left:8px;" id="izinCountLabel">(0/2 bulan ini)</span>
+        </h4>
+        <button onclick="toggleIzinForm()" style="background:rgba(255,255,255,0.06);border:none;color:#94a3b8;padding:4px 12px;border-radius:8px;cursor:pointer;font-size:12px;font-family:'Inter',sans-serif;">
+            <i class="fas fa-chevron-down" id="izinToggleIcon"></i>
+        </button>
+    </div>
+
+    <div id="izinFormContainer" style="display:none;">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+            <div>
+                <label style="font-size:11px;color:#94a3b8;font-weight:600;display:block;margin-bottom:4px;">Tanggal Izin</label>
+                <input type="date" id="izinTanggal" style="width:100%;padding:10px 12px;border-radius:10px;border:1px solid rgba(255,255,255,0.1);background:rgba(0,0,0,0.3);color:white;font-family:'Inter',sans-serif;font-size:13px;">
+            </div>
+            <div>
+                <label style="font-size:11px;color:#94a3b8;font-weight:600;display:block;margin-bottom:4px;">Alasan Izin</label>
+                <select id="izinAlasan" style="width:100%;padding:10px 12px;border-radius:10px;border:1px solid rgba(255,255,255,0.1);background:rgba(0,0,0,0.3);color:white;font-family:'Inter',sans-serif;font-size:13px;">
+                    <option value="">Pilih alasan</option>
+                    <option value="Sakit">Sakit</option>
+                    <option value="Keperluan Keluarga">Keperluan Keluarga</option>
+                    <option value="Keperluan Pribadi">Keperluan Pribadi</option>
+                    <option value="Acara Penting">Acara Penting</option>
+                    <option value="Lainnya">Lainnya</option>
+                </select>
+            </div>
+        </div>
+        <div style="margin-top:10px;display:flex;gap:10px;">
+            <button onclick="ajukanIzin()" class="btn-izin" style="flex:1;padding:10px;background:linear-gradient(135deg,#f59e0b,#d97706);border:none;border-radius:10px;color:white;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif;font-size:13px;">
+                <i class="fas fa-paper-plane"></i> Ajukan Izin
+            </button>
+        </div>
+    </div>
+
+    <!-- RIWAYAT IZIN USER -->
+    <div style="margin-top:12px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+            <span style="font-size:11px;font-weight:600;color:#94a3b8;">📋 Riwayat Izin Anda</span>
+        </div>
+        <div id="izinRiwayatContainer" style="max-height:150px;overflow-y:auto;">
+            <div style="text-align:center;color:#64748b;font-size:12px;padding:8px 0;">Memuat riwayat izin...</div>
+        </div>
+    </div>
+</div>
 
     <!-- NOTIFIKASI -->
     <div class="notification" id="notification">
@@ -1494,7 +1541,218 @@
         document.getElementById('connectionStatus').textContent = 'Offline';
         document.getElementById('connectionStatus').style.color = '#ef4444';
     });
+// ============================================================
+// FITUR IZIN
+// ============================================================
 
+var izinCount = 0;
+var maxIzinPerBulan = 2;
+
+function toggleIzinForm() {
+    var container = document.getElementById('izinFormContainer');
+    var icon = document.getElementById('izinToggleIcon');
+    if (container.style.display === 'none') {
+        container.style.display = 'block';
+        icon.className = 'fas fa-chevron-up';
+    } else {
+        container.style.display = 'none';
+        icon.className = 'fas fa-chevron-down';
+    }
+}
+
+function getBulanSekarang() {
+    var now = new Date();
+    var offset = 7 * 60 * 60 * 1000;
+    var date = new Date(now.getTime() + offset);
+    return date.getFullYear() + '-' + String(date.getMonth() + 1).padStart(2, '0');
+}
+
+function getTanggalSekarang() {
+    var now = new Date();
+    var offset = 7 * 60 * 60 * 1000;
+    var date = new Date(now.getTime() + offset);
+    return date.toISOString().split('T')[0];
+}
+
+async function loadRiwayatIzin() {
+    var container = document.getElementById('izinRiwayatContainer');
+    var bulan = getBulanSekarang();
+
+    try {
+        var response = await fetch(
+            SUPABASE_URL + '/rest/v1/izin?select=*&karyawan_id=eq.' + user.id + '&order=tanggal.desc',
+            {
+                headers: {
+                    'apikey': SUPABASE_ANON_KEY,
+                    'Authorization': 'Bearer ' + SUPABASE_ANON_KEY
+                }
+            }
+        );
+        var data = await response.json();
+
+        // Hitung izin bulan ini
+        var izinBulanIni = data.filter(function(item) {
+            return item.tanggal && item.tanggal.startsWith(bulan) && item.status === 'disetujui';
+        });
+        izinCount = izinBulanIni.length;
+
+        // Update label
+        document.getElementById('izinCountLabel').textContent = '(' + izinCount + '/' + maxIzinPerBulan + ' bulan ini)';
+
+        if (!data || data.length === 0) {
+            container.innerHTML = '<div style="text-align:center;color:#64748b;font-size:12px;padding:8px 0;">Belum ada riwayat izin</div>';
+            return;
+        }
+
+        var html = '';
+        data.forEach(function(item, idx) {
+            if (idx >= 5) return; // tampilkan 5 terakhir
+
+            var statusClass = '';
+            var statusLabel = '';
+            var statusColor = '';
+
+            if (item.status === 'pending') {
+                statusClass = 'pending';
+                statusLabel = '⏳ Pending';
+                statusColor = '#f59e0b';
+            } else if (item.status === 'disetujui') {
+                statusClass = 'disetujui';
+                statusLabel = '✅ Disetujui';
+                statusColor = '#34d399';
+            } else if (item.status === 'ditolak') {
+                statusClass = 'ditolak';
+                statusLabel = '❌ Ditolak';
+                statusColor = '#f87171';
+            }
+
+            var tglDisplay = item.tanggal ? formatTanggalIzin(item.tanggal) : '-';
+
+            html += '<div style="display:flex;justify-content:space-between;align-items:center;padding:6px 8px;border-bottom:1px solid rgba(255,255,255,0.04);font-size:12px;">';
+            html += '<div><strong>' + tglDisplay + '</strong> <span style="color:#94a3b8;font-size:11px;">' + (item.alasan || '-') + '</span></div>';
+            html += '<div style="color:' + statusColor + ';font-weight:600;font-size:11px;">' + statusLabel + '</div>';
+            if (item.status === 'ditolak' && item.alasan_tolak) {
+                html += '<div style="font-size:10px;color:#f87171;">⚠️ ' + item.alasan_tolak + '</div>';
+            }
+            html += '</div>';
+        });
+
+        if (data.length > 5) {
+            html += '<div style="text-align:center;color:#64748b;font-size:10px;padding:4px 0;">+ ' + (data.length - 5) + ' lagi</div>';
+        }
+
+        container.innerHTML = html;
+
+        // Set default tanggal = besok
+        var tomorrow = new Date();
+        tomorrow.setDate(tomorrow.getDate() + 1);
+        var tglDefault = tomorrow.toISOString().split('T')[0];
+        document.getElementById('izinTanggal').value = tglDefault;
+
+    } catch(e) {
+        console.error('Error load izin:', e);
+        container.innerHTML = '<div style="text-align:center;color:#64748b;font-size:12px;padding:8px 0;">Gagal memuat riwayat izin</div>';
+    }
+}
+
+function formatTanggalIzin(dateStr) {
+    var d = new Date(dateStr + 'T00:00:00');
+    var bulan = ['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agu','Sep','Okt','Nov','Des'];
+    return d.getDate() + ' ' + bulan[d.getMonth()] + ' ' + d.getFullYear();
+}
+
+async function ajukanIzin() {
+    var tanggal = document.getElementById('izinTanggal').value;
+    var alasan = document.getElementById('izinAlasan').value;
+
+    if (!tanggal) {
+        showToast('Pilih tanggal izin!', 'error');
+        return;
+    }
+
+    if (!alasan) {
+        showToast('Pilih alasan izin!', 'error');
+        return;
+    }
+
+    // Cek kuota
+    if (izinCount >= maxIzinPerBulan) {
+        showToast('⚠️ Kuota izin bulan ini sudah habis (maksimal ' + maxIzinPerBulan + 'x)!', 'error');
+        return;
+    }
+
+    // Cek tanggal tidak boleh hari ini atau kemarin (minimal besok)
+    var today = getTanggalSekarang();
+    if (tanggal <= today) {
+        showToast('⚠️ Izin harus diajukan minimal H-1 (besok atau setelahnya)!', 'error');
+        return;
+    }
+
+    // Cek apakah sudah ada pengajuan untuk tanggal itu
+    try {
+        var checkRes = await fetch(
+            SUPABASE_URL + '/rest/v1/izin?select=id&karyawan_id=eq.' + user.id + '&tanggal=eq.' + tanggal,
+            {
+                headers: {
+                    'apikey': SUPABASE_ANON_KEY,
+                    'Authorization': 'Bearer ' + SUPABASE_ANON_KEY
+                }
+            }
+        );
+        var existing = await checkRes.json();
+
+        if (existing && existing.length > 0) {
+            showToast('⚠️ Anda sudah mengajukan izin untuk tanggal ini!', 'warning');
+            return;
+        }
+
+        // Kirim pengajuan
+        var payload = {
+            karyawan_id: user.id,
+            tanggal: tanggal,
+            alasan: alasan,
+            status: 'pending'
+        };
+
+        var response = await fetch(SUPABASE_URL + '/rest/v1/izin', {
+            method: 'POST',
+            headers: {
+                'apikey': SUPABASE_ANON_KEY,
+                'Authorization': 'Bearer ' + SUPABASE_ANON_KEY,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(payload)
+        });
+
+        if (response.ok) {
+            showToast('✅ Pengajuan izin berhasil dikirim! Menunggu persetujuan admin.', 'success');
+            document.getElementById('izinAlasan').value = '';
+            document.getElementById('izinFormContainer').style.display = 'none';
+            document.getElementById('izinToggleIcon').className = 'fas fa-chevron-down';
+            loadRiwayatIzin();
+            // Kirim notifikasi Telegram ke admin
+            await sendTelegram('📢 <b>PENGAJUAN IZIN</b>\n👤 ' + user.nama + '\n🆔 ' + user.id + '\n📅 ' + tanggal + '\n📝 ' + alasan + '\n⏳ Status: PENDING');
+        } else {
+            var error = await response.text();
+            showToast('❌ Gagal mengajukan izin: ' + error, 'error');
+        }
+    } catch(e) {
+        console.error('Error ajukan izin:', e);
+        showToast('❌ Gagal koneksi!', 'error');
+    }
+}
+
+// Override sendTelegram biar gak error kalo token kosong
+var originalSendTelegram = sendTelegram;
+sendTelegram = async function(msg) {
+    try {
+        if (typeof originalSendTelegram === 'function') {
+            await originalSendTelegram(msg);
+        }
+    } catch(e) {
+        console.log('Telegram notifikasi:', msg);
+    }
+};
     console.log('✅ App ready!');
     console.log('🗓️ Today (WIB):', getTodayIndonesia());
 </script>
