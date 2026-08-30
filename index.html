@@ -1585,6 +1585,11 @@ async function loadRiwayatIzin() {
                 headers: {
                     'apikey': SUPABASE_ANON_KEY,
                     'Authorization': 'Bearer ' + SUPABASE_ANON_KEY
+                    (async function() {
+    await loadHariLibur();
+    await syncStatus();
+    await loadRiwayatIzin(); // 🔥 TAMBAHKAN INI
+})();
                 }
             }
         );
