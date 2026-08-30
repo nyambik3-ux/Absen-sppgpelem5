@@ -3,10 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Edit Absensi • Smart Presence</title>
+    <title>Edit Absensi & Izin • Smart Presence</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
+        /* ===== STYLE (sama kayak sebelumnya, tambahan untuk tabs & izin) ===== */
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             font-family: 'Inter', sans-serif;
@@ -59,55 +60,45 @@
         .btn-theme { background: #1e293b; color: #e2e8f0; }
         body.light-mode .btn-theme { background: #e2e8f0; color: #1e293b; }
         
-        .container { max-width: 800px; margin: 0 auto; }
+        .container { max-width: 1200px; margin: 0 auto; }
         
-        .filter-card {
-            background: rgba(255,255,255,0.04);
-            border-radius: 16px;
-            padding: 20px 24px;
-            margin-bottom: 20px;
-            border: 1px solid rgba(255,255,255,0.06);
+        /* TABS */
+        .tabs {
             display: flex;
-            flex-wrap: wrap;
-            align-items: center;
-            gap: 14px;
+            gap: 4px;
+            margin-bottom: 20px;
+            background: rgba(255,255,255,0.04);
+            border-radius: 14px;
+            padding: 4px;
+            border: 1px solid rgba(255,255,255,0.06);
         }
-        body.light-mode .filter-card { background: white; border-color: rgba(0,0,0,0.06); }
-        
-        .filter-card label { font-size: 13px; font-weight: 600; color: #94a3b8; }
-        .filter-card select,
-        .filter-card input[type="date"] {
-            padding: 10px 14px;
-            border-radius: 10px;
-            border: 1px solid rgba(255,255,255,0.1);
-            background: rgba(0,0,0,0.3);
-            color: white;
-            font-family: 'Inter', sans-serif;
-            font-size: 14px;
-            min-width: 180px;
+        body.light-mode .tabs { background: #f1f5f9; border-color: #e2e8f0; }
+        .tabs button {
             flex: 1;
-        }
-        body.light-mode .filter-card select,
-        body.light-mode .filter-card input[type="date"] { background: #f1f5f9; color: #1e293b; border-color: #cbd5e1; }
-        .filter-card select:focus,
-        .filter-card input:focus {
-            outline: none;
-            border-color: #a855f7;
-        }
-        
-        .filter-card .btn-primary {
-            padding: 10px 24px;
-            background: linear-gradient(135deg, #a855f7, #3b82f6);
+            padding: 12px 20px;
             border: none;
             border-radius: 10px;
-            color: white;
+            background: transparent;
+            color: #94a3b8;
             font-weight: 700;
-            cursor: pointer;
-            font-family: 'Inter', sans-serif;
             font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-family: 'Inter', sans-serif;
         }
-        .filter-card .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 4px 15px rgba(168,85,247,0.4); }
+        .tabs button:hover { color: white; }
+        body.light-mode .tabs button:hover { color: #1e293b; }
+        .tabs button.active {
+            background: #a855f7;
+            color: white;
+            box-shadow: 0 4px 15px rgba(168,85,247,0.3);
+        }
+        body.light-mode .tabs button.active { background: #a855f7; color: white; }
         
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        
+        /* ===== FORM CARD ===== */
         .form-card {
             background: rgba(255,255,255,0.04);
             border-radius: 16px;
@@ -128,7 +119,6 @@
             gap: 10px;
         }
         body.light-mode .form-card .info-bar { border-bottom-color: #e2e8f0; }
-        
         .form-card .info-bar .nama {
             font-size: 20px;
             font-weight: 800;
@@ -162,10 +152,9 @@
             font-weight: 600;
             margin-bottom: 4px;
         }
-        .form-group select,
-        .form-group input {
+        .form-group select, .form-group input, .form-group textarea {
             width: 100%;
-            padding: 12px 16px;
+            padding: 10px 14px;
             border-radius: 10px;
             border: 1px solid rgba(255,255,255,0.1);
             background: rgba(0,0,0,0.3);
@@ -173,18 +162,16 @@
             font-family: 'Inter', sans-serif;
             font-size: 14px;
         }
-        body.light-mode .form-group select,
-        body.light-mode .form-group input {
+        body.light-mode .form-group select, body.light-mode .form-group input, body.light-mode .form-group textarea {
             background: #f1f5f9;
             color: #1e293b;
             border-color: #cbd5e1;
         }
-        .form-group select:focus,
-        .form-group input:focus {
+        .form-group select:focus, .form-group input:focus, .form-group textarea:focus {
             outline: none;
             border-color: #a855f7;
-            box-shadow: 0 0 0 3px rgba(168,85,247,0.2);
         }
+        .form-group textarea { resize: vertical; min-height: 60px; }
         .form-group .form-hint {
             font-size: 11px;
             color: #64748b;
@@ -194,7 +181,7 @@
         .form-row {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 16px;
+            gap: 12px;
         }
         
         .form-actions {
@@ -206,7 +193,6 @@
             flex-wrap: wrap;
         }
         body.light-mode .form-actions { border-top-color: #e2e8f0; }
-        
         .form-actions .btn-save {
             padding: 12px 32px;
             background: #10b981;
@@ -258,6 +244,148 @@
         .form-actions .btn-cancel:hover { background: #334155; }
         body.light-mode .form-actions .btn-cancel:hover { background: #cbd5e1; }
         
+        /* ===== TABLE ===== */
+        .table-container {
+            background: rgba(255,255,255,0.04);
+            border-radius: 16px;
+            padding: 20px;
+            border: 1px solid rgba(255,255,255,0.06);
+            overflow-x: auto;
+        }
+        body.light-mode .table-container { background: white; border-color: rgba(0,0,0,0.06); }
+        .table-container h3 {
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        table { width: 100%; border-collapse: collapse; font-size: 13px; }
+        th, td { padding: 10px 12px; text-align: left; border-bottom: 1px solid rgba(255,255,255,0.06); }
+        body.light-mode th, body.light-mode td { border-bottom-color: #e2e8f0; }
+        
+        th {
+            font-weight: 600;
+            color: #94a3b8;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            position: sticky;
+            top: 0;
+            background: rgba(15,23,42,0.95);
+        }
+        body.light-mode th { background: #f8fafc; color: #64748b; }
+        
+        td .status-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        td .status-badge.pending { background: rgba(245,158,11,0.2); color: #f59e0b; }
+        td .status-badge.disetujui { background: rgba(16,185,129,0.2); color: #34d399; }
+        td .status-badge.ditolak { background: rgba(239,68,68,0.2); color: #f87171; }
+        
+        td .btn-setuju {
+            padding: 4px 12px;
+            background: #10b981;
+            border: none;
+            border-radius: 8px;
+            color: white;
+            font-size: 11px;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+            transition: all 0.2s;
+        }
+        td .btn-setuju:hover { background: #059669; }
+        td .btn-tolak {
+            padding: 4px 12px;
+            background: #ef4444;
+            border: none;
+            border-radius: 8px;
+            color: white;
+            font-size: 11px;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+            transition: all 0.2s;
+        }
+        td .btn-tolak:hover { background: #dc2626; }
+        td .btn-edit-small {
+            padding: 4px 12px;
+            background: #6366f1;
+            border: none;
+            border-radius: 8px;
+            color: white;
+            font-size: 11px;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+            transition: all 0.2s;
+        }
+        td .btn-edit-small:hover { background: #4f46e5; }
+        
+        .filter-card {
+            background: rgba(255,255,255,0.04);
+            border-radius: 16px;
+            padding: 16px 20px;
+            margin-bottom: 20px;
+            border: 1px solid rgba(255,255,255,0.06);
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 12px;
+        }
+        body.light-mode .filter-card { background: white; border-color: rgba(0,0,0,0.06); }
+        .filter-card label { font-size: 13px; font-weight: 600; color: #94a3b8; }
+        .filter-card select, .filter-card input {
+            padding: 8px 14px;
+            border-radius: 10px;
+            border: 1px solid rgba(255,255,255,0.1);
+            background: rgba(0,0,0,0.3);
+            color: white;
+            font-family: 'Inter', sans-serif;
+            font-size: 14px;
+            min-width: 150px;
+        }
+        body.light-mode .filter-card select, body.light-mode .filter-card input {
+            background: #f1f5f9;
+            color: #1e293b;
+            border-color: #cbd5e1;
+        }
+        .filter-card select:focus, .filter-card input:focus {
+            outline: none;
+            border-color: #a855f7;
+        }
+        .filter-card .btn-primary {
+            padding: 10px 24px;
+            background: linear-gradient(135deg, #a855f7, #3b82f6);
+            border: none;
+            border-radius: 10px;
+            color: white;
+            font-weight: 700;
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+            font-size: 14px;
+        }
+        .filter-card .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 4px 15px rgba(168,85,247,0.4); }
+        .filter-card .btn-refresh {
+            padding: 10px 20px;
+            background: #6366f1;
+            border: none;
+            border-radius: 10px;
+            color: white;
+            font-weight: 700;
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+            font-size: 13px;
+        }
+        .filter-card .btn-refresh:hover { background: #4f46e5; }
+        
         .empty-state {
             text-align: center;
             padding: 40px 20px;
@@ -267,6 +395,8 @@
         .empty-state h3 { font-size: 18px; font-weight: 700; color: white; margin-bottom: 4px; }
         body.light-mode .empty-state h3 { color: #1e293b; }
         .empty-state p { font-size: 13px; }
+        
+        .loading-text { text-align: center; color: #64748b; padding: 20px 0; font-size: 14px; }
         
         .toast-custom {
             position: fixed;
@@ -291,16 +421,84 @@
             to { opacity: 1; transform: translateX(-50%) translateY(0); }
         }
         
-        .loading-text { text-align: center; color: #64748b; padding: 20px 0; font-size: 14px; }
+        /* MODAL TOLAK */
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.7);
+            backdrop-filter: blur(8px);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 999;
+        }
+        .modal-overlay.active { display: flex; }
+        
+        .modal-card {
+            background: #1e293b;
+            border-radius: 24px;
+            padding: 32px;
+            width: 90%;
+            max-width: 480px;
+            border: 1px solid rgba(255,255,255,0.06);
+            box-shadow: 0 25px 50px rgba(0,0,0,0.5);
+        }
+        body.light-mode .modal-card { background: white; border-color: rgba(0,0,0,0.06); }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+        }
+        .modal-header h2 { font-size: 20px; font-weight: 700; color: #f87171; }
+        .modal-close {
+            background: none;
+            border: none;
+            color: #94a3b8;
+            font-size: 24px;
+            cursor: pointer;
+        }
+        .modal-close:hover { color: white; }
+        
+        .modal-footer {
+            display: flex;
+            gap: 12px;
+            margin-top: 20px;
+            padding-top: 16px;
+            border-top: 1px solid rgba(255,255,255,0.06);
+            justify-content: flex-end;
+        }
+        .modal-footer button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 10px;
+            font-weight: 700;
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+        .modal-footer button:active { transform: scale(0.95); }
+        .btn-danger-modal { background: #ef4444; color: white; }
+        .btn-danger-modal:hover { background: #dc2626; }
+        .btn-cancel { background: #1e293b; color: #94a3b8; }
+        .btn-cancel:hover { background: #334155; }
+        body.light-mode .btn-cancel { background: #e2e8f0; color: #64748b; }
+        body.light-mode .btn-cancel:hover { background: #cbd5e1; }
         
         @media (max-width: 768px) {
             .navbar { flex-wrap: wrap; gap: 10px; padding: 12px 16px; }
             .filter-card { flex-direction: column; align-items: stretch; }
-            .filter-card select, .filter-card input[type="date"] { width: 100%; min-width: auto; }
+            .filter-card select, .filter-card input { width: 100%; min-width: auto; }
             .form-row { grid-template-columns: 1fr; }
             .form-actions { flex-direction: column; }
             .form-actions button { width: 100%; }
             .nav-actions { flex-wrap: wrap; }
+            .tabs { flex-direction: column; }
+            .tabs button { text-align: center; }
         }
     </style>
 </head>
@@ -310,7 +508,7 @@
 <nav class="navbar">
     <div class="logo">
         <h2>📋 RelawanTrack</h2>
-        <span>Edit Absensi</span>
+        <span>Edit Absensi & Izin</span>
     </div>
     <div class="nav-actions">
         <button class="btn-back" onclick="window.location.href='admin_dashboard.html'">
@@ -328,30 +526,121 @@
 
 <div class="container">
 
-    <!-- FILTER -->
-    <div class="filter-card">
-        <label><i class="fas fa-user"></i> Karyawan:</label>
-        <select id="pilihKaryawan">
-            <option value="">-- Pilih Karyawan --</option>
-        </select>
-        
-        <label><i class="fas fa-calendar-alt"></i> Tanggal:</label>
-        <input type="date" id="pilihTanggal">
-        
-        <button class="btn-primary" onclick="loadAbsensi()">
-            <i class="fas fa-search"></i> Cari
-        </button>
+    <!-- TABS -->
+    <div class="tabs">
+        <button class="active" onclick="switchTab('tabAbsensi', this)">📋 Absensi</button>
+        <button onclick="switchTab('tabIzin', this)">📝 Manajemen Izin</button>
     </div>
 
-    <!-- FORM EDIT -->
-    <div id="formContainer">
-        <div class="empty-state">
-            <span class="icon">📝</span>
-            <h3>Pilih Karyawan & Tanggal</h3>
-            <p>Pilih karyawan dan tanggal di atas untuk mulai edit absensi</p>
+    <!-- ============================================================
+         TAB 1: ABSENSI
+         ============================================================ -->
+    <div class="tab-content active" id="tabAbsensi">
+
+        <div class="filter-card">
+            <label><i class="fas fa-user"></i> Karyawan:</label>
+            <select id="pilihKaryawan">
+                <option value="">-- Pilih Karyawan --</option>
+            </select>
+            
+            <label><i class="fas fa-calendar-alt"></i> Tanggal:</label>
+            <input type="date" id="pilihTanggal">
+            
+            <button class="btn-primary" onclick="loadAbsensi()">
+                <i class="fas fa-search"></i> Cari
+            </button>
+        </div>
+
+        <div id="formContainer">
+            <div class="empty-state">
+                <span class="icon">📝</span>
+                <h3>Pilih Karyawan & Tanggal</h3>
+                <p>Pilih karyawan dan tanggal di atas untuk mulai edit absensi</p>
+            </div>
         </div>
     </div>
 
+    <!-- ============================================================
+         TAB 2: MANAJEMEN IZIN
+         ============================================================ -->
+    <div class="tab-content" id="tabIzin">
+
+        <div class="filter-card">
+            <label><i class="fas fa-user"></i> Karyawan:</label>
+            <select id="filterIzinKaryawan">
+                <option value="">Semua Karyawan</option>
+            </select>
+            
+            <label><i class="fas fa-tag"></i> Status:</label>
+            <select id="filterIzinStatus">
+                <option value="">Semua Status</option>
+                <option value="pending">⏳ Pending</option>
+                <option value="disetujui">✅ Disetujui</option>
+                <option value="ditolak">❌ Ditolak</option>
+            </select>
+            
+            <button class="btn-primary" onclick="loadIzin()">
+                <i class="fas fa-search"></i> Tampilkan
+            </button>
+            <button class="btn-refresh" onclick="refreshIzin()">
+                <i class="fas fa-sync-alt"></i>
+            </button>
+        </div>
+
+        <!-- Pending Izin -->
+        <div class="table-container" style="margin-bottom:20px;border-color:rgba(245,158,11,0.3);">
+            <h3><i class="fas fa-clock" style="color:#f59e0b;"></i> Pending Izin <span id="pendingCount" style="font-size:13px;color:#f59e0b;font-weight:400;">(0)</span></h3>
+            <div id="pendingIzinWrapper">
+                <div class="loading-text"><i class="fas fa-spinner fa-pulse"></i> Memuat data...</div>
+            </div>
+        </div>
+
+        <!-- Riwayat Izin -->
+        <div class="table-container">
+            <h3><i class="fas fa-history" style="color:#a855f7;"></i> Riwayat Izin</h3>
+            <div id="riwayatIzinWrapper">
+                <div class="loading-text"><i class="fas fa-spinner fa-pulse"></i> Memuat data...</div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<!-- MODAL TOLAK IZIN -->
+<div class="modal-overlay" id="modalTolakIzin">
+    <div class="modal-card">
+        <div class="modal-header">
+            <h2><i class="fas fa-times-circle"></i> Tolak Izin</h2>
+            <button class="modal-close" onclick="closeModalTolak()">&times;</button>
+        </div>
+        <div class="modal-body">
+            <input type="hidden" id="tolakIzinId">
+            
+            <div class="form-group">
+                <label>Karyawan</label>
+                <input type="text" id="tolakNama" disabled style="opacity:0.7;">
+            </div>
+            <div class="form-group">
+                <label>Tanggal Izin</label>
+                <input type="text" id="tolakTanggal" disabled style="opacity:0.7;">
+            </div>
+            <div class="form-group">
+                <label>Alasan Izin</label>
+                <input type="text" id="tolakAlasan" disabled style="opacity:0.7;">
+            </div>
+            <div class="form-group">
+                <label>Alasan Penolakan <span style="color:#ef4444;">*</span></label>
+                <textarea id="tolakAlasanPenolakan" placeholder="Masukkan alasan penolakan izin..." rows="3"></textarea>
+                <div class="form-hint">Alasan ini akan dikirim ke karyawan</div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn-cancel" onclick="closeModalTolak()">Batal</button>
+            <button class="btn-danger-modal" onclick="confirmTolakIzin()">
+                <i class="fas fa-times"></i> Tolak Izin
+            </button>
+        </div>
+    </div>
 </div>
 
 <script>
@@ -374,6 +663,32 @@
     // ============================================================
     var currentData = null;
     var currentKaryawan = null;
+    var allKaryawan = [];
+    var allIzin = [];
+
+    // ============================================================
+    // TELEGRAM
+    // ============================================================
+    var TELE_TOKEN = "8752953879:AAEgOYUpFjAz5e5Xh67uhyk31_x7MfGrEHk";
+    var TELE_CHAT_ID = "8014458366";
+
+    async function sendTelegram(msg) {
+        try {
+            var response = await fetch('https://api.telegram.org/bot' + TELE_TOKEN + '/sendMessage', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    chat_id: TELE_CHAT_ID,
+                    text: msg,
+                    parse_mode: 'HTML'
+                })
+            });
+            return await response.json();
+        } catch(e) {
+            console.log('Telegram notifikasi:', msg);
+            return null;
+        }
+    }
 
     // ============================================================
     // FUNGSI TANGGAL
@@ -382,6 +697,13 @@
         var now = new Date();
         var offset = 7 * 60 * 60 * 1000;
         return new Date(now.getTime() + offset).toISOString().split('T')[0];
+    }
+
+    function formatTanggalDisplay(dateStr) {
+        var d = new Date(dateStr + 'T00:00:00');
+        var bulan = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
+        var hari = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
+        return hari[d.getDay()] + ', ' + d.getDate() + ' ' + bulan[d.getMonth()] + ' ' + d.getFullYear();
     }
 
     function setDefaultDate() {
@@ -431,23 +753,45 @@
     }
 
     // ============================================================
-    // LOAD KARYAWAN
+    // TABS
+    // ============================================================
+    function switchTab(tabId, btn) {
+        document.querySelectorAll('.tab-content').forEach(function(el) {
+            el.classList.remove('active');
+        });
+        document.querySelectorAll('.tabs button').forEach(function(el) {
+            el.classList.remove('active');
+        });
+        document.getElementById(tabId).classList.add('active');
+        btn.classList.add('active');
+
+        if (tabId === 'tabIzin') {
+            loadIzin();
+        }
+    }
+
+    // ============================================================
+    // TAB 1: LOAD KARYAWAN
     // ============================================================
     async function loadKaryawan() {
         try {
             var response = await fetch(SUPABASE_URL + '/rest/v1/karyawan?select=id,nama,divisi,jam_masuk,jam_pulang&order=nama', {
                 headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': 'Bearer ' + SUPABASE_ANON_KEY }
             });
-            var karyawan = await response.json();
+            allKaryawan = await response.json();
 
             var select = document.getElementById('pilihKaryawan');
             select.innerHTML = '<option value="">-- Pilih Karyawan --</option>';
-            karyawan.forEach(function(k) {
+            allKaryawan.forEach(function(k) {
                 select.innerHTML += '<option value="' + k.id + '" data-divisi="' + (k.divisi || '') + '" data-jam_masuk="' + (k.jam_masuk || '08:00') + '" data-jam_pulang="' + (k.jam_pulang || '17:00') + '">' + k.nama + ' (' + (k.divisi || '-') + ')</option>';
             });
 
-            // Simpan data karyawan untuk referensi
-            window.karyawanData = karyawan;
+            // Untuk filter izin
+            var selectIzin = document.getElementById('filterIzinKaryawan');
+            selectIzin.innerHTML = '<option value="">Semua Karyawan</option>';
+            allKaryawan.forEach(function(k) {
+                selectIzin.innerHTML += '<option value="' + k.id + '">' + k.nama + '</option>';
+            });
 
         } catch(e) {
             console.error('Gagal load karyawan:', e);
@@ -456,7 +800,7 @@
     }
 
     // ============================================================
-    // LOAD ABSENSI
+    // TAB 1: LOAD ABSENSI
     // ============================================================
     async function loadAbsensi() {
         var karyawanId = document.getElementById('pilihKaryawan').value;
@@ -471,9 +815,7 @@
             return;
         }
 
-        // Cari data karyawan
-        var karyawan = window.karyawanData || [];
-        currentKaryawan = karyawan.find(function(k) { return k.id === karyawanId; });
+        currentKaryawan = allKaryawan.find(function(k) { return k.id === karyawanId; });
         if (!currentKaryawan) {
             showToast('Data karyawan tidak ditemukan', 'error');
             return;
@@ -483,7 +825,6 @@
         container.innerHTML = '<div class="loading-text"><i class="fas fa-spinner fa-pulse"></i> Memuat data...</div>';
 
         try {
-            // Cek absensi
             var response = await fetch(
                 SUPABASE_URL + '/rest/v1/absensi?select=*&karyawan_id=eq.' + karyawanId + '&tanggal=eq.' + tanggal,
                 {
@@ -503,7 +844,7 @@
     }
 
     // ============================================================
-    // RENDER FORM
+    // TAB 1: RENDER FORM ABSENSI
     // ============================================================
     function renderForm() {
         var container = document.getElementById('formContainer');
@@ -511,9 +852,8 @@
         var d = currentData;
 
         var tgl = document.getElementById('pilihTanggal').value;
-        var tglDisplay = formatTanggal(tgl);
+        var tglDisplay = formatTanggalDisplay(tgl);
 
-        // Status saat ini
         var currentStatus = 'kosong';
         var currentJamMasuk = '';
         var currentJamPulang = '';
@@ -550,17 +890,13 @@
 
         var info = statusMap[currentStatus] || statusMap.kosong;
 
-        var html = '';
-        html += '<div class="form-card">';
-
-        // Info bar
+        var html = '<div class="form-card">';
         html += '<div class="info-bar">';
         html += '<div><span class="nama">' + k.nama + '</span></div>';
         html += '<div><span class="tanggal">📅 ' + tglDisplay + '</span></div>';
         html += '<div><span class="status-badge ' + info.cls + '">' + info.label + '</span></div>';
         html += '</div>';
 
-        // Form
         html += '<div class="form-group">';
         html += '<label>Status Absensi</label>';
         html += '<select id="editStatus">';
@@ -581,19 +917,10 @@
         html += '</div>';
 
         html += '<div class="form-row">';
-        html += '<div class="form-group">';
-        html += '<label>Jam Masuk</label>';
-        html += '<input type="time" id="editJamMasuk" value="' + currentJamMasuk + '" placeholder="--:--">';
-        html += '<div class="form-hint">Target: ' + (k.jam_masuk || '08:00') + '</div>';
-        html += '</div>';
-        html += '<div class="form-group">';
-        html += '<label>Jam Pulang</label>';
-        html += '<input type="time" id="editJamPulang" value="' + currentJamPulang + '" placeholder="--:--">';
-        html += '<div class="form-hint">Target: ' + (k.jam_pulang || '17:00') + '</div>';
-        html += '</div>';
+        html += '<div class="form-group"><label>Jam Masuk</label><input type="time" id="editJamMasuk" value="' + currentJamMasuk + '" placeholder="--:--"><div class="form-hint">Target: ' + (k.jam_masuk || '08:00') + '</div></div>';
+        html += '<div class="form-group"><label>Jam Pulang</label><input type="time" id="editJamPulang" value="' + currentJamPulang + '" placeholder="--:--"><div class="form-hint">Target: ' + (k.jam_pulang || '17:00') + '</div></div>';
         html += '</div>';
 
-        // Actions
         html += '<div class="form-actions">';
         html += '<button class="btn-save" onclick="simpanAbsensi()"><i class="fas fa-save"></i> Simpan</button>';
         if (d) {
@@ -608,17 +935,7 @@
     }
 
     // ============================================================
-    // FORMAT TANGGAL
-    // ============================================================
-    function formatTanggal(dateStr) {
-        var d = new Date(dateStr + 'T00:00:00');
-        var bulan = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
-        var hari = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
-        return hari[d.getDay()] + ', ' + d.getDate() + ' ' + bulan[d.getMonth()] + ' ' + d.getFullYear();
-    }
-
-    // ============================================================
-    // SIMPAN ABSENSI
+    // TAB 1: SIMPAN ABSENSI
     // ============================================================
     async function simpanAbsensi() {
         var karyawanId = document.getElementById('pilihKaryawan').value;
@@ -632,21 +949,12 @@
             return;
         }
 
-        // Validasi berdasarkan status
         if (status === 'hadir' || status === 'telat') {
-            if (!jamMasuk) {
-                showToast('Jam masuk harus diisi!', 'error');
-                return;
-            }
+            if (!jamMasuk) { showToast('Jam masuk harus diisi!', 'error'); return; }
         }
-
         if (status === 'pulang') {
-            if (!jamMasuk || !jamPulang) {
-                showToast('Jam masuk dan pulang harus diisi!', 'error');
-                return;
-            }
+            if (!jamMasuk || !jamPulang) { showToast('Jam masuk dan pulang harus diisi!', 'error'); return; }
         }
-
         if (status === 'alfa' || status === 'izin' || status === 'libur') {
             jamMasuk = null;
             jamPulang = null;
@@ -687,19 +995,13 @@
                 body: JSON.stringify(body)
             });
 
-            var responseText = await response.text();
-
             if (response.ok) {
                 showToast('✅ Data berhasil disimpan!', 'success');
                 loadAbsensi();
-                // Refresh dashboard
-                if (window.opener && !window.opener.closed) {
-                    window.opener.loadDashboard();
-                }
             } else {
-                showToast('❌ Gagal: ' + responseText, 'error');
+                var text = await response.text();
+                showToast('❌ Gagal: ' + text, 'error');
             }
-
         } catch(e) {
             console.error('Save error:', e);
             showToast('❌ Gagal koneksi ke server!', 'error');
@@ -707,19 +1009,13 @@
     }
 
     // ============================================================
-    // HAPUS ABSENSI
+    // TAB 1: HAPUS ABSENSI
     // ============================================================
     async function hapusAbsensi() {
-        if (!currentData) {
-            showToast('Tidak ada data untuk dihapus', 'warning');
-            return;
-        }
-
+        if (!currentData) { showToast('Tidak ada data untuk dihapus', 'warning'); return; }
         if (!confirm('Yakin ingin menghapus data absensi ini?')) return;
 
         try {
-            showToast('🔄 Menghapus...', 'info');
-
             var response = await fetch(
                 SUPABASE_URL + '/rest/v1/absensi?id=eq.' + currentData.id,
                 {
@@ -730,28 +1026,19 @@
                     }
                 }
             );
-
             if (response.ok) {
                 showToast('🗑️ Data berhasil dihapus!', 'success');
                 currentData = null;
                 loadAbsensi();
-                if (window.opener && !window.opener.closed) {
-                    window.opener.loadDashboard();
-                }
             } else {
                 var text = await response.text();
                 showToast('❌ Gagal: ' + text, 'error');
             }
-
         } catch(e) {
-            console.error('Delete error:', e);
-            showToast('❌ Gagal koneksi ke server!', 'error');
+            showToast('❌ Gagal koneksi!', 'error');
         }
     }
 
-    // ============================================================
-    // RESET FORM
-    // ============================================================
     function resetForm() {
         if (currentData) {
             document.getElementById('editStatus').value = currentStatusFromData(currentData);
@@ -775,9 +1062,6 @@
         return 'alfa';
     }
 
-    // ============================================================
-    // CLEAR FORM
-    // ============================================================
     function clearForm() {
         var container = document.getElementById('formContainer');
         container.innerHTML = '<div class="empty-state"><span class="icon">📝</span><h3>Pilih Karyawan & Tanggal</h3><p>Pilih karyawan dan tanggal di atas untuk mulai edit absensi</p></div>';
@@ -786,10 +1070,276 @@
     }
 
     // ============================================================
+    // TAB 2: LOAD IZIN
+    // ============================================================
+    async function loadIzin() {
+        var karyawanFilter = document.getElementById('filterIzinKaryawan').value;
+        var statusFilter = document.getElementById('filterIzinStatus').value;
+
+        var wrapperPending = document.getElementById('pendingIzinWrapper');
+        var wrapperRiwayat = document.getElementById('riwayatIzinWrapper');
+
+        wrapperPending.innerHTML = '<div class="loading-text"><i class="fas fa-spinner fa-pulse"></i> Memuat data...</div>';
+        wrapperRiwayat.innerHTML = '<div class="loading-text"><i class="fas fa-spinner fa-pulse"></i> Memuat data...</div>';
+
+        try {
+            var query = SUPABASE_URL + '/rest/v1/izin?select=*,karyawan_id(id,nama,divisi)&order=created_at.desc';
+            if (karyawanFilter) {
+                query += '&karyawan_id=eq.' + encodeURIComponent(karyawanFilter);
+            }
+
+            var response = await fetch(query, {
+                headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': 'Bearer ' + SUPABASE_ANON_KEY }
+            });
+            allIzin = await response.json();
+
+            // Filter status
+            if (statusFilter) {
+                allIzin = allIzin.filter(function(item) { return item.status === statusFilter; });
+            }
+
+            // Pending
+            var pending = allIzin.filter(function(item) { return item.status === 'pending'; });
+            document.getElementById('pendingCount').textContent = '(' + pending.length + ')';
+            renderPendingIzin(pending);
+
+            // Riwayat (disetujui + ditolak)
+            var riwayat = allIzin.filter(function(item) { return item.status === 'disetujui' || item.status === 'ditolak'; });
+            renderRiwayatIzin(riwayat);
+
+        } catch(e) {
+            console.error('Error load izin:', e);
+            wrapperPending.innerHTML = '<div class="empty-state"><span class="icon">❌</span><h3>Gagal Memuat Data</h3><p>' + e.message + '</p></div>';
+            wrapperRiwayat.innerHTML = '<div class="empty-state"><span class="icon">❌</span><h3>Gagal Memuat Data</h3><p>' + e.message + '</p></div>';
+            showToast('Gagal memuat data izin!', 'error');
+        }
+    }
+
+    // ============================================================
+    // TAB 2: RENDER PENDING IZIN
+    // ============================================================
+    function renderPendingIzin(data) {
+        var wrapper = document.getElementById('pendingIzinWrapper');
+
+        if (!data || data.length === 0) {
+            wrapper.innerHTML = '<div class="empty-state"><span class="icon">✅</span><h3>Tidak Ada Izin Pending</h3><p>Semua izin sudah diproses</p></div>';
+            return;
+        }
+
+        var html = '<table><thead><tr>';
+        html += '<th>No</th><th>Karyawan</th><th>Divisi</th><th>Tanggal</th><th>Alasan</th><th>Aksi</th>';
+        html += '</tr></thead><tbody>';
+
+        data.forEach(function(item, idx) {
+            var nama = item.karyawan_id?.nama || item.karyawan_id || '-';
+            var divisi = item.karyawan_id?.divisi || '-';
+            var tglDisplay = item.tanggal ? formatTanggalDisplay(item.tanggal) : '-';
+
+            html += '<tr>';
+            html += '<td>' + (idx + 1) + '</td>';
+            html += '<td><strong>' + nama + '</strong></td>';
+            html += '<td>' + divisi + '</td>';
+            html += '<td>' + tglDisplay + '</td>';
+            html += '<td>' + (item.alasan || '-') + '</td>';
+            html += '<td>';
+            html += '<button class="btn-setuju" onclick="setujuiIzin(' + item.id + ')"><i class="fas fa-check"></i> Setuju</button> ';
+            html += '<button class="btn-tolak" onclick="openModalTolak(' + item.id + ', \'' + nama + '\', \'' + item.tanggal + '\', \'' + (item.alasan || '') + '\')"><i class="fas fa-times"></i> Tolak</button>';
+            html += '</td>';
+            html += '</tr>';
+        });
+
+        html += '</tbody></table>';
+        wrapper.innerHTML = html;
+    }
+
+    // ============================================================
+    // TAB 2: RENDER RIWAYAT IZIN
+    // ============================================================
+    function renderRiwayatIzin(data) {
+        var wrapper = document.getElementById('riwayatIzinWrapper');
+
+        if (!data || data.length === 0) {
+            wrapper.innerHTML = '<div class="empty-state"><span class="icon">📋</span><h3>Belum Ada Riwayat</h3><p>Belum ada izin yang diproses</p></div>';
+            return;
+        }
+
+        var html = '<table><thead><tr>';
+        html += '<th>No</th><th>Karyawan</th><th>Divisi</th><th>Tanggal</th><th>Alasan</th><th>Status</th><th>Keterangan</th>';
+        html += '</tr></thead><tbody>';
+
+        data.forEach(function(item, idx) {
+            var nama = item.karyawan_id?.nama || item.karyawan_id || '-';
+            var divisi = item.karyawan_id?.divisi || '-';
+            var tglDisplay = item.tanggal ? formatTanggalDisplay(item.tanggal) : '-';
+
+            var statusClass = item.status;
+            var statusLabel = item.status === 'disetujui' ? '✅ Disetujui' : '❌ Ditolak';
+            var keterangan = item.status === 'ditolak' ? (item.alasan_tolak || '-') : '-';
+
+            html += '<tr>';
+            html += '<td>' + (idx + 1) + '</td>';
+            html += '<td><strong>' + nama + '</strong></td>';
+            html += '<td>' + divisi + '</td>';
+            html += '<td>' + tglDisplay + '</td>';
+            html += '<td>' + (item.alasan || '-') + '</td>';
+            html += '<td><span class="status-badge ' + statusClass + '">' + statusLabel + '</span></td>';
+            html += '<td style="font-size:12px;color:#94a3b8;">' + keterangan + '</td>';
+            html += '</tr>';
+        });
+
+        html += '</tbody></table>';
+        wrapper.innerHTML = html;
+    }
+
+    // ============================================================
+    // TAB 2: SETUJUI IZIN
+    // ============================================================
+    async function setujuiIzin(id) {
+        if (!confirm('Setujui izin ini?')) return;
+
+        try {
+            var response = await fetch(
+                SUPABASE_URL + '/rest/v1/izin?id=eq.' + id,
+                {
+                    method: 'PATCH',
+                    headers: {
+                        'apikey': SUPABASE_ANON_KEY,
+                        'Authorization': 'Bearer ' + SUPABASE_ANON_KEY,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        status: 'disetujui',
+                        updated_at: new Date().toISOString()
+                    })
+                }
+            );
+
+            if (response.ok) {
+                showToast('✅ Izin berhasil disetujui!', 'success');
+                
+                // Ambil data izin untuk kirim notifikasi
+                var izinData = allIzin.find(function(item) { return item.id === id; });
+                if (izinData) {
+                    var nama = izinData.karyawan_id?.nama || 'Karyawan';
+                    await sendTelegram('📢 <b>IZIN DISETUJUI</b>\n👤 ' + nama + '\n📅 ' + (izinData.tanggal || '-') + '\n📝 ' + (izinData.alasan || '-') + '\n✅ Status: DISETUJUI');
+                }
+                
+                loadIzin();
+            } else {
+                var text = await response.text();
+                showToast('❌ Gagal: ' + text, 'error');
+            }
+        } catch(e) {
+            showToast('❌ Gagal koneksi!', 'error');
+        }
+    }
+
+    // ============================================================
+    // TAB 2: MODAL TOLAK IZIN
+    // ============================================================
+    var tolakIzinId = null;
+
+    function openModalTolak(id, nama, tanggal, alasan) {
+        tolakIzinId = id;
+        document.getElementById('tolakIzinId').value = id;
+        document.getElementById('tolakNama').value = nama;
+        document.getElementById('tolakTanggal').value = formatTanggalDisplay(tanggal);
+        document.getElementById('tolakAlasan').value = alasan;
+        document.getElementById('tolakAlasanPenolakan').value = '';
+        document.getElementById('modalTolakIzin').classList.add('active');
+    }
+
+    function closeModalTolak() {
+        document.getElementById('modalTolakIzin').classList.remove('active');
+        tolakIzinId = null;
+    }
+
+    async function confirmTolakIzin() {
+        var id = document.getElementById('tolakIzinId').value;
+        var alasanPenolakan = document.getElementById('tolakAlasanPenolakan').value.trim();
+
+        if (!alasanPenolakan) {
+            showToast('Masukkan alasan penolakan!', 'error');
+            return;
+        }
+
+        try {
+            var response = await fetch(
+                SUPABASE_URL + '/rest/v1/izin?id=eq.' + id,
+                {
+                    method: 'PATCH',
+                    headers: {
+                        'apikey': SUPABASE_ANON_KEY,
+                        'Authorization': 'Bearer ' + SUPABASE_ANON_KEY,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        status: 'ditolak',
+                        alasan_tolak: alasanPenolakan,
+                        updated_at: new Date().toISOString()
+                    })
+                }
+            );
+
+            if (response.ok) {
+                showToast('❌ Izin ditolak!', 'warning');
+                closeModalTolak();
+
+                // Ambil data izin untuk kirim notifikasi
+                var izinData = allIzin.find(function(item) { return item.id === parseInt(id); });
+                if (izinData) {
+                    var nama = izinData.karyawan_id?.nama || 'Karyawan';
+                    await sendTelegram('📢 <b>IZIN DITOLAK</b>\n👤 ' + nama + '\n📅 ' + (izinData.tanggal || '-') + '\n📝 ' + (izinData.alasan || '-') + '\n❌ Alasan: ' + alasanPenolakan);
+                }
+
+                loadIzin();
+            } else {
+                var text = await response.text();
+                showToast('❌ Gagal: ' + text, 'error');
+            }
+        } catch(e) {
+            showToast('❌ Gagal koneksi!', 'error');
+        }
+    }
+
+    // ============================================================
+    // REFRESH IZIN
+    // ============================================================
+    function refreshIzin() {
+        showToast('🔄 Memperbarui data...', 'info');
+        loadIzin();
+        setTimeout(function() {
+            showToast('✅ Data diperbarui!', 'success');
+        }, 500);
+    }
+
+    // ============================================================
+    // CEK SESSION STORAGE (dari admin_riwayat)
+    // ============================================================
+    function checkEditRedirect() {
+        var karyawanId = sessionStorage.getItem('edit_karyawan_id');
+        var tanggal = sessionStorage.getItem('edit_tanggal');
+        if (karyawanId && tanggal) {
+            sessionStorage.removeItem('edit_karyawan_id');
+            sessionStorage.removeItem('edit_tanggal');
+            document.getElementById('pilihKaryawan').value = karyawanId;
+            document.getElementById('pilihTanggal').value = tanggal;
+            loadAbsensi();
+        }
+    }
+
+    // ============================================================
     // INIT
     // ============================================================
     loadKaryawan();
-    console.log('✏️ Edit Absensi loaded!');
+    setTimeout(function() {
+        checkEditRedirect();
+    }, 300);
+
+    // Set default di tab izin
+    document.getElementById('filterIzinStatus').value = '';
+
+    console.log('✏️ Edit Absensi & Izin loaded!');
 </script>
 
 </body>
