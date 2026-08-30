@@ -1,0 +1,1233 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>KPI • Smart Presence</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #0f172a;
+            min-height: 100vh;
+            color: #e2e8f0;
+            padding: 20px;
+        }
+        body.light-mode { background: #f1f5f9; color: #1e293b; }
+
+        .navbar {
+            background: rgba(15, 23, 42, 0.85);
+            backdrop-filter: blur(20px);
+            padding: 12px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-radius: 16px;
+            max-width: 1400px;
+            margin: 0 auto 20px;
+            border: 1px solid rgba(255,255,255,0.06);
+        }
+        body.light-mode .navbar { background: rgba(255,255,255,0.85); border-color: rgba(0,0,0,0.06); }
+
+        .logo h2 {
+            font-size: 20px;
+            background: linear-gradient(135deg, #a855f7, #3b82f6);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        .logo span { font-size: 12px; color: #64748b; }
+
+        .nav-actions { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+        .nav-actions button {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 600;
+            transition: all 0.2s;
+            font-family: 'Inter', sans-serif;
+        }
+        .nav-actions button:active { transform: scale(0.95); }
+        .btn-logout { background: #ef4444; color: white; }
+        .btn-logout:hover { background: #dc2626; }
+        .btn-back { background: #6366f1; color: white; }
+        .btn-back:hover { background: #4f46e5; }
+        .btn-theme { background: #1e293b; color: #e2e8f0; }
+        body.light-mode .btn-theme { background: #e2e8f0; color: #1e293b; }
+
+        .container { max-width: 1300px; margin: 0 auto; }
+
+        .filter-card {
+            background: rgba(255,255,255,0.04);
+            border-radius: 16px;
+            padding: 20px 24px;
+            margin-bottom: 20px;
+            border: 1px solid rgba(255,255,255,0.06);
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 14px;
+        }
+        body.light-mode .filter-card { background: white; border-color: rgba(0,0,0,0.06); }
+
+        .filter-card label { font-size: 13px; font-weight: 600; color: #94a3b8; }
+        .filter-card select, .filter-card input[type="month"] {
+            padding: 10px 14px;
+            border-radius: 10px;
+            border: 1px solid rgba(255,255,255,0.1);
+            background: rgba(0,0,0,0.3);
+            color: white;
+            font-family: 'Inter', sans-serif;
+            font-size: 14px;
+            min-width: 150px;
+        }
+        body.light-mode .filter-card select, body.light-mode .filter-card input[type="month"] {
+            background: #f1f5f9;
+            color: #1e293b;
+            border-color: #cbd5e1;
+        }
+        .filter-card select:focus, .filter-card input:focus {
+            outline: none;
+            border-color: #a855f7;
+        }
+
+        .filter-card .btn-primary {
+            padding: 10px 24px;
+            background: linear-gradient(135deg, #a855f7, #3b82f6);
+            border: none;
+            border-radius: 10px;
+            color: white;
+            font-weight: 700;
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+            font-size: 14px;
+        }
+        .filter-card .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 4px 15px rgba(168,85,247,0.4); }
+        .filter-card .btn-success {
+            padding: 10px 20px;
+            background: #10b981;
+            border: none;
+            border-radius: 10px;
+            color: white;
+            font-weight: 700;
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+            font-size: 13px;
+        }
+        .filter-card .btn-success:hover { background: #059669; }
+        .filter-card .btn-refresh {
+            padding: 10px 20px;
+            background: #6366f1;
+            border: none;
+            border-radius: 10px;
+            color: white;
+            font-weight: 700;
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+            font-size: 13px;
+        }
+        .filter-card .btn-refresh:hover { background: #4f46e5; }
+
+        /* KPI CARD */
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+        .kpi-card {
+            background: rgba(255,255,255,0.04);
+            border-radius: 16px;
+            padding: 20px;
+            border: 1px solid rgba(255,255,255,0.06);
+            text-align: center;
+        }
+        body.light-mode .kpi-card { background: white; border-color: rgba(0,0,0,0.06); }
+        .kpi-card .label {
+            font-size: 12px;
+            color: #94a3b8;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .kpi-card .value {
+            font-size: 32px;
+            font-weight: 800;
+            margin: 4px 0;
+        }
+        .kpi-card .value.hijau { color: #34d399; }
+        .kpi-card .value.kuning { color: #fbbf24; }
+        .kpi-card .value.merah { color: #f87171; }
+        .kpi-card .sub {
+            font-size: 12px;
+            color: #64748b;
+        }
+
+        /* TABLE */
+        .table-container {
+            background: rgba(255,255,255,0.04);
+            border-radius: 16px;
+            padding: 20px;
+            border: 1px solid rgba(255,255,255,0.06);
+            overflow-x: auto;
+            margin-bottom: 20px;
+        }
+        body.light-mode .table-container { background: white; border-color: rgba(0,0,0,0.06); }
+
+        .table-container h3 {
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        table { width: 100%; border-collapse: collapse; font-size: 13px; }
+        th, td { padding: 10px 12px; text-align: left; border-bottom: 1px solid rgba(255,255,255,0.06); }
+        body.light-mode th, body.light-mode td { border-bottom-color: #e2e8f0; }
+
+        th {
+            font-weight: 600;
+            color: #94a3b8;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            position: sticky;
+            top: 0;
+            background: rgba(15,23,42,0.95);
+        }
+        body.light-mode th { background: #f8fafc; color: #64748b; }
+
+        td .badge-kpi {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 700;
+        }
+        td .badge-kpi.hijau { background: rgba(16,185,129,0.2); color: #34d399; }
+        td .badge-kpi.kuning { background: rgba(251,191,36,0.2); color: #fbbf24; }
+        td .badge-kpi.merah { background: rgba(248,113,113,0.2); color: #f87171; }
+
+        td .btn-edit-sikap {
+            padding: 4px 12px;
+            background: #f59e0b;
+            border: none;
+            border-radius: 8px;
+            color: white;
+            font-size: 11px;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+            transition: all 0.2s;
+        }
+        td .btn-edit-sikap:hover { background: #d97706; }
+
+        /* AI REKOMENDASI */
+        .ai-card {
+            background: rgba(168,85,247,0.08);
+            border-radius: 16px;
+            padding: 20px 24px;
+            border: 1px solid rgba(168,85,247,0.2);
+            margin-bottom: 20px;
+        }
+        body.light-mode .ai-card { background: rgba(168,85,247,0.05); }
+        .ai-card .header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 10px;
+        }
+        .ai-card .header .icon {
+            font-size: 24px;
+            background: rgba(168,85,247,0.2);
+            padding: 8px 12px;
+            border-radius: 12px;
+        }
+        .ai-card .header h3 {
+            font-size: 16px;
+            font-weight: 700;
+            color: #a855f7;
+        }
+        .ai-card .content {
+            font-size: 14px;
+            line-height: 1.7;
+            color: #cbd5e1;
+        }
+        body.light-mode .ai-card .content { color: #1e293b; }
+        .ai-card .content strong { color: white; }
+        body.light-mode .ai-card .content strong { color: #0f172a; }
+        .ai-card .content .saran {
+            background: rgba(0,0,0,0.15);
+            padding: 12px 16px;
+            border-radius: 10px;
+            margin-top: 8px;
+            border-left: 3px solid #a855f7;
+        }
+        body.light-mode .ai-card .content .saran { background: #f1f5f9; }
+
+        /* MODAL SIKAP */
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.7);
+            backdrop-filter: blur(8px);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 999;
+        }
+        .modal-overlay.active { display: flex; }
+
+        .modal-card {
+            background: #1e293b;
+            border-radius: 24px;
+            padding: 32px;
+            width: 90%;
+            max-width: 480px;
+            border: 1px solid rgba(255,255,255,0.06);
+            box-shadow: 0 25px 50px rgba(0,0,0,0.5);
+        }
+        body.light-mode .modal-card { background: white; border-color: rgba(0,0,0,0.06); }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+        }
+        .modal-header h2 { font-size: 20px; font-weight: 700; }
+        .modal-close {
+            background: none;
+            border: none;
+            color: #94a3b8;
+            font-size: 24px;
+            cursor: pointer;
+        }
+        .modal-close:hover { color: white; }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+        .form-group label {
+            display: block;
+            font-size: 12px;
+            color: #94a3b8;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%;
+            padding: 10px 14px;
+            border-radius: 10px;
+            border: 1px solid rgba(255,255,255,0.1);
+            background: rgba(0,0,0,0.3);
+            color: white;
+            font-family: 'Inter', sans-serif;
+            font-size: 14px;
+        }
+        body.light-mode .form-group input, body.light-mode .form-group select, body.light-mode .form-group textarea {
+            background: #f1f5f9;
+            color: #1e293b;
+            border-color: #cbd5e1;
+        }
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+            outline: none;
+            border-color: #a855f7;
+        }
+        .form-group textarea { resize: vertical; min-height: 60px; }
+
+        .modal-footer {
+            display: flex;
+            gap: 12px;
+            margin-top: 20px;
+            padding-top: 16px;
+            border-top: 1px solid rgba(255,255,255,0.06);
+            justify-content: flex-end;
+        }
+        .modal-footer button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 10px;
+            font-weight: 700;
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+        .modal-footer button:active { transform: scale(0.95); }
+        .btn-save { background: #10b981; color: white; }
+        .btn-save:hover { background: #059669; }
+        .btn-cancel { background: #1e293b; color: #94a3b8; }
+        .btn-cancel:hover { background: #334155; }
+        body.light-mode .btn-cancel { background: #e2e8f0; color: #64748b; }
+        body.light-mode .btn-cancel:hover { background: #cbd5e1; }
+
+        .loading-text { text-align: center; color: #64748b; padding: 40px 0; font-size: 14px; }
+        .empty-text { text-align: center; color: #64748b; padding: 30px 0; font-size: 14px; }
+
+        .toast-custom {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #1e293b;
+            color: white;
+            padding: 14px 28px;
+            border-radius: 16px;
+            font-weight: 600;
+            font-size: 14px;
+            z-index: 9999;
+            border-left: 4px solid #10b981;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+            animation: slideUp 0.3s ease;
+            max-width: 90%;
+            font-family: 'Inter', sans-serif;
+        }
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateX(-50%) translateY(30px); }
+            to { opacity: 1; transform: translateX(-50%) translateY(0); }
+        }
+
+        @media (max-width: 768px) {
+            .navbar { flex-wrap: wrap; gap: 10px; padding: 12px 16px; }
+            .filter-card { flex-direction: column; align-items: stretch; }
+            .filter-card select, .filter-card input { width: 100%; min-width: auto; }
+            .kpi-grid { grid-template-columns: 1fr; }
+            .nav-actions { flex-wrap: wrap; }
+            .modal-card { padding: 20px; margin: 10px; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar">
+    <div class="logo">
+        <h2>📋 RelawanTrack</h2>
+        <span>KPI Karyawan</span>
+    </div>
+    <div class="nav-actions">
+        <button class="btn-back" onclick="window.location.href='admin_dashboard.html'">
+            <i class="fas fa-arrow-left"></i> Dashboard
+        </button>
+        <button class="btn-theme" onclick="toggleTheme()">
+            <i class="fas fa-moon" id="themeIcon"></i>
+        </button>
+        <span id="adminName" style="font-weight:600;font-size:14px;">Admin</span>
+        <button class="btn-logout" onclick="doLogout()">
+            <i class="fas fa-sign-out-alt"></i> Keluar
+        </button>
+    </div>
+</nav>
+
+<div class="container">
+
+    <!-- FILTER -->
+    <div class="filter-card">
+        <label><i class="fas fa-calendar-alt"></i> Bulan:</label>
+        <input type="month" id="filterBulan">
+
+        <label><i class="fas fa-users"></i> Divisi:</label>
+        <select id="filterDivisi">
+            <option value="">Semua Divisi</option>
+        </select>
+
+        <label><i class="fas fa-user"></i> Karyawan:</label>
+        <select id="filterKaryawan">
+            <option value="">Semua Karyawan</option>
+        </select>
+
+        <button class="btn-primary" onclick="loadKPI()">
+            <i class="fas fa-search"></i> Tampilkan
+        </button>
+        <button class="btn-success" onclick="exportExcel()">
+            <i class="fas fa-file-excel"></i> Excel
+        </button>
+        <button class="btn-refresh" onclick="refreshData()">
+            <i class="fas fa-sync-alt"></i>
+        </button>
+    </div>
+
+    <!-- KPI SUMMARY -->
+    <div class="kpi-grid" id="kpiSummary">
+        <div class="kpi-card">
+            <div class="label">📊 Rata-rata KPI</div>
+            <div class="value hijau" id="avgKpi">0%</div>
+            <div class="sub">Semua karyawan</div>
+        </div>
+        <div class="kpi-card">
+            <div class="label">✅ Ketepatan Waktu</div>
+            <div class="value hijau" id="avgTepat">0%</div>
+            <div class="sub">Rata-rata</div>
+        </div>
+        <div class="kpi-card">
+            <div class="label">🏆 Ketepatan Kerja</div>
+            <div class="value hijau" id="avgKerja">0%</div>
+            <div class="sub">Rata-rata</div>
+        </div>
+        <div class="kpi-card">
+            <div class="label">👔 Sikap (APD/Seragam)</div>
+            <div class="value kuning" id="avgSikap">0%</div>
+            <div class="sub">Rata-rata</div>
+        </div>
+    </div>
+
+    <!-- AI REKOMENDASI -->
+    <div class="ai-card" id="aiCard">
+        <div class="header">
+            <span class="icon">🤖</span>
+            <h3>Rekomendasi AI - Kinerja Periode Ini</h3>
+        </div>
+        <div class="content" id="aiContent">
+            <p>Silakan pilih periode dan klik <strong>Tampilkan</strong> untuk melihat rekomendasi.</p>
+        </div>
+    </div>
+
+    <!-- TABLE KPI -->
+    <div class="table-container">
+        <h3><i class="fas fa-chart-line" style="color:#a855f7;"></i> Detail KPI Karyawan</h3>
+        <div id="tableWrapper">
+            <div class="loading-text"><i class="fas fa-spinner fa-pulse"></i> Memuat data...</div>
+        </div>
+    </div>
+
+</div>
+
+<!-- MODAL EDIT SIKAP -->
+<div class="modal-overlay" id="modalSikap">
+    <div class="modal-card">
+        <div class="modal-header">
+            <h2>✏️ Edit Nilai Sikap</h2>
+            <button class="modal-close" onclick="closeModalSikap()">&times;</button>
+        </div>
+        <div class="modal-body">
+            <input type="hidden" id="sikapKaryawanId">
+            <input type="hidden" id="sikapBulan">
+
+            <div class="form-group">
+                <label>Karyawan</label>
+                <input type="text" id="sikapNama" disabled>
+            </div>
+
+            <div class="form-group">
+                <label>Nilai Sikap (0-100)</label>
+                <input type="number" id="sikapNilai" min="0" max="100" placeholder="Masukkan nilai 0-100">
+                <div style="font-size:11px;color:#64748b;margin-top:4px;">0-100, semakin tinggi semakin baik</div>
+            </div>
+
+            <div class="form-group">
+                <label>Catatan (Opsional)</label>
+                <textarea id="sikapCatatan" placeholder="Contoh: Rajin pakai APD, seragam rapi"></textarea>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn-cancel" onclick="closeModalSikap()">Batal</button>
+            <button class="btn-save" onclick="simpanSikap()">
+                <i class="fas fa-save"></i> Simpan
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+    // ============================================================
+    // KONFIGURASI SUPABASE
+    // ============================================================
+    var SUPABASE_URL = 'https://zcaqqybonpfishwkmffg.supabase.co';
+    var SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpjYXFxeWJvbnBmaXNod2ttZmZnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODc2Mjc2NDgsImV4cCI6MjEwMzIwMzY0OH0.pBk5nwJI3u9n08onTNmvcOFxtCXQvv-ipYIu2f_iAiQ';
+
+    // ============================================================
+    // CEK LOGIN
+    // ============================================================
+    if (!localStorage.getItem('admin_logged_in')) {
+        window.location.href = 'admin_login.html';
+    }
+    document.getElementById('adminName').textContent = localStorage.getItem('admin_username') || 'Admin';
+
+    // ============================================================
+    // VARIABLES
+    // ============================================================
+    var allKPI = [];
+    var allKaryawan = [];
+    var hariLiburMap = {};
+
+    // ============================================================
+    // THEME
+    // ============================================================
+    function toggleTheme() {
+        document.body.classList.toggle('light-mode');
+        var icon = document.getElementById('themeIcon');
+        icon.className = document.body.classList.contains('light-mode') ? 'fas fa-sun' : 'fas fa-moon';
+    }
+
+    // ============================================================
+    // TOAST
+    // ============================================================
+    function showToast(msg, type) {
+        type = type || 'success';
+        var existing = document.querySelector('.toast-custom');
+        if (existing) existing.remove();
+        var toast = document.createElement('div');
+        toast.className = 'toast-custom';
+        var colors = { success: '#10b981', error: '#ef4444', warning: '#f59e0b', info: '#3b82f6' };
+        toast.style.borderLeftColor = colors[type] || '#10b981';
+        var icons = { success: '✅', error: '❌', warning: '⚠️', info: 'ℹ️' };
+        toast.innerHTML = (icons[type] || 'ℹ️') + ' ' + msg;
+        document.body.appendChild(toast);
+        setTimeout(function() {
+            toast.style.opacity = '0';
+            toast.style.transform = 'translateX(-50%) translateY(20px)';
+            setTimeout(function() { toast.remove(); }, 300);
+        }, 3000);
+    }
+
+    // ============================================================
+    // LOGOUT
+    // ============================================================
+    function doLogout() {
+        if (confirm('Yakin ingin keluar?')) {
+            localStorage.removeItem('admin_logged_in');
+            localStorage.removeItem('admin_username');
+            window.location.href = 'admin_login.html';
+        }
+    }
+
+    // ============================================================
+    // DATE HELPERS
+    // ============================================================
+    function getTodayIndonesia() {
+        var now = new Date();
+        var offset = 7 * 60 * 60 * 1000;
+        return new Date(now.getTime() + offset).toISOString().split('T')[0];
+    }
+
+    function getDaysInMonth(month, year) {
+        return new Date(year, month, 0).getDate();
+    }
+
+    function padZero(num) {
+        return String(num).padStart(2, '0');
+    }
+
+    function getMonthName(month) {
+        var names = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
+        return names[month - 1] || '';
+    }
+
+    // ============================================================
+    // SET DEFAULT BULAN
+    // ============================================================
+    function setDefaultBulan() {
+        var now = new Date();
+        var year = now.getFullYear();
+        var month = String(now.getMonth() + 1).padStart(2, '0');
+        document.getElementById('filterBulan').value = year + '-' + month;
+    }
+    setDefaultBulan();
+
+    // ============================================================
+    // LOAD HARI LIBUR
+    // ============================================================
+    async function loadHariLibur() {
+        try {
+            var response = await fetch(
+                SUPABASE_URL + '/rest/v1/hari_libur?select=tanggal,divisi',
+                {
+                    headers: {
+                        'apikey': SUPABASE_ANON_KEY,
+                        'Authorization': 'Bearer ' + SUPABASE_ANON_KEY
+                    }
+                }
+            );
+            var data = await response.json();
+            hariLiburMap = {};
+            data.forEach(function(item) {
+                var key = item.tanggal + '|' + item.divisi;
+                hariLiburMap[key] = true;
+            });
+        } catch(e) {
+            hariLiburMap = {};
+        }
+    }
+
+    function isTanggalLibur(tanggal, divisi) {
+        var key = tanggal + '|' + divisi;
+        return hariLiburMap[key] || false;
+    }
+
+    // ============================================================
+    // LOAD FILTER OPTIONS
+    // ============================================================
+    async function loadFilterOptions() {
+        try {
+            var response = await fetch(SUPABASE_URL + '/rest/v1/karyawan?select=id,nama,divisi', {
+                headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': 'Bearer ' + SUPABASE_ANON_KEY }
+            });
+            allKaryawan = await response.json();
+
+            // Divisi
+            var divisiSet = new Set();
+            allKaryawan.forEach(function(k) { if (k.divisi) divisiSet.add(k.divisi); });
+
+            var selectDivisi = document.getElementById('filterDivisi');
+            selectDivisi.innerHTML = '<option value="">Semua Divisi</option>';
+            divisiSet.forEach(function(d) {
+                selectDivisi.innerHTML += '<option value="' + d + '">' + d + '</option>';
+            });
+
+            // Karyawan
+            var selectKaryawan = document.getElementById('filterKaryawan');
+            selectKaryawan.innerHTML = '<option value="">Semua Karyawan</option>';
+            allKaryawan.forEach(function(k) {
+                selectKaryawan.innerHTML += '<option value="' + k.id + '">' + k.nama + '</option>';
+            });
+
+        } catch(e) {
+            console.error('Gagal load filter:', e);
+        }
+    }
+
+    // ============================================================
+    // LOAD KPI
+    // ============================================================
+    async function loadKPI() {
+        var bulan = document.getElementById('filterBulan').value;
+        var divisiFilter = document.getElementById('filterDivisi').value;
+        var karyawanFilter = document.getElementById('filterKaryawan').value;
+
+        if (!bulan) {
+            showToast('Pilih bulan dulu!', 'warning');
+            return;
+        }
+
+        var wrapper = document.getElementById('tableWrapper');
+        wrapper.innerHTML = '<div class="loading-text"><i class="fas fa-spinner fa-pulse"></i> Memuat data...</div>';
+
+        try {
+            await loadHariLibur();
+
+            var parts = bulan.split('-');
+            var tahun = parseInt(parts[0]);
+            var bulanNum = parseInt(parts[1]);
+            var daysInMonth = getDaysInMonth(bulanNum, tahun);
+
+            // Build query karyawan
+            var karyawanList = allKaryawan;
+            if (divisiFilter) {
+                karyawanList = karyawanList.filter(function(k) { return k.divisi === divisiFilter; });
+            }
+            if (karyawanFilter) {
+                karyawanList = karyawanList.filter(function(k) { return k.id === karyawanFilter; });
+            }
+
+            if (karyawanList.length === 0) {
+                wrapper.innerHTML = '<div class="empty-text"><i class="fas fa-inbox"></i> Tidak ada karyawan</div>';
+                resetSummary();
+                return;
+            }
+
+            // Load absensi bulan ini
+            var startDate = tahun + '-' + padZero(bulanNum) + '-01';
+            var endDate = tahun + '-' + padZero(bulanNum) + '-' + padZero(daysInMonth);
+
+            var absenRes = await fetch(
+                SUPABASE_URL + '/rest/v1/absensi?select=*&tanggal=gte.' + startDate + '&tanggal=lte.' + endDate,
+                {
+                    headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': 'Bearer ' + SUPABASE_ANON_KEY }
+                }
+            );
+            var absensi = await absenRes.json();
+
+            // Map absensi
+            var absenMap = {};
+            absensi.forEach(function(a) {
+                var key = a.karyawan_id + '|' + a.tanggal;
+                absenMap[key] = a;
+            });
+
+            // Load nilai sikap (kpi_sikap)
+            var sikapRes = await fetch(
+                SUPABASE_URL + '/rest/v1/kpi_sikap?select=*&bulan=eq.' + bulan,
+                {
+                    headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': 'Bearer ' + SUPABASE_ANON_KEY }
+                }
+            );
+            var sikapData = await sikapRes.json();
+            var sikapMap = {};
+            sikapData.forEach(function(s) {
+                sikapMap[s.karyawan_id] = s;
+            });
+
+            // Generate date list
+            var dateList = [];
+            for (var d = 1; d <= daysInMonth; d++) {
+                dateList.push(tahun + '-' + padZero(bulanNum) + '-' + padZero(d));
+            }
+
+            // Hitung KPI
+            allKPI = [];
+            var totalTepat = 0, totalKerja = 0, totalSikap = 0;
+            var countTepat = 0, countKerja = 0, countSikap = 0;
+
+            karyawanList.forEach(function(k) {
+                var targetMasuk = k.jam_masuk || '08:00';
+                var totalHariKerja = 0;
+                var totalTepatWaktu = 0;
+                var totalHadirLengkap = 0;
+                var totalAlfa = 0;
+                var totalTelat = 0;
+                var totalIzin = 0;
+
+                dateList.forEach(function(tgl) {
+                    var isLibur = isTanggalLibur(tgl, k.divisi);
+                    if (isLibur) return;
+
+                    totalHariKerja++;
+
+                    var key = k.id + '|' + tgl;
+                    var abs = absenMap[key];
+
+                    if (!abs) {
+                        totalAlfa++;
+                        return;
+                    }
+
+                    if (abs.status === 'izin') {
+                        totalIzin++;
+                        return;
+                    }
+
+                    if (abs.jam_masuk) {
+                        if (abs.jam_masuk <= targetMasuk) {
+                            totalTepatWaktu++;
+                        } else {
+                            totalTelat++;
+                        }
+
+                        if (abs.jam_pulang) {
+                            totalHadirLengkap++;
+                        }
+                    } else {
+                        totalAlfa++;
+                    }
+                });
+
+                var tepatWaktuPct = totalHariKerja > 0 ? Math.round((totalTepatWaktu / totalHariKerja) * 100) : 0;
+                var kerjaPct = totalHariKerja > 0 ? Math.round((totalHadirLengkap / totalHariKerja) * 100) : 0;
+
+                var sikap = sikapMap[k.id];
+                var sikapNilai = sikap ? sikap.nilai : null;
+                var sikapCatatan = sikap ? sikap.catatan : '';
+
+                var totalKpi = 0;
+                var countKpi = 0;
+
+                if (tepatWaktuPct > 0) { totalKpi += tepatWaktuPct * 0.4; countKpi += 0.4; }
+                if (kerjaPct > 0) { totalKpi += kerjaPct * 0.4; countKpi += 0.4; }
+                if (sikapNilai !== null) { totalKpi += sikapNilai * 0.2; countKpi += 0.2; }
+
+                var totalKpiPct = countKpi > 0 ? Math.round(totalKpi / countKpi) : 0;
+
+                if (tepatWaktuPct > 0) { totalTepat += tepatWaktuPct; countTepat++; }
+                if (kerjaPct > 0) { totalKerja += kerjaPct; countKerja++; }
+                if (sikapNilai !== null) { totalSikap += sikapNilai; countSikap++; }
+
+                // AI Rekomendasi
+                var rekomendasi = generateRekomendasi({
+                    nama: k.nama,
+                    tepatWaktu: tepatWaktuPct,
+                    kerja: kerjaPct,
+                    sikap: sikapNilai,
+                    alfa: totalAlfa,
+                    telat: totalTelat,
+                    izin: totalIzin,
+                    totalHari: totalHariKerja
+                });
+
+                allKPI.push({
+                    id: k.id,
+                    nama: k.nama,
+                    divisi: k.divisi,
+                    tepatWaktu: tepatWaktuPct,
+                    kerja: kerjaPct,
+                    sikap: sikapNilai,
+                    sikapCatatan: sikapCatatan,
+                    total: totalKpiPct,
+                    alfa: totalAlfa,
+                    telat: totalTelat,
+                    izin: totalIzin,
+                    totalHari: totalHariKerja,
+                    rekomendasi: rekomendasi
+                });
+            });
+
+            // Update summary
+            var avgTepat = countTepat > 0 ? Math.round(totalTepat / countTepat) : 0;
+            var avgKerja = countKerja > 0 ? Math.round(totalKerja / countKerja) : 0;
+            var avgSikap = countSikap > 0 ? Math.round(totalSikap / countSikap) : 0;
+            var avgTotal = Math.round((avgTepat + avgKerja + avgSikap) / 3);
+
+            document.getElementById('avgTepat').textContent = avgTepat + '%';
+            document.getElementById('avgKerja').textContent = avgKerja + '%';
+            document.getElementById('avgSikap').textContent = avgSikap + '%';
+            document.getElementById('avgKpi').textContent = avgTotal + '%';
+
+            // Warna
+            document.getElementById('avgKpi').className = 'value ' + getWarna(avgTotal);
+            document.getElementById('avgTepat').className = 'value ' + getWarna(avgTepat);
+            document.getElementById('avgKerja').className = 'value ' + getWarna(avgKerja);
+            document.getElementById('avgSikap').className = 'value ' + getWarna(avgSikap);
+
+            // AI Summary
+            renderAI(allKPI);
+
+            // Render table
+            renderTable();
+
+        } catch(e) {
+            console.error('Error:', e);
+            wrapper.innerHTML = '<div class="empty-text"><i class="fas fa-exclamation-triangle"></i> Gagal memuat data</div>';
+            showToast('Gagal memuat data!', 'error');
+        }
+    }
+
+    // ============================================================
+    // GENERATE REKOMENDASI AI
+    // ============================================================
+    function generateRekomendasi(data) {
+        var rekomendasi = [];
+        var saran = [];
+        var status = 'Baik';
+
+        var nama = data.nama;
+        var tepat = data.tepatWaktu;
+        var kerja = data.kerja;
+        var sikap = data.sikap;
+        var alfa = data.alfa;
+        var telat = data.telat;
+        var totalHari = data.totalHari;
+
+        // Penilaian
+        if (tepat >= 90 && kerja >= 90 && (sikap === null || sikap >= 80)) {
+            status = '⭐ Sangat Baik';
+            rekomendasi.push(nama + ' memiliki kinerja yang sangat baik.');
+            rekomendasi.push('Ketepatan waktu, kehadiran, dan sikap sangat konsisten.');
+            saran.push('Pertahankan kedisiplinan dan terus jadi role model untuk tim.');
+        } else if (tepat >= 70 && kerja >= 70 && (sikap === null || sikap >= 60)) {
+            status = '✅ Baik';
+            rekomendasi.push(nama + ' memiliki kinerja yang baik.');
+            saran.push('Tingkatkan konsistensi di beberapa area untuk mencapai hasil lebih optimal.');
+        } else if (tepat >= 50 && kerja >= 50 && (sikap === null || sikap >= 40)) {
+            status = '⚠️ Cukup';
+            rekomendasi.push(nama + ' perlu perhatian khusus dalam beberapa area.');
+            saran.push('Fokus pada peningkatan disiplin dan kehadiran.');
+        } else {
+            status = '❌ Perlu Perbaikan';
+            rekomendasi.push(nama + ' perlu perbaikan signifikan dalam kinerja.');
+            saran.push('Evaluasi ulang kinerja dalam 1 bulan.');
+        }
+
+        // Detail
+        if (tepat < 70) {
+            saran.push('Tingkatkan kedisiplinan datang tepat waktu (' + tepat + '% dari target).');
+        }
+        if (kerja < 80) {
+            saran.push('Tingkatkan kehadiran dan konsistensi kerja (' + kerja + '% dari target).');
+        }
+        if (sikap !== null && sikap < 70) {
+            saran.push('Wajib pakai APD dan seragam sesuai aturan (' + sikap + '% penilaian).');
+        }
+        if (alfa > 3) {
+            saran.push('Kurangi alfa (' + alfa + 'x dalam sebulan), komunikasikan jika berhalangan.');
+        }
+        if (telat > 5) {
+            saran.push('Disiplin waktu perlu ditingkatkan (' + telat + 'x terlambat dalam sebulan).');
+        }
+
+        return {
+            status: status,
+            rekomendasi: rekomendasi,
+            saran: saran
+        };
+    }
+
+    function getWarna(nilai) {
+        if (nilai >= 80) return 'hijau';
+        if (nilai >= 60) return 'kuning';
+        return 'merah';
+    }
+
+    // ============================================================
+    // RENDER AI SUMMARY
+    // ============================================================
+    function renderAI(data) {
+        var container = document.getElementById('aiContent');
+
+        if (!data || data.length === 0) {
+            container.innerHTML = '<p>Belum ada data untuk periode ini.</p>';
+            return;
+        }
+
+        var total = data.length;
+        var baik = data.filter(function(d) { return d.total >= 80; }).length;
+        var cukup = data.filter(function(d) { return d.total >= 60 && d.total < 80; }).length;
+        var kurang = data.filter(function(d) { return d.total < 60; }).length;
+
+        var top = data.slice().sort(function(a, b) { return b.total - a.total; }).slice(0, 3);
+
+        var html = '';
+
+        // Summary
+        html += '<p><strong>Ringkasan Kinerja Periode Ini:</strong></p>';
+        html += '<ul style="list-style:none;padding:0;margin:6px 0 12px;">';
+        html += '<li>✅ Kinerja Baik (>80%): <strong>' + baik + '</strong> karyawan</li>';
+        html += '<li>🟡 Kinerja Cukup (60-80%): <strong>' + cukup + '</strong> karyawan</li>';
+        html += '<li>❌ Kinerja Kurang (<60%): <strong>' + kurang + '</strong> karyawan</li>';
+        html += '</ul>';
+
+        // Top 3
+        if (top.length > 0) {
+            html += '<p><strong>🏆 Top 3 Kinerja Terbaik:</strong></p>';
+            html += '<ul style="list-style:none;padding:0;margin:6px 0 12px;">';
+            top.forEach(function(k, i) {
+                var emoji = i === 0 ? '🥇' : i === 1 ? '🥈' : '🥉';
+                html += '<li>' + emoji + ' <strong>' + k.nama + '</strong> - ' + k.total + '% (' + k.divisi + ')</li>';
+            });
+            html += '</ul>';
+        }
+
+        // Saran umum
+        if (kurang > 0) {
+            html += '<div class="saran">';
+            html += '<strong>⚠️ Saran untuk karyawan dengan kinerja kurang:</strong><br>';
+            html += '• Berikan pembinaan dan evaluasi kinerja secara berkala<br>';
+            html += '• Fokus pada kedisiplinan waktu dan kehadiran<br>';
+            html += '• Pastikan penggunaan APD dan seragam sesuai aturan';
+            html += '</div>';
+        }
+
+        container.innerHTML = html;
+    }
+
+    // ============================================================
+    // RENDER TABLE
+    // ============================================================
+    function renderTable() {
+        var wrapper = document.getElementById('tableWrapper');
+
+        if (!allKPI || allKPI.length === 0) {
+            wrapper.innerHTML = '<div class="empty-text"><i class="fas fa-inbox"></i> Tidak ada data KPI</div>';
+            return;
+        }
+
+        var html = '<table><thead><tr>';
+        html += '<th>No</th><th>Nama</th><th>Divisi</th>';
+        html += '<th>Ketepatan Waktu</th>';
+        html += '<th>Ketepatan Kerja</th>';
+        html += '<th>Sikap (APD)</th>';
+        html += '<th>Total KPI</th>';
+        html += '<th>Status</th>';
+        html += '<th>Aksi</th>';
+        html += '</tr></thead><tbody>';
+
+        allKPI.forEach(function(k, idx) {
+            var warnaTotal = getWarna(k.total);
+            var warnaTepat = getWarna(k.tepatWaktu);
+            var warnaKerja = getWarna(k.kerja);
+            var warnaSikap = k.sikap !== null ? getWarna(k.sikap) : 'kuning';
+
+            var statusLabel = k.rekomendasi ? k.rekomendasi.status : '⚪';
+
+            html += '<tr>';
+            html += '<td>' + (idx + 1) + '</td>';
+            html += '<td><strong>' + k.nama + '</strong></td>';
+            html += '<td>' + k.divisi + '</td>';
+            html += '<td><span class="badge-kpi ' + warnaTepat + '">' + k.tepatWaktu + '%</span></td>';
+            html += '<td><span class="badge-kpi ' + warnaKerja + '">' + k.kerja + '%</span></td>';
+            html += '<td><span class="badge-kpi ' + warnaSikap + '">' + (k.sikap !== null ? k.sikap + '%' : '-') + '</span></td>';
+            html += '<td><span class="badge-kpi ' + warnaTotal + '" style="font-size:14px;">' + k.total + '%</span></td>';
+            html += '<td>' + statusLabel + '</td>';
+            html += '<td>';
+            html += '<button class="btn-edit-sikap" onclick="openModalSikap(\'' + k.id + '\', \'' + k.nama + '\')"><i class="fas fa-edit"></i> Sikap</button>';
+            html += '</td>';
+            html += '</tr>';
+        });
+
+        html += '</tbody></table>';
+        wrapper.innerHTML = html;
+    }
+
+    function resetSummary() {
+        document.getElementById('avgTepat').textContent = '0%';
+        document.getElementById('avgKerja').textContent = '0%';
+        document.getElementById('avgSikap').textContent = '0%';
+        document.getElementById('avgKpi').textContent = '0%';
+        document.getElementById('aiContent').innerHTML = '<p>Silakan pilih periode dan klik <strong>Tampilkan</strong> untuk melihat rekomendasi.</p>';
+    }
+
+    // ============================================================
+    // MODAL SIKAP
+    // ============================================================
+    var currentSikapId = null;
+
+    function openModalSikap(karyawanId, nama) {
+        currentSikapId = karyawanId;
+        document.getElementById('sikapKaryawanId').value = karyawanId;
+        document.getElementById('sikapNama').value = nama;
+        document.getElementById('sikapNilai').value = '';
+        document.getElementById('sikapCatatan').value = '';
+        document.getElementById('sikapBulan').value = document.getElementById('filterBulan').value;
+
+        // Cek data existing
+        var bulan = document.getElementById('filterBulan').value;
+        if (bulan) {
+            var existing = allKPI.find(function(k) { return k.id === karyawanId; });
+            if (existing && existing.sikap !== null) {
+                document.getElementById('sikapNilai').value = existing.sikap;
+                document.getElementById('sikapCatatan').value = existing.sikapCatatan || '';
+            }
+        }
+
+        document.getElementById('modalSikap').classList.add('active');
+    }
+
+    function closeModalSikap() {
+        document.getElementById('modalSikap').classList.remove('active');
+        currentSikapId = null;
+    }
+
+    // ============================================================
+    // SIMPAN SIKAP
+    // ============================================================
+    async function simpanSikap() {
+        var karyawanId = document.getElementById('sikapKaryawanId').value;
+        var bulan = document.getElementById('sikapBulan').value;
+        var nilai = parseInt(document.getElementById('sikapNilai').value);
+        var catatan = document.getElementById('sikapCatatan').value.trim();
+
+        if (!karyawanId || !bulan) {
+            showToast('Data tidak lengkap!', 'error');
+            return;
+        }
+
+        if (isNaN(nilai) || nilai < 0 || nilai > 100) {
+            showToast('Masukkan nilai 0-100!', 'error');
+            return;
+        }
+
+        try {
+            // Cek apakah sudah ada
+            var checkRes = await fetch(
+                SUPABASE_URL + '/rest/v1/kpi_sikap?select=id&karyawan_id=eq.' + karyawanId + '&bulan=eq.' + bulan,
+                {
+                    headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': 'Bearer ' + SUPABASE_ANON_KEY }
+                }
+            );
+            var existing = await checkRes.json();
+
+            var payload = {
+                karyawan_id: karyawanId,
+                bulan: bulan,
+                nilai: nilai,
+                catatan: catatan
+            };
+
+            var res;
+            if (existing && existing.length > 0) {
+                res = await fetch(
+                    SUPABASE_URL + '/rest/v1/kpi_sikap?id=eq.' + existing[0].id,
+                    {
+                        method: 'PATCH',
+                        headers: {
+                            'apikey': SUPABASE_ANON_KEY,
+                            'Authorization': 'Bearer ' + SUPABASE_ANON_KEY,
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ nilai: nilai, catatan: catatan })
+                    }
+                );
+            } else {
+                res = await fetch(
+                    SUPABASE_URL + '/rest/v1/kpi_sikap',
+                    {
+                        method: 'POST',
+                        headers: {
+                            'apikey': SUPABASE_ANON_KEY,
+                            'Authorization': 'Bearer ' + SUPABASE_ANON_KEY,
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(payload)
+                    }
+                );
+            }
+
+            if (res.ok) {
+                showToast('✅ Nilai sikap berhasil disimpan!', 'success');
+                closeModalSikap();
+                loadKPI();
+            } else {
+                var error = await res.text();
+                showToast('❌ Gagal: ' + error, 'error');
+            }
+        } catch(e) {
+            console.error('Error:', e);
+            showToast('❌ Gagal koneksi!', 'error');
+        }
+    }
+
+    // ============================================================
+    // EXPORT EXCEL
+    // ============================================================
+    function exportExcel() {
+        if (allKPI.length === 0) { showToast('Tidak ada data', 'warning'); return; }
+
+        var bulan = document.getElementById('filterBulan').value;
+        var parts = bulan.split('-');
+        var bulanName = getMonthName(parseInt(parts[1])) + ' ' + parts[0];
+
+        var csv = 'KPI Karyawan - ' + bulanName + '\n\n';
+        csv += 'No,Nama,Divisi,Ketepatan Waktu,Ketepatan Kerja,Sikap (APD),Total KPI,Status\n';
+
+        allKPI.forEach(function(k, idx) {
+            csv += (idx+1) + ',' + k.nama + ',' + k.divisi + ',' + k.tepatWaktu + '%,' + k.kerja + '%,' + (k.sikap !== null ? k.sikap + '%' : '-') + ',' + k.total + '%,' + (k.rekomendasi ? k.rekomendasi.status : '-') + '\n';
+        });
+
+        var blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+        var link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = 'KPI_' + bulan + '.csv';
+        link.click();
+        showToast('📥 Excel berhasil didownload!', 'success');
+    }
+
+    // ============================================================
+    // REFRESH
+    // ============================================================
+    function refreshData() {
+        showToast('🔄 Memperbarui data...', 'info');
+        loadKPI();
+        setTimeout(function() {
+            showToast('✅ Data diperbarui!', 'success');
+        }, 500);
+    }
+
+    // ============================================================
+    // INIT
+    // ============================================================
+    loadFilterOptions();
+    setTimeout(function() {
+        loadKPI();
+    }, 300);
+    console.log('📊 KPI loaded!');
+</script>
+
+</body>
+</html>
