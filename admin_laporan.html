@@ -119,7 +119,6 @@
             width: 100%;
             margin-top: 4px;
         }
-        .tutorial-text a { color: #38bdf8; text-decoration: underline; }
 
         .filter-card .btn-primary {
             padding: 10px 24px;
@@ -513,12 +512,12 @@
             </div>
         </div>
 
-        <!-- Input URL Logo & Tutorial -->
+        <!-- Input URL Logo dari Supabase -->
         <div class="logo-setting-box">
             <label><i class="fas fa-image"></i> URL Logo Kop:</label>
-            <input type="text" id="logoUrlInput" placeholder="Masukkan Direct Link gambar logo (contoh: https://i.ibb.co/...)" value="" oninput="updateLogoPreview()">
+            <input type="text" id="logoUrlInput" placeholder="Masukkan URL logo Supabase..." value="https://zcaqqybonpfishwkmffg.supabase.co/storage/v1/object/public/logo/GKL1_Badan%20Gizi%20Nasional%20(BGN)%20-%20koleksilogo.com%20(1).png" oninput="updateLogoPreview()">
             <div class="tutorial-text">
-                💡 <b>Cara menampilkan logo:</b> Upload gambar logo Anda ke situs hosting gambar gratis (seperti <a href="https://imgbb.com" target="_blank">ImgBB</a> atau <a href="https://imgur.com" target="_blank">Imgur</a>), salin tautan langsung gambar (<em>Direct Link</em> yang berakhiran .jpg / .png), lalu tempel (paste) di kolom input atas.
+                ✓ Menggunakan URL Supabase Storage Anda. Logo otomatis tersimpan dan aktif.
             </div>
         </div>
     </div>
@@ -920,7 +919,7 @@
         html += '<div class="kop">';
         html += '<div class="header-wrapper">';
         
-        // Logo sebelah kiri (absolut / kotak merah)
+        // Logo sebelah kiri (kotak merah)
         html += '<div class="logo-container">';
         if (logoUrl) {
             html += '<img src="' + logoUrl + '" alt="Logo" class="logo-img" id="kopLogoImg" onerror="this.style.display=\'none\'">';
