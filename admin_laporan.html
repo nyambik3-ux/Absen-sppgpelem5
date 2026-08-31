@@ -76,6 +76,7 @@
         
         .filter-card label { font-size: 13px; font-weight: 600; color: #94a3b8; }
         .filter-card input[type="date"],
+        .filter-card input[type="text"],
         .filter-card select {
             padding: 10px 14px;
             border-radius: 10px;
@@ -87,12 +88,38 @@
             min-width: 150px;
         }
         body.light-mode .filter-card input[type="date"],
+        body.light-mode .filter-card input[type="text"],
         body.light-mode .filter-card select { background: #f1f5f9; color: #1e293b; border-color: #cbd5e1; }
         .filter-card input:focus, .filter-card select:focus {
             outline: none;
             border-color: #a855f7;
         }
         
+        .logo-setting-box {
+            width: 100%;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            background: rgba(0,0,0,0.15);
+            padding: 10px 14px;
+            border-radius: 10px;
+            border: 1px dashed rgba(255,255,255,0.2);
+            margin-top: 5px;
+        }
+        body.light-mode .logo-setting-box { background: #f8fafc; border-color: #cbd5e1; }
+        
+        .logo-setting-box input[type="text"] {
+            flex-grow: 1;
+        }
+
+        .tutorial-text {
+            font-size: 11px;
+            color: #94a3b8;
+            width: 100%;
+            margin-top: 4px;
+        }
+        .tutorial-text a { color: #38bdf8; text-decoration: underline; }
+
         .filter-card .btn-primary {
             padding: 10px 24px;
             background: linear-gradient(135deg, #a855f7, #3b82f6);
@@ -105,18 +132,6 @@
             font-size: 14px;
         }
         .filter-card .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 4px 15px rgba(168,85,247,0.4); }
-        .filter-card .btn-success {
-            padding: 10px 20px;
-            background: #10b981;
-            border: none;
-            border-radius: 10px;
-            color: white;
-            font-weight: 700;
-            cursor: pointer;
-            font-family: 'Inter', sans-serif;
-            font-size: 13px;
-        }
-        .filter-card .btn-success:hover { background: #059669; }
         .filter-card .btn-print {
             padding: 10px 20px;
             background: #f59e0b;
@@ -171,21 +186,20 @@
             flex-wrap: nowrap;
         }
         
-        .laporan-preview .kop .header-wrapper .teks {
-            text-align: justify;
-            text-justify: inter-word;
-            flex-grow: 1;
-        }
-        
         .laporan-preview .kop .header-wrapper .logo-container {
             flex-shrink: 0;
-            text-align: right;
+            text-align: left;
         }
 
         .laporan-preview .kop .header-wrapper .logo-img {
             height: 75px;
             width: auto;
             object-fit: contain;
+        }
+
+        .laporan-preview .kop .header-wrapper .teks {
+            text-align: center;
+            flex-grow: 1;
         }
         
         .laporan-preview .kop .header-wrapper .teks .instansi {
@@ -274,7 +288,6 @@
         .laporan-preview .summary-item .num.libur { color: #2563eb; }
         .laporan-preview .summary-item .num.izin { color: #7c3aed; }
         .laporan-preview .summary-item .num.total { color: #0f172a; }
-        .laporan-preview .summary-item .num.telat { color: #d97706; }
         
         /* ===== TABLE ===== */
         .laporan-preview table {
@@ -309,7 +322,6 @@
         .laporan-preview td .status-label.alfa { background: #fee2e2; color: #b91c1c; }
         .laporan-preview td .status-label.izin { background: #ede9fe; color: #7c3aed; }
         .laporan-preview td .status-label.libur { background: #dbeafe; color: #2563eb; }
-        .laporan-preview td .status-label.telat { background: #fef3c7; color: #d97706; }
         
         .laporan-preview .legenda {
             display: flex;
@@ -339,7 +351,6 @@
         .laporan-preview .legenda-item .dot.alfa { background: #b91c1c; }
         .laporan-preview .legenda-item .dot.izin { background: #7c3aed; }
         .laporan-preview .legenda-item .dot.libur { background: #2563eb; }
-        .laporan-preview .legenda-item .dot.telat { background: #d97706; }
         
         .laporan-preview .ttd {
             display: flex;
@@ -411,7 +422,7 @@
         @media (max-width: 768px) {
             .navbar { flex-wrap: wrap; gap: 10px; padding: 12px 16px; }
             .filter-card { flex-direction: column; align-items: stretch; }
-            .filter-card input[type="date"], .filter-card select { width: 100%; min-width: auto; }
+            .filter-card input[type="date"], .filter-card input[type="text"], .filter-card select { width: 100%; min-width: auto; }
             .laporan-preview { padding: 20px; }
             .laporan-preview table { font-size: 9px; }
             .laporan-preview th, .laporan-preview td { padding: 2px 3px; }
@@ -462,25 +473,42 @@
 
     <!-- FILTER -->
     <div class="filter-card">
-        <label><i class="fas fa-calendar-alt"></i> Periode:</label>
-        <input type="date" id="startDate">
-        <span style="color:#64748b;">s/d</span>
-        <input type="date" id="endDate">
-        
-        <label><i class="fas fa-users"></i> Divisi:</label>
-        <select id="filterDivisi">
-            <option value="">Semua Divisi</option>
-        </select>
-        
-        <button class="btn-primary" onclick="loadLaporan()">
-            <i class="fas fa-search"></i> Tampilkan
-        </button>
-        <button class="btn-print" onclick="cetakLaporan()">
-            <i class="fas fa-print"></i> Cetak / PDF
-        </button>
-        <button class="btn-refresh" onclick="refreshData()">
-            <i class="fas fa-sync-alt"></i>
-        </button>
+        <div style="display: flex; gap: 10px; flex-wrap: wrap; width: 100%; align-items: center;">
+            <div>
+                <label style="display:block; margin-bottom:4px;"><i class="fas fa-calendar-alt"></i> Periode:</label>
+                <input type="date" id="startDate">
+            </div>
+            <div>
+                <label style="display:block; margin-bottom:4px; opacity:0;">s/d</label>
+                <input type="date" id="endDate">
+            </div>
+            <div>
+                <label style="display:block; margin-bottom:4px;"><i class="fas fa-users"></i> Divisi:</label>
+                <select id="filterDivisi">
+                    <option value="">Semua Divisi</option>
+                </select>
+            </div>
+            <div style="margin-top: 18px;">
+                <button class="btn-primary" onclick="loadLaporan()">
+                    <i class="fas fa-search"></i> Tampilkan
+                </button>
+                <button class="btn-print" onclick="cetakLaporan()">
+                    <i class="fas fa-print"></i> Cetak / PDF
+                </button>
+                <button class="btn-refresh" onclick="refreshData()">
+                    <i class="fas fa-sync-alt"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Input URL Logo & Tutorial -->
+        <div class="logo-setting-box">
+            <label><i class="fas fa-image"></i> URL Logo Kop:</label>
+            <input type="text" id="logoUrlInput" placeholder="Masukkan URL gambar logo (contoh: https://... atau /logo.png)" value="https://via.placeholder.com/150x75?text=LOGO" oninput="updateLogoPreview()">
+            <div class="tutorial-text">
+                💡 <b>Cara memasukkan logo:</b> Upload gambar logo Anda ke situs hosting gambar gratis (seperti <a href="https://imgbb.com" target="_blank">ImgBB</a> atau <a href="https://imgur.com" target="_blank">Imgur</a>), salin <em>Direct Link</em> gambar tersebut, lalu tempel (paste) di kolom input atas.
+            </div>
+        </div>
     </div>
 
     <!-- PREVIEW LAPORAN -->
@@ -542,12 +570,6 @@
         return new Date(parts[0], parts[1] - 1, parts[2]);
     }
 
-    function formatTanggalDisplay(dateStr) {
-        var d = new Date(dateStr + 'T00:00:00');
-        var bulan = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
-        return d.getDate() + ' ' + bulan[d.getMonth()] + ' ' + d.getFullYear();
-    }
-
     function setDefaultDates() {
         var todayStr = getTodayIndonesia();
         var end = todayStr;
@@ -561,6 +583,17 @@
         document.getElementById('endDate').value = end;
     }
     setDefaultDates();
+
+    // ============================================================
+    // UPDATE LIVE LOGO PREVIEW
+    // ============================================================
+    function updateLogoPreview() {
+        var url = document.getElementById('logoUrlInput').value;
+        var logoImg = document.getElementById('kopLogoImg');
+        if (logoImg) {
+            logoImg.src = url;
+        }
+    }
 
     // ============================================================
     // THEME
@@ -728,7 +761,7 @@
             }
 
             allData = [];
-            var totalHadir = 0, totalTelat = 0, totalAlfa = 0, totalIzin = 0;
+            var totalMasuk = 0, totalAlfa = 0, totalIzin = 0;
 
             karyawan.forEach(function(k) {
                 var row = {
@@ -738,8 +771,7 @@
                     targetMasuk: k.jam_masuk || '08:00',
                     targetPulang: k.jam_pulang || '17:00',
                     dates: [],
-                    hadir: 0,
-                    telat: 0,
+                    masuk: 0,
                     alfa: 0,
                     izin: 0
                 };
@@ -767,17 +799,10 @@
                             row.izin++;
                             totalIzin++;
                         } else if (jamMasuk !== '-') {
-                            if (jamMasuk <= row.targetMasuk) {
-                                status = 'hadir';
-                                statusLabel = '✅';
-                                row.hadir++;
-                                totalHadir++;
-                            } else {
-                                status = 'telat';
-                                statusLabel = '⏰';
-                                row.telat++;
-                                totalTelat++;
-                            }
+                            status = 'hadir';
+                            statusLabel = '✅';
+                            row.masuk++;
+                            totalMasuk++;
                         } else {
                             status = 'alfa';
                             statusLabel = '❌';
@@ -812,7 +837,7 @@
                 return indexA - indexB;
             });
 
-            renderLaporan(totalHadir, totalTelat, totalAlfa, totalIzin);
+            renderLaporan(totalMasuk, totalAlfa, totalIzin);
 
         } catch(e) {
             console.error('Error:', e);
@@ -824,12 +849,13 @@
     // ============================================================
     // RENDER LAPORAN
     // ============================================================
-    function renderLaporan(totalHadir, totalTelat, totalAlfa, totalIzin) {
+    function renderLaporan(totalMasuk, totalAlfa, totalIzin) {
         var container = document.getElementById('laporanContainer');
 
         var start = document.getElementById('startDate').value;
         var end = document.getElementById('endDate').value;
         var divisiFilter = document.getElementById('filterDivisi').value;
+        var logoUrl = document.getElementById('logoUrlInput').value;
 
         var dStart = parseDateIndonesia(start);
         var dEnd = parseDateIndonesia(end);
@@ -864,7 +890,7 @@
                 tableHtml += '<td><span class="status-label ' + cls + '">' + label + '</span></td>';
             });
 
-            var total = row.hadir + row.telat + row.izin;
+            var total = row.masuk + row.izin;
             tableHtml += '<td><strong>' + total + '</strong></td>';
             tableHtml += '</tr>';
         });
@@ -877,17 +903,17 @@
         html += '<div class="kop">';
         html += '<div class="header-wrapper">';
         
-        // Teks Kop Surat sebelah kiri (justify)
+        // Logo sebelah kiri
+        html += '<div class="logo-container">';
+        html += '<img src="' + logoUrl + '" alt="Logo" class="logo-img" id="kopLogoImg">';
+        html += '</div>';
+
+        // Teks Kop Surat di tengah
         html += '<div class="teks">';
         html += '<div class="instansi">SATUAN PELAYANAN PEMENUHAN GIZI</div>';
         html += '<div class="instansi-2">SPPG KEDIRI PARE PELEM 5</div>';
         html += '<div class="alamat">Jl Langkat, Singgahan Pelem Kec. Pare, Kab. Kediri, Prov. Jatim 64212</div>';
         html += '<div class="email">Email : sppgpelem10@gmail.com</div>';
-        html += '</div>';
-
-        // Logo sebelah kanan
-        html += '<div class="logo-container">';
-        html += '<img src="https://via.placeholder.com/150x75?text=LOGO" alt="Logo" class="logo-img" id="kopLogoImg">';
         html += '</div>';
 
         html += '</div>'; // end header-wrapper
@@ -898,19 +924,17 @@
         html += '<div class="tgl-cetak">Dicetak pada: ' + tglCetak + (divisiFilter ? ' | Divisi: ' + divisiFilter : '') + '</div>';
         html += '</div>';
 
-        // Summary items
+        // Summary items (ganti telat jadi masuk)
         html += '<div class="summary">';
         html += '<div class="summary-item"><div class="num total">' + totalKaryawan + '</div><div class="label">Karyawan</div></div>';
-        html += '<div class="summary-item"><div class="num hadir">' + totalHadir + '</div><div class="label">Hadir</div></div>';
-        html += '<div class="summary-item"><div class="num telat">' + totalTelat + '</div><div class="label">Telat</div></div>';
+        html += '<div class="summary-item"><div class="num hadir">' + totalMasuk + '</div><div class="label">Masuk</div></div>';
         html += '<div class="summary-item"><div class="num izin">' + totalIzin + '</div><div class="label">Izin</div></div>';
         html += '<div class="summary-item"><div class="num alfa">' + totalAlfa + '</div><div class="label">Alfa</div></div>';
         html += '</div>';
 
         // Legenda
         html += '<div class="legenda">';
-        html += '<div class="legenda-item"><span class="dot hadir"></span> Hadir</div>';
-        html += '<div class="legenda-item"><span class="dot telat"></span> Telat</div>';
+        html += '<div class="legenda-item"><span class="dot hadir"></span> Masuk</div>';
         html += '<div class="legenda-item"><span class="dot izin"></span> Izin</div>';
         html += '<div class="legenda-item"><span class="dot alfa"></span> Alfa</div>';
         html += '<div class="legenda-item"><span class="dot libur"></span> Libur</div>';
