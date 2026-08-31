@@ -165,80 +165,82 @@
         .laporan-preview .kop .header-wrapper {
             display: flex;
             align-items: center;
-            justify-content: center;
+            justify-content: space-between;
             gap: 20px;
-            margin-bottom: 6px;
-            flex-wrap: wrap;
-        }
-        
-        .laporan-preview .kop .header-wrapper .logo-img {
-            height: 70px;
-            width: auto;
-            object-fit: contain;
-            flex-shrink: 0;
-            border-radius: 8px;
+            margin-bottom: 4px;
+            flex-wrap: nowrap;
         }
         
         .laporan-preview .kop .header-wrapper .teks {
-            text-align: left;
+            text-align: justify;
+            text-justify: inter-word;
+            flex-grow: 1;
+        }
+        
+        .laporan-preview .kop .header-wrapper .logo-container {
+            flex-shrink: 0;
+            text-align: right;
+        }
+
+        .laporan-preview .kop .header-wrapper .logo-img {
+            height: 75px;
+            width: auto;
+            object-fit: contain;
         }
         
         .laporan-preview .kop .header-wrapper .teks .instansi {
-            font-size: 14px;
+            font-size: 13px;
             font-weight: 700;
-            letter-spacing: 1px;
+            letter-spacing: 0.5px;
             color: #0f172a;
+            line-height: 1.2;
         }
         
         .laporan-preview .kop .header-wrapper .teks .instansi-2 {
-            font-size: 20px;
+            font-size: 15px;
             font-weight: 800;
-            letter-spacing: 2px;
+            letter-spacing: 1px;
             color: #0f172a;
+            margin-top: 1px;
+            line-height: 1.2;
+        }
+        
+        .laporan-preview .kop .header-wrapper .teks .alamat {
+            font-size: 11px;
+            color: #334155;
             margin-top: 2px;
+            line-height: 1.2;
         }
         
-        .laporan-preview .kop .header-wrapper .teks .yayasan {
-            font-size: 13px;
-            font-weight: 500;
-            color: #475569;
-            margin-top: 2px;
-        }
-        
-        .laporan-preview .kop .alamat {
-            font-size: 12px;
-            color: #64748b;
-            margin-top: 4px;
-        }
-        
-        .laporan-preview .kop .email {
-            font-size: 12px;
-            color: #64748b;
-            margin-bottom: 0px;
+        .laporan-preview .kop .header-wrapper .teks .email {
+            font-size: 11px;
+            color: #334155;
+            margin-top: 1px;
+            line-height: 1.2;
         }
         
         .laporan-preview .kop .garis-kop {
             border-bottom: 3px double #1e293b;
-            margin-top: 12px;
+            margin-top: 8px;
             margin-bottom: 16px;
         }
         
         .laporan-preview .kop .judul {
-            font-size: 24px;
+            font-size: 20px;
             font-weight: 800;
-            letter-spacing: 3px;
+            letter-spacing: 2px;
             color: #0f172a;
             margin-top: 4px;
         }
         
         .laporan-preview .kop .periode {
-            font-size: 14px;
+            font-size: 13px;
             color: #475569;
             margin-top: 4px;
         }
         
         .laporan-preview .kop .tgl-cetak {
-            font-size: 12px;
+            font-size: 11px;
             color: #94a3b8;
             margin-top: 2px;
         }
@@ -413,14 +415,14 @@
             .laporan-preview { padding: 20px; }
             .laporan-preview table { font-size: 9px; }
             .laporan-preview th, .laporan-preview td { padding: 2px 3px; }
-            .laporan-preview .kop .header-wrapper .teks .instansi-2 { font-size: 16px; }
-            .laporan-preview .kop .judul { font-size: 18px; }
+            .laporan-preview .kop .header-wrapper .teks .instansi-2 { font-size: 14px; }
+            .laporan-preview .kop .judul { font-size: 16px; }
             .laporan-preview .summary-item { min-width: 60px; padding: 4px 10px; }
             .laporan-preview .summary-item .num { font-size: 16px; }
             .nav-actions { flex-wrap: wrap; }
             .laporan-preview .ttd { flex-direction: column; gap: 20px; align-items: center; }
             .laporan-preview .ttd-box { width: 100%; }
-            .laporan-preview .kop .header-wrapper { gap: 12px; }
+            .laporan-preview .kop .header-wrapper { gap: 10px; }
             .laporan-preview .kop .header-wrapper .logo-img { height: 50px; }
         }
         
@@ -875,15 +877,21 @@
         html += '<div class="kop">';
         html += '<div class="header-wrapper">';
         
-        // Menggunakan placeholder teks/gambar kop surat standar sesuai template yang ada
+        // Teks Kop Surat sebelah kiri (justify)
         html += '<div class="teks">';
-        html += '<div class="instansi">YAYASAN / INSTANSI TERKAIT</div>';
-        html += '<div class="instansi-2">LAPORAN KEHADIRAN RELAWANTRACK</div>';
-        html += '<div class="yayasan">Sistem Manajemen Absensi Terpadu</div>';
+        html += '<div class="instansi">SATUAN PELAYANAN PEMENUHAN GIZI</div>';
+        html += '<div class="instansi-2">SPPG KEDIRI PARE PELEM 5</div>';
+        html += '<div class="alamat">Jl Langkat, Singgahan Pelem Kec. Pare, Kab. Kediri, Prov. Jatim 64212</div>';
+        html += '<div class="email">Email : sppgpelem10@gmail.com</div>';
         html += '</div>';
+
+        // Logo sebelah kanan
+        html += '<div class="logo-container">';
+        html += '<img src="https://via.placeholder.com/150x75?text=LOGO" alt="Logo" class="logo-img" id="kopLogoImg">';
         html += '</div>';
+
+        html += '</div>'; // end header-wrapper
         
-        html += '<div class="alamat">Alamat Kantor Operasional • Email: info@relawantrack.com</div>';
         html += '<div class="garis-kop"></div>';
         html += '<div class="judul">LAPORAN REKAPITULASI ABSENSI</div>';
         html += '<div class="periode">Periode: ' + periode + '</div>';
