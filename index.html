@@ -74,6 +74,7 @@
     function showToast(msg, type) {
         type = type || 'success';
         var container = document.getElementById('toastContainer');
+        if (!container) return;
         container.innerHTML = '';
         var toast = document.createElement('div');
         toast.className = 'toast' + (type !== 'success' ? ' ' + type : '');
@@ -88,10 +89,11 @@
     }
 
     // ============================================================
-    // PARTICLES
+    // PARTICLES - ⭐ FIX: tambahin if (!container) return
     // ============================================================
     function createParticles() {
         var container = document.getElementById('particles');
+        if (!container) return;  // ⭐ FIX: cegah error null
         for (var i = 0; i < 25; i++) {
             var p = document.createElement('div');
             p.className = 'particle';
@@ -104,7 +106,11 @@
             container.appendChild(p);
         }
     }
-    createParticles();
+
+    // ⭐ FIX: panggil createParticles pake DOMContentLoaded
+    document.addEventListener('DOMContentLoaded', function() {
+        createParticles();
+    });
 
     // ============================================================
     // CLOCK
@@ -114,9 +120,13 @@
         var h = String(now.getHours()).padStart(2,'0');
         var m = String(now.getMinutes()).padStart(2,'0');
         var s = String(now.getSeconds()).padStart(2,'0');
-        document.getElementById('clock').textContent = h + ':' + m + ':' + s;
-        var options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-        document.getElementById('date').textContent = now.toLocaleDateString('id-ID', options);
+        var clockEl = document.getElementById('clock');
+        if (clockEl) clockEl.textContent = h + ':' + m + ':' + s;
+        var dateEl = document.getElementById('date');
+        if (dateEl) {
+            var options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            dateEl.textContent = now.toLocaleDateString('id-ID', options);
+        }
     }
     updateClock();
     setInterval(updateClock, 1000);
@@ -125,33 +135,43 @@
     // LOAD USER DATA
     // ============================================================
     function loadUserData() {
-        document.getElementById('userName').textContent = user.nama || user.id || 'User';
+        var nameEl = document.getElementById('userName');
+        if (nameEl) nameEl.textContent = user.nama || user.id || 'User';
 
         var divisi = user.divisi || 'Relawan';
         if (divisi.includes(' - ')) divisi = divisi.split(' - ')[0];
         if (divisi.includes('\n')) divisi = divisi.split('\n')[0];
 
-        document.getElementById('userDivisi').textContent = divisi;
-        document.getElementById('userDivisiBadge').textContent = user.divisi ? '• ' + divisi : '';
-        document.getElementById('divisiBadge').textContent = divisi || 'Divisi';
-        document.getElementById('notifName').textContent = user.nama || 'User';
-        document.getElementById('targetMasuk').textContent = user.jamMasuk || '08:00';
-        document.getElementById('targetPulang').textContent = user.jamPulang || '17:00';
+        var divEl = document.getElementById('userDivisi');
+        if (divEl) divEl.textContent = divisi;
+        var badgeEl = document.getElementById('userDivisiBadge');
+        if (badgeEl) badgeEl.textContent = user.divisi ? '• ' + divisi : '';
+        var divisiBadge = document.getElementById('divisiBadge');
+        if (divisiBadge) divisiBadge.textContent = divisi || 'Divisi';
+        var notifName = document.getElementById('notifName');
+        if (notifName) notifName.textContent = user.nama || 'User';
+        var targetMasuk = document.getElementById('targetMasuk');
+        if (targetMasuk) targetMasuk.textContent = user.jamMasuk || '08:00';
+        var targetPulang = document.getElementById('targetPulang');
+        if (targetPulang) targetPulang.textContent = user.jamPulang || '17:00';
 
         if (user.foto && user.foto !== '' && user.foto !== 'https://via.placeholder.com/150') {
             var img = document.getElementById('imgAvatar');
-            var url = user.foto;
-            if (url.includes('drive.google.com')) {
-                var match = url.match(/[-\w]{25,}/);
-                if (match) url = 'https://lh3.googleusercontent.com/d/' + match[0];
+            if (img) {
+                var url = user.foto;
+                if (url.includes('drive.google.com')) {
+                    var match = url.match(/[-\w]{25,}/);
+                    if (match) url = 'https://lh3.googleusercontent.com/d/' + match[0];
+                }
+                img.src = url;
+                img.style.display = 'block';
+                var placeholder = document.getElementById('avatarPlaceholder');
+                if (placeholder) placeholder.style.display = 'none';
+                img.onerror = function() {
+                    img.style.display = 'none';
+                    if (placeholder) placeholder.style.display = 'flex';
+                };
             }
-            img.src = url;
-            img.style.display = 'block';
-            document.getElementById('avatarPlaceholder').style.display = 'none';
-            img.onerror = function() {
-                img.style.display = 'none';
-                document.getElementById('avatarPlaceholder').style.display = 'flex';
-            };
         }
     }
     loadUserData();
@@ -349,54 +369,82 @@
         checkIzinHariIni();
 
         if (!isHariKerja) {
-            document.getElementById('statusMasuk').textContent = '🔵';
-            document.getElementById('statusMasukSub').textContent = 'Bukan Hari Kerja (' + dayName + ')';
-            document.getElementById('statusPulang').textContent = '🔵';
-            document.getElementById('statusPulangSub').textContent = 'Bukan Hari Kerja (' + dayName + ')';
-            document.getElementById('notifText').innerHTML = '📅 <strong>BUKAN HARI KERJA</strong> - ' + dayName + ' untuk divisi ' + user.divisi;
-            document.getElementById('userBadge').textContent = '🔵 Libur';
+            var statusMasuk = document.getElementById('statusMasuk');
+            if (statusMasuk) statusMasuk.textContent = '🔵';
+            var statusMasukSub = document.getElementById('statusMasukSub');
+            if (statusMasukSub) statusMasukSub.textContent = 'Bukan Hari Kerja (' + dayName + ')';
+            var statusPulang = document.getElementById('statusPulang');
+            if (statusPulang) statusPulang.textContent = '🔵';
+            var statusPulangSub = document.getElementById('statusPulangSub');
+            if (statusPulangSub) statusPulangSub.textContent = 'Bukan Hari Kerja (' + dayName + ')';
+            var notifText = document.getElementById('notifText');
+            if (notifText) notifText.innerHTML = '📅 <strong>BUKAN HARI KERJA</strong> - ' + dayName + ' untuk divisi ' + user.divisi;
+            var userBadge = document.getElementById('userBadge');
+            if (userBadge) userBadge.textContent = '🔵 Libur';
             return;
         }
 
         if (isLibur) {
-            document.getElementById('statusMasuk').textContent = '🔵';
-            document.getElementById('statusMasukSub').textContent = 'Hari Libur!';
-            document.getElementById('statusPulang').textContent = '🔵';
-            document.getElementById('statusPulangSub').textContent = 'Hari Libur!';
-            document.getElementById('notifText').innerHTML = '📅 <strong>HARI LIBUR</strong> - tidak perlu absen';
-            document.getElementById('userBadge').textContent = '🔵 Libur';
+            var statusMasuk = document.getElementById('statusMasuk');
+            if (statusMasuk) statusMasuk.textContent = '🔵';
+            var statusMasukSub = document.getElementById('statusMasukSub');
+            if (statusMasukSub) statusMasukSub.textContent = 'Hari Libur!';
+            var statusPulang = document.getElementById('statusPulang');
+            if (statusPulang) statusPulang.textContent = '🔵';
+            var statusPulangSub = document.getElementById('statusPulangSub');
+            if (statusPulangSub) statusPulangSub.textContent = 'Hari Libur!';
+            var notifText = document.getElementById('notifText');
+            if (notifText) notifText.innerHTML = '📅 <strong>HARI LIBUR</strong> - tidak perlu absen';
+            var userBadge = document.getElementById('userBadge');
+            if (userBadge) userBadge.textContent = '🔵 Libur';
             return;
         }
 
         // Cek izin hari ini - jika ada izin disetujui
         if (window.izinHariIniStatus === 'disetujui') {
-            document.getElementById('statusMasuk').textContent = '📝';
-            document.getElementById('statusMasukSub').textContent = 'Izin Disetujui';
-            document.getElementById('statusPulang').textContent = '📝';
-            document.getElementById('statusPulangSub').textContent = 'Izin Disetujui';
-            document.getElementById('notifText').innerHTML = '📝 <strong>IZIN DISETUJUI</strong> - ' + (window.izinHariIniAlasan || '');
-            document.getElementById('userBadge').textContent = '📝 Izin';
+            var statusMasuk = document.getElementById('statusMasuk');
+            if (statusMasuk) statusMasuk.textContent = '📝';
+            var statusMasukSub = document.getElementById('statusMasukSub');
+            if (statusMasukSub) statusMasukSub.textContent = 'Izin Disetujui';
+            var statusPulang = document.getElementById('statusPulang');
+            if (statusPulang) statusPulang.textContent = '📝';
+            var statusPulangSub = document.getElementById('statusPulangSub');
+            if (statusPulangSub) statusPulangSub.textContent = 'Izin Disetujui';
+            var notifText = document.getElementById('notifText');
+            if (notifText) notifText.innerHTML = '📝 <strong>IZIN DISETUJUI</strong> - ' + (window.izinHariIniAlasan || '');
+            var userBadge = document.getElementById('userBadge');
+            if (userBadge) userBadge.textContent = '📝 Izin';
             return;
         }
 
         if (statusData.sudahMasuk && statusData.jamMasuk) {
-            document.getElementById('statusMasuk').textContent = formatTime(statusData.jamMasuk);
-            document.getElementById('statusMasukSub').textContent = '✅ Sudah absen';
+            var statusMasuk = document.getElementById('statusMasuk');
+            if (statusMasuk) statusMasuk.textContent = formatTime(statusData.jamMasuk);
+            var statusMasukSub = document.getElementById('statusMasukSub');
+            if (statusMasukSub) statusMasukSub.textContent = '✅ Sudah absen';
         } else {
-            document.getElementById('statusMasuk').textContent = '--:--';
-            document.getElementById('statusMasukSub').textContent = '⏳ Belum absen';
+            var statusMasuk = document.getElementById('statusMasuk');
+            if (statusMasuk) statusMasuk.textContent = '--:--';
+            var statusMasukSub = document.getElementById('statusMasukSub');
+            if (statusMasukSub) statusMasukSub.textContent = '⏳ Belum absen';
         }
 
         if (statusData.sudahPulang && statusData.jamPulang) {
-            document.getElementById('statusPulang').textContent = formatTime(statusData.jamPulang);
-            document.getElementById('statusPulangSub').textContent = '✅ Sudah absen';
+            var statusPulang = document.getElementById('statusPulang');
+            if (statusPulang) statusPulang.textContent = formatTime(statusData.jamPulang);
+            var statusPulangSub = document.getElementById('statusPulangSub');
+            if (statusPulangSub) statusPulangSub.textContent = '✅ Sudah absen';
         } else {
-            document.getElementById('statusPulang').textContent = '--:--';
-            document.getElementById('statusPulangSub').textContent = '⏳ Belum absen';
+            var statusPulang = document.getElementById('statusPulang');
+            if (statusPulang) statusPulang.textContent = '--:--';
+            var statusPulangSub = document.getElementById('statusPulangSub');
+            if (statusPulangSub) statusPulangSub.textContent = '⏳ Belum absen';
         }
 
-        document.getElementById('notifText').innerHTML = 'Selamat datang! <strong>' + (user.nama || 'User') + '</strong>, jangan lupa absen hari ini.';
-        document.getElementById('userBadge').textContent = '🟢 Online';
+        var notifText = document.getElementById('notifText');
+        if (notifText) notifText.innerHTML = 'Selamat datang! <strong>' + (user.nama || 'User') + '</strong>, jangan lupa absen hari ini.';
+        var userBadge = document.getElementById('userBadge');
+        if (userBadge) userBadge.textContent = '🟢 Online';
 
         updateProgress();
         updateStatsMini();
@@ -477,9 +525,13 @@
                 }
             }
 
-            document.getElementById('progressMasuk').style.width = Math.min(100, progress) + '%';
-            document.getElementById('statusMasukText').textContent = status;
-            document.getElementById('statusMasukText').className = 'status-text ' + statusClass;
+            var progressMasuk = document.getElementById('progressMasuk');
+            if (progressMasuk) progressMasuk.style.width = Math.min(100, progress) + '%';
+            var statusMasukText = document.getElementById('statusMasukText');
+            if (statusMasukText) {
+                statusMasukText.textContent = status;
+                statusMasukText.className = 'status-text ' + statusClass;
+            }
         }
 
         var targetPulang = parseTime(user.jamPulang || '17:00');
@@ -515,9 +567,13 @@
                 statusClass = '';
             }
 
-            document.getElementById('progressPulang').style.width = Math.min(100, progress) + '%';
-            document.getElementById('statusPulangText').textContent = status;
-            document.getElementById('statusPulangText').className = 'status-text ' + statusClass;
+            var progressPulang = document.getElementById('progressPulang');
+            if (progressPulang) progressPulang.style.width = Math.min(100, progress) + '%';
+            var statusPulangText = document.getElementById('statusPulangText');
+            if (statusPulangText) {
+                statusPulangText.textContent = status;
+                statusPulangText.className = 'status-text ' + statusClass;
+            }
         }
     }
 
@@ -529,17 +585,22 @@
     }
 
     function updateStatsMini() {
-        document.getElementById('statHadir').textContent = statusData.statHadir || 0;
-        document.getElementById('statTelat').textContent = statusData.statTelat || 0;
-        document.getElementById('statAlfa').textContent = statusData.statAlfa || 0;
-        document.getElementById('statTercepat').textContent = statusData.statTercepat || '--:--';
+        var statHadir = document.getElementById('statHadir');
+        if (statHadir) statHadir.textContent = statusData.statHadir || 0;
+        var statTelat = document.getElementById('statTelat');
+        if (statTelat) statTelat.textContent = statusData.statTelat || 0;
+        var statAlfa = document.getElementById('statAlfa');
+        if (statAlfa) statAlfa.textContent = statusData.statAlfa || 0;
+        var statTercepat = document.getElementById('statTercepat');
+        if (statTercepat) statTercepat.textContent = statusData.statTercepat || '--:--';
     }
 
     // ============================================================
-    // UPDATE FAB BUTTON - UDAH DIPERBAIKI ⭐
+    // UPDATE FAB BUTTON - ⭐ FIX: prioritas PULANG lebih tinggi
     // ============================================================
     function updateFabButton() {
         var btn = document.getElementById('fabAbsen');
+        if (!btn) return;
         var text = document.getElementById('fabText');
         var sub = document.getElementById('fabSub');
         var icon = btn.querySelector('.fab-icon');
@@ -547,60 +608,60 @@
         btn.className = 'fab-btn';
         btn.disabled = false;
 
-        // 🔥 CEK STATUS ABSEN DARI HARI INI
+        // CEK STATUS ABSEN DARI HARI INI
         var sudahMasukHariIni = statusData.sudahMasuk || false;
         var sudahPulangHariIni = statusData.sudahPulang || false;
         
-        // 🔥 PRIORITAS 1: UDAH ABSEN MASUK TAPI BELUM PULANG -> TAMPILKAN TOMBOL PULANG
+        // ⭐ PRIORITAS 1: UDAH ABSEN MASUK TAPI BELUM PULANG -> TAMPILKAN TOMBOL PULANG
         if (sudahMasukHariIni && !sudahPulangHariIni) {
             btn.classList.add('btn-pulang');
-            text.textContent = '📤 ABSEN PULANG';
-            sub.textContent = 'klik untuk pulang';
-            icon.textContent = '📤';
+            if (text) text.textContent = '📤 ABSEN PULANG';
+            if (sub) sub.textContent = 'klik untuk pulang';
+            if (icon) icon.textContent = '📤';
             btn.onclick = function() { handleAbsenClick('PULANG'); };
             return;
         }
 
-        // 🔥 PRIORITAS 2: UDAH ABSEN MASUK DAN PULANG -> SELESAI
+        // PRIORITAS 2: UDAH ABSEN MASUK DAN PULANG -> SELESAI
         if (sudahMasukHariIni && sudahPulangHariIni) {
             btn.classList.add('btn-selesai');
             btn.disabled = true;
-            text.textContent = '✅ SELESAI';
-            sub.textContent = 'absen hari ini selesai';
-            icon.textContent = '✅';
+            if (text) text.textContent = '✅ SELESAI';
+            if (sub) sub.textContent = 'absen hari ini selesai';
+            if (icon) icon.textContent = '✅';
             return;
         }
 
-        // 🔥 PRIORITAS 3: BELUM ABSEN MASUK -> CEK LIBUR / HARI KERJA
+        // PRIORITAS 3: BELUM ABSEN MASUK -> CEK LIBUR / HARI KERJA
         if (statusData.isLibur || !statusData.isHariKerja) {
             btn.classList.add('btn-selesai');
             btn.disabled = true;
-            text.textContent = '🔵 LIBUR';
-            sub.textContent = 'hari ini tidak perlu absen';
-            icon.textContent = '🔵';
+            if (text) text.textContent = '🔵 LIBUR';
+            if (sub) sub.textContent = 'hari ini tidak perlu absen';
+            if (icon) icon.textContent = '🔵';
             return;
         }
 
-        // 🔥 PRIORITAS 4: CEK IZIN
+        // PRIORITAS 4: CEK IZIN
         if (window.izinHariIniStatus === 'disetujui') {
             btn.classList.add('btn-selesai');
             btn.disabled = true;
-            text.textContent = '📝 IZIN';
-            sub.textContent = 'izin disetujui, tidak perlu absen';
-            icon.textContent = '📝';
+            if (text) text.textContent = '📝 IZIN';
+            if (sub) sub.textContent = 'izin disetujui, tidak perlu absen';
+            if (icon) icon.textContent = '📝';
             return;
         }
 
-        // 🔥 PRIORITAS 5: BELUM ABSEN MASUK -> TAMPILKAN TOMBOL MASUK
+        // PRIORITAS 5: BELUM ABSEN MASUK -> TAMPILKAN TOMBOL MASUK
         btn.classList.add('btn-datang');
-        text.textContent = '📥 ABSEN MASUK';
-        sub.textContent = 'klik untuk absen';
-        icon.textContent = '📥';
+        if (text) text.textContent = '📥 ABSEN MASUK';
+        if (sub) sub.textContent = 'klik untuk absen';
+        if (icon) icon.textContent = '📥';
         btn.onclick = function() { handleAbsenClick('DATANG'); };
     }
 
     // ============================================================
-    // HANDLE ABSEN - UDAH DIPERBAIKI ⭐
+    // HANDLE ABSEN - ⭐ FIX: PULANG skip cek libur
     // ============================================================
     var isProcessing = false;
 
@@ -615,7 +676,7 @@
     }
 
     async function handleAbsenClick(action) {
-        // 🔥 KALAU ACTION = PULANG, SKIP CEK LIBUR / HARI KERJA
+        // ⭐ FIX: KALAU ACTION = PULANG, SKIP CEK LIBUR / HARI KERJA
         if (action === 'PULANG') {
             // LANGSUNG KE PROSES PULANG
         } else {
@@ -641,8 +702,10 @@
         isProcessing = true;
 
         var btn = document.getElementById('fabAbsen');
-        btn.classList.add('loading');
-        btn.disabled = true;
+        if (btn) {
+            btn.classList.add('loading');
+            btn.disabled = true;
+        }
 
         showToast('📡 Mengambil lokasi GPS...', 'info');
 
@@ -659,8 +722,10 @@
             lng = position.coords.longitude;
         } catch(err) {
             showToast('❌ Gagal ambil lokasi. Pastikan GPS aktif!', 'error');
-            btn.classList.remove('loading');
-            btn.disabled = false;
+            if (btn) {
+                btn.classList.remove('loading');
+                btn.disabled = false;
+            }
             isProcessing = false;
             return;
         }
@@ -668,8 +733,10 @@
         var jarak = hitungJarak(lat, lng, KANTOR.lat, KANTOR.lng);
         if (jarak > KANTOR.rad) {
             showToast('📍 Kejauhan! Jarak: ' + Math.round(jarak) + 'm (Max: ' + KANTOR.rad + 'm)', 'error');
-            btn.classList.remove('loading');
-            btn.disabled = false;
+            if (btn) {
+                btn.classList.remove('loading');
+                btn.disabled = false;
+            }
             isProcessing = false;
             return;
         }
@@ -696,8 +763,10 @@
 
                 if (record && record.jam_masuk) {
                     showToast('⚠️ Anda sudah absen masuk hari ini!', 'warning');
-                    btn.classList.remove('loading');
-                    btn.disabled = false;
+                    if (btn) {
+                        btn.classList.remove('loading');
+                        btn.disabled = false;
+                    }
                     isProcessing = false;
                     return;
                 }
@@ -785,16 +854,20 @@
 
                 if (!record || !record.jam_masuk) {
                     showToast('❌ Anda belum absen masuk! (cek hari ini & kemarin)', 'error');
-                    btn.classList.remove('loading');
-                    btn.disabled = false;
+                    if (btn) {
+                        btn.classList.remove('loading');
+                        btn.disabled = false;
+                    }
                     isProcessing = false;
                     return;
                 }
 
                 if (record.jam_pulang) {
                     showToast('⚠️ Anda sudah absen pulang!', 'warning');
-                    btn.classList.remove('loading');
-                    btn.disabled = false;
+                    if (btn) {
+                        btn.classList.remove('loading');
+                        btn.disabled = false;
+                    }
                     isProcessing = false;
                     return;
                 }
@@ -834,8 +907,10 @@
             showToast('❌ Gagal koneksi ke server! ' + e.message, 'error');
         }
 
-        btn.classList.remove('loading');
-        btn.disabled = false;
+        if (btn) {
+            btn.classList.remove('loading');
+            btn.disabled = false;
+        }
         isProcessing = false;
     }
 
@@ -848,17 +923,19 @@
     function toggleIzinForm() {
         var container = document.getElementById('izinFormContainer');
         var icon = document.getElementById('izinToggleIcon');
+        if (!container) return;
         if (container.style.display === 'none' || container.style.display === '') {
             container.style.display = 'block';
-            icon.className = 'fas fa-chevron-up';
+            if (icon) icon.className = 'fas fa-chevron-up';
         } else {
             container.style.display = 'none';
-            icon.className = 'fas fa-chevron-down';
+            if (icon) icon.className = 'fas fa-chevron-down';
         }
     }
 
     async function loadRiwayatIzin() {
         var container = document.getElementById('izinRiwayatContainer');
+        if (!container) return;
         var bulan = getBulanSekarang();
 
         try {
@@ -878,7 +955,8 @@
             });
             izinCount = izinBulanIni.length;
 
-            document.getElementById('izinCountLabel').textContent = '(' + izinCount + '/' + maxIzinPerBulan + ' bulan ini)';
+            var countLabel = document.getElementById('izinCountLabel');
+            if (countLabel) countLabel.textContent = '(' + izinCount + '/' + maxIzinPerBulan + ' bulan ini)';
 
             if (!data || data.length === 0) {
                 container.innerHTML = '<div style="text-align:center;color:#64748b;font-size:12px;padding:8px 0;">Belum ada riwayat izin</div>';
@@ -893,20 +971,16 @@
 
                 var statusClass = '';
                 var statusLabel = '';
-                var statusColor = '';
 
                 if (item.status === 'pending') {
                     statusClass = 'pending';
                     statusLabel = '⏳ Pending';
-                    statusColor = '#f59e0b';
                 } else if (item.status === 'disetujui') {
                     statusClass = 'disetujui';
                     statusLabel = '✅ Disetujui';
-                    statusColor = '#34d399';
                 } else if (item.status === 'ditolak') {
                     statusClass = 'ditolak';
                     statusLabel = '❌ Ditolak';
-                    statusColor = '#f87171';
                 }
 
                 var tglDisplay = item.tanggal ? formatTanggalIzin(item.tanggal) : '-';
@@ -929,7 +1003,8 @@
             var tomorrow = new Date();
             tomorrow.setDate(tomorrow.getDate() + 1);
             var tglDefault = tomorrow.toISOString().split('T')[0];
-            document.getElementById('izinTanggal').value = tglDefault;
+            var izinTanggal = document.getElementById('izinTanggal');
+            if (izinTanggal) izinTanggal.value = tglDefault;
 
         } catch(e) {
             console.error('Error load izin:', e);
@@ -938,15 +1013,19 @@
     }
 
     async function ajukanIzin() {
-        var tanggal = document.getElementById('izinTanggal').value;
-        var alasan = document.getElementById('izinAlasan').value;
+        var tanggal = document.getElementById('izinTanggal');
+        var alasan = document.getElementById('izinAlasan');
+        if (!tanggal || !alasan) return;
+        
+        var tgl = tanggal.value;
+        var als = alasan.value;
 
-        if (!tanggal) {
+        if (!tgl) {
             showToast('Pilih tanggal izin!', 'error');
             return;
         }
 
-        if (!alasan) {
+        if (!als) {
             showToast('Pilih alasan izin!', 'error');
             return;
         }
@@ -959,14 +1038,14 @@
 
         // Cek tanggal tidak boleh hari ini atau kemarin
         var today = getTanggalSekarang();
-        if (tanggal <= today) {
+        if (tgl <= today) {
             showToast('⚠️ Izin harus diajukan minimal H-1 (besok atau setelahnya)!', 'error');
             return;
         }
 
         try {
             var checkRes = await fetch(
-                SUPABASE_URL + '/rest/v1/izin?select=id&karyawan_id=eq.' + user.id + '&tanggal=eq.' + tanggal,
+                SUPABASE_URL + '/rest/v1/izin?select=id&karyawan_id=eq.' + user.id + '&tanggal=eq.' + tgl,
                 {
                     headers: {
                         'apikey': SUPABASE_ANON_KEY,
@@ -983,8 +1062,8 @@
 
             var payload = {
                 karyawan_id: user.id,
-                tanggal: tanggal,
-                alasan: alasan,
+                tanggal: tgl,
+                alasan: als,
                 status: 'pending'
             };
 
@@ -1000,11 +1079,14 @@
 
             if (response.ok) {
                 showToast('✅ Pengajuan izin berhasil dikirim! Menunggu persetujuan admin.', 'success');
-                document.getElementById('izinAlasan').value = '';
-                document.getElementById('izinFormContainer').style.display = 'none';
-                document.getElementById('izinToggleIcon').className = 'fas fa-chevron-down';
+                var alasanEl = document.getElementById('izinAlasan');
+                if (alasanEl) alasanEl.value = '';
+                var formContainer = document.getElementById('izinFormContainer');
+                if (formContainer) formContainer.style.display = 'none';
+                var toggleIcon = document.getElementById('izinToggleIcon');
+                if (toggleIcon) toggleIcon.className = 'fas fa-chevron-down';
                 loadRiwayatIzin();
-                await sendTelegram('📢 <b>PENGAJUAN IZIN</b>\n👤 ' + user.nama + '\n🆔 ' + user.id + '\n📅 ' + tanggal + '\n📝 ' + alasan + '\n⏳ Status: PENDING');
+                await sendTelegram('📢 <b>PENGAJUAN IZIN</b>\n👤 ' + user.nama + '\n🆔 ' + user.id + '\n📅 ' + tgl + '\n📝 ' + als + '\n⏳ Status: PENDING');
             } else {
                 var error = await response.text();
                 showToast('❌ Gagal mengajukan izin: ' + error, 'error');
@@ -1138,6 +1220,7 @@
 
     function renderRanking() {
         var container = document.getElementById('rankingList');
+        if (!container) return;
         var ranking = statusData.ranking || [];
 
         if (ranking.length === 0) {
@@ -1273,9 +1356,12 @@
         var readerPreview = new FileReader();
         readerPreview.onload = function(e) {
             var img = document.getElementById('imgAvatar');
-            img.src = e.target.result;
-            img.style.display = 'block';
-            document.getElementById('avatarPlaceholder').style.display = 'none';
+            if (img) {
+                img.src = e.target.result;
+                img.style.display = 'block';
+                var placeholder = document.getElementById('avatarPlaceholder');
+                if (placeholder) placeholder.style.display = 'none';
+            }
         };
         readerPreview.readAsDataURL(file);
 
@@ -1310,10 +1396,12 @@
     // Set default tanggal izin = besok
     var tomorrow = new Date();
     tomorrow.setDate(tomorrow.getDate() + 1);
-    document.getElementById('izinTanggal').value = tomorrow.toISOString().split('T')[0];
+    var izinTanggal = document.getElementById('izinTanggal');
+    if (izinTanggal) izinTanggal.value = tomorrow.toISOString().split('T')[0];
 
     // Izin form default hidden
-    document.getElementById('izinFormContainer').style.display = 'none';
+    var izinForm = document.getElementById('izinFormContainer');
+    if (izinForm) izinForm.style.display = 'none';
 
     (async function() {
         await loadHariLibur();
@@ -1325,13 +1413,19 @@
     })();
 
     window.addEventListener('online', function() {
-        document.getElementById('connectionStatus').textContent = 'Online';
-        document.getElementById('connectionStatus').style.color = '#34d399';
+        var connStatus = document.getElementById('connectionStatus');
+        if (connStatus) {
+            connStatus.textContent = 'Online';
+            connStatus.style.color = '#34d399';
+        }
         syncStatus();
     });
     window.addEventListener('offline', function() {
-        document.getElementById('connectionStatus').textContent = 'Offline';
-        document.getElementById('connectionStatus').style.color = '#ef4444';
+        var connStatus = document.getElementById('connectionStatus');
+        if (connStatus) {
+            connStatus.textContent = 'Offline';
+            connStatus.style.color = '#ef4444';
+        }
     });
 
     console.log('✅ App ready!');
