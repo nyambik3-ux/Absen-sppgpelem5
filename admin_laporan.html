@@ -1,547 +1,3 @@
-<!DOCTYPE html>
-<html lang="id">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Laporan Formal • Smart Presence</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body {
-            font-family: 'Inter', sans-serif;
-            background: #0f172a;
-            min-height: 100vh;
-            color: #e2e8f0;
-            padding: 20px;
-        }
-        body.light-mode { background: #f1f5f9; color: #1e293b; }
-        
-        .navbar {
-            background: rgba(15, 23, 42, 0.85);
-            backdrop-filter: blur(20px);
-            padding: 12px 24px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-radius: 16px;
-            max-width: 1400px;
-            margin: 0 auto 20px;
-            border: 1px solid rgba(255,255,255,0.06);
-        }
-        body.light-mode .navbar { background: rgba(255,255,255,0.85); border-color: rgba(0,0,0,0.06); }
-        
-        .logo h2 {
-            font-size: 20px;
-            background: linear-gradient(135deg, #a855f7, #3b82f6);
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
-        }
-        .logo span { font-size: 12px; color: #64748b; }
-        
-        .nav-actions { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
-        .nav-actions button {
-            padding: 8px 16px;
-            border: none;
-            border-radius: 12px;
-            cursor: pointer;
-            font-size: 13px;
-            font-weight: 600;
-            transition: all 0.2s;
-            font-family: 'Inter', sans-serif;
-        }
-        .nav-actions button:active { transform: scale(0.95); }
-        .btn-logout { background: #ef4444; color: white; }
-        .btn-logout:hover { background: #dc2626; }
-        .btn-back { background: #6366f1; color: white; }
-        .btn-back:hover { background: #4f46e5; }
-        .btn-theme { background: #1e293b; color: #e2e8f0; }
-        body.light-mode .btn-theme { background: #e2e8f0; color: #1e293b; }
-        
-        .container { max-width: 1200px; margin: 0 auto; }
-        
-        .filter-card {
-            background: rgba(255,255,255,0.04);
-            border-radius: 16px;
-            padding: 20px 24px;
-            margin-bottom: 20px;
-            border: 1px solid rgba(255,255,255,0.06);
-            display: flex;
-            flex-wrap: wrap;
-            align-items: center;
-            gap: 14px;
-        }
-        body.light-mode .filter-card { background: white; border-color: rgba(0,0,0,0.06); }
-        
-        .filter-card label { font-size: 13px; font-weight: 600; color: #94a3b8; }
-        .filter-card input[type="date"],
-        .filter-card input[type="text"],
-        .filter-card input[type="range"],
-        .filter-card select {
-            padding: 10px 14px;
-            border-radius: 10px;
-            border: 1px solid rgba(255,255,255,0.1);
-            background: rgba(0,0,0,0.3);
-            color: white;
-            font-family: 'Inter', sans-serif;
-            font-size: 14px;
-        }
-        body.light-mode .filter-card input[type="date"],
-        body.light-mode .filter-card input[type="text"],
-        body.light-mode .filter-card select { background: #f1f5f9; color: #1e293b; border-color: #cbd5e1; }
-        .filter-card input:focus, .filter-card select:focus {
-            outline: none;
-            border-color: #a855f7;
-        }
-        
-        .logo-setting-box {
-            width: 100%;
-            display: grid;
-            grid-template-columns: 1fr 1fr 1fr;
-            gap: 15px;
-            align-items: center;
-            background: rgba(0,0,0,0.15);
-            padding: 14px;
-            border-radius: 10px;
-            border: 1px dashed rgba(255,255,255,0.2);
-            margin-top: 5px;
-        }
-        body.light-mode .logo-setting-box { background: #f8fafc; border-color: #cbd5e1; }
-        
-        .control-group {
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-        }
-        .control-group label {
-            font-size: 11px;
-            color: #94a3b8;
-        }
-
-        .filter-card .btn-primary {
-            padding: 10px 24px;
-            background: linear-gradient(135deg, #a855f7, #3b82f6);
-            border: none;
-            border-radius: 10px;
-            color: white;
-            font-weight: 700;
-            cursor: pointer;
-            font-family: 'Inter', sans-serif;
-            font-size: 14px;
-        }
-        .filter-card .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 4px 15px rgba(168,85,247,0.4); }
-        .filter-card .btn-print {
-            padding: 10px 20px;
-            background: #f59e0b;
-            border: none;
-            border-radius: 10px;
-            color: white;
-            font-weight: 700;
-            cursor: pointer;
-            font-family: 'Inter', sans-serif;
-            font-size: 13px;
-        }
-        .filter-card .btn-print:hover { background: #d97706; }
-        .filter-card .btn-refresh {
-            padding: 10px 20px;
-            background: #6366f1;
-            border: none;
-            border-radius: 10px;
-            color: white;
-            font-weight: 700;
-            cursor: pointer;
-            font-family: 'Inter', sans-serif;
-            font-size: 13px;
-        }
-        .filter-card .btn-refresh:hover { background: #4f46e5; }
-        
-        /* ===== LAPORAN PREVIEW ===== */
-        .laporan-preview {
-            background: white;
-            color: #1e293b;
-            border-radius: 16px;
-            padding: 40px;
-            max-width: 1100px;
-            margin: 0 auto;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
-            font-family: 'Times New Roman', Times, serif;
-        }
-        body.light-mode .laporan-preview { box-shadow: 0 10px 40px rgba(0,0,0,0.1); }
-        
-        /* ===== KOP SURAT ===== */
-        .laporan-preview .kop {
-            text-align: center;
-            padding-bottom: 0px;
-            margin-bottom: 0px;
-        }
-        
-        .laporan-preview .kop .header-wrapper {
-            display: flex;
-            align-items: center;
-            justify-content: flex-start;
-            gap: 20px;
-            margin-bottom: 4px;
-            position: relative;
-            min-height: 75px;
-        }
-        
-        .laporan-preview .kop .header-wrapper .logo-container {
-            position: absolute;
-            left: 10px; /* Default pos */
-            top: 50%;
-            transform: translateY(-50%);
-            z-index: 5;
-        }
-
-        .laporan-preview .kop .header-wrapper .logo-img {
-            height: 65px; /* Default size */
-            width: auto;
-            object-fit: contain;
-            display: block;
-        }
-
-        .laporan-preview .kop .header-wrapper .teks {
-            text-align: center;
-            width: 100%;
-        }
-        
-        .laporan-preview .kop .header-wrapper .teks .instansi {
-            font-size: 13px;
-            font-weight: 700;
-            letter-spacing: 0.5px;
-            color: #0f172a;
-            line-height: 1.2;
-        }
-        
-        .laporan-preview .kop .header-wrapper .teks .instansi-2 {
-            font-size: 15px;
-            font-weight: 800;
-            letter-spacing: 1px;
-            color: #0f172a;
-            margin-top: 1px;
-            line-height: 1.2;
-        }
-
-        .laporan-preview .kop .header-wrapper .teks .yayasan-sub {
-            font-size: 12px;
-            font-weight: 700;
-            color: #334155;
-            margin-top: 1px;
-            line-height: 1.2;
-        }
-        
-        .laporan-preview .kop .header-wrapper .teks .alamat {
-            font-size: 11px;
-            color: #334155;
-            margin-top: 2px;
-            line-height: 1.2;
-        }
-        
-        .laporan-preview .kop .header-wrapper .teks .email {
-            font-size: 11px;
-            color: #334155;
-            margin-top: 1px;
-            line-height: 1.2;
-        }
-        
-        .laporan-preview .kop .garis-kop {
-            border-bottom: 3px double #1e293b;
-            margin-top: 12px;
-            margin-bottom: 16px;
-        }
-        
-        .laporan-preview .kop .judul {
-            font-size: 20px;
-            font-weight: 800;
-            letter-spacing: 2px;
-            color: #0f172a;
-            margin-top: 4px;
-        }
-        
-        .laporan-preview .kop .periode {
-            font-size: 13px;
-            color: #475569;
-            margin-top: 4px;
-        }
-        
-        .laporan-preview .kop .tgl-cetak {
-            font-size: 11px;
-            color: #94a3b8;
-            margin-top: 2px;
-        }
-        
-        /* ===== SUMMARY ===== */
-        .laporan-preview .summary {
-            display: flex;
-            gap: 16px;
-            justify-content: center;
-            margin: 16px 0 20px;
-            flex-wrap: wrap;
-        }
-        .laporan-preview .summary-item {
-            padding: 8px 16px;
-            border: 1px solid #cbd5e1;
-            border-radius: 6px;
-            text-align: center;
-            min-width: 80px;
-            background: #f8fafc;
-        }
-        .laporan-preview .summary-item .num {
-            font-size: 20px;
-            font-weight: 700;
-        }
-        .laporan-preview .summary-item .label {
-            font-size: 10px;
-            color: #64748b;
-        }
-        .laporan-preview .summary-item .num.hadir { color: #059669; }
-        .laporan-preview .summary-item .num.alfa { color: #b91c1c; }
-        .laporan-preview .summary-item .num.libur { color: #2563eb; }
-        .laporan-preview .summary-item .num.izin { color: #7c3aed; }
-        .laporan-preview .summary-item .num.total { color: #0f172a; }
-        
-        /* ===== TABLE ===== */
-        .laporan-preview table {
-            width: 100%;
-            border-collapse: collapse;
-            margin: 12px 0 16px;
-            font-size: 11px;
-        }
-        .laporan-preview th, .laporan-preview td {
-            padding: 4px 6px;
-            border: 1px solid #cbd5e1;
-            text-align: center;
-            vertical-align: middle;
-        }
-        .laporan-preview th {
-            background: #f1f5f9;
-            font-weight: 700;
-            font-size: 10px;
-            text-transform: uppercase;
-            letter-spacing: 0.3px;
-        }
-        
-        .laporan-preview td .status-label {
-            display: inline-block;
-            padding: 1px 6px;
-            border-radius: 3px;
-            font-weight: 600;
-            font-size: 9px;
-            min-width: 22px;
-        }
-        .laporan-preview td .status-label.hadir { background: #d1fae5; color: #059669; }
-        .laporan-preview td .status-label.alfa { background: #fee2e2; color: #b91c1c; }
-        .laporan-preview td .status-label.izin { background: #ede9fe; color: #7c3aed; }
-        .laporan-preview td .status-label.libur { background: #dbeafe; color: #2563eb; }
-        
-        .laporan-preview .legenda {
-            display: flex;
-            gap: 16px;
-            justify-content: center;
-            margin: 10px 0 16px;
-            flex-wrap: wrap;
-            padding: 8px 14px;
-            background: #f8fafc;
-            border-radius: 6px;
-            border: 1px solid #e2e8f0;
-        }
-        .laporan-preview .legenda-item {
-            display: flex;
-            align-items: center;
-            gap: 4px;
-            font-size: 10px;
-            font-weight: 600;
-        }
-        .laporan-preview .legenda-item .dot {
-            display: inline-block;
-            width: 12px;
-            height: 12px;
-            border-radius: 3px;
-        }
-        .laporan-preview .legenda-item .dot.hadir { background: #059669; }
-        .laporan-preview .legenda-item .dot.alfa { background: #b91c1c; }
-        .laporan-preview .legenda-item .dot.izin { background: #7c3aed; }
-        .laporan-preview .legenda-item .dot.libur { background: #2563eb; }
-        
-        .laporan-preview .ttd {
-            display: flex;
-            justify-content: space-between;
-            margin-top: 24px;
-            padding-top: 16px;
-            border-top: 1px solid #cbd5e1;
-        }
-        .laporan-preview .ttd-box {
-            text-align: center;
-            width: 45%;
-        }
-        .laporan-preview .ttd-box .label {
-            font-size: 10px;
-            color: #64748b;
-            margin-bottom: 2px;
-        }
-        .laporan-preview .ttd-box .nama {
-            font-size: 12px;
-            font-weight: 700;
-            margin-top: 2px;
-        }
-        .laporan-preview .ttd-box .jabatan {
-            font-size: 10px;
-            color: #475569;
-        }
-        .laporan-preview .ttd-box .line {
-            width: 180px;
-            border-bottom: 1px solid #1e293b;
-            margin: 32px auto 2px;
-            max-width: 100%;
-        }
-        
-        .laporan-preview .footer {
-            text-align: center;
-            font-size: 9px;
-            color: #94a3b8;
-            margin-top: 12px;
-            padding-top: 10px;
-            border-top: 1px solid #e2e8f0;
-        }
-        
-        .loading-text { text-align: center; color: #64748b; padding: 40px 0; font-size: 14px; }
-        .empty-text { text-align: center; color: #64748b; padding: 30px 0; font-size: 14px; }
-        
-        .toast-custom {
-            position: fixed;
-            bottom: 30px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: #1e293b;
-            color: white;
-            padding: 14px 28px;
-            border-radius: 16px;
-            font-weight: 600;
-            font-size: 14px;
-            z-index: 9999;
-            border-left: 4px solid #10b981;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
-            animation: slideUp 0.3s ease;
-            max-width: 90%;
-            font-family: 'Inter', sans-serif;
-        }
-        @keyframes slideUp {
-            from { opacity: 0; transform: translateX(-50%) translateY(30px); }
-            to { opacity: 1; transform: translateX(-50%) translateY(0); }
-        }
-        
-        @media (max-width: 768px) {
-            .navbar { flex-wrap: wrap; gap: 10px; padding: 12px 16px; }
-            .filter-card { flex-direction: column; align-items: stretch; }
-            .filter-card input[type="date"], .filter-card input[type="text"], .filter-card select { width: 100%; min-width: auto; }
-            .laporan-preview { padding: 20px; }
-            .laporan-preview table { font-size: 9px; }
-            .laporan-preview th, .laporan-preview td { padding: 2px 3px; }
-            .laporan-preview .kop .header-wrapper { position: static; display: flex; flex-direction: column; align-items: center; }
-            .laporan-preview .kop .header-wrapper .logo-container { position: static; transform: none; margin-bottom: 10px; text-align: center; }
-            .laporan-preview .kop .header-wrapper .logo-img { margin: 0 auto; }
-            .laporan-preview .kop .judul { font-size: 16px; }
-            .laporan-preview .summary-item { min-width: 60px; padding: 4px 10px; }
-            .laporan-preview .summary-item .num { font-size: 16px; }
-            .nav-actions { flex-wrap: wrap; }
-            .laporan-preview .ttd { flex-direction: column; gap: 20px; align-items: center; }
-            .laporan-preview .ttd-box { width: 100%; }
-        }
-        
-        @media print {
-            body { background: white; padding: 0; }
-            .navbar { display: none; }
-            .filter-card { display: none; }
-            .laporan-preview { box-shadow: none; padding: 20px 30px; border-radius: 0; }
-            .laporan-preview .ttd-box .line { margin: 32px auto 2px; }
-            .toast-custom { display: none; }
-        }
-    </style>
-</head>
-<body>
-
-<!-- NAVBAR -->
-<nav class="navbar">
-    <div class="logo">
-        <h2>📋 RelawanTrack</h2>
-        <span>Laporan Formal</span>
-    </div>
-    <div class="nav-actions">
-        <button class="btn-back" onclick="window.location.href='admin_dashboard.html'">
-            <i class="fas fa-arrow-left"></i> Dashboard
-        </button>
-        <button class="btn-theme" onclick="toggleTheme()">
-            <i class="fas fa-moon" id="themeIcon"></i>
-        </button>
-        <span id="adminName" style="font-weight:600;font-size:14px;">Admin</span>
-        <button class="btn-logout" onclick="doLogout()">
-            <i class="fas fa-sign-out-alt"></i> Keluar
-        </button>
-    </div>
-</nav>
-
-<div class="container">
-
-    <!-- FILTER -->
-    <div class="filter-card">
-        <div style="display: flex; gap: 10px; flex-wrap: wrap; width: 100%; align-items: center;">
-            <div>
-                <label style="display:block; margin-bottom:4px;"><i class="fas fa-calendar-alt"></i> Periode:</label>
-                <input type="date" id="startDate">
-            </div>
-            <div>
-                <label style="display:block; margin-bottom:4px; opacity:0;">s/d</label>
-                <input type="date" id="endDate">
-            </div>
-            <div>
-                <label style="display:block; margin-bottom:4px;"><i class="fas fa-users"></i> Divisi:</label>
-                <select id="filterDivisi">
-                    <option value="">Semua Divisi</option>
-                </select>
-            </div>
-            <div style="margin-top: 18px;">
-                <button class="btn-primary" onclick="loadLaporan()">
-                    <i class="fas fa-search"></i> Tampilkan
-                </button>
-                <button class="btn-print" onclick="cetakLaporan()">
-                    <i class="fas fa-print"></i> Cetak / PDF
-                </button>
-                <button class="btn-refresh" onclick="refreshData()">
-                    <i class="fas fa-sync-alt"></i>
-                </button>
-            </div>
-        </div>
-
-        <!-- Panel Kontrol Posisi & Ukuran Logo -->
-        <div class="logo-setting-box">
-            <div class="control-group" style="grid-column: span 3;">
-                <label><i class="fas fa-link"></i> URL Logo Supabase:</label>
-                <input type="text" id="logoUrlInput" value="https://zcaqqybonpfishwkmffg.supabase.co/storage/v1/object/public/logo/Logo_Badan_Gizi_Nasional_(2024)%20(1).png" oninput="updateLogoStyle()">
-            </div>
-            <div class="control-group">
-                <label><i class="fas fa-expand"></i> Ukuran Tinggi Logo (<span id="sizeVal">65</span>px):</label>
-                <input type="range" id="logoSizeRange" min="30" max="110" value="65" oninput="updateLogoStyle()">
-            </div>
-            <div class="control-group">
-                <label><i class="fas fa-arrows-alt-h"></i> Geser Kiri / Kanan (<span id="posVal">25</span>px):</label>
-                <input type="range" id="logoPosRange" min="0" max="150" value="25" oninput="updateLogoStyle()">
-            </div>
-            <div class="control-group" style="justify-content: flex-end;">
-                <button type="button" onclick="resetLogoConfig()" style="padding: 8px; background: #334155; color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 12px; font-weight: 600;">
-                    <i class="fas fa-undo"></i> Reset Posisi Default
-                </button>
-            </div>
-        </div>
-    </div>
-
-    <!-- PREVIEW LAPORAN -->
-    <div id="laporanContainer">
-        <div class="loading-text"><i class="fas fa-spinner fa-pulse"></i> Silakan pilih periode dan klik Tampilkan</div>
-    </div>
-
-</div>
-
 <script>
     // ============================================================
     // KONFIGURASI SUPABASE
@@ -563,17 +19,44 @@
     var allData = [];
     var dateList = [];
     var hariLiburMap = {};
+
+    // ⭐ URUTAN DIVISI YANG LO MAU
     var urutanDivisi = [
         'Aslap',
         'Kepala Chef',
         'Pengolahan',
         'Persiapan',
         'Pemorsian',
-        'Distribusi',
         'Cuci Foodtray',
+        'Distribusi',
         'Satpam',
         'Kebersihan'
     ];
+
+    // ⭐ MAPPING DIVISI (biar konsisten dari database)
+    var mappingDivisi = {
+        'Asisten Lapangan': 'Aslap',
+        'Asisten lapangan': 'Aslap',
+        'aslap': 'Aslap',
+        'ASLAP': 'Aslap',
+        'Kepala Chef': 'Kepala Chef',
+        'Kepala chef': 'Kepala Chef',
+        'Pengolahan': 'Pengolahan',
+        'pengolahan': 'Pengolahan',
+        'Persiapan': 'Persiapan',
+        'persiapan': 'Persiapan',
+        'Pemorsian': 'Pemorsian',
+        'pemorsian': 'Pemorsian',
+        'Cuci Foodtray': 'Cuci Foodtray',
+        'Cuci foodtray': 'Cuci Foodtray',
+        'cuci foodtray': 'Cuci Foodtray',
+        'Distribusi': 'Distribusi',
+        'distribusi': 'Distribusi',
+        'Satpam': 'Satpam',
+        'satpam': 'Satpam',
+        'Kebersihan': 'Kebersihan',
+        'kebersihan': 'Kebersihan'
+    };
 
     // ============================================================
     // FUNGSI TANGGAL
@@ -609,7 +92,7 @@
     setDefaultDates();
 
     // ============================================================
-    // UPDATE LIVE LOGO STYLE (UKURAN & POSISI)
+    // UPDATE LIVE LOGO STYLE
     // ============================================================
     function updateLogoStyle() {
         var url = document.getElementById('logoUrlInput').value.trim();
@@ -715,7 +198,7 @@
     }
 
     // ============================================================
-    // LOAD FILTER OPTIONS
+    // LOAD FILTER OPTIONS - ⭐ UDAH DIPERBAIKI
     // ============================================================
     async function loadFilterOptions() {
         try {
@@ -726,9 +209,14 @@
 
             var divisiSet = new Set();
             karyawan.forEach(function(k) {
-                if (k.divisi) divisiSet.add(k.divisi);
+                if (k.divisi) {
+                    // Mapping divisi ke format standar
+                    var mapped = mappingDivisi[k.divisi] || k.divisi;
+                    divisiSet.add(mapped);
+                }
             });
 
+            // Urutkan berdasarkan urutanDivisi
             var sortedDivisi = [];
             urutanDivisi.forEach(function(d) {
                 if (divisiSet.has(d)) {
@@ -753,7 +241,7 @@
     loadFilterOptions();
 
     // ============================================================
-    // LOAD LAPORAN
+    // LOAD LAPORAN - ⭐ UDAH DIPERBAIKI
     // ============================================================
     async function loadLaporan() {
         var start = document.getElementById('startDate').value;
@@ -812,10 +300,14 @@
             var totalMasuk = 0, totalAlfa = 0, totalIzin = 0;
 
             karyawan.forEach(function(k) {
+                // ⭐ Mapping divisi ke format standar
+                var divisiMapped = mappingDivisi[k.divisi] || k.divisi || '-';
+                
                 var row = {
                     id: k.id,
                     nama: k.nama || k.id,
-                    divisi: k.divisi || '-',
+                    divisi: divisiMapped,
+                    divisiAsli: k.divisi || '-',
                     targetMasuk: k.jam_masuk || '08:00',
                     targetPulang: k.jam_pulang || '17:00',
                     dates: [],
@@ -825,7 +317,7 @@
                 };
 
                 dateList.forEach(function(tgl) {
-                    var isLibur = isTanggalLibur(tgl, row.divisi);
+                    var isLibur = isTanggalLibur(tgl, divisiMapped);
                     var key = k.id + '|' + tgl;
                     var abs = absenMap[key];
                     
@@ -877,7 +369,24 @@
                 allData.push(row);
             });
 
+            // ⭐ URUTKAN BERDASARKAN URUTAN DIVISI + NAMA ASISTEN LAPANGAN DI ATAS
             allData.sort(function(a, b) {
+                // Cek apakah Asisten Lapangan (LUKI & IKHWANUL)
+                var isAslapA = a.divisi === 'Aslap';
+                var isAslapB = b.divisi === 'Aslap';
+                
+                // Kalo dua-duanya Aslap, urutkan berdasarkan nama (LUKI dulu)
+                if (isAslapA && isAslapB) {
+                    if (a.nama.includes('LUKI') && !b.nama.includes('LUKI')) return -1;
+                    if (!a.nama.includes('LUKI') && b.nama.includes('LUKI')) return 1;
+                    return a.nama.localeCompare(b.nama);
+                }
+                
+                // Aslap selalu di atas
+                if (isAslapA && !isAslapB) return -1;
+                if (!isAslapA && isAslapB) return 1;
+                
+                // Urutkan berdasarkan urutanDivisi
                 var indexA = urutanDivisi.indexOf(a.divisi);
                 var indexB = urutanDivisi.indexOf(b.divisi);
                 if (indexA === -1) indexA = 999;
@@ -953,7 +462,6 @@
         html += '<div class="kop">';
         html += '<div class="header-wrapper">';
         
-        // Logo dengan posisi dan ukuran dinamis sesuai slider
         html += '<div class="logo-container" style="left: ' + logoPos + 'px;">';
         if (logoUrl) {
             html += '<img src="' + logoUrl + '" alt="Logo" class="logo-img" style="height: ' + logoSize + 'px;" onerror="this.style.display=\'none\'">';
@@ -962,7 +470,6 @@
         }
         html += '</div>';
 
-        // Teks Kop Surat di tengah
         html += '<div class="teks">';
         html += '<div class="instansi">SATUAN PELAYANAN PEMENUHAN GIZI</div>';
         html += '<div class="instansi-2">SPPG KEDIRI PARE PELEM 5</div>';
@@ -971,7 +478,7 @@
         html += '<div class="email">Email : sppgpelem10@gmail.com</div>';
         html += '</div>';
 
-        html += '</div>'; // end header-wrapper
+        html += '</div>';
         
         html += '<div class="garis-kop"></div>';
         html += '<div class="judul">LAPORAN REKAPITULASI ABSENSI</div>';
@@ -1007,7 +514,7 @@
         html += '</div>';
         html += '<div class="ttd-box">';
         html += '<div class="label">Dibuat Oleh,</div>';
-        html += '<div class="jabatan">ASisten Lapangan 2</div>';
+        html += '<div class="jabatan">Asisten Lapangan 2</div>';
         html += '<div class="line"></div>';
         html += '<div class="nama">' + (localStorage.getItem('admin_username') || 'Ikhwanul Muchlisin') + '</div>';
         html += '</div>';
@@ -1034,5 +541,3 @@
         showToast('Data di-refresh', 'info');
     }
 </script>
-</body>
-</html>
