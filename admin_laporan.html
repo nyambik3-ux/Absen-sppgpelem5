@@ -550,7 +550,7 @@
     var SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpjYXFxeWJvbnBmaXNod2ttZmZnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODc2Mjc2NDgsImV4cCI6MjEwMzIwMzY0OH0.pBk5nwJI3u9n08onTNmvcOFxtCXQvv-ipYIu2f_iAiQ';
 
     // ============================================================
-    // CEK LOGIN - ⭐ DIBUNGKUS DOMContentLoaded (FIX ERROR NULL)
+    // CEK LOGIN
     // ============================================================
     document.addEventListener('DOMContentLoaded', function() {
         if (!localStorage.getItem('admin_logged_in')) {
@@ -560,7 +560,6 @@
         if (adminName) {
             adminName.textContent = localStorage.getItem('admin_username') || 'Admin';
         }
-        // Load filter options after DOM ready
         loadFilterOptions();
     });
 
@@ -571,7 +570,7 @@
     var dateList = [];
     var hariLiburMap = {};
 
-    // ⭐ URUTAN DIVISI YANG LO MAU
+    // ⭐ URUTAN DIVISI
     var urutanDivisi = [
         'Aslap',
         'Kepala Chef',
@@ -584,29 +583,58 @@
         'Kebersihan'
     ];
 
-    // ⭐ MAPPING DIVISI (biar konsisten dari database)
+    // ⭐ MAPPING DIVISI - LENGKAP DENGAN SEMUA VARIASI DARI DATABASE
     var mappingDivisi = {
+        // ASLAP
         'Asisten Lapangan': 'Aslap',
         'Asisten lapangan': 'Aslap',
         'aslap': 'Aslap',
         'ASLAP': 'Aslap',
+        
+        // KEPALA CHEF
         'Kepala Chef': 'Kepala Chef',
         'Kepala chef': 'Kepala Chef',
+        
+        // PENGOLAHAN
         'Pengolahan': 'Pengolahan',
         'pengolahan': 'Pengolahan',
+        
+        // PERSIAPAN (TIM PERSIAPAN BAHAN -> Persiapan)
         'Persiapan': 'Persiapan',
         'persiapan': 'Persiapan',
+        'TIM PERSIAPAN BAHAN': 'Persiapan',
+        'Tim Persiapan Bahan': 'Persiapan',
+        'tim persiapan bahan': 'Persiapan',
+        
+        // PEMORSIAN (PEMORSIAN MAKANAN -> Pemorsian)
         'Pemorsian': 'Pemorsian',
         'pemorsian': 'Pemorsian',
+        'PEMORSIAN MAKANAN': 'Pemorsian',
+        'Pemorsian Makanan': 'Pemorsian',
+        'pemorsian makanan': 'Pemorsian',
+        
+        // CUCI FOODTRAY (CUCIL ALAT MAKAN -> Cuci Foodtray)
         'Cuci Foodtray': 'Cuci Foodtray',
         'Cuci foodtray': 'Cuci Foodtray',
         'cuci foodtray': 'Cuci Foodtray',
+        'CUCIL ALAT MAKAN': 'Cuci Foodtray',
+        'Cuci Alat Makan': 'Cuci Foodtray',
+        'cuci alat makan': 'Cuci Foodtray',
+        
+        // DISTRIBUSI
         'Distribusi': 'Distribusi',
         'distribusi': 'Distribusi',
+        'DISTRIBUSI': 'Distribusi',
+        
+        // SATPAM
         'Satpam': 'Satpam',
         'satpam': 'Satpam',
+        'SATPAM': 'Satpam',
+        
+        // KEBERSIHAN
         'Kebersihan': 'Kebersihan',
-        'kebersihan': 'Kebersihan'
+        'kebersihan': 'Kebersihan',
+        'KEBERSIHAN': 'Kebersihan'
     };
 
     // ============================================================
@@ -643,7 +671,7 @@
     setDefaultDates();
 
     // ============================================================
-    // UPDATE LIVE LOGO STYLE (UKURAN & POSISI)
+    // UPDATE LIVE LOGO STYLE
     // ============================================================
     function updateLogoStyle() {
         var url = document.getElementById('logoUrlInput').value.trim();
@@ -749,7 +777,7 @@
     }
 
     // ============================================================
-    // LOAD FILTER OPTIONS - ⭐ UDAH DIPERBAIKI
+    // LOAD FILTER OPTIONS
     // ============================================================
     async function loadFilterOptions() {
         try {
@@ -791,7 +819,7 @@
     }
 
     // ============================================================
-    // LOAD LAPORAN - ⭐ UDAH DIPERBAIKI
+    // LOAD LAPORAN
     // ============================================================
     async function loadLaporan() {
         var start = document.getElementById('startDate').value;
@@ -1087,16 +1115,12 @@
     }
 
     // ============================================================
-    // INIT - ⭐ JALANKAN SETELAH DOM LOAD
+    // INIT
     // ============================================================
     document.addEventListener('DOMContentLoaded', function() {
-        // Set default dates
         setDefaultDates();
-        // Load filter options
         loadFilterOptions();
-        // Reset logo config
         resetLogoConfig();
-        // Load laporan default
         setTimeout(function() {
             loadLaporan();
         }, 500);
