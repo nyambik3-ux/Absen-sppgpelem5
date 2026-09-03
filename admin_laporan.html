@@ -583,58 +583,59 @@
         'Kebersihan'
     ];
 
-    // ⭐ MAPPING DIVISI - LENGKAP DENGAN SEMUA VARIASI DARI DATABASE
+    // ⭐ MAPPING DIVISI - SESUAI DATA DI DATABASE LO
     var mappingDivisi = {
-        // ASLAP
+        // ASISTEN LAPANGAN -> Aslap
+        'ASISTEN LAPANGAN': 'Aslap',
         'Asisten Lapangan': 'Aslap',
-        'Asisten lapangan': 'Aslap',
-        'aslap': 'Aslap',
-        'ASLAP': 'Aslap',
+        'asisten lapangan': 'Aslap',
+        'Aslap': 'Aslap',
         
         // KEPALA CHEF
+        'KEPALA CHEF': 'Kepala Chef',
         'Kepala Chef': 'Kepala Chef',
-        'Kepala chef': 'Kepala Chef',
+        'kepala chef': 'Kepala Chef',
         
         // PENGOLAHAN
+        'PENGOLAHAN': 'Pengolahan',
         'Pengolahan': 'Pengolahan',
         'pengolahan': 'Pengolahan',
         
-        // PERSIAPAN (TIM PERSIAPAN BAHAN -> Persiapan)
-        'Persiapan': 'Persiapan',
-        'persiapan': 'Persiapan',
+        // TIM PERSIAPAN BAHAN -> Persiapan
         'TIM PERSIAPAN BAHAN': 'Persiapan',
         'Tim Persiapan Bahan': 'Persiapan',
         'tim persiapan bahan': 'Persiapan',
+        'Persiapan': 'Persiapan',
+        'persiapan': 'Persiapan',
         
-        // PEMORSIAN (PEMORSIAN MAKANAN -> Pemorsian)
-        'Pemorsian': 'Pemorsian',
-        'pemorsian': 'Pemorsian',
+        // PEMORSIAN MAKANAN -> Pemorsian
         'PEMORSIAN MAKANAN': 'Pemorsian',
         'Pemorsian Makanan': 'Pemorsian',
         'pemorsian makanan': 'Pemorsian',
+        'Pemorsian': 'Pemorsian',
+        'pemorsian': 'Pemorsian',
         
-        // CUCI FOODTRAY (CUCIL ALAT MAKAN -> Cuci Foodtray)
-        'Cuci Foodtray': 'Cuci Foodtray',
-        'Cuci foodtray': 'Cuci Foodtray',
-        'cuci foodtray': 'Cuci Foodtray',
-        'CUCIL ALAT MAKAN': 'Cuci Foodtray',
+        // CUCI ALAT MAKAN -> Cuci Foodtray
+        'CUCI ALAT MAKAN': 'Cuci Foodtray',
         'Cuci Alat Makan': 'Cuci Foodtray',
         'cuci alat makan': 'Cuci Foodtray',
+        'Cuci Foodtray': 'Cuci Foodtray',
+        'cuci foodtray': 'Cuci Foodtray',
         
         // DISTRIBUSI
+        'DISTRIBUSI': 'Distribusi',
         'Distribusi': 'Distribusi',
         'distribusi': 'Distribusi',
-        'DISTRIBUSI': 'Distribusi',
         
         // SATPAM
+        'SATPAM': 'Satpam',
         'Satpam': 'Satpam',
         'satpam': 'Satpam',
-        'SATPAM': 'Satpam',
         
         // KEBERSIHAN
+        'KEBERSIHAN': 'Kebersihan',
         'Kebersihan': 'Kebersihan',
-        'kebersihan': 'Kebersihan',
-        'KEBERSIHAN': 'Kebersihan'
+        'kebersihan': 'Kebersihan'
     };
 
     // ============================================================
@@ -946,7 +947,7 @@
                 allData.push(row);
             });
 
-            // ⭐ URUTKAN: ASLAP (LUKI & IKHWANUL) DI ATAS, SISANYA SESUAI URUTAN
+            // ⭐ URUTKAN: ASLAP DI ATAS, SISANYA SESUAI URUTAN
             allData.sort(function(a, b) {
                 var isAslapA = a.divisi === 'Aslap';
                 var isAslapB = b.divisi === 'Aslap';
