@@ -3,502 +3,147 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Edit Absensi & Izin • Smart Presence</title>
+    <title>Pengaturan Admin • RelawanTrack</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
-        /* ===== STYLE (sama kayak sebelumnya, tambahan untuk tabs & izin) ===== */
+        /* ============ STYLE UMUM ============ */
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body {
-            font-family: 'Inter', sans-serif;
-            background: #0f172a;
-            min-height: 100vh;
-            color: #e2e8f0;
-            padding: 20px;
-        }
+        body { font-family: 'Inter', sans-serif; background: #0f172a; min-height: 100vh; color: #e2e8f0; padding: 20px; }
         body.light-mode { background: #f1f5f9; color: #1e293b; }
-        
-        .navbar {
-            background: rgba(15, 23, 42, 0.85);
-            backdrop-filter: blur(20px);
-            padding: 12px 24px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-radius: 16px;
-            max-width: 1400px;
-            margin: 0 auto 20px;
-            border: 1px solid rgba(255,255,255,0.06);
-        }
+
+        .navbar { background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(20px); padding: 12px 24px; display: flex; justify-content: space-between; align-items: center; border-radius: 16px; max-width: 1400px; margin: 0 auto 20px; border: 1px solid rgba(255,255,255,0.06); }
         body.light-mode .navbar { background: rgba(255,255,255,0.85); border-color: rgba(0,0,0,0.06); }
-        
-        .logo h2 {
-            font-size: 20px;
-            background: linear-gradient(135deg, #a855f7, #3b82f6);
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
-        }
+        .logo h2 { font-size: 20px; background: linear-gradient(135deg, #a855f7, #3b82f6); -webkit-background-clip: text; background-clip: text; color: transparent; }
         .logo span { font-size: 12px; color: #64748b; }
-        
         .nav-actions { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
-        .nav-actions button {
-            padding: 8px 16px;
-            border: none;
-            border-radius: 12px;
-            cursor: pointer;
-            font-size: 13px;
-            font-weight: 600;
-            transition: all 0.2s;
-            font-family: 'Inter', sans-serif;
-        }
+        .nav-actions button { padding: 8px 16px; border: none; border-radius: 12px; cursor: pointer; font-size: 13px; font-weight: 600; transition: all 0.2s; font-family: 'Inter', sans-serif; }
         .nav-actions button:active { transform: scale(0.95); }
-        .btn-logout { background: #ef4444; color: white; }
-        .btn-logout:hover { background: #dc2626; }
-        .btn-back { background: #6366f1; color: white; }
-        .btn-back:hover { background: #4f46e5; }
-        .btn-theme { background: #1e293b; color: #e2e8f0; }
-        body.light-mode .btn-theme { background: #e2e8f0; color: #1e293b; }
-        
+        .btn-logout { background: #ef4444; color: white; } .btn-logout:hover { background: #dc2626; }
+        .btn-back { background: #6366f1; color: white; } .btn-back:hover { background: #4f46e5; }
+        .btn-theme { background: #1e293b; color: #e2e8f0; } body.light-mode .btn-theme { background: #e2e8f0; color: #1e293b; }
         .container { max-width: 1200px; margin: 0 auto; }
-        
-        /* TABS */
-        .tabs {
-            display: flex;
-            gap: 4px;
-            margin-bottom: 20px;
-            background: rgba(255,255,255,0.04);
-            border-radius: 14px;
-            padding: 4px;
-            border: 1px solid rgba(255,255,255,0.06);
-        }
+
+        /* ============ TABS ============ */
+        .tabs { display: flex; gap: 4px; margin-bottom: 20px; background: rgba(255,255,255,0.04); border-radius: 14px; padding: 4px; border: 1px solid rgba(255,255,255,0.06); }
         body.light-mode .tabs { background: #f1f5f9; border-color: #e2e8f0; }
-        .tabs button {
-            flex: 1;
-            padding: 12px 20px;
-            border: none;
-            border-radius: 10px;
-            background: transparent;
-            color: #94a3b8;
-            font-weight: 700;
-            font-size: 14px;
-            cursor: pointer;
-            transition: all 0.3s;
-            font-family: 'Inter', sans-serif;
-        }
-        .tabs button:hover { color: white; }
-        body.light-mode .tabs button:hover { color: #1e293b; }
-        .tabs button.active {
-            background: #a855f7;
-            color: white;
-            box-shadow: 0 4px 15px rgba(168,85,247,0.3);
-        }
+        .tabs button { flex: 1; padding: 12px 20px; border: none; border-radius: 10px; background: transparent; color: #94a3b8; font-weight: 700; font-size: 14px; cursor: pointer; transition: all 0.3s; font-family: 'Inter', sans-serif; }
+        .tabs button:hover { color: white; } body.light-mode .tabs button:hover { color: #1e293b; }
+        .tabs button.active { background: #a855f7; color: white; box-shadow: 0 4px 15px rgba(168,85,247,0.3); }
         body.light-mode .tabs button.active { background: #a855f7; color: white; }
-        
-        .tab-content { display: none; }
-        .tab-content.active { display: block; }
-        
-        /* ===== FORM CARD ===== */
-        .form-card {
-            background: rgba(255,255,255,0.04);
-            border-radius: 16px;
-            padding: 24px;
-            border: 1px solid rgba(255,255,255,0.06);
-            margin-bottom: 20px;
-        }
+        .tab-content { display: none; } .tab-content.active { display: block; }
+
+        /* ============ FORM CARD & GROUP ============ */
+        .form-card { background: rgba(255,255,255,0.04); border-radius: 16px; padding: 24px; border: 1px solid rgba(255,255,255,0.06); margin-bottom: 20px; }
         body.light-mode .form-card { background: white; border-color: rgba(0,0,0,0.06); }
+        .form-card h3 { font-size: 16px; font-weight: 700; margin-bottom: 16px; display: flex; align-items: center; gap: 10px; }
         
-        .form-card .info-bar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding-bottom: 16px;
-            border-bottom: 1px solid rgba(255,255,255,0.06);
-            margin-bottom: 20px;
-            flex-wrap: wrap;
-            gap: 10px;
-        }
-        body.light-mode .form-card .info-bar { border-bottom-color: #e2e8f0; }
-        .form-card .info-bar .nama {
-            font-size: 20px;
-            font-weight: 800;
-            color: white;
-        }
-        body.light-mode .form-card .info-bar .nama { color: #1e293b; }
-        .form-card .info-bar .tanggal {
-            font-size: 14px;
-            color: #94a3b8;
-        }
-        .form-card .info-bar .status-badge {
-            padding: 6px 16px;
-            border-radius: 20px;
-            font-size: 13px;
-            font-weight: 700;
-        }
-        .form-card .info-bar .status-badge.hadir { background: rgba(16,185,129,0.2); color: #34d399; }
-        .form-card .info-bar .status-badge.telat { background: rgba(251,146,60,0.2); color: #fb923c; }
-        .form-card .info-bar .status-badge.alfa { background: rgba(239,68,68,0.2); color: #f87171; }
-        .form-card .info-bar .status-badge.izin { background: rgba(96,165,250,0.2); color: #60a5fa; }
-        .form-card .info-bar .status-badge.libur { background: rgba(168,85,247,0.2); color: #a855f7; }
-        .form-card .info-bar .status-badge.kosong { background: rgba(100,116,139,0.2); color: #94a3b8; }
+        .form-group { margin-bottom: 16px; }
+        .form-group label { display: block; font-size: 12px; color: #94a3b8; font-weight: 600; margin-bottom: 4px; }
+        .form-group select, .form-group input, .form-group textarea { width: 100%; padding: 10px 14px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.1); background: rgba(0,0,0,0.3); color: white; font-family: 'Inter', sans-serif; font-size: 14px; }
+        body.light-mode .form-group select, body.light-mode .form-group input, body.light-mode .form-group textarea { background: #f1f5f9; color: #1e293b; border-color: #cbd5e1; }
+        .form-group select:focus, .form-group input:focus, .form-group textarea:focus { outline: none; border-color: #a855f7; box-shadow: 0 0 0 3px rgba(168,85,247,0.2); }
+        .form-group .form-hint { font-size: 11px; color: #64748b; margin-top: 4px; }
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
         
-        .form-group {
-            margin-bottom: 16px;
-        }
-        .form-group label {
-            display: block;
-            font-size: 12px;
-            color: #94a3b8;
-            font-weight: 600;
-            margin-bottom: 4px;
-        }
-        .form-group select, .form-group input, .form-group textarea {
-            width: 100%;
-            padding: 10px 14px;
-            border-radius: 10px;
-            border: 1px solid rgba(255,255,255,0.1);
-            background: rgba(0,0,0,0.3);
-            color: white;
-            font-family: 'Inter', sans-serif;
-            font-size: 14px;
-        }
-        body.light-mode .form-group select, body.light-mode .form-group input, body.light-mode .form-group textarea {
-            background: #f1f5f9;
-            color: #1e293b;
-            border-color: #cbd5e1;
-        }
-        .form-group select:focus, .form-group input:focus, .form-group textarea:focus {
-            outline: none;
-            border-color: #a855f7;
-        }
-        .form-group textarea { resize: vertical; min-height: 60px; }
-        .form-group .form-hint {
-            font-size: 11px;
-            color: #64748b;
-            margin-top: 4px;
-        }
-        
-        .form-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 12px;
-        }
-        
-        .form-actions {
-            display: flex;
-            gap: 12px;
-            margin-top: 20px;
-            padding-top: 16px;
-            border-top: 1px solid rgba(255,255,255,0.06);
-            flex-wrap: wrap;
-        }
-        body.light-mode .form-actions { border-top-color: #e2e8f0; }
-        .form-actions .btn-save {
-            padding: 12px 32px;
-            background: #10b981;
-            border: none;
-            border-radius: 10px;
-            color: white;
-            font-weight: 700;
-            cursor: pointer;
-            font-family: 'Inter', sans-serif;
-            font-size: 14px;
-        }
-        .form-actions .btn-save:hover { background: #059669; }
-        .form-actions .btn-delete {
-            padding: 12px 32px;
-            background: #ef4444;
-            border: none;
-            border-radius: 10px;
-            color: white;
-            font-weight: 700;
-            cursor: pointer;
-            font-family: 'Inter', sans-serif;
-            font-size: 14px;
-        }
-        .form-actions .btn-delete:hover { background: #dc2626; }
-        .form-actions .btn-reset {
-            padding: 12px 32px;
-            background: #f59e0b;
-            border: none;
-            border-radius: 10px;
-            color: white;
-            font-weight: 700;
-            cursor: pointer;
-            font-family: 'Inter', sans-serif;
-            font-size: 14px;
-        }
-        .form-actions .btn-reset:hover { background: #d97706; }
-        .form-actions .btn-cancel {
-            padding: 12px 32px;
-            background: #1e293b;
-            border: none;
-            border-radius: 10px;
-            color: #94a3b8;
-            font-weight: 700;
-            cursor: pointer;
-            font-family: 'Inter', sans-serif;
-            font-size: 14px;
-        }
-        body.light-mode .form-actions .btn-cancel { background: #e2e8f0; color: #64748b; }
-        .form-actions .btn-cancel:hover { background: #334155; }
-        body.light-mode .form-actions .btn-cancel:hover { background: #cbd5e1; }
-        
-        /* ===== TABLE ===== */
-        .table-container {
-            background: rgba(255,255,255,0.04);
-            border-radius: 16px;
-            padding: 20px;
-            border: 1px solid rgba(255,255,255,0.06);
-            overflow-x: auto;
-        }
+        .btn-actions { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 8px; }
+        .btn-primary { padding: 10px 24px; background: linear-gradient(135deg, #10b981, #059669); border: none; border-radius: 10px; color: white; font-weight: 700; cursor: pointer; font-family: 'Inter', sans-serif; font-size: 14px; transition: all 0.2s; }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 4px 15px rgba(16,185,129,0.4); }
+        .btn-danger { padding: 10px 24px; background: #ef4444; border: none; border-radius: 10px; color: white; font-weight: 700; cursor: pointer; font-family: 'Inter', sans-serif; font-size: 14px; transition: all 0.2s; }
+        .btn-danger:hover { background: #dc2626; }
+        .btn-refresh { padding: 10px 20px; background: #6366f1; border: none; border-radius: 10px; color: white; font-weight: 700; cursor: pointer; font-family: 'Inter', sans-serif; font-size: 13px; }
+        .btn-refresh:hover { background: #4f46e5; }
+        .btn-warning { padding: 10px 20px; background: #f59e0b; border: none; border-radius: 10px; color: white; font-weight: 700; cursor: pointer; font-family: 'Inter', sans-serif; font-size: 13px; }
+        .btn-warning:hover { background: #d97706; }
+        .btn-save { padding: 12px 32px; background: #10b981; border: none; border-radius: 10px; color: white; font-weight: 700; cursor: pointer; font-family: 'Inter', sans-serif; font-size: 14px; }
+        .btn-save:hover { background: #059669; }
+        .btn-delete { padding: 12px 32px; background: #ef4444; border: none; border-radius: 10px; color: white; font-weight: 700; cursor: pointer; font-family: 'Inter', sans-serif; font-size: 14px; }
+        .btn-delete:hover { background: #dc2626; }
+        .btn-cancel { padding: 12px 32px; background: #1e293b; border: none; border-radius: 10px; color: #94a3b8; font-weight: 700; cursor: pointer; font-family: 'Inter', sans-serif; font-size: 14px; }
+        body.light-mode .btn-cancel { background: #e2e8f0; color: #64748b; }
+
+        /* ============ TABLE ============ */
+        .table-container { background: rgba(255,255,255,0.04); border-radius: 16px; padding: 20px; border: 1px solid rgba(255,255,255,0.06); overflow-x: auto; }
         body.light-mode .table-container { background: white; border-color: rgba(0,0,0,0.06); }
-        .table-container h3 {
-            font-size: 16px;
-            font-weight: 700;
-            margin-bottom: 16px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        
+        .table-container h3 { font-size: 16px; font-weight: 700; margin-bottom: 16px; display: flex; align-items: center; gap: 10px; }
         table { width: 100%; border-collapse: collapse; font-size: 13px; }
         th, td { padding: 10px 12px; text-align: left; border-bottom: 1px solid rgba(255,255,255,0.06); }
         body.light-mode th, body.light-mode td { border-bottom-color: #e2e8f0; }
-        
-        th {
-            font-weight: 600;
-            color: #94a3b8;
-            font-size: 11px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            position: sticky;
-            top: 0;
-            background: rgba(15,23,42,0.95);
-        }
+        th { font-weight: 600; color: #94a3b8; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; position: sticky; top: 0; background: rgba(15,23,42,0.95); }
         body.light-mode th { background: #f8fafc; color: #64748b; }
-        
-        td .status-badge {
-            display: inline-block;
-            padding: 4px 12px;
-            border-radius: 12px;
-            font-size: 12px;
-            font-weight: 600;
-        }
-        td .status-badge.pending { background: rgba(245,158,11,0.2); color: #f59e0b; }
-        td .status-badge.disetujui { background: rgba(16,185,129,0.2); color: #34d399; }
-        td .status-badge.ditolak { background: rgba(239,68,68,0.2); color: #f87171; }
-        
-        td .btn-setuju {
-            padding: 4px 12px;
-            background: #10b981;
-            border: none;
-            border-radius: 8px;
-            color: white;
-            font-size: 11px;
-            font-weight: 600;
-            cursor: pointer;
-            font-family: 'Inter', sans-serif;
-            transition: all 0.2s;
-        }
-        td .btn-setuju:hover { background: #059669; }
-        td .btn-tolak {
-            padding: 4px 12px;
-            background: #ef4444;
-            border: none;
-            border-radius: 8px;
-            color: white;
-            font-size: 11px;
-            font-weight: 600;
-            cursor: pointer;
-            font-family: 'Inter', sans-serif;
-            transition: all 0.2s;
-        }
-        td .btn-tolak:hover { background: #dc2626; }
-        td .btn-edit-small {
-            padding: 4px 12px;
-            background: #6366f1;
-            border: none;
-            border-radius: 8px;
-            color: white;
-            font-size: 11px;
-            font-weight: 600;
-            cursor: pointer;
-            font-family: 'Inter', sans-serif;
-            transition: all 0.2s;
-        }
-        td .btn-edit-small:hover { background: #4f46e5; }
-        
-        .filter-card {
-            background: rgba(255,255,255,0.04);
-            border-radius: 16px;
-            padding: 16px 20px;
-            margin-bottom: 20px;
-            border: 1px solid rgba(255,255,255,0.06);
-            display: flex;
-            flex-wrap: wrap;
-            align-items: center;
-            gap: 12px;
-        }
-        body.light-mode .filter-card { background: white; border-color: rgba(0,0,0,0.06); }
-        .filter-card label { font-size: 13px; font-weight: 600; color: #94a3b8; }
-        .filter-card select, .filter-card input {
-            padding: 8px 14px;
-            border-radius: 10px;
-            border: 1px solid rgba(255,255,255,0.1);
-            background: rgba(0,0,0,0.3);
-            color: white;
-            font-family: 'Inter', sans-serif;
-            font-size: 14px;
-            min-width: 150px;
-        }
-        body.light-mode .filter-card select, body.light-mode .filter-card input {
-            background: #f1f5f9;
-            color: #1e293b;
-            border-color: #cbd5e1;
-        }
-        .filter-card select:focus, .filter-card input:focus {
-            outline: none;
-            border-color: #a855f7;
-        }
-        .filter-card .btn-primary {
-            padding: 10px 24px;
-            background: linear-gradient(135deg, #a855f7, #3b82f6);
-            border: none;
-            border-radius: 10px;
-            color: white;
-            font-weight: 700;
-            cursor: pointer;
-            font-family: 'Inter', sans-serif;
-            font-size: 14px;
-        }
-        .filter-card .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 4px 15px rgba(168,85,247,0.4); }
-        .filter-card .btn-refresh {
-            padding: 10px 20px;
-            background: #6366f1;
-            border: none;
-            border-radius: 10px;
-            color: white;
-            font-weight: 700;
-            cursor: pointer;
-            font-family: 'Inter', sans-serif;
-            font-size: 13px;
-        }
-        .filter-card .btn-refresh:hover { background: #4f46e5; }
-        
-        .empty-state {
-            text-align: center;
-            padding: 40px 20px;
-            color: #64748b;
-        }
+
+        .badge-divisi { display: inline-block; padding: 2px 10px; border-radius: 12px; font-size: 11px; font-weight: 600; background: rgba(168,85,247,0.15); color: #a855f7; }
+        .hari-badge { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 10px; font-weight: 600; margin: 1px 2px; background: rgba(16,185,129,0.15); color: #34d399; }
+        .hari-badge.off { background: rgba(100,116,139,0.15); color: #64748b; }
+        .status-badge { display: inline-block; padding: 4px 12px; border-radius: 12px; font-size: 12px; font-weight: 600; }
+        .status-badge.hadir { background: rgba(16,185,129,0.2); color: #34d399; }
+        .status-badge.telat { background: rgba(251,146,60,0.2); color: #fb923c; }
+        .status-badge.alfa { background: rgba(239,68,68,0.2); color: #f87171; }
+        .status-badge.pending { background: rgba(245,158,11,0.2); color: #f59e0b; }
+        .status-badge.disetujui { background: rgba(16,185,129,0.2); color: #34d399; }
+        .status-badge.ditolak { background: rgba(239,68,68,0.2); color: #f87171; }
+        td .btn-delete-small { padding: 4px 12px; background: #ef4444; border: none; border-radius: 8px; color: white; font-size: 11px; font-weight: 600; cursor: pointer; font-family: 'Inter', sans-serif; }
+        td .btn-edit-small { padding: 4px 12px; background: #6366f1; border: none; border-radius: 8px; color: white; font-size: 11px; font-weight: 600; cursor: pointer; font-family: 'Inter', sans-serif; }
+        td .btn-setuju { padding: 4px 12px; background: #10b981; border: none; border-radius: 8px; color: white; font-size: 11px; font-weight: 600; cursor: pointer; font-family: 'Inter', sans-serif; }
+        td .btn-tolak { padding: 4px 12px; background: #ef4444; border: none; border-radius: 8px; color: white; font-size: 11px; font-weight: 600; cursor: pointer; font-family: 'Inter', sans-serif; }
+
+        .empty-state { text-align: center; padding: 40px 20px; color: #64748b; }
         .empty-state .icon { font-size: 48px; display: block; margin-bottom: 12px; color: #475569; }
         .empty-state h3 { font-size: 18px; font-weight: 700; color: white; margin-bottom: 4px; }
         body.light-mode .empty-state h3 { color: #1e293b; }
         .empty-state p { font-size: 13px; }
-        
         .loading-text { text-align: center; color: #64748b; padding: 20px 0; font-size: 14px; }
-        
-        .toast-custom {
-            position: fixed;
-            bottom: 30px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: #1e293b;
-            color: white;
-            padding: 14px 28px;
-            border-radius: 16px;
-            font-weight: 600;
-            font-size: 14px;
-            z-index: 9999;
-            border-left: 4px solid #10b981;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
-            animation: slideUp 0.3s ease;
-            max-width: 90%;
-            font-family: 'Inter', sans-serif;
-        }
-        @keyframes slideUp {
-            from { opacity: 0; transform: translateX(-50%) translateY(30px); }
-            to { opacity: 1; transform: translateX(-50%) translateY(0); }
-        }
-        
-        /* MODAL TOLAK */
-        .modal-overlay {
-            position: fixed;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(0,0,0,0.7);
-            backdrop-filter: blur(8px);
-            display: none;
-            justify-content: center;
-            align-items: center;
-            z-index: 999;
-        }
+
+        .toast-custom { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); background: #1e293b; color: white; padding: 14px 28px; border-radius: 16px; font-weight: 600; font-size: 14px; z-index: 9999; border-left: 4px solid #10b981; box-shadow: 0 10px 40px rgba(0,0,0,0.5); animation: slideUp 0.3s ease; max-width: 90%; font-family: 'Inter', sans-serif; }
+        @keyframes slideUp { from { opacity: 0; transform: translateX(-50%) translateY(30px); } to { opacity: 1; transform: translateX(-50%) translateY(0); } }
+
+        .hidden { display: none; }
+        .info-box { background: rgba(59,130,246,0.1); border-left: 3px solid #3b82f6; padding: 12px 16px; border-radius: 8px; margin-bottom: 16px; font-size: 13px; color: #94a3b8; }
+        .info-box strong { color: white; }
+        body.light-mode .info-box strong { color: #1e293b; }
+        .hari-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px; margin: 8px 0 12px; }
+        .hari-grid label { display: flex; flex-direction: column; align-items: center; gap: 4px; font-size: 12px; font-weight: 600; color: #94a3b8; cursor: pointer; padding: 10px 8px; border-radius: 10px; border: 2px solid rgba(255,255,255,0.06); transition: all 0.2s; background: rgba(0,0,0,0.15); }
+        body.light-mode .hari-grid label { border-color: #e2e8f0; background: #f8fafc; }
+        .hari-grid label.active { border-color: #10b981; background: rgba(16,185,129,0.12); color: #34d399; }
+        .hari-grid label input[type="checkbox"] { display: none; }
+        .hari-grid label .icon { font-size: 20px; } .hari-grid label .text { font-size: 10px; text-transform: uppercase; }
+        .radio-group { display: flex; gap: 16px; flex-wrap: wrap; padding: 8px 0; }
+        .radio-group label { display: flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 600; color: #94a3b8; cursor: pointer; }
+        .radio-group label.active { color: white; } body.light-mode .radio-group label.active { color: #1e293b; }
+        .radio-group input[type="radio"] { accent-color: #a855f7; width: 16px; height: 16px; cursor: pointer; }
+
+        .filter-card { background: rgba(255,255,255,0.04); border-radius: 16px; padding: 16px 20px; margin-bottom: 20px; border: 1px solid rgba(255,255,255,0.06); display: flex; flex-wrap: wrap; align-items: center; gap: 12px; }
+        body.light-mode .filter-card { background: white; border-color: rgba(0,0,0,0.06); }
+        .filter-card label { font-size: 13px; font-weight: 600; color: #94a3b8; }
+        .filter-card select, .filter-card input { padding: 8px 14px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.1); background: rgba(0,0,0,0.3); color: white; font-family: 'Inter', sans-serif; font-size: 14px; min-width: 150px; }
+        body.light-mode .filter-card select, body.light-mode .filter-card input { background: #f1f5f9; color: #1e293b; border-color: #cbd5e1; }
+        .filter-card .btn-primary { padding: 10px 24px; background: linear-gradient(135deg, #a855f7, #3b82f6); border: none; border-radius: 10px; color: white; font-weight: 700; cursor: pointer; font-family: 'Inter', sans-serif; font-size: 14px; }
+        .filter-card .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 4px 15px rgba(168,85,247,0.4); }
+
+        .modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.7); backdrop-filter: blur(8px); display: none; justify-content: center; align-items: center; z-index: 999; }
         .modal-overlay.active { display: flex; }
-        
-        .modal-card {
-            background: #1e293b;
-            border-radius: 24px;
-            padding: 32px;
-            width: 90%;
-            max-width: 480px;
-            border: 1px solid rgba(255,255,255,0.06);
-            box-shadow: 0 25px 50px rgba(0,0,0,0.5);
-        }
+        .modal-card { background: #1e293b; border-radius: 24px; padding: 32px; width: 90%; max-width: 480px; border: 1px solid rgba(255,255,255,0.06); box-shadow: 0 25px 50px rgba(0,0,0,0.5); }
         body.light-mode .modal-card { background: white; border-color: rgba(0,0,0,0.06); }
-        
-        .modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-            padding-bottom: 12px;
-            border-bottom: 1px solid rgba(255,255,255,0.06);
-        }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding-bottom: 12px; border-bottom: 1px solid rgba(255,255,255,0.06); }
         .modal-header h2 { font-size: 20px; font-weight: 700; color: #f87171; }
-        .modal-close {
-            background: none;
-            border: none;
-            color: #94a3b8;
-            font-size: 24px;
-            cursor: pointer;
-        }
-        .modal-close:hover { color: white; }
-        
-        .modal-footer {
-            display: flex;
-            gap: 12px;
-            margin-top: 20px;
-            padding-top: 16px;
-            border-top: 1px solid rgba(255,255,255,0.06);
-            justify-content: flex-end;
-        }
-        .modal-footer button {
-            padding: 10px 20px;
-            border: none;
-            border-radius: 10px;
-            font-weight: 700;
-            cursor: pointer;
-            font-family: 'Inter', sans-serif;
-            font-size: 14px;
-            transition: all 0.2s;
-        }
-        .modal-footer button:active { transform: scale(0.95); }
-        .btn-danger-modal { background: #ef4444; color: white; }
-        .btn-danger-modal:hover { background: #dc2626; }
-        .btn-cancel { background: #1e293b; color: #94a3b8; }
-        .btn-cancel:hover { background: #334155; }
+        .modal-close { background: none; border: none; color: #94a3b8; font-size: 24px; cursor: pointer; }
+        .modal-footer { display: flex; gap: 12px; margin-top: 20px; padding-top: 16px; border-top: 1px solid rgba(255,255,255,0.06); justify-content: flex-end; }
+        .modal-footer button { padding: 10px 20px; border: none; border-radius: 10px; font-weight: 700; cursor: pointer; font-family: 'Inter', sans-serif; font-size: 14px; }
+        .btn-danger-modal { background: #ef4444; color: white; } .btn-danger-modal:hover { background: #dc2626; }
+        .btn-cancel { background: #1e293b; color: #94a3b8; } .btn-cancel:hover { background: #334155; }
         body.light-mode .btn-cancel { background: #e2e8f0; color: #64748b; }
-        body.light-mode .btn-cancel:hover { background: #cbd5e1; }
-        
+
         @media (max-width: 768px) {
             .navbar { flex-wrap: wrap; gap: 10px; padding: 12px 16px; }
-            .filter-card { flex-direction: column; align-items: stretch; }
-            .filter-card select, .filter-card input { width: 100%; min-width: auto; }
-            .form-row { grid-template-columns: 1fr; }
-            .form-actions { flex-direction: column; }
-            .form-actions button { width: 100%; }
-            .nav-actions { flex-wrap: wrap; }
             .tabs { flex-direction: column; }
             .tabs button { text-align: center; }
+            .form-row { grid-template-columns: 1fr; }
+            .filter-card { flex-direction: column; align-items: stretch; }
+            .filter-card select, .filter-card input { width: 100%; min-width: auto; }
+            .hari-grid { grid-template-columns: repeat(7, 1fr); gap: 4px; }
+            .hari-grid label { padding: 6px 4px; }
+            .btn-actions { flex-direction: column; }
+            .btn-actions button { width: 100%; }
         }
     </style>
 </head>
@@ -508,7 +153,7 @@
 <nav class="navbar">
     <div class="logo">
         <h2>📋 RelawanTrack</h2>
-        <span>Edit Absensi & Izin</span>
+        <span>Pengaturan Admin</span>
     </div>
     <div class="nav-actions">
         <button class="btn-back" onclick="window.location.href='admin_dashboard.html'">
@@ -528,15 +173,98 @@
 
     <!-- TABS -->
     <div class="tabs">
-        <button class="active" onclick="switchTab('tabAbsensi', this)">📋 Absensi</button>
+        <button class="active" onclick="switchTab('tabLiburKerja', this)">📅 Libur & Hari Kerja</button>
+        <button onclick="switchTab('tabAbsensi', this)">✏️ Edit Absensi (By Name)</button>
         <button onclick="switchTab('tabIzin', this)">📝 Manajemen Izin</button>
     </div>
 
     <!-- ============================================================
-         TAB 1: ABSENSI
+         TAB 1: LIBUR & HARI KERJA (BY DIVISI)
          ============================================================ -->
-    <div class="tab-content active" id="tabAbsensi">
+    <div class="tab-content active" id="tabLiburKerja">
 
+        <!-- Form Tambah Libur -->
+        <div class="form-card">
+            <h3><i class="fas fa-calendar-plus" style="color:#a855f7;"></i> Tambah Libur (By Divisi)</h3>
+            <div class="form-group">
+                <label>Pilih Divisi</label>
+                <select id="pilihDivisiLibur"><option value="__semua">Semua Divisi</option></select>
+                <div class="form-hint">Pilih divisi yang diliburkan, atau "Semua Divisi" untuk semua</div>
+            </div>
+            <div class="form-group">
+                <label>Jenis Periode</label>
+                <div class="radio-group" id="radioPeriode">
+                    <label class="active"><input type="radio" name="periode" value="tanggal" checked> Satu Tanggal</label>
+                    <label><input type="radio" name="periode" value="rentang"> Rentang Tanggal</label>
+                    <label><input type="radio" name="periode" value="bulan"> Satu Bulan</label>
+                </div>
+            </div>
+            <div id="opsiTanggal">
+                <div class="form-group"><label>Tanggal</label><input type="date" id="inputTanggal"></div>
+            </div>
+            <div id="opsiRentang" class="hidden">
+                <div class="form-row">
+                    <div class="form-group"><label>Tanggal Mulai</label><input type="date" id="inputTanggalMulai"></div>
+                    <div class="form-group"><label>Tanggal Selesai</label><input type="date" id="inputTanggalSelesai"></div>
+                </div>
+            </div>
+            <div id="opsiBulan" class="hidden">
+                <div class="form-row">
+                    <div class="form-group"><label>Bulan</label><select id="inputBulan">
+                        <option value="1">Januari</option><option value="2">Februari</option><option value="3">Maret</option>
+                        <option value="4">April</option><option value="5">Mei</option><option value="6">Juni</option>
+                        <option value="7">Juli</option><option value="8" selected>Agustus</option><option value="9">September</option>
+                        <option value="10">Oktober</option><option value="11">November</option><option value="12">Desember</option>
+                    </select></div>
+                    <div class="form-group"><label>Tahun</label><select id="inputTahun"></select></div>
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Keterangan (Opsional)</label>
+                <input type="text" id="inputKeterangan" placeholder="Contoh: Libur 17 Agustus">
+                <div class="form-hint">Keterangan akan muncul di daftar libur</div>
+            </div>
+            <div class="btn-actions">
+                <button class="btn-primary" onclick="tambahLibur()"><i class="fas fa-plus"></i> Tambahkan Libur</button>
+                <button class="btn-danger" onclick="hapusSemuaLibur()"><i class="fas fa-trash"></i> Hapus Semua Libur</button>
+                <button class="btn-refresh" onclick="loadLibur()"><i class="fas fa-sync-alt"></i> Refresh</button>
+            </div>
+        </div>
+
+        <!-- Form Atur Hari Kerja -->
+        <div class="form-card">
+            <h3><i class="fas fa-calendar-check" style="color:#10b981;"></i> Atur Hari Kerja Per Divisi</h3>
+            <div class="info-box">
+                💡 <strong>Hari Kerja</strong> adalah hari dimana divisi WAJIB masuk. Hari yang TIDAK dicentang akan dianggap <strong>LIBUR</strong>.
+            </div>
+            <div class="form-group">
+                <label>Pilih Divisi</label>
+                <select id="pilihDivisiHariKerja" onchange="loadHariKerjaDivisi()">
+                    <option value="">-- Pilih Divisi --</option>
+                </select>
+            </div>
+            <div id="hariKerjaContainer">
+                <div class="empty-state"><span class="icon">🕐</span><p>Pilih divisi di atas untuk mulai mengatur hari kerja</p></div>
+            </div>
+        </div>
+
+        <!-- Daftar Libur -->
+        <div class="table-container">
+            <h3><i class="fas fa-list" style="color:#a855f7;"></i> Daftar Libur <span id="divisiLabelLibur" style="font-size:13px;color:#94a3b8;font-weight:400;">- Semua Divisi</span></h3>
+            <div id="tableWrapperLibur"><div class="loading-text"><i class="fas fa-spinner fa-pulse"></i> Memuat data...</div></div>
+        </div>
+
+        <!-- Daftar Hari Kerja Semua Divisi -->
+        <div class="table-container">
+            <h3><i class="fas fa-list" style="color:#10b981;"></i> Daftar Hari Kerja Semua Divisi</h3>
+            <div id="tableWrapperHariKerja"><div class="loading-text"><i class="fas fa-spinner fa-pulse"></i> Memuat data...</div></div>
+        </div>
+    </div>
+
+    <!-- ============================================================
+         TAB 2: EDIT ABSENSI (BY NAME)
+         ============================================================ -->
+    <div class="tab-content" id="tabAbsensi">
         <div class="filter-card">
             <label><i class="fas fa-user"></i> Karyawan:</label>
             <select id="pilihKaryawan">
@@ -546,25 +274,18 @@
             <label><i class="fas fa-calendar-alt"></i> Tanggal:</label>
             <input type="date" id="pilihTanggal">
             
-            <button class="btn-primary" onclick="loadAbsensi()">
-                <i class="fas fa-search"></i> Cari
-            </button>
+            <button class="btn-primary" onclick="loadAbsensi()"><i class="fas fa-search"></i> Cari</button>
         </div>
 
         <div id="formContainer">
-            <div class="empty-state">
-                <span class="icon">📝</span>
-                <h3>Pilih Karyawan & Tanggal</h3>
-                <p>Pilih karyawan dan tanggal di atas untuk mulai edit absensi</p>
-            </div>
+            <div class="empty-state"><span class="icon">✏️</span><h3>Pilih Karyawan & Tanggal</h3><p>Pilih karyawan dan tanggal di atas untuk mulai edit absensi</p></div>
         </div>
     </div>
 
     <!-- ============================================================
-         TAB 2: MANAJEMEN IZIN
+         TAB 3: MANAJEMEN IZIN (BY NAME)
          ============================================================ -->
     <div class="tab-content" id="tabIzin">
-
         <div class="filter-card">
             <label><i class="fas fa-user"></i> Karyawan:</label>
             <select id="filterIzinKaryawan">
@@ -579,28 +300,20 @@
                 <option value="ditolak">❌ Ditolak</option>
             </select>
             
-            <button class="btn-primary" onclick="loadIzin()">
-                <i class="fas fa-search"></i> Tampilkan
-            </button>
-            <button class="btn-refresh" onclick="refreshIzin()">
-                <i class="fas fa-sync-alt"></i>
-            </button>
+            <button class="btn-primary" onclick="loadIzin()"><i class="fas fa-search"></i> Tampilkan</button>
+            <button class="btn-refresh" onclick="refreshIzin()"><i class="fas fa-sync-alt"></i></button>
         </div>
 
         <!-- Pending Izin -->
         <div class="table-container" style="margin-bottom:20px;border-color:rgba(245,158,11,0.3);">
             <h3><i class="fas fa-clock" style="color:#f59e0b;"></i> Pending Izin <span id="pendingCount" style="font-size:13px;color:#f59e0b;font-weight:400;">(0)</span></h3>
-            <div id="pendingIzinWrapper">
-                <div class="loading-text"><i class="fas fa-spinner fa-pulse"></i> Memuat data...</div>
-            </div>
+            <div id="pendingIzinWrapper"><div class="loading-text"><i class="fas fa-spinner fa-pulse"></i> Memuat data...</div></div>
         </div>
 
         <!-- Riwayat Izin -->
         <div class="table-container">
             <h3><i class="fas fa-history" style="color:#a855f7;"></i> Riwayat Izin</h3>
-            <div id="riwayatIzinWrapper">
-                <div class="loading-text"><i class="fas fa-spinner fa-pulse"></i> Memuat data...</div>
-            </div>
+            <div id="riwayatIzinWrapper"><div class="loading-text"><i class="fas fa-spinner fa-pulse"></i> Memuat data...</div></div>
         </div>
     </div>
 
@@ -615,7 +328,6 @@
         </div>
         <div class="modal-body">
             <input type="hidden" id="tolakIzinId">
-            
             <div class="form-group">
                 <label>Karyawan</label>
                 <input type="text" id="tolakNama" disabled style="opacity:0.7;">
@@ -636,16 +348,14 @@
         </div>
         <div class="modal-footer">
             <button class="btn-cancel" onclick="closeModalTolak()">Batal</button>
-            <button class="btn-danger-modal" onclick="confirmTolakIzin()">
-                <i class="fas fa-times"></i> Tolak Izin
-            </button>
+            <button class="btn-danger-modal" onclick="confirmTolakIzin()"><i class="fas fa-times"></i> Tolak Izin</button>
         </div>
     </div>
 </div>
 
 <script>
     // ============================================================
-    // KONFIGURASI SUPABASE
+    // KONFIGURASI SUPABASE (SESUAI DENGAN YANG KAMU KASIH)
     // ============================================================
     var SUPABASE_URL = 'https://zcaqqybonpfishwkmffg.supabase.co';
     var SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpjYXFxeWJvbnBmaXNod2ttZmZnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODc2Mjc2NDgsImV4cCI6MjEwMzIwMzY0OH0.pBk5nwJI3u9n08onTNmvcOFxtCXQvv-ipYIu2f_iAiQ';
@@ -653,125 +363,70 @@
     // ============================================================
     // CEK LOGIN
     // ============================================================
-    if (!localStorage.getItem('admin_logged_in')) {
-        window.location.href = 'admin_login.html';
-    }
-    document.getElementById('adminName').textContent = localStorage.getItem('admin_username') || 'Admin';
+    if (!localStorage.getItem('admin_logged_in')) window.location.href = 'admin_login.html';
+    var adminNameEl = document.getElementById('adminName');
+    if (adminNameEl) adminNameEl.textContent = localStorage.getItem('admin_username') || 'Admin';
 
     // ============================================================
-    // VARIABLES
+    // VARIABLES & TELEGRAM
     // ============================================================
+    var allKaryawan = [];
+    var divisiList = [];
+    var hariList = ['senin', 'selasa', 'rabu', 'kamis', 'jumat', 'sabtu', 'minggu'];
+    var hariLabel = {'senin':'Sen','selasa':'Sel','rabu':'Rab','kamis':'Kam','jumat':'Jum','sabtu':'Sab','minggu':'Min'};
+    var hariIcon = {'senin':'🌙','selasa':'🌙','rabu':'🌙','kamis':'🌙','jumat':'🌙','sabtu':'☀️','minggu':'☀️'};
     var currentData = null;
     var currentKaryawan = null;
-    var allKaryawan = [];
     var allIzin = [];
 
-    // ============================================================
-    // TELEGRAM
-    // ============================================================
     var TELE_TOKEN = "8752953879:AAEgOYUpFjAz5e5Xh67uhyk31_x7MfGrEHk";
     var TELE_CHAT_ID = "8014458366";
 
     async function sendTelegram(msg) {
         try {
             var response = await fetch('https://api.telegram.org/bot' + TELE_TOKEN + '/sendMessage', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    chat_id: TELE_CHAT_ID,
-                    text: msg,
-                    parse_mode: 'HTML'
-                })
+                method: 'POST', headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ chat_id: TELE_CHAT_ID, text: msg, parse_mode: 'HTML' })
             });
             return await response.json();
-        } catch(e) {
-            console.log('Telegram notifikasi:', msg);
-            return null;
-        }
+        } catch(e) { console.log('Telegram:', msg); return null; }
     }
 
     // ============================================================
-    // FUNGSI TANGGAL
+    // FUNGSI DASAR (TOAST, THEME, TANGGAL, LOGOUT, TABS)
     // ============================================================
-    function getTodayIndonesia() {
-        var now = new Date();
-        var offset = 7 * 60 * 60 * 1000;
-        return new Date(now.getTime() + offset).toISOString().split('T')[0];
+    function toggleTheme() { document.body.classList.toggle('light-mode'); document.getElementById('themeIcon').className = document.body.classList.contains('light-mode') ? 'fas fa-sun' : 'fas fa-moon'; }
+    function showToast(msg, type) {
+        type = type || 'success'; var existing = document.querySelector('.toast-custom'); if (existing) existing.remove();
+        var toast = document.createElement('div'); toast.className = 'toast-custom';
+        var colors = { success: '#10b981', error: '#ef4444', warning: '#f59e0b', info: '#3b82f6' };
+        toast.style.borderLeftColor = colors[type] || '#10b981';
+        var icons = { success: '✅', error: '❌', warning: '⚠️', info: 'ℹ️' };
+        toast.innerHTML = (icons[type] || 'ℹ️') + ' ' + msg; document.body.appendChild(toast);
+        setTimeout(function() { toast.style.opacity = '0'; toast.style.transform = 'translateX(-50%) translateY(20px)'; setTimeout(function() { toast.remove(); }, 300); }, 3000);
     }
-
+    function doLogout() { if (confirm('Yakin ingin keluar?')) { localStorage.removeItem('admin_logged_in'); localStorage.removeItem('admin_username'); window.location.href = 'admin_login.html'; } }
+    function switchTab(tabId, btn) {
+        document.querySelectorAll('.tab-content').forEach(function(el) { el.classList.remove('active'); });
+        document.querySelectorAll('.tabs button').forEach(function(el) { el.classList.remove('active'); });
+        document.getElementById(tabId).classList.add('active'); btn.classList.add('active');
+        if (tabId === 'tabAbsensi') { checkEditRedirect(); }
+        if (tabId === 'tabIzin') { loadIzin(); }
+    }
+    function getTodayIndonesia() { var now = new Date(); var offset = 7 * 60 * 60 * 1000; return new Date(now.getTime() + offset).toISOString().split('T')[0]; }
     function formatTanggalDisplay(dateStr) {
         var d = new Date(dateStr + 'T00:00:00');
         var bulan = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
         var hari = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
         return hari[d.getDay()] + ', ' + d.getDate() + ' ' + bulan[d.getMonth()] + ' ' + d.getFullYear();
     }
-
-    function setDefaultDate() {
-        document.getElementById('pilihTanggal').value = getTodayIndonesia();
-    }
+    function getDaysInMonth(month, year) { return new Date(year, month, 0).getDate(); }
+    function padZero(num) { return String(num).padStart(2, '0'); }
+    function setDefaultDate() { document.getElementById('pilihTanggal').value = getTodayIndonesia(); }
     setDefaultDate();
 
     // ============================================================
-    // THEME
-    // ============================================================
-    function toggleTheme() {
-        document.body.classList.toggle('light-mode');
-        var icon = document.getElementById('themeIcon');
-        icon.className = document.body.classList.contains('light-mode') ? 'fas fa-sun' : 'fas fa-moon';
-    }
-
-    // ============================================================
-    // TOAST
-    // ============================================================
-    function showToast(msg, type) {
-        type = type || 'success';
-        var existing = document.querySelector('.toast-custom');
-        if (existing) existing.remove();
-        var toast = document.createElement('div');
-        toast.className = 'toast-custom';
-        var colors = { success: '#10b981', error: '#ef4444', warning: '#f59e0b', info: '#3b82f6' };
-        toast.style.borderLeftColor = colors[type] || '#10b981';
-        var icons = { success: '✅', error: '❌', warning: '⚠️', info: 'ℹ️' };
-        toast.innerHTML = (icons[type] || 'ℹ️') + ' ' + msg;
-        document.body.appendChild(toast);
-        setTimeout(function() {
-            toast.style.opacity = '0';
-            toast.style.transform = 'translateX(-50%) translateY(20px)';
-            setTimeout(function() { toast.remove(); }, 300);
-        }, 3000);
-    }
-
-    // ============================================================
-    // LOGOUT
-    // ============================================================
-    function doLogout() {
-        if (confirm('Yakin ingin keluar?')) {
-            localStorage.removeItem('admin_logged_in');
-            localStorage.removeItem('admin_username');
-            window.location.href = 'admin_login.html';
-        }
-    }
-
-    // ============================================================
-    // TABS
-    // ============================================================
-    function switchTab(tabId, btn) {
-        document.querySelectorAll('.tab-content').forEach(function(el) {
-            el.classList.remove('active');
-        });
-        document.querySelectorAll('.tabs button').forEach(function(el) {
-            el.classList.remove('active');
-        });
-        document.getElementById(tabId).classList.add('active');
-        btn.classList.add('active');
-
-        if (tabId === 'tabIzin') {
-            loadIzin();
-        }
-    }
-
-    // ============================================================
-    // TAB 1: LOAD KARYAWAN
+    // LOAD SEMUA DATA (DIVISI & KARYAWAN)
     // ============================================================
     async function loadKaryawan() {
         try {
@@ -780,77 +435,265 @@
             });
             allKaryawan = await response.json();
 
+            // Dropdown Absensi
             var select = document.getElementById('pilihKaryawan');
             select.innerHTML = '<option value="">-- Pilih Karyawan --</option>';
             allKaryawan.forEach(function(k) {
                 select.innerHTML += '<option value="' + k.id + '" data-divisi="' + (k.divisi || '') + '" data-jam_masuk="' + (k.jam_masuk || '08:00') + '" data-jam_pulang="' + (k.jam_pulang || '17:00') + '">' + k.nama + ' (' + (k.divisi || '-') + ')</option>';
             });
 
-            // Untuk filter izin
+            // Dropdown Izin
             var selectIzin = document.getElementById('filterIzinKaryawan');
             selectIzin.innerHTML = '<option value="">Semua Karyawan</option>';
-            allKaryawan.forEach(function(k) {
-                selectIzin.innerHTML += '<option value="' + k.id + '">' + k.nama + '</option>';
-            });
+            allKaryawan.forEach(function(k) { selectIzin.innerHTML += '<option value="' + k.id + '">' + k.nama + '</option>'; });
 
-        } catch(e) {
-            console.error('Gagal load karyawan:', e);
-            showToast('Gagal memuat data karyawan', 'error');
-        }
+            // Dropdown Divisi (dari data karyawan)
+            var divisiSet = new Set();
+            allKaryawan.forEach(function(k) { if (k.divisi) divisiSet.add(k.divisi); });
+            divisiList = Array.from(divisiSet).sort();
+
+            var selectLibur = document.getElementById('pilihDivisiLibur');
+            selectLibur.innerHTML = '<option value="__semua">Semua Divisi</option>';
+            divisiList.forEach(function(d) { selectLibur.innerHTML += '<option value="' + d + '">' + d + '</option>'; });
+
+            var selectHariKerja = document.getElementById('pilihDivisiHariKerja');
+            selectHariKerja.innerHTML = '<option value="">-- Pilih Divisi --</option>';
+            divisiList.forEach(function(d) { selectHariKerja.innerHTML += '<option value="' + d + '">' + d + '</option>'; });
+
+        } catch(e) { console.error('Gagal load karyawan:', e); showToast('Gagal memuat data karyawan', 'error'); }
     }
 
     // ============================================================
-    // TAB 1: LOAD ABSENSI
+    // FUNGSI TAB 1: ATUR LIBUR (BY DIVISI)
+    // ============================================================
+    document.querySelectorAll('input[name="periode"]').forEach(function(radio) {
+        radio.addEventListener('change', function() {
+            document.querySelectorAll('.radio-group label').forEach(function(label) { label.classList.toggle('active', label.querySelector('input').checked); });
+            var val = document.querySelector('input[name="periode"]:checked').value;
+            document.getElementById('opsiTanggal').classList.toggle('hidden', val !== 'tanggal');
+            document.getElementById('opsiRentang').classList.toggle('hidden', val !== 'rentang');
+            document.getElementById('opsiBulan').classList.toggle('hidden', val !== 'bulan');
+        });
+    });
+
+    function populateTahun() {
+        var select = document.getElementById('inputTahun'); var currentYear = new Date().getFullYear();
+        for (var y = currentYear - 2; y <= currentYear + 1; y++) select.innerHTML += '<option value="' + y + '" ' + (y === currentYear ? 'selected' : '') + '>' + y + '</option>';
+    }
+    populateTahun();
+
+    async function loadLibur() {
+        var wrapper = document.getElementById('tableWrapperLibur'); wrapper.innerHTML = '<div class="loading-text"><i class="fas fa-spinner fa-pulse"></i> Memuat data...</div>';
+        var divisi = document.getElementById('pilihDivisiLibur').value;
+        try {
+            var query = SUPABASE_URL + '/rest/v1/hari_libur?select=*&order=tanggal.desc';
+            if (divisi !== '__semua') query += '&divisi=eq.' + encodeURIComponent(divisi);
+            var response = await fetch(query, { headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': 'Bearer ' + SUPABASE_ANON_KEY } });
+            var allLibur = await response.json();
+            document.getElementById('divisiLabelLibur').textContent = divisi === '__semua' ? '- Semua Divisi' : '- ' + divisi;
+
+            if (!allLibur || allLibur.length === 0) { wrapper.innerHTML = '<div class="empty-state"><span class="icon">📅</span><h3>Belum Ada Data</h3></div>'; return; }
+            var html = '<table><thead><tr><th>No</th><th>Tanggal</th><th>Divisi</th><th>Keterangan</th><th>Aksi</th></tr></thead><tbody>';
+            allLibur.forEach(function(item, idx) {
+                html += '<tr><td>' + (idx + 1) + '</td><td>' + formatTanggalDisplay(item.tanggal) + '</td><td><span class="badge-divisi">' + item.divisi + '</span></td><td>' + (item.keterangan || '-') + '</td><td><button class="btn-delete-small" onclick="hapusLibur(' + item.id + ')"><i class="fas fa-trash"></i> Hapus</button></td></tr>';
+            });
+            html += '</tbody></table>'; wrapper.innerHTML = html;
+        } catch(e) { wrapper.innerHTML = '<div class="empty-state">Gagal memuat data</div>'; }
+    }
+
+    async function tambahLibur() {
+        var divisi = document.getElementById('pilihDivisiLibur').value;
+        var periode = document.querySelector('input[name="periode"]:checked').value;
+        var keterangan = document.getElementById('inputKeterangan').value.trim() || 'Libur';
+        var tanggalList = [];
+
+        if (periode === 'tanggal') {
+            var tanggal = document.getElementById('inputTanggal').value;
+            if (!tanggal) { showToast('Pilih tanggal!', 'error'); return; }
+            tanggalList.push(tanggal);
+        } else if (periode === 'rentang') {
+            var mulai = document.getElementById('inputTanggalMulai').value; var selesai = document.getElementById('inputTanggalSelesai').value;
+            if (!mulai || !selesai) { showToast('Pilih rentang tanggal!', 'error'); return; }
+            if (mulai > selesai) { showToast('Tanggal mulai harus sebelum selesai!', 'error'); return; }
+            var d = new Date(mulai + 'T00:00:00'); var end = new Date(selesai + 'T00:00:00');
+            while (d <= end) { tanggalList.push(d.toISOString().split('T')[0]); d.setDate(d.getDate() + 1); }
+        } else {
+            var bulan = parseInt(document.getElementById('inputBulan').value); var tahun = parseInt(document.getElementById('inputTahun').value);
+            var days = getDaysInMonth(bulan, tahun);
+            for (var i = 1; i <= days; i++) tanggalList.push(tahun + '-' + padZero(bulan) + '-' + padZero(i));
+        }
+
+        var divisiTarget = divisi === '__semua' ? divisiList : [divisi];
+        if (divisiTarget.length === 0) { showToast('Tidak ada divisi!', 'error'); return; }
+
+        var dataToInsert = [];
+        for (var d = 0; d < divisiTarget.length; d++) for (var t = 0; t < tanggalList.length; t++) dataToInsert.push({ tanggal: tanggalList[t], divisi: divisiTarget[d], keterangan: keterangan });
+
+        try {
+            var response = await fetch(SUPABASE_URL + '/rest/v1/hari_libur', {
+                method: 'POST', headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': 'Bearer ' + SUPABASE_ANON_KEY, 'Content-Type': 'application/json', 'Prefer': 'resolution=merge-duplicates' },
+                body: JSON.stringify(dataToInsert)
+            });
+            if (response.ok) { showToast('✅ ' + dataToInsert.length + ' data libur ditambahkan!', 'success'); loadLibur(); }
+            else { showToast('❌ Gagal!', 'error'); }
+        } catch(e) { showToast('❌ Gagal koneksi!', 'error'); }
+    }
+
+    async function hapusLibur(id) {
+        if (!confirm('Hapus libur ini?')) return;
+        try {
+            var response = await fetch(SUPABASE_URL + '/rest/v1/hari_libur?id=eq.' + id, { method: 'DELETE', headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': 'Bearer ' + SUPABASE_ANON_KEY } });
+            if (response.ok) { showToast('🗑️ Berhasil dihapus!', 'success'); loadLibur(); }
+        } catch(e) { showToast('❌ Gagal!', 'error'); }
+    }
+
+    async function hapusSemuaLibur() {
+        var divisi = document.getElementById('pilihDivisiLibur').value;
+        if (!confirm('Hapus semua libur?')) return;
+        try {
+            var query = SUPABASE_URL + '/rest/v1/hari_libur'; if (divisi !== '__semua') query += '?divisi=eq.' + encodeURIComponent(divisi);
+            var response = await fetch(query, { method: 'DELETE', headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': 'Bearer ' + SUPABASE_ANON_KEY } });
+            if (response.ok) { showToast('🗑️ Berhasil dihapus semua!', 'success'); loadLibur(); }
+        } catch(e) { showToast('❌ Gagal!', 'error'); }
+    }
+
+    // ============================================================
+    // FUNGSI TAB 1: ATUR HARI KERJA
+    // ============================================================
+    async function loadHariKerjaDivisi() {
+        var divisi = document.getElementById('pilihDivisiHariKerja').value;
+        if (!divisi) { document.getElementById('hariKerjaContainer').innerHTML = '<div class="empty-state"><span class="icon">🕐</span><p>Pilih divisi di atas</p></div>'; return; }
+
+        try {
+            var response = await fetch(SUPABASE_URL + '/rest/v1/karyawan?select=hari_masuk&divisi=eq.' + encodeURIComponent(divisi) + '&limit=1', {
+                headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': 'Bearer ' + SUPABASE_ANON_KEY }
+            });
+            var data = await response.json();
+            var hariArray = [];
+            if (data && data.length > 0 && data[0].hari_masuk) {
+                try { hariArray = typeof data[0].hari_masuk === 'string' ? JSON.parse(data[0].hari_masuk) : data[0].hari_masuk; } catch(e) { hariArray = []; }
+            }
+            if (!Array.isArray(hariArray) || hariArray.length === 0) hariArray = ['senin', 'selasa', 'rabu', 'kamis', 'jumat', 'sabtu', 'minggu'];
+            renderHariKerjaForm(divisi, hariArray);
+        } catch(e) { showToast('Gagal memuat!', 'error'); }
+    }
+
+    function renderHariKerjaForm(divisi, hariArray) {
+        var container = document.getElementById('hariKerjaContainer');
+        var html = '<div class="form-group"><label>📅 Hari Kerja untuk: <strong>' + divisi + '</strong></label><div class="hari-grid" id="hariKerjaGrid">';
+        hariList.forEach(function(h) {
+            var isChecked = hariArray.indexOf(h) !== -1;
+            html += '<label class="' + (isChecked ? 'active' : '') + '" data-hari="' + h + '"><input type="checkbox" ' + (isChecked ? 'checked' : '') + '><span class="icon">' + hariIcon[h] + '</span><span class="text">' + hariLabel[h] + '</span></label>';
+        });
+        html += '</div></div>';
+        html += '<div class="btn-actions"><button class="btn-primary" onclick="simpanHariKerja()"><i class="fas fa-save"></i> Simpan</button><button class="btn-warning" onclick="resetHariKerja()"><i class="fas fa-undo"></i> Reset</button></div>';
+        container.innerHTML = html;
+        document.querySelectorAll('#hariKerjaGrid label').forEach(function(label) {
+            label.addEventListener('click', function() {
+                var checkbox = this.querySelector('input[type="checkbox"]'); checkbox.checked = !checkbox.checked; this.classList.toggle('active', checkbox.checked);
+            });
+        });
+    }
+
+    async function simpanHariKerja() {
+        var divisi = document.getElementById('pilihDivisiHariKerja').value;
+        if (!divisi) { showToast('Pilih divisi!', 'warning'); return; }
+        var labels = document.querySelectorAll('#hariKerjaGrid label');
+        var hariArray = [];
+        labels.forEach(function(label) { var checkbox = label.querySelector('input[type="checkbox"]'); if (checkbox && checkbox.checked) hariArray.push(label.dataset.hari); });
+        if (hariArray.length === 0) { showToast('Minimal 1 hari!', 'error'); return; }
+
+        try {
+            var response = await fetch(SUPABASE_URL + '/rest/v1/karyawan?divisi=eq.' + encodeURIComponent(divisi), {
+                method: 'PATCH', headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': 'Bearer ' + SUPABASE_ANON_KEY, 'Content-Type': 'application/json' },
+                body: JSON.stringify({ hari_masuk: hariArray })
+            });
+            if (response.ok) { showToast('✅ Tersimpan!', 'success'); loadHariKerjaAll(); loadHariKerjaDivisi(); }
+        } catch(e) { showToast('❌ Gagal!', 'error'); }
+    }
+
+    async function resetHariKerja() {
+        var divisi = document.getElementById('pilihDivisiHariKerja').value;
+        if (!divisi) { showToast('Pilih divisi!', 'warning'); return; }
+        if (!confirm('Reset?')) return;
+        var defaultHari = ['senin', 'selasa', 'rabu', 'kamis', 'jumat', 'sabtu', 'minggu'];
+        try {
+            var response = await fetch(SUPABASE_URL + '/rest/v1/karyawan?divisi=eq.' + encodeURIComponent(divisi), {
+                method: 'PATCH', headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': 'Bearer ' + SUPABASE_ANON_KEY, 'Content-Type': 'application/json' },
+                body: JSON.stringify({ hari_masuk: defaultHari })
+            });
+            if (response.ok) { showToast('🔄 Direset!', 'success'); loadHariKerjaAll(); loadHariKerjaDivisi(); }
+        } catch(e) { showToast('❌ Gagal!', 'error'); }
+    }
+
+    async function loadHariKerjaAll() {
+        var wrapper = document.getElementById('tableWrapperHariKerja');
+        wrapper.innerHTML = '<div class="loading-text"><i class="fas fa-spinner fa-pulse"></i> Memuat data...</div>';
+        try {
+            var response = await fetch(SUPABASE_URL + '/rest/v1/karyawan?select=divisi,hari_masuk', { headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': 'Bearer ' + SUPABASE_ANON_KEY } });
+            var data = await response.json();
+            if (!Array.isArray(data) || data.length === 0) { wrapper.innerHTML = '<div class="empty-state">Belum ada data</div>'; return; }
+
+            var divisiMap = {};
+            data.forEach(function(k) {
+                if (!k.divisi) return;
+                if (!divisiMap[k.divisi]) divisiMap[k.divisi] = [];
+                var hariArray = [];
+                try { hariArray = typeof k.hari_masuk === 'string' ? JSON.parse(k.hari_masuk) : (k.hari_masuk || []); } catch(e) { hariArray = []; }
+                divisiMap[k.divisi].push(hariArray);
+            });
+
+            var html = '<table><thead><tr><th>No</th><th>Divisi</th><th>Hari Kerja</th><th>Jumlah</th></tr></thead><tbody>';
+            var keys = Object.keys(divisiMap).sort();
+            keys.forEach(function(divisi, idx) {
+                var hariCount = {};
+                divisiMap[divisi].forEach(function(arr) { arr.forEach(function(h) { hariCount[h] = (hariCount[h] || 0) + 1; }); });
+                var totalKaryawan = divisiMap[divisi].length;
+                var hariKerja = [];
+                hariList.forEach(function(h) {
+                    var count = hariCount[h] || 0;
+                    if (Math.round((count / totalKaryawan) * 100) > 50) hariKerja.push(h);
+                });
+                if (hariKerja.length === 0) hariKerja = ['senin', 'selasa', 'rabu', 'kamis', 'jumat', 'sabtu', 'minggu'];
+                var hariHtml = '';
+                hariList.forEach(function(h) {
+                    var active = hariKerja.indexOf(h) !== -1;
+                    hariHtml += '<span class="hari-badge' + (active ? '' : ' off') + '">' + hariLabel[h] + '</span>';
+                });
+                html += '<tr><td>' + (idx + 1) + '</td><td><span class="badge-divisi">' + divisi + '</span></td><td style="font-size:11px;">' + hariHtml + '</td><td>' + totalKaryawan + ' karyawan</td></tr>';
+            });
+            html += '</tbody></table>';
+            wrapper.innerHTML = html;
+        } catch(e) { wrapper.innerHTML = '<div class="empty-state">Gagal memuat</div>'; }
+    }
+
+    // ============================================================
+    // FUNGSI TAB 2: EDIT ABSENSI (BY NAME)
     // ============================================================
     async function loadAbsensi() {
         var karyawanId = document.getElementById('pilihKaryawan').value;
         var tanggal = document.getElementById('pilihTanggal').value;
-
-        if (!karyawanId) {
-            showToast('Pilih karyawan dulu!', 'warning');
-            return;
-        }
-        if (!tanggal) {
-            showToast('Pilih tanggal!', 'warning');
-            return;
-        }
+        if (!karyawanId) { showToast('Pilih karyawan!', 'warning'); return; }
+        if (!tanggal) { showToast('Pilih tanggal!', 'warning'); return; }
 
         currentKaryawan = allKaryawan.find(function(k) { return k.id === karyawanId; });
-        if (!currentKaryawan) {
-            showToast('Data karyawan tidak ditemukan', 'error');
-            return;
-        }
+        if (!currentKaryawan) { showToast('Karyawan tidak ditemukan!', 'error'); return; }
 
         var container = document.getElementById('formContainer');
-        container.innerHTML = '<div class="loading-text"><i class="fas fa-spinner fa-pulse"></i> Memuat data...</div>';
+        container.innerHTML = '<div class="loading-text"><i class="fas fa-spinner fa-pulse"></i> Memuat...</div>';
 
         try {
-            var response = await fetch(
-                SUPABASE_URL + '/rest/v1/absensi?select=*&karyawan_id=eq.' + karyawanId + '&tanggal=eq.' + tanggal,
-                {
-                    headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': 'Bearer ' + SUPABASE_ANON_KEY }
-                }
-            );
+            var response = await fetch(SUPABASE_URL + '/rest/v1/absensi?select=*&karyawan_id=eq.' + karyawanId + '&tanggal=eq.' + tanggal, { headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': 'Bearer ' + SUPABASE_ANON_KEY } });
             var data = await response.json();
             currentData = data[0] || null;
-
             renderForm();
-
-        } catch(e) {
-            console.error('Error load absensi:', e);
-            container.innerHTML = '<div class="empty-state"><span class="icon">❌</span><h3>Gagal Memuat Data</h3><p>' + e.message + '</p></div>';
-            showToast('Gagal memuat data!', 'error');
-        }
+        } catch(e) { container.innerHTML = '<div class="empty-state">Gagal memuat</div>'; showToast('Gagal memuat!', 'error'); }
     }
 
-    // ============================================================
-    // TAB 1: RENDER FORM ABSENSI
-    // ============================================================
     function renderForm() {
         var container = document.getElementById('formContainer');
         var k = currentKaryawan;
         var d = currentData;
-
         var tgl = document.getElementById('pilihTanggal').value;
         var tglDisplay = formatTanggalDisplay(tgl);
 
@@ -859,84 +702,36 @@
         var currentJamPulang = '';
 
         if (d) {
-            if (d.status === 'izin') {
-                currentStatus = 'izin';
-            } else if (d.jam_masuk && d.jam_pulang) {
-                currentStatus = 'pulang';
-            } else if (d.jam_masuk) {
-                if (d.jam_masuk <= (k.jam_masuk || '08:00')) {
-                    currentStatus = 'hadir';
-                } else {
-                    currentStatus = 'telat';
-                }
-            } else {
-                currentStatus = 'alfa';
-            }
+            if (d.status === 'izin') currentStatus = 'izin';
+            else if (d.jam_masuk && d.jam_pulang) currentStatus = 'pulang';
+            else if (d.jam_masuk) currentStatus = d.jam_masuk <= (k.jam_masuk || '08:00') ? 'hadir' : 'telat';
+            else currentStatus = 'alfa';
             currentJamMasuk = d.jam_masuk || '';
             currentJamPulang = d.jam_pulang || '';
-        } else {
-            currentStatus = 'alfa';
-        }
+        } else currentStatus = 'alfa';
 
         var statusMap = {
-            hadir: { label: '🟢 Tepat Waktu', cls: 'hadir' },
-            telat: { label: '🟡 Terlambat', cls: 'telat' },
-            alfa: { label: '🔴 Alfa', cls: 'alfa' },
-            izin: { label: '🔵 Izin', cls: 'izin' },
-            libur: { label: '🟣 Libur', cls: 'libur' },
-            pulang: { label: '✅ Pulang', cls: 'hadir' },
-            kosong: { label: '⚪ Belum Ada Data', cls: 'kosong' }
+            hadir: { label: '🟢 Tepat Waktu', cls: 'hadir' }, telat: { label: '🟡 Terlambat', cls: 'telat' },
+            alfa: { label: '🔴 Alfa', cls: 'alfa' }, izin: { label: '🔵 Izin', cls: 'izin' },
+            pulang: { label: '✅ Pulang', cls: 'hadir' }, libur: { label: '🟣 Libur', cls: 'libur' }
         };
-
         var info = statusMap[currentStatus] || statusMap.kosong;
 
-        var html = '<div class="form-card">';
-        html += '<div class="info-bar">';
-        html += '<div><span class="nama">' + k.nama + '</span></div>';
-        html += '<div><span class="tanggal">📅 ' + tglDisplay + '</span></div>';
-        html += '<div><span class="status-badge ' + info.cls + '">' + info.label + '</span></div>';
-        html += '</div>';
-
-        html += '<div class="form-group">';
-        html += '<label>Status Absensi</label>';
-        html += '<select id="editStatus">';
-        var statusOptions = [
-            { value: 'hadir', label: '🟢 Tepat Waktu (Masuk ≤ target)' },
-            { value: 'telat', label: '🟡 Terlambat (Masuk > target)' },
-            { value: 'alfa', label: '🔴 Alfa (Tidak masuk)' },
-            { value: 'izin', label: '🔵 Izin' },
-            { value: 'pulang', label: '✅ Pulang (Masuk + Pulang)' },
-            { value: 'libur', label: '🟣 Libur' }
-        ];
-        statusOptions.forEach(function(opt) {
-            var selected = (opt.value === currentStatus || (currentStatus === 'kosong' && opt.value === 'alfa')) ? 'selected' : '';
-            html += '<option value="' + opt.value + '" ' + selected + '>' + opt.label + '</option>';
-        });
-        html += '</select>';
-        html += '<div class="form-hint">Pilih status yang sesuai untuk hari ini</div>';
-        html += '</div>';
-
-        html += '<div class="form-row">';
-        html += '<div class="form-group"><label>Jam Masuk</label><input type="time" id="editJamMasuk" value="' + currentJamMasuk + '" placeholder="--:--"><div class="form-hint">Target: ' + (k.jam_masuk || '08:00') + '</div></div>';
-        html += '<div class="form-group"><label>Jam Pulang</label><input type="time" id="editJamPulang" value="' + currentJamPulang + '" placeholder="--:--"><div class="form-hint">Target: ' + (k.jam_pulang || '17:00') + '</div></div>';
-        html += '</div>';
-
-        html += '<div class="form-actions">';
-        html += '<button class="btn-save" onclick="simpanAbsensi()"><i class="fas fa-save"></i> Simpan</button>';
-        if (d) {
-            html += '<button class="btn-delete" onclick="hapusAbsensi()"><i class="fas fa-trash"></i> Hapus</button>';
-        }
-        html += '<button class="btn-reset" onclick="resetForm()"><i class="fas fa-undo"></i> Reset</button>';
-        html += '<button class="btn-cancel" onclick="clearForm()"><i class="fas fa-times"></i> Batal</button>';
-        html += '</div>';
-
-        html += '</div>';
+        var html = '<div class="form-card"><div class="info-bar"><div><span class="nama" style="font-weight:700;font-size:18px;">' + k.nama + '</span></div><div><span class="tanggal">📅 ' + tglDisplay + '</span></div><div><span class="status-badge ' + info.cls + '">' + info.label + '</span></div></div>';
+        html += '<div class="form-group"><label>Status Absensi</label><select id="editStatus">';
+        html += '<option value="hadir"' + (currentStatus === 'hadir' ? ' selected' : '') + '>🟢 Tepat Waktu</option>';
+        html += '<option value="telat"' + (currentStatus === 'telat' ? ' selected' : '') + '>🟡 Terlambat</option>';
+        html += '<option value="alfa"' + (currentStatus === 'alfa' ? ' selected' : '') + '>🔴 Alfa</option>';
+        html += '<option value="izin"' + (currentStatus === 'izin' ? ' selected' : '') + '>🔵 Izin</option>';
+        html += '<option value="libur"' + (currentStatus === 'libur' ? ' selected' : '') + '>🟣 Libur</option>';
+        html += '</select></div>';
+        html += '<div class="form-row"><div class="form-group"><label>Jam Masuk</label><input type="time" id="editJamMasuk" value="' + currentJamMasuk + '"></div><div class="form-group"><label>Jam Pulang</label><input type="time" id="editJamPulang" value="' + currentJamPulang + '"></div></div>';
+        html += '<div class="form-actions"><button class="btn-save" onclick="simpanAbsensi()"><i class="fas fa-save"></i> Simpan</button>';
+        if (d) html += '<button class="btn-delete" onclick="hapusAbsensi()"><i class="fas fa-trash"></i> Hapus</button>';
+        html += '<button class="btn-cancel" onclick="clearForm()"><i class="fas fa-times"></i> Batal</button></div></div>';
         container.innerHTML = html;
     }
 
-    // ============================================================
-    // TAB 1: SIMPAN ABSENSI
-    // ============================================================
     async function simpanAbsensi() {
         var karyawanId = document.getElementById('pilihKaryawan').value;
         var tanggal = document.getElementById('pilihTanggal').value;
@@ -944,303 +739,100 @@
         var jamMasuk = document.getElementById('editJamMasuk').value || null;
         var jamPulang = document.getElementById('editJamPulang').value || null;
 
-        if (!karyawanId || !tanggal) {
-            showToast('Data tidak lengkap!', 'error');
-            return;
-        }
+        if (status === 'hadir' || status === 'telat') { if (!jamMasuk) { showToast('Jam masuk wajib diisi!', 'error'); return; } }
+        if (status === 'alfa' || status === 'izin' || status === 'libur') { jamMasuk = null; jamPulang = null; }
 
-        if (status === 'hadir' || status === 'telat') {
-            if (!jamMasuk) { showToast('Jam masuk harus diisi!', 'error'); return; }
-        }
-        if (status === 'pulang') {
-            if (!jamMasuk || !jamPulang) { showToast('Jam masuk dan pulang harus diisi!', 'error'); return; }
-        }
-        if (status === 'alfa' || status === 'izin' || status === 'libur') {
-            jamMasuk = null;
-            jamPulang = null;
-        }
-
-        var payload = {
-            karyawan_id: karyawanId,
-            tanggal: tanggal,
-            jam_masuk: jamMasuk,
-            jam_pulang: jamPulang,
-            status: status === 'pulang' ? 'pulang' : (status === 'izin' ? 'izin' : 'hadir')
-        };
-
+        var payload = { karyawan_id: karyawanId, tanggal: tanggal, jam_masuk: jamMasuk, jam_pulang: jamPulang, status: status };
         try {
-            showToast('🔄 Menyimpan...', 'info');
-
-            var method = 'POST';
-            var url = SUPABASE_URL + '/rest/v1/absensi';
-            var body = payload;
-
-            if (currentData) {
-                method = 'PATCH';
-                url = SUPABASE_URL + '/rest/v1/absensi?id=eq.' + currentData.id;
-                body = {
-                    jam_masuk: jamMasuk,
-                    jam_pulang: jamPulang,
-                    status: status === 'pulang' ? 'pulang' : (status === 'izin' ? 'izin' : 'hadir')
-                };
-            }
-
-            var response = await fetch(url, {
-                method: method,
-                headers: {
-                    'apikey': SUPABASE_ANON_KEY,
-                    'Authorization': 'Bearer ' + SUPABASE_ANON_KEY,
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(body)
-            });
-
-            if (response.ok) {
-                showToast('✅ Data berhasil disimpan!', 'success');
-                loadAbsensi();
-            } else {
-                var text = await response.text();
-                showToast('❌ Gagal: ' + text, 'error');
-            }
-        } catch(e) {
-            console.error('Save error:', e);
-            showToast('❌ Gagal koneksi ke server!', 'error');
-        }
+            var method = 'POST'; var url = SUPABASE_URL + '/rest/v1/absensi';
+            if (currentData) { method = 'PATCH'; url = SUPABASE_URL + '/rest/v1/absensi?id=eq.' + currentData.id; }
+            var response = await fetch(url, { method: method, headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': 'Bearer ' + SUPABASE_ANON_KEY, 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+            if (response.ok) { showToast('✅ Disimpan!', 'success'); loadAbsensi(); }
+            else { showToast('❌ Gagal!', 'error'); }
+        } catch(e) { showToast('❌ Koneksi gagal!', 'error'); }
     }
 
-    // ============================================================
-    // TAB 1: HAPUS ABSENSI
-    // ============================================================
     async function hapusAbsensi() {
-        if (!currentData) { showToast('Tidak ada data untuk dihapus', 'warning'); return; }
-        if (!confirm('Yakin ingin menghapus data absensi ini?')) return;
-
+        if (!currentData) return;
+        if (!confirm('Hapus?')) return;
         try {
-            var response = await fetch(
-                SUPABASE_URL + '/rest/v1/absensi?id=eq.' + currentData.id,
-                {
-                    method: 'DELETE',
-                    headers: {
-                        'apikey': SUPABASE_ANON_KEY,
-                        'Authorization': 'Bearer ' + SUPABASE_ANON_KEY
-                    }
-                }
-            );
-            if (response.ok) {
-                showToast('🗑️ Data berhasil dihapus!', 'success');
-                currentData = null;
-                loadAbsensi();
-            } else {
-                var text = await response.text();
-                showToast('❌ Gagal: ' + text, 'error');
-            }
-        } catch(e) {
-            showToast('❌ Gagal koneksi!', 'error');
-        }
-    }
-
-    function resetForm() {
-        if (currentData) {
-            document.getElementById('editStatus').value = currentStatusFromData(currentData);
-            document.getElementById('editJamMasuk').value = currentData.jam_masuk || '';
-            document.getElementById('editJamPulang').value = currentData.jam_pulang || '';
-        } else {
-            document.getElementById('editStatus').value = 'alfa';
-            document.getElementById('editJamMasuk').value = '';
-            document.getElementById('editJamPulang').value = '';
-        }
-        showToast('🔄 Form direset', 'info');
-    }
-
-    function currentStatusFromData(d) {
-        if (d.status === 'izin') return 'izin';
-        if (d.jam_masuk && d.jam_pulang) return 'pulang';
-        if (d.jam_masuk) {
-            var target = currentKaryawan?.jam_masuk || '08:00';
-            return d.jam_masuk <= target ? 'hadir' : 'telat';
-        }
-        return 'alfa';
+            var response = await fetch(SUPABASE_URL + '/rest/v1/absensi?id=eq.' + currentData.id, { method: 'DELETE', headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': 'Bearer ' + SUPABASE_ANON_KEY } });
+            if (response.ok) { showToast('🗑️ Dihapus!', 'success'); currentData = null; loadAbsensi(); }
+        } catch(e) { showToast('❌ Gagal!', 'error'); }
     }
 
     function clearForm() {
         var container = document.getElementById('formContainer');
-        container.innerHTML = '<div class="empty-state"><span class="icon">📝</span><h3>Pilih Karyawan & Tanggal</h3><p>Pilih karyawan dan tanggal di atas untuk mulai edit absensi</p></div>';
+        container.innerHTML = '<div class="empty-state"><span class="icon">✏️</span><h3>Pilih Karyawan & Tanggal</h3></div>';
         currentData = null;
         currentKaryawan = null;
     }
 
     // ============================================================
-    // TAB 2: LOAD IZIN
+    // FUNGSI TAB 3: MANAJEMEN IZIN
     // ============================================================
     async function loadIzin() {
         var karyawanFilter = document.getElementById('filterIzinKaryawan').value;
         var statusFilter = document.getElementById('filterIzinStatus').value;
-
         var wrapperPending = document.getElementById('pendingIzinWrapper');
         var wrapperRiwayat = document.getElementById('riwayatIzinWrapper');
-
-        wrapperPending.innerHTML = '<div class="loading-text"><i class="fas fa-spinner fa-pulse"></i> Memuat data...</div>';
-        wrapperRiwayat.innerHTML = '<div class="loading-text"><i class="fas fa-spinner fa-pulse"></i> Memuat data...</div>';
+        wrapperPending.innerHTML = '<div class="loading-text">Memuat...</div>';
+        wrapperRiwayat.innerHTML = '<div class="loading-text">Memuat...</div>';
 
         try {
             var query = SUPABASE_URL + '/rest/v1/izin?select=*,karyawan_id(id,nama,divisi)&order=created_at.desc';
-            if (karyawanFilter) {
-                query += '&karyawan_id=eq.' + encodeURIComponent(karyawanFilter);
-            }
-
-            var response = await fetch(query, {
-                headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': 'Bearer ' + SUPABASE_ANON_KEY }
-            });
+            if (karyawanFilter) query += '&karyawan_id=eq.' + encodeURIComponent(karyawanFilter);
+            var response = await fetch(query, { headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': 'Bearer ' + SUPABASE_ANON_KEY } });
             allIzin = await response.json();
 
-            // Filter status
-            if (statusFilter) {
-                allIzin = allIzin.filter(function(item) { return item.status === statusFilter; });
-            }
+            if (statusFilter) allIzin = allIzin.filter(function(item) { return item.status === statusFilter; });
 
-            // Pending
             var pending = allIzin.filter(function(item) { return item.status === 'pending'; });
             document.getElementById('pendingCount').textContent = '(' + pending.length + ')';
             renderPendingIzin(pending);
 
-            // Riwayat (disetujui + ditolak)
             var riwayat = allIzin.filter(function(item) { return item.status === 'disetujui' || item.status === 'ditolak'; });
             renderRiwayatIzin(riwayat);
-
-        } catch(e) {
-            console.error('Error load izin:', e);
-            wrapperPending.innerHTML = '<div class="empty-state"><span class="icon">❌</span><h3>Gagal Memuat Data</h3><p>' + e.message + '</p></div>';
-            wrapperRiwayat.innerHTML = '<div class="empty-state"><span class="icon">❌</span><h3>Gagal Memuat Data</h3><p>' + e.message + '</p></div>';
-            showToast('Gagal memuat data izin!', 'error');
-        }
+        } catch(e) { showToast('Gagal memuat izin!', 'error'); }
     }
 
-    // ============================================================
-    // TAB 2: RENDER PENDING IZIN
-    // ============================================================
     function renderPendingIzin(data) {
         var wrapper = document.getElementById('pendingIzinWrapper');
-
-        if (!data || data.length === 0) {
-            wrapper.innerHTML = '<div class="empty-state"><span class="icon">✅</span><h3>Tidak Ada Izin Pending</h3><p>Semua izin sudah diproses</p></div>';
-            return;
-        }
-
-        var html = '<table><thead><tr>';
-        html += '<th>No</th><th>Karyawan</th><th>Divisi</th><th>Tanggal</th><th>Alasan</th><th>Aksi</th>';
-        html += '</tr></thead><tbody>';
-
+        if (!data || data.length === 0) { wrapper.innerHTML = '<div class="empty-state"><span class="icon">✅</span><h3>Tidak Ada Pending</h3></div>'; return; }
+        var html = '<table><thead><tr><th>No</th><th>Karyawan</th><th>Divisi</th><th>Tanggal</th><th>Alasan</th><th>Aksi</th></tr></thead><tbody>';
         data.forEach(function(item, idx) {
-            var nama = item.karyawan_id?.nama || item.karyawan_id || '-';
-            var divisi = item.karyawan_id?.divisi || '-';
-            var tglDisplay = item.tanggal ? formatTanggalDisplay(item.tanggal) : '-';
-
-            html += '<tr>';
-            html += '<td>' + (idx + 1) + '</td>';
-            html += '<td><strong>' + nama + '</strong></td>';
-            html += '<td>' + divisi + '</td>';
-            html += '<td>' + tglDisplay + '</td>';
-            html += '<td>' + (item.alasan || '-') + '</td>';
-            html += '<td>';
-            html += '<button class="btn-setuju" onclick="setujuiIzin(' + item.id + ')"><i class="fas fa-check"></i> Setuju</button> ';
-            html += '<button class="btn-tolak" onclick="openModalTolak(' + item.id + ', \'' + nama + '\', \'' + item.tanggal + '\', \'' + (item.alasan || '') + '\')"><i class="fas fa-times"></i> Tolak</button>';
-            html += '</td>';
-            html += '</tr>';
+            var nama = item.karyawan_id?.nama || '-'; var divisi = item.karyawan_id?.divisi || '-'; var tgl = formatTanggalDisplay(item.tanggal);
+            html += '<tr><td>' + (idx + 1) + '</td><td><strong>' + nama + '</strong></td><td>' + divisi + '</td><td>' + tgl + '</td><td>' + (item.alasan || '-') + '</td><td><button class="btn-setuju" onclick="setujuiIzin(' + item.id + ')">Setuju</button> <button class="btn-tolak" onclick="openModalTolak(' + item.id + ', \'' + nama + '\', \'' + item.tanggal + '\', \'' + (item.alasan || '') + '\')">Tolak</button></td></tr>';
         });
-
-        html += '</tbody></table>';
-        wrapper.innerHTML = html;
+        html += '</tbody></table>'; wrapper.innerHTML = html;
     }
 
-    // ============================================================
-    // TAB 2: RENDER RIWAYAT IZIN
-    // ============================================================
     function renderRiwayatIzin(data) {
         var wrapper = document.getElementById('riwayatIzinWrapper');
-
-        if (!data || data.length === 0) {
-            wrapper.innerHTML = '<div class="empty-state"><span class="icon">📋</span><h3>Belum Ada Riwayat</h3><p>Belum ada izin yang diproses</p></div>';
-            return;
-        }
-
-        var html = '<table><thead><tr>';
-        html += '<th>No</th><th>Karyawan</th><th>Divisi</th><th>Tanggal</th><th>Alasan</th><th>Status</th><th>Keterangan</th>';
-        html += '</tr></thead><tbody>';
-
+        if (!data || data.length === 0) { wrapper.innerHTML = '<div class="empty-state"><span class="icon">📋</span><h3>Belum Ada Riwayat</h3></div>'; return; }
+        var html = '<table><thead><tr><th>No</th><th>Karyawan</th><th>Divisi</th><th>Tanggal</th><th>Alasan</th><th>Status</th><th>Keterangan</th></tr></thead><tbody>';
         data.forEach(function(item, idx) {
-            var nama = item.karyawan_id?.nama || item.karyawan_id || '-';
-            var divisi = item.karyawan_id?.divisi || '-';
-            var tglDisplay = item.tanggal ? formatTanggalDisplay(item.tanggal) : '-';
-
-            var statusClass = item.status;
-            var statusLabel = item.status === 'disetujui' ? '✅ Disetujui' : '❌ Ditolak';
-            var keterangan = item.status === 'ditolak' ? (item.alasan_tolak || '-') : '-';
-
-            html += '<tr>';
-            html += '<td>' + (idx + 1) + '</td>';
-            html += '<td><strong>' + nama + '</strong></td>';
-            html += '<td>' + divisi + '</td>';
-            html += '<td>' + tglDisplay + '</td>';
-            html += '<td>' + (item.alasan || '-') + '</td>';
-            html += '<td><span class="status-badge ' + statusClass + '">' + statusLabel + '</span></td>';
-            html += '<td style="font-size:12px;color:#94a3b8;">' + keterangan + '</td>';
-            html += '</tr>';
+            var nama = item.karyawan_id?.nama || '-'; var divisi = item.karyawan_id?.divisi || '-'; var tgl = formatTanggalDisplay(item.tanggal);
+            var statusClass = item.status; var statusLabel = item.status === 'disetujui' ? '✅ Disetujui' : '❌ Ditolak';
+            html += '<tr><td>' + (idx + 1) + '</td><td><strong>' + nama + '</strong></td><td>' + divisi + '</td><td>' + tgl + '</td><td>' + (item.alasan || '-') + '</td><td><span class="status-badge ' + statusClass + '">' + statusLabel + '</span></td><td>' + (item.alasan_tolak || '-') + '</td></tr>';
         });
-
-        html += '</tbody></table>';
-        wrapper.innerHTML = html;
+        html += '</tbody></table>'; wrapper.innerHTML = html;
     }
 
-    // ============================================================
-    // TAB 2: SETUJUI IZIN
-    // ============================================================
     async function setujuiIzin(id) {
-        if (!confirm('Setujui izin ini?')) return;
-
+        if (!confirm('Setujui izin?')) return;
         try {
-            var response = await fetch(
-                SUPABASE_URL + '/rest/v1/izin?id=eq.' + id,
-                {
-                    method: 'PATCH',
-                    headers: {
-                        'apikey': SUPABASE_ANON_KEY,
-                        'Authorization': 'Bearer ' + SUPABASE_ANON_KEY,
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        status: 'disetujui',
-                        updated_at: new Date().toISOString()
-                    })
-                }
-            );
-
+            var response = await fetch(SUPABASE_URL + '/rest/v1/izin?id=eq.' + id, { method: 'PATCH', headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': 'Bearer ' + SUPABASE_ANON_KEY, 'Content-Type': 'application/json' }, body: JSON.stringify({ status: 'disetujui', updated_at: new Date().toISOString() }) });
             if (response.ok) {
-                showToast('✅ Izin berhasil disetujui!', 'success');
-                
-                // Ambil data izin untuk kirim notifikasi
+                showToast('✅ Disetujui!', 'success');
                 var izinData = allIzin.find(function(item) { return item.id === id; });
-                if (izinData) {
-                    var nama = izinData.karyawan_id?.nama || 'Karyawan';
-                    await sendTelegram('📢 <b>IZIN DISETUJUI</b>\n👤 ' + nama + '\n📅 ' + (izinData.tanggal || '-') + '\n📝 ' + (izinData.alasan || '-') + '\n✅ Status: DISETUJUI');
-                }
-                
+                if (izinData) { var nama = izinData.karyawan_id?.nama || 'Karyawan'; await sendTelegram('📢 <b>IZIN DISETUJUI</b>\n👤 ' + nama + '\n📅 ' + izinData.tanggal + '\n✅ Status: DISETUJUI'); }
                 loadIzin();
-            } else {
-                var text = await response.text();
-                showToast('❌ Gagal: ' + text, 'error');
             }
-        } catch(e) {
-            showToast('❌ Gagal koneksi!', 'error');
-        }
+        } catch(e) { showToast('❌ Gagal!', 'error'); }
     }
-
-    // ============================================================
-    // TAB 2: MODAL TOLAK IZIN
-    // ============================================================
-    var tolakIzinId = null;
 
     function openModalTolak(id, nama, tanggal, alasan) {
-        tolakIzinId = id;
         document.getElementById('tolakIzinId').value = id;
         document.getElementById('tolakNama').value = nama;
         document.getElementById('tolakTanggal').value = formatTanggalDisplay(tanggal);
@@ -1248,80 +840,28 @@
         document.getElementById('tolakAlasanPenolakan').value = '';
         document.getElementById('modalTolakIzin').classList.add('active');
     }
-
-    function closeModalTolak() {
-        document.getElementById('modalTolakIzin').classList.remove('active');
-        tolakIzinId = null;
-    }
-
+    function closeModalTolak() { document.getElementById('modalTolakIzin').classList.remove('active'); }
     async function confirmTolakIzin() {
         var id = document.getElementById('tolakIzinId').value;
-        var alasanPenolakan = document.getElementById('tolakAlasanPenolakan').value.trim();
-
-        if (!alasanPenolakan) {
-            showToast('Masukkan alasan penolakan!', 'error');
-            return;
-        }
-
+        var alasan = document.getElementById('tolakAlasanPenolakan').value.trim();
+        if (!alasan) { showToast('Masukkan alasan!', 'error'); return; }
         try {
-            var response = await fetch(
-                SUPABASE_URL + '/rest/v1/izin?id=eq.' + id,
-                {
-                    method: 'PATCH',
-                    headers: {
-                        'apikey': SUPABASE_ANON_KEY,
-                        'Authorization': 'Bearer ' + SUPABASE_ANON_KEY,
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        status: 'ditolak',
-                        alasan_tolak: alasanPenolakan,
-                        updated_at: new Date().toISOString()
-                    })
-                }
-            );
-
+            var response = await fetch(SUPABASE_URL + '/rest/v1/izin?id=eq.' + id, { method: 'PATCH', headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': 'Bearer ' + SUPABASE_ANON_KEY, 'Content-Type': 'application/json' }, body: JSON.stringify({ status: 'ditolak', alasan_tolak: alasan, updated_at: new Date().toISOString() }) });
             if (response.ok) {
-                showToast('❌ Izin ditolak!', 'warning');
-                closeModalTolak();
-
-                // Ambil data izin untuk kirim notifikasi
+                showToast('❌ Ditolak!', 'warning'); closeModalTolak();
                 var izinData = allIzin.find(function(item) { return item.id === parseInt(id); });
-                if (izinData) {
-                    var nama = izinData.karyawan_id?.nama || 'Karyawan';
-                    await sendTelegram('📢 <b>IZIN DITOLAK</b>\n👤 ' + nama + '\n📅 ' + (izinData.tanggal || '-') + '\n📝 ' + (izinData.alasan || '-') + '\n❌ Alasan: ' + alasanPenolakan);
-                }
-
+                if (izinData) { var nama = izinData.karyawan_id?.nama || 'Karyawan'; await sendTelegram('📢 <b>IZIN DITOLAK</b>\n👤 ' + nama + '\n📅 ' + izinData.tanggal + '\n❌ Alasan: ' + alasan); }
                 loadIzin();
-            } else {
-                var text = await response.text();
-                showToast('❌ Gagal: ' + text, 'error');
             }
-        } catch(e) {
-            showToast('❌ Gagal koneksi!', 'error');
-        }
+        } catch(e) { showToast('❌ Gagal!', 'error'); }
     }
 
-    // ============================================================
-    // REFRESH IZIN
-    // ============================================================
-    function refreshIzin() {
-        showToast('🔄 Memperbarui data...', 'info');
-        loadIzin();
-        setTimeout(function() {
-            showToast('✅ Data diperbarui!', 'success');
-        }, 500);
-    }
-
-    // ============================================================
-    // CEK SESSION STORAGE (dari admin_riwayat)
-    // ============================================================
+    function refreshIzin() { showToast('🔄 Memperbarui...', 'info'); loadIzin(); setTimeout(function() { showToast('✅ Diperbarui!', 'success'); }, 500); }
     function checkEditRedirect() {
         var karyawanId = sessionStorage.getItem('edit_karyawan_id');
         var tanggal = sessionStorage.getItem('edit_tanggal');
         if (karyawanId && tanggal) {
-            sessionStorage.removeItem('edit_karyawan_id');
-            sessionStorage.removeItem('edit_tanggal');
+            sessionStorage.removeItem('edit_karyawan_id'); sessionStorage.removeItem('edit_tanggal');
             document.getElementById('pilihKaryawan').value = karyawanId;
             document.getElementById('pilihTanggal').value = tanggal;
             loadAbsensi();
@@ -1329,17 +869,13 @@
     }
 
     // ============================================================
-    // INIT
+    // INITIAL LOAD
     // ============================================================
     loadKaryawan();
     setTimeout(function() {
-        checkEditRedirect();
+        loadLibur();
+        loadHariKerjaAll();
     }, 300);
-
-    // Set default di tab izin
-    document.getElementById('filterIzinStatus').value = '';
-
-    console.log('✏️ Edit Absensi & Izin loaded!');
 </script>
 
 </body>
