@@ -588,10 +588,10 @@
 
 <script>
     // ============================================================
-    // KONFIGURASI SUPABASE
+    // KONFIGURASI SUPABASE (PASTIKAN INI SUDAH BENAR)
     // ============================================================
-    var SUPABASE_URL = 'https://zcaqqybonpfishwkmffg.supabase.co';
-    var SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpjYXFxeWJvbnBmaXNod2ttZmZnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODc2Mjc2NDgsImV4cCI6MjEwMzIwMzY0OH0.pBk5nwJI3u9n08onTNmvcOFxtCXQvv-ipYIu2f_iAiQ';
+    var SUPABASE_URL = 'https://zczagvbonpfishwkfmf.supabase.co';
+    var SUPABASE_ANON_KEY = 'GANTI_INI_DENGAN_KEY_ASLI_KAMU';
 
     // ============================================================
     // CEK LOGIN
@@ -824,7 +824,7 @@
     }
 
     // ============================================================
-    // TAB 1: TAMBAH LIBUR
+    // TAB 1: TAMBAH LIBUR (SUDAH DIPERBAIKI DARI ERROR 409)
     // ============================================================
     async function tambahLibur() {
         var divisi = document.getElementById('pilihDivisiLibur').value;
@@ -853,63 +853,54 @@
             var tahun = parseInt(document.getElementById('inputTahun').value);
             var days = getDaysInMonth(bulan, tahun);
             for (var i = 1; i <= days; i++) {
-                var tgl = tahun + '-' + padZero(bulan) + '-' + padZero(i);
-                tanggalList.push(tgl);
+                tanggalList.push(tahun + '-' + padZero(bulan) + '-' + padZero(i));
             }
-        }
-
-        if (tanggalList.length === 0) {
-            showToast('Tidak ada tanggal yang dipilih!', 'error');
-            return;
         }
 
         var divisiTarget = divisi === '__semua' ? divisiList : [divisi];
+        if (divisiTarget.length === 0) { showToast('Tidak ada divisi yang dipilih!', 'error'); return; }
 
-        if (divisiTarget.length === 0) {
-            showToast('Tidak ada divisi yang dipilih!', 'error');
-            return;
+        // Bangun array data untuk dikirim sekaligus (Batch)
+        var dataToInsert = [];
+        for (var d = 0; d < divisiTarget.length; d++) {
+            for (var t = 0; t < tanggalList.length; t++) {
+                dataToInsert.push({
+                    tanggal: tanggalList[t],
+                    divisi: divisiTarget[d],
+                    keterangan: keterangan
+                });
+            }
         }
 
-        var totalInsert = 0;
-        var totalError = 0;
+        if (dataToInsert.length === 0) return;
 
-        showToast('🔄 Menambahkan ' + (tanggalList.length * divisiTarget.length) + ' data...', 'info');
+        showToast('🔄 Menambahkan ' + dataToInsert.length + ' data...', 'info');
 
         try {
-            for (var dIdx = 0; dIdx < divisiTarget.length; dIdx++) {
-                var dName = divisiTarget[dIdx];
-                for (var tIdx = 0; tIdx < tanggalList.length; tIdx++) {
-                    var tgl = tanggalList[tIdx];
-                    var payload = {
-                        tanggal: tgl,
-                        divisi: dName,
-                        keterangan: keterangan
-                    };
+            // GANTI FETCH BIASA DENGAN UPSERT (mencegah 409)
+            var response = await fetch(SUPABASE_URL + '/rest/v1/hari_libur', {
+                method: 'POST',
+                headers: {
+                    'apikey': SUPABASE_ANON_KEY,
+                    'Authorization': 'Bearer ' + SUPABASE_ANON_KEY,
+                    'Content-Type': 'application/json',
+                    // Kunci anti-409: Jika data sudah ada, langsung di-merge, tidak error
+                    'Prefer': 'resolution=merge-duplicates,return=representation'
+                },
+                body: JSON.stringify(dataToInsert)
+            });
 
-                    var response = await fetch(SUPABASE_URL + '/rest/v1/hari_libur', {
-                        method: 'POST',
-                        headers: {
-                            'apikey': SUPABASE_ANON_KEY,
-                            'Authorization': 'Bearer ' + SUPABASE_ANON_KEY,
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify(payload)
-                    });
-
-                    if (response.ok) {
-                        totalInsert++;
-                    } else {
-                        totalError++;
-                    }
-                }
+            if (response.ok) {
+                showToast('✅ ' + dataToInsert.length + ' data libur berhasil ditambahkan!', 'success');
+                loadLibur();
+            } else {
+                var error = await response.text();
+                console.error(error);
+                showToast('❌ Gagal menambahkan libur: ' + error, 'error');
             }
-
-            showToast('✅ ' + totalInsert + ' data libur berhasil ditambahkan' + (totalError > 0 ? ', ' + totalError + ' gagal (mungkin sudah ada)' : ''), totalError > 0 ? 'warning' : 'success');
-            loadLibur();
-
         } catch(e) {
             console.error('Error:', e);
-            showToast('❌ Gagal menambahkan libur!', 'error');
+            showToast('❌ Gagal koneksi!', 'error');
         }
     }
 
@@ -1049,7 +1040,7 @@
     }
 
     // ============================================================
-    // TAB 2: SIMPAN HARI KERJA
+    // TAB 2: SIMPAN HARI KERJA (SUDAH DIPERBAIKI DARI ERROR 409)
     // ============================================================
     async function simpanHariKerja() {
         var divisi = document.getElementById('pilihDivisiHariKerja').value;
@@ -1076,7 +1067,8 @@
                 headers: {
                     'apikey': SUPABASE_ANON_KEY,
                     'Authorization': 'Bearer ' + SUPABASE_ANON_KEY,
-                    'Content-Type': 'application/json'
+                    'Content-Type': 'application/json',
+                    'Prefer': 'resolution=merge-duplicates'
                 },
                 body: JSON.stringify({ hari_masuk: hariArray })
             });
@@ -1111,7 +1103,8 @@
                 headers: {
                     'apikey': SUPABASE_ANON_KEY,
                     'Authorization': 'Bearer ' + SUPABASE_ANON_KEY,
-                    'Content-Type': 'application/json'
+                    'Content-Type': 'application/json',
+                    'Prefer': 'resolution=merge-duplicates'
                 },
                 body: JSON.stringify({ hari_masuk: defaultHari })
             });
