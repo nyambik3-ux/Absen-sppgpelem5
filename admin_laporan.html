@@ -820,7 +820,7 @@
     }
 
     // ============================================================
-    // LOAD LAPORAN
+    // LOAD LAPORAN - ⭐ UDAH DIPERBAIKI (LIBUR & IZIN GAK JADI ALFA)
     // ============================================================
     async function loadLaporan() {
         var start = document.getElementById('startDate').value;
@@ -904,30 +904,40 @@
                     var jamMasuk = '-';
                     var jamPulang = '-';
 
+                    // ⭐ PRIORITAS 1: LIBUR
                     if (isLibur) {
                         status = 'libur';
                         statusLabel = '🔵';
-                    } else if (abs) {
+                    } 
+                    // ⭐ PRIORITAS 2: ADA DATA ABSEN
+                    else if (abs) {
                         jamMasuk = abs.jam_masuk || '-';
                         jamPulang = abs.jam_pulang || '-';
                         
+                        // ⭐ IZIN
                         if (abs.status === 'izin') {
                             status = 'izin';
                             statusLabel = '📝';
                             row.izin++;
                             totalIzin++;
-                        } else if (jamMasuk !== '-') {
+                        } 
+                        // ⭐ HADIR (ADA JAM MASUK)
+                        else if (jamMasuk !== '-') {
                             status = 'hadir';
                             statusLabel = '✅';
                             row.masuk++;
                             totalMasuk++;
-                        } else {
+                        } 
+                        // ⭐ ALFA (BUKAN LIBUR, BUKAN IZIN, TAPI GAK ADA JAM MASUK)
+                        else {
                             status = 'alfa';
                             statusLabel = '❌';
                             row.alfa++;
                             totalAlfa++;
                         }
-                    } else {
+                    } 
+                    // ⭐ ALFA (GAK ADA DATA ABSEN SAMA SEKALI)
+                    else {
                         status = 'alfa';
                         statusLabel = '❌';
                         row.alfa++;
