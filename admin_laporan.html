@@ -748,7 +748,7 @@
     }
 
     // ============================================================
-    // LOAD HARI LIBUR
+    // LOAD HARI LIBUR - ⭐ FIX: PAKE MAPPING DIVISI
     // ============================================================
     async function loadHariLibur() {
         try {
@@ -764,10 +764,14 @@
             var data = await response.json();
             hariLiburMap = {};
             data.forEach(function(item) {
-                var key = item.tanggal + '|' + item.divisi;
+                // ⭐ PAKE MAPPING DIVISI
+                var divisiMapped = mappingDivisi[item.divisi] || item.divisi;
+                var key = item.tanggal + '|' + divisiMapped;
                 hariLiburMap[key] = true;
             });
+            console.log('📅 Hari Libur Map:', hariLiburMap);
         } catch(e) {
+            console.error('Error load hari libur:', e);
             hariLiburMap = {};
         }
     }
@@ -923,6 +927,11 @@
                     var statusLabel = '❌';
                     var jamMasuk = '-';
                     var jamPulang = '-';
+
+                    // ⭐ DEBUG: log cek libur
+                    if (isLibur) {
+                        console.log('🔵 LIBUR:', tgl, divisiMapped, k.nama);
+                    }
 
                     // ⭐ PRIORITAS 1: LIBUR
                     if (isLibur) {
