@@ -820,7 +820,7 @@
     }
 
     // ============================================================
-    // LOAD LAPORAN - ⭐ UDAH DIPERBAIKI (LIBUR & IZIN GAK JADI ALFA)
+    // LOAD LAPORAN - ⭐ FIX: LIBUR + IZIN DARI TABEL IZIN
     // ============================================================
     async function loadLaporan() {
         var start = document.getElementById('startDate').value;
@@ -838,6 +838,7 @@
         try {
             await loadHariLibur();
 
+            // 1. AMBIL DATA KARYAWAN
             var karyawanQuery = SUPABASE_URL + '/rest/v1/karyawan?select=id,nama,divisi,jam_masuk,jam_pulang';
             if (divisiFilter) {
                 karyawanQuery += '&divisi=eq.' + encodeURIComponent(divisiFilter);
@@ -854,6 +855,7 @@
                 return;
             }
 
+            // 2. AMBIL DATA ABSENSI
             var absenRes = await fetch(
                 SUPABASE_URL + '/rest/v1/absensi?select=*&tanggal=gte.' + start + '&tanggal=lte.' + end,
                 {
@@ -868,6 +870,23 @@
                 absenMap[key] = a;
             });
 
+            // ⭐ 3. AMBIL DATA IZIN (DARI TABEL IZIN)
+            var izinRes = await fetch(
+                SUPABASE_URL + '/rest/v1/izin?select=karyawan_id,tanggal&tanggal=gte.' + start + '&tanggal=lte.' + end + '&status=eq.disetujui',
+                {
+                    headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': 'Bearer ' + SUPABASE_ANON_KEY }
+                }
+            );
+            var izinData = await izinRes.json();
+
+            // ⭐ BUAT MAP IZIN
+            var izinMap = {};
+            izinData.forEach(function(i) {
+                var key = i.karyawan_id + '|' + i.tanggal;
+                izinMap[key] = true;
+            });
+
+            // 4. BUAT DAFTAR TANGGAL
             dateList = [];
             var dStart = parseDateIndonesia(start);
             var dEnd = parseDateIndonesia(end);
@@ -896,6 +915,7 @@
 
                 dateList.forEach(function(tgl) {
                     var isLibur = isTanggalLibur(tgl, divisiMapped);
+                    var isIzin = izinMap[k.id + '|' + tgl] || false;
                     var key = k.id + '|' + tgl;
                     var abs = absenMap[key];
                     
@@ -909,34 +929,23 @@
                         status = 'libur';
                         statusLabel = '🔵';
                     } 
-                    // ⭐ PRIORITAS 2: ADA DATA ABSEN
-                    else if (abs) {
+                    // ⭐ PRIORITAS 2: IZIN (DARI TABEL IZIN)
+                    else if (isIzin) {
+                        status = 'izin';
+                        statusLabel = '📝';
+                        row.izin++;
+                        totalIzin++;
+                    }
+                    // ⭐ PRIORITAS 3: HADIR (ADA DATA ABSEN & JAM MASUK)
+                    else if (abs && abs.jam_masuk && abs.jam_masuk !== '-') {
                         jamMasuk = abs.jam_masuk || '-';
                         jamPulang = abs.jam_pulang || '-';
-                        
-                        // ⭐ IZIN
-                        if (abs.status === 'izin') {
-                            status = 'izin';
-                            statusLabel = '📝';
-                            row.izin++;
-                            totalIzin++;
-                        } 
-                        // ⭐ HADIR (ADA JAM MASUK)
-                        else if (jamMasuk !== '-') {
-                            status = 'hadir';
-                            statusLabel = '✅';
-                            row.masuk++;
-                            totalMasuk++;
-                        } 
-                        // ⭐ ALFA (BUKAN LIBUR, BUKAN IZIN, TAPI GAK ADA JAM MASUK)
-                        else {
-                            status = 'alfa';
-                            statusLabel = '❌';
-                            row.alfa++;
-                            totalAlfa++;
-                        }
+                        status = 'hadir';
+                        statusLabel = '✅';
+                        row.masuk++;
+                        totalMasuk++;
                     } 
-                    // ⭐ ALFA (GAK ADA DATA ABSEN SAMA SEKALI)
+                    // ⭐ PRIORITAS 4: ALFA
                     else {
                         status = 'alfa';
                         statusLabel = '❌';
