@@ -437,7 +437,7 @@
     }
 
     // ============================================================
-    // LOAD LAPORAN (MATRIX) - BACA HARI KERJA DARI hari_masuk
+    // LOAD LAPORAN (MATRIX) - FILTER MANUAL (ANTI MUNDUR 1 HARI)
     // ============================================================
     async function loadLaporan() {
         var start = document.getElementById('startDate').value;
@@ -462,22 +462,22 @@
             });
             var allKaryawan = await kRes.json();
 
-            // 2. Ambil Absensi
-            var absenQuery = SUPABASE_URL + '/rest/v1/absensi?select=*&tanggal=gte.' + start + '&tanggal=lte.' + end;
+            // 2. Ambil SEMUA Absensi (TANPA filter tanggal)
+            var absenQuery = SUPABASE_URL + '/rest/v1/absensi?select=*';
             var absenRes = await fetch(absenQuery, {
                 headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': 'Bearer ' + SUPABASE_ANON_KEY }
             });
             var absensi = await absenRes.json();
 
-            // 3. Ambil Data Izin (dari tabel izin, HANYA status disetujui)
-            var izinQuery = SUPABASE_URL + '/rest/v1/izin?select=*&tanggal=gte.' + start + '&tanggal=lte.' + end;
+            // 3. Ambil SEMUA Data Izin (TANPA filter tanggal)
+            var izinQuery = SUPABASE_URL + '/rest/v1/izin?select=*';
             var izinRes = await fetch(izinQuery, {
                 headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': 'Bearer ' + SUPABASE_ANON_KEY }
             });
             var izinData = await izinRes.json();
 
-            // 4. Ambil Data Hari Libur
-            var liburQuery = SUPABASE_URL + '/rest/v1/hari_libur?select=tanggal,divisi&tanggal=gte.' + start + '&tanggal=lte.' + end;
+            // 4. Ambil SEMUA Data Hari Libur (TANPA filter tanggal)
+            var liburQuery = SUPABASE_URL + '/rest/v1/hari_libur?select=tanggal,divisi';
             var liburRes = await fetch(liburQuery, {
                 headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': 'Bearer ' + SUPABASE_ANON_KEY }
             });
@@ -489,7 +489,7 @@
                 hariLiburMap[key] = true;
             });
 
-            // 5. Generate Array Tanggal
+            // 5. Generate Array Tanggal dengan filter manual
             var tanggalList = [];
             var current = new Date(start + 'T00:00:00');
             var endDate = new Date(end + 'T00:00:00');
@@ -498,23 +498,31 @@
                 current.setDate(current.getDate() + 1);
             }
 
-            // Map Absensi per Karyawan
+            // 6. Filter Data Absensi sesuai rentang tanggal
+            var absensiFiltered = absensi.filter(function(a) {
+                return a.tanggal >= start && a.tanggal <= end;
+            });
+
+            // 7. Filter Data Izin sesuai rentang tanggal
+            var izinFiltered = izinData.filter(function(i) {
+                return i.tanggal >= start && i.tanggal <= end && i.status === 'disetujui';
+            });
+
+            // 8. Map Absensi per Karyawan
             var absensiMap = {};
-            absensi.forEach(function(a) {
+            absensiFiltered.forEach(function(a) {
                 if (!absensiMap[a.karyawan_id]) absensiMap[a.karyawan_id] = {};
                 absensiMap[a.karyawan_id][a.tanggal] = a;
             });
 
-            // Map Izin per Karyawan
+            // 9. Map Izin per Karyawan
             var izinMap = {};
-            (izinData || []).forEach(function(i) {
-                if (i.status === 'disetujui') {
-                    if (!izinMap[i.karyawan_id]) izinMap[i.karyawan_id] = {};
-                    izinMap[i.karyawan_id][i.tanggal] = i;
-                }
+            izinFiltered.forEach(function(i) {
+                if (!izinMap[i.karyawan_id]) izinMap[i.karyawan_id] = {};
+                izinMap[i.karyawan_id][i.tanggal] = i;
             });
 
-            // 6. Map Hari Kerja per Karyawan
+            // 10. Map Hari Kerja per Karyawan
             var hariKerjaMap = {};
             allKaryawan.forEach(function(k) {
                 var workDays = [];
@@ -523,14 +531,13 @@
                         workDays = typeof k.hari_masuk === 'string' ? JSON.parse(k.hari_masuk) : k.hari_masuk;
                     } catch(e) { workDays = []; }
                 }
-                // Default jika tidak ada data: Minggu-Jumat
                 if (!Array.isArray(workDays) || workDays.length === 0) {
                     workDays = ['minggu', 'senin', 'selasa', 'rabu', 'kamis', 'jumat'];
                 }
                 hariKerjaMap[k.id] = workDays;
             });
 
-            // Filter Divisi + Sort
+            // 11. Filter Divisi + Sort
             var karyawanFiltered = allKaryawan.filter(function(k) {
                 if (divisiFilter) return k.divisi === divisiFilter;
                 return true;
@@ -544,7 +551,7 @@
                 return indexA - indexB;
             });
 
-            // Render Header Tabel
+            // 12. Render Header Tabel
             var html = '<table><thead><tr>';
             html += '<th style="min-width: 30px;">No</th>';
             html += '<th style="min-width: 150px; text-align: left;">Nama</th>';
@@ -560,7 +567,7 @@
             html += '<th style="min-width: 60px;">Total Izin</th>';
             html += '</tr></thead><tbody>';
 
-            // Render Body Tabel
+            // 13. Render Body Tabel
             karyawanFiltered.forEach(function(k, idx) {
                 var nama = k.nama;
                 var divisi = k.divisi || '-';
@@ -580,7 +587,6 @@
                     var isLiburGlobal = hariLiburMap[t + '|__semua'];
                     var isLiburDivisi = hariLiburMap[keyLibur];
 
-                    // Cek hari kerja dari hari_masuk
                     var dayOfWeek = new Date(t + 'T00:00:00').getDay();
                     var dayNames = ['minggu', 'senin', 'selasa', 'rabu', 'kamis', 'jumat', 'sabtu'];
                     var dayName = dayNames[dayOfWeek];
