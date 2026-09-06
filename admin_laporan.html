@@ -437,7 +437,7 @@
     }
 
     // ============================================================
-    // LOAD LAPORAN (MATRIX) - DENGAN TOTAL IZIN & KETERANGAN
+    // LOAD LAPORAN (MATRIX) - LOGIKA GABUNGAN LIBUR BY DIVISI & BY NAME
     // ============================================================
     async function loadLaporan() {
         var start = document.getElementById('startDate').value;
@@ -525,7 +525,7 @@
             });
 
             html += '<th style="min-width: 60px;">Total Masuk</th>';
-            html += '<th style="min-width: 60px;">Total Izin</th>'; // Tambahan Header Total Izin
+            html += '<th style="min-width: 60px;">Total Izin</th>';
             html += '</tr></thead><tbody>';
 
             // Render Body Tabel
@@ -533,7 +533,7 @@
                 var nama = k.nama;
                 var divisi = k.divisi || '-';
                 var totalHadir = 0;
-                var totalIzin = 0; // Inisialisasi Total Izin
+                var totalIzin = 0;
 
                 html += '<tr>';
                 html += '<td>' + (idx + 1) + '</td>';
@@ -543,26 +543,31 @@
                 tanggalList.forEach(function(t) {
                     var absen = absensiMap[k.id] ? absensiMap[k.id][t] : null;
                     var keyLibur = t + '|' + divisi;
-                    var isLiburGlobalOrDivisi = hariLiburMap[keyLibur] || false;
+                    var isLiburGlobal = hariLiburMap[t + '|__semua']; // Cek libur global (semua divisi)
+                    var isLiburDivisi = hariLiburMap[keyLibur]; // Cek libur divisi tertentu
                     
                     var status = 'alfa';
-                    var keteranganIzin = ''; // Variabel penampung alasan izin
+                    var keteranganIzin = '';
 
-                    if (isLiburGlobalOrDivisi) {
+                    // LOGIKA GABUNGAN:
+                    // 1. Cek libur by divisi/global dari hari_libur
+                    if (isLiburGlobal || isLiburDivisi) {
                         status = 'libur';
-                    } else if (absen) {
+                    } 
+                    // 2. Cek dari tabel absensi (by name)
+                    else if (absen) {
                         if (absen.status === 'libur') {
                             status = 'libur';
                         } else if (absen.status === 'izin') {
                             status = 'izin';
-                            keteranganIzin = absen.alasan || 'Izin'; // Ambil keterangan alasan dari DB
+                            keteranganIzin = absen.alasan || 'Izin';
                         } else if (absen.jam_masuk) {
                             status = 'hadir';
                         }
                     }
 
                     if (status === 'hadir') totalHadir++;
-                    if (status === 'izin') totalIzin++; // Tambah counter izin
+                    if (status === 'izin') totalIzin++;
 
                     var badge = '';
                     if (status === 'hadir') {
@@ -570,7 +575,6 @@
                     } else if (status === 'libur') {
                         badge = '<div class="status-libur">L</div>';
                     } else if (status === 'izin') {
-                        // Ditambahkan atribut title agar alasan muncul saat kursor diarahkan (hover)
                         badge = '<div class="status-izin" title="' + keteranganIzin + '">I</div>';
                     } else if (status === 'alfa') {
                         badge = '<div class="status-alfa">A</div>';
@@ -580,7 +584,7 @@
                 });
 
                 html += '<td class="col-akumulasi col-total-hadir">' + totalHadir + '</td>';
-                html += '<td class="col-akumulasi" style="color: #2563eb;">' + totalIzin + '</td>'; // Kolom Total Izin
+                html += '<td class="col-akumulasi" style="color: #2563eb;">' + totalIzin + '</td>';
                 html += '</tr>';
             });
 
