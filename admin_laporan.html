@@ -168,6 +168,7 @@
         body.light-mode th { background: #f8fafc; color: #64748b; }
 
         .badge-divisi { display: inline-block; padding: 2px 10px; border-radius: 12px; font-size: 11px; font-weight: 600; background: rgba(168,85,247,0.15); color: #a855f7; }
+        .badge-nama { display: inline-block; padding: 2px 10px; border-radius: 12px; font-size: 11px; font-weight: 600; background: rgba(59,130,246,0.15); color: #60a5fa; }
 
         .loading-text { text-align: center; color: #64748b; padding: 40px 0; font-size: 14px; }
         .empty-text { text-align: center; color: #64748b; padding: 30px 0; font-size: 14px; }
@@ -203,8 +204,8 @@
             table, th, td { border-color: #000 !important; color: black !important; }
             th { background: #ddd !important; color: black !important; }
             .stats-grid { display: none; }
-            .stat-card { display: none; }
             .badge-divisi { background: #ddd; color: black; }
+            .badge-nama { background: #ddd; color: black; }
             .toast-custom { display: none; }
         }
 
@@ -292,10 +293,18 @@
         </div>
     </div>
 
-    <!-- TABLE LAPORAN -->
+    <!-- TABLE 1: REKAP PER DIVISI -->
+    <div class="table-container" style="margin-bottom: 24px;">
+        <h3><i class="fas fa-building" style="color:#a855f7;"></i> Rekapitulasi Absensi per Divisi</h3>
+        <div id="tableWrapperDivisi">
+            <div class="loading-text"><i class="fas fa-spinner fa-pulse"></i> Memuat laporan...</div>
+        </div>
+    </div>
+
+    <!-- TABLE 2: REKAP PER KARYAWAN (BY NAME) -->
     <div class="table-container">
-        <h3><i class="fas fa-file-alt" style="color:#a855f7;"></i> Rekapitulasi Absensi per Divisi</h3>
-        <div id="tableWrapper">
+        <h3><i class="fas fa-users" style="color:#60a5fa;"></i> Rekapitulasi Absensi per Karyawan</h3>
+        <div id="tableWrapperKaryawan">
             <div class="loading-text"><i class="fas fa-spinner fa-pulse"></i> Memuat laporan...</div>
         </div>
     </div>
@@ -320,7 +329,8 @@
     // ============================================================
     var allKaryawan = [];
     var divisiList = [];
-    var currentTableHtml = '';
+    var currentTableDivisiHtml = '';
+    var currentTableKaryawanHtml = '';
 
     // ============================================================
     // FUNGSI TANGGAL
@@ -400,7 +410,7 @@
     }
 
     // ============================================================
-    // LOAD LAPORAN (REKAP PER DIVISI)
+    // LOAD LAPORAN (REKAP PER DIVISI + PER KARYAWAN)
     // ============================================================
     async function loadLaporan() {
         var start = document.getElementById('startDate').value;
@@ -412,8 +422,10 @@
             return;
         }
 
-        var wrapper = document.getElementById('tableWrapper');
-        wrapper.innerHTML = '<div class="loading-text"><i class="fas fa-spinner fa-pulse"></i> Memuat laporan...</div>';
+        var wrapperDivisi = document.getElementById('tableWrapperDivisi');
+        var wrapperKaryawan = document.getElementById('tableWrapperKaryawan');
+        wrapperDivisi.innerHTML = '<div class="loading-text"><i class="fas fa-spinner fa-pulse"></i> Memuat laporan...</div>';
+        wrapperKaryawan.innerHTML = '<div class="loading-text"><i class="fas fa-spinner fa-pulse"></i> Memuat laporan...</div>';
 
         try {
             // Ambil semua karyawan
@@ -438,6 +450,12 @@
             var divisiMap = {};
             divisiList.forEach(function(d) { divisiMap[d] = { hadir: 0, telat: 0, izin: 0, libur: 0, alfa: 0, jumlahKaryawan: 0 }; });
 
+            // Grouping per karyawan (by name)
+            var karyawanMapRekap = {};
+            allKaryawan.forEach(function(k) {
+                karyawanMapRekap[k.id] = { nama: k.nama, divisi: k.divisi, hadir: 0, telat: 0, izin: 0, libur: 0, alfa: 0, totalAbsensi: 0 };
+            });
+
             // Hitung jumlah karyawan per divisi
             allKaryawan.forEach(function(k) {
                 if (k.divisi && divisiMap[k.divisi]) divisiMap[k.divisi].jumlahKaryawan++;
@@ -450,6 +468,9 @@
                 if (divisiFilter && divisi !== divisiFilter) return;
 
                 if (!divisiMap[divisi]) divisiMap[divisi] = { hadir: 0, telat: 0, izin: 0, libur: 0, alfa: 0, jumlahKaryawan: 0 };
+
+                // Buat untuk per karyawan
+                if (!karyawanMapRekap[a.karyawan_id]) karyawanMapRekap[a.karyawan_id] = { nama: a.karyawan_id, divisi: divisi, hadir: 0, telat: 0, izin: 0, libur: 0, alfa: 0, totalAbsensi: 0 };
 
                 var status = 'alfa';
                 // LOGIKA PENTING: BACA STATUS DARI DATABASE
@@ -464,12 +485,14 @@
                     status = a.jam_masuk <= targetJam ? 'hadir' : 'telat';
                 }
 
-                // Tambahkan ke total & divisi
-                if (status === 'hadir') { totalHadir++; divisiMap[divisi].hadir++; }
-                else if (status === 'telat') { totalTelat++; divisiMap[divisi].telat++; }
-                else if (status === 'izin') { totalIzin++; divisiMap[divisi].izin++; }
-                else if (status === 'libur') { totalLibur++; divisiMap[divisi].libur++; }
-                else { totalAlfa++; divisiMap[divisi].alfa++; }
+                // Tambahkan ke total & divisi & karyawan
+                if (status === 'hadir') { totalHadir++; divisiMap[divisi].hadir++; karyawanMapRekap[a.karyawan_id].hadir++; }
+                else if (status === 'telat') { totalTelat++; divisiMap[divisi].telat++; karyawanMapRekap[a.karyawan_id].telat++; }
+                else if (status === 'izin') { totalIzin++; divisiMap[divisi].izin++; karyawanMapRekap[a.karyawan_id].izin++; }
+                else if (status === 'libur') { totalLibur++; divisiMap[divisi].libur++; karyawanMapRekap[a.karyawan_id].libur++; }
+                else { totalAlfa++; divisiMap[divisi].alfa++; karyawanMapRekap[a.karyawan_id].alfa++; }
+
+                karyawanMapRekap[a.karyawan_id].totalAbsensi++;
             });
 
             // Update stats
@@ -479,14 +502,14 @@
             document.getElementById('statLibur').textContent = totalLibur;
             document.getElementById('statAlfa').textContent = totalAlfa;
 
-            // Render Tabel Rekap
-            var html = '<table><thead><tr>';
-            html += '<th>No</th><th>Divisi</th><th>Karyawan</th><th>Hadir</th><th>Telat</th><th>Izin</th><th>Libur</th><th>Alfa</th><th>Total Absensi</th>';
-            html += '</tr></thead><tbody>';
+            // Render Tabel Rekap Per Divisi
+            var htmlDivisi = '<table><thead><tr>';
+            htmlDivisi += '<th>No</th><th>Divisi</th><th>Karyawan</th><th>Hadir</th><th>Telat</th><th>Izin</th><th>Libur</th><th>Alfa</th><th>Total Absensi</th>';
+            htmlDivisi += '</tr></thead><tbody>';
 
             var keys = divisiFilter ? [divisiFilter] : divisiList;
             if (keys.length === 0) {
-                html += '<tr><td colspan="9" style="text-align:center;padding:20px;">Belum ada data divisi</td></tr>';
+                htmlDivisi += '<tr><td colspan="9" style="text-align:center;padding:20px;">Belum ada data divisi</td></tr>';
             }
 
             keys.forEach(function(divisi, idx) {
@@ -495,26 +518,62 @@
                 var totalAbsensi = d.hadir + d.telat + d.izin + d.libur + d.alfa;
                 var jumlahKaryawan = d.jumlahKaryawan;
 
-                html += '<tr>';
-                html += '<td>' + (idx + 1) + '</td>';
-                html += '<td><span class="badge-divisi">' + divisi + '</span></td>';
-                html += '<td>' + jumlahKaryawan + '</td>';
-                html += '<td style="color:#34d399;font-weight:700;">' + d.hadir + '</td>';
-                html += '<td style="color:#fb923c;font-weight:700;">' + d.telat + '</td>';
-                html += '<td style="color:#60a5fa;font-weight:700;">' + d.izin + '</td>';
-                html += '<td style="color:#a855f7;font-weight:700;">' + d.libur + '</td>';
-                html += '<td style="color:#f87171;font-weight:700;">' + d.alfa + '</td>';
-                html += '<td>' + totalAbsensi + '</td>';
-                html += '</tr>';
+                htmlDivisi += '<tr>';
+                htmlDivisi += '<td>' + (idx + 1) + '</td>';
+                htmlDivisi += '<td><span class="badge-divisi">' + divisi + '</span></td>';
+                htmlDivisi += '<td>' + jumlahKaryawan + '</td>';
+                htmlDivisi += '<td style="color:#34d399;font-weight:700;">' + d.hadir + '</td>';
+                htmlDivisi += '<td style="color:#fb923c;font-weight:700;">' + d.telat + '</td>';
+                htmlDivisi += '<td style="color:#60a5fa;font-weight:700;">' + d.izin + '</td>';
+                htmlDivisi += '<td style="color:#a855f7;font-weight:700;">' + d.libur + '</td>';
+                htmlDivisi += '<td style="color:#f87171;font-weight:700;">' + d.alfa + '</td>';
+                htmlDivisi += '<td>' + totalAbsensi + '</td>';
+                htmlDivisi += '</tr>';
             });
 
-            html += '</tbody></table>';
-            wrapper.innerHTML = html;
-            currentTableHtml = html;
+            htmlDivisi += '</tbody></table>';
+            wrapperDivisi.innerHTML = htmlDivisi;
+            currentTableDivisiHtml = htmlDivisi;
+
+            // Render Tabel Rekap Per Karyawan (By Name)
+            var htmlKaryawan = '<table><thead><tr>';
+            htmlKaryawan += '<th>No</th><th>Nama</th><th>Divisi</th><th>Hadir</th><th>Telat</th><th>Izin</th><th>Libur</th><th>Alfa</th><th>Total</th>';
+            htmlKaryawan += '</tr></thead><tbody>';
+
+            var karyawanKeys = Object.keys(karyawanMapRekap).sort(function(a, b) {
+                return karyawanMapRekap[a].nama.localeCompare(karyawanMapRekap[b].nama);
+            });
+
+            if (karyawanKeys.length === 0) {
+                htmlKaryawan += '<tr><td colspan="9" style="text-align:center;padding:20px;">Belum ada data karyawan</td></tr>';
+            }
+
+            karyawanKeys.forEach(function(id, idx) {
+                var data = karyawanMapRekap[id];
+                if (!data) return;
+                var total = data.hadir + data.telat + data.izin + data.libur + data.alfa;
+
+                htmlKaryawan += '<tr>';
+                htmlKaryawan += '<td>' + (idx + 1) + '</td>';
+                htmlKaryawan += '<td><span class="badge-nama">' + data.nama + '</span></td>';
+                htmlKaryawan += '<td>' + (data.divisi || '-') + '</td>';
+                htmlKaryawan += '<td style="color:#34d399;font-weight:700;">' + data.hadir + '</td>';
+                htmlKaryawan += '<td style="color:#fb923c;font-weight:700;">' + data.telat + '</td>';
+                htmlKaryawan += '<td style="color:#60a5fa;font-weight:700;">' + data.izin + '</td>';
+                htmlKaryawan += '<td style="color:#a855f7;font-weight:700;">' + data.libur + '</td>';
+                htmlKaryawan += '<td style="color:#f87171;font-weight:700;">' + data.alfa + '</td>';
+                htmlKaryawan += '<td>' + total + '</td>';
+                htmlKaryawan += '</tr>';
+            });
+
+            htmlKaryawan += '</tbody></table>';
+            wrapperKaryawan.innerHTML = htmlKaryawan;
+            currentTableKaryawanHtml = htmlKaryawan;
 
         } catch(e) {
             console.error('Error:', e);
-            wrapper.innerHTML = '<div class="empty-text">Gagal memuat laporan</div>';
+            wrapperDivisi.innerHTML = '<div class="empty-text">Gagal memuat laporan</div>';
+            wrapperKaryawan.innerHTML = '<div class="empty-text">Gagal memuat laporan</div>';
             showToast('Gagal memuat laporan!', 'error');
         }
     }
@@ -523,21 +582,32 @@
     // EXPORT EXCEL (CSV)
     // ============================================================
     function exportExcel() {
-        if (!currentTableHtml) { showToast('Tidak ada data', 'warning'); return; }
-
         var start = document.getElementById('startDate').value;
         var end = document.getElementById('endDate').value;
 
-        var csv = 'Rekapitulasi Absensi ' + start + ' - ' + end + '\n\n';
+        var csv = 'Laporan Absensi ' + start + ' - ' + end + '\n\n';
+        csv += '=== REKAP PER DIVISI ===\n';
         csv += 'No,Divisi,Karyawan,Hadir,Telat,Izin,Libur,Alfa,Total Absensi\n';
+        if (currentTableDivisiHtml) {
+            var table1 = document.querySelector('#tableWrapperDivisi table');
+            var rows1 = table1.querySelectorAll('tr');
+            for (var i = 1; i < rows1.length; i++) {
+                var cols = rows1[i].querySelectorAll('td');
+                if (cols.length === 0) continue;
+                csv += cols[0].innerText + ',' + cols[1].innerText + ',' + cols[2].innerText + ',' + cols[3].innerText + ',' + cols[4].innerText + ',' + cols[5].innerText + ',' + cols[6].innerText + ',' + cols[7].innerText + ',' + cols[8].innerText + '\n';
+            }
+        }
 
-        // Ambil data dari tabel yang sudah dirender
-        var table = document.querySelector('#tableWrapper table');
-        var rows = table.querySelectorAll('tr');
-        for (var i = 1; i < rows.length; i++) { // Skip header
-            var cols = rows[i].querySelectorAll('td');
-            if (cols.length === 0) continue;
-            csv += cols[0].innerText + ',' + cols[1].innerText + ',' + cols[2].innerText + ',' + cols[3].innerText + ',' + cols[4].innerText + ',' + cols[5].innerText + ',' + cols[6].innerText + ',' + cols[7].innerText + ',' + cols[8].innerText + '\n';
+        csv += '\n\n=== REKAP PER KARYAWAN ===\n';
+        csv += 'No,Nama,Divisi,Hadir,Telat,Izin,Libur,Alfa,Total\n';
+        if (currentTableKaryawanHtml) {
+            var table2 = document.querySelector('#tableWrapperKaryawan table');
+            var rows2 = table2.querySelectorAll('tr');
+            for (var i = 1; i < rows2.length; i++) {
+                var cols = rows2[i].querySelectorAll('td');
+                if (cols.length === 0) continue;
+                csv += cols[0].innerText + ',' + cols[1].innerText + ',' + cols[2].innerText + ',' + cols[3].innerText + ',' + cols[4].innerText + ',' + cols[5].innerText + ',' + cols[6].innerText + ',' + cols[7].innerText + ',' + cols[8].innerText + '\n';
+            }
         }
 
         var blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
@@ -552,7 +622,7 @@
     // EXPORT PDF (PRINT)
     // ============================================================
     function exportPDF() {
-        if (!currentTableHtml) { showToast('Tidak ada data', 'warning'); return; }
+        if (!currentTableDivisiHtml && !currentTableKaryawanHtml) { showToast('Tidak ada data', 'warning'); return; }
         window.print();
     }
 
