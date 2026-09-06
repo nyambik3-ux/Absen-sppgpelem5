@@ -195,7 +195,7 @@
         /* Status Warna */
         .status-hadir { background: #10b981; color: white; font-weight: 700; border-radius: 4px; }
         .status-libur { background: #a855f7; color: white; font-weight: 700; border-radius: 4px; }
-        .status-izin { background: #3b82f6; color: white; font-weight: 700; border-radius: 4px; }
+        .status-izin { background: #3b82f6; color: white; font-weight: 700; border-radius: 4px; cursor: help; }
         .status-alfa { background: #ef4444; color: white; font-weight: 700; border-radius: 4px; }
 
         /* Kolom Akumulasi */
@@ -387,7 +387,8 @@
     }
 
     function formatTanggalLengkap(dateStr) {
-        var d = new Date(dateStr + 'T00:00:00');
+        var p = dateStr.split('-');
+        var d = new Date(parseInt(p[0]), parseInt(p[1]) - 1, parseInt(p[2]));
         var bulan = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
         return d.getDate() + ' ' + bulan[d.getMonth()] + ' ' + d.getFullYear();
     }
@@ -419,7 +420,6 @@
             data.forEach(function(k) { if (k.divisi) divisiSet.add(k.divisi); });
             divisiList = Array.from(divisiSet);
 
-            // Urutkan sesuai urutan manual
             divisiList.sort(function(a, b) {
                 var indexA = divisiUrutan.indexOf(a);
                 var indexB = divisiUrutan.indexOf(b);
@@ -437,7 +437,7 @@
     }
 
     // ============================================================
-    // LOAD LAPORAN (MATRIX) - FILTER MANUAL (ANTI MUNDUR 1 HARI)
+    // LOAD LAPORAN (MATRIX) - FIX TIMEZONE & PENILAIAN STATUS
     // ============================================================
     async function loadLaporan() {
         var start = document.getElementById('startDate').value;
@@ -456,28 +456,28 @@
         wrapper.innerHTML = '<div class="loading-text" style="padding: 40px; text-align: center; color: #64748b;"><i class="fas fa-spinner fa-pulse"></i> Memuat laporan...</div>';
 
         try {
-            // 1. Ambil Karyawan (termasuk hari_masuk)
+            // 1. Ambil Karyawan
             var kRes = await fetch(SUPABASE_URL + '/rest/v1/karyawan?select=id,nama,divisi,hari_masuk', {
                 headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': 'Bearer ' + SUPABASE_ANON_KEY }
             });
             var allKaryawan = await kRes.json();
 
-            // 2. Ambil SEMUA Absensi (TANPA filter tanggal)
-            var absenQuery = SUPABASE_URL + '/rest/v1/absensi?select=*';
+            // 2. Ambil Absensi
+            var absenQuery = SUPABASE_URL + '/rest/v1/absensi?select=*&tanggal=gte.' + start + '&tanggal=lte.' + end;
             var absenRes = await fetch(absenQuery, {
                 headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': 'Bearer ' + SUPABASE_ANON_KEY }
             });
             var absensi = await absenRes.json();
 
-            // 3. Ambil SEMUA Data Izin (TANPA filter tanggal)
-            var izinQuery = SUPABASE_URL + '/rest/v1/izin?select=*';
+            // 3. Ambil Data Izin
+            var izinQuery = SUPABASE_URL + '/rest/v1/izin?select=*&tanggal=gte.' + start + '&tanggal=lte.' + end;
             var izinRes = await fetch(izinQuery, {
                 headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': 'Bearer ' + SUPABASE_ANON_KEY }
             });
             var izinData = await izinRes.json();
 
-            // 4. Ambil SEMUA Data Hari Libur (TANPA filter tanggal)
-            var liburQuery = SUPABASE_URL + '/rest/v1/hari_libur?select=tanggal,divisi';
+            // 4. Ambil Data Hari Libur
+            var liburQuery = SUPABASE_URL + '/rest/v1/hari_libur?select=tanggal,divisi&tanggal=gte.' + start + '&tanggal=lte.' + end;
             var liburRes = await fetch(liburQuery, {
                 headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': 'Bearer ' + SUPABASE_ANON_KEY }
             });
@@ -489,40 +489,39 @@
                 hariLiburMap[key] = true;
             });
 
-            // 5. Generate Array Tanggal dengan filter manual
+            // 5. Generate Tanggal Presisi LOKAL
             var tanggalList = [];
-            var current = new Date(start + 'T00:00:00');
-            var endDate = new Date(end + 'T00:00:00');
+            var currParts = start.split('-');
+            var endParts = end.split('-');
+            
+            var current = new Date(parseInt(currParts[0]), parseInt(currParts[1]) - 1, parseInt(currParts[2]));
+            var endDate = new Date(parseInt(endParts[0]), parseInt(endParts[1]) - 1, parseInt(endParts[2]));
+
             while (current <= endDate) {
-                tanggalList.push(current.toISOString().split('T')[0]);
+                var y = current.getFullYear();
+                var m = String(current.getMonth() + 1).padStart(2, '0');
+                var d = String(current.getDate()).padStart(2, '0');
+                tanggalList.push(y + '-' + m + '-' + d);
                 current.setDate(current.getDate() + 1);
             }
 
-            // 6. Filter Data Absensi sesuai rentang tanggal
-            var absensiFiltered = absensi.filter(function(a) {
-                return a.tanggal >= start && a.tanggal <= end;
-            });
-
-            // 7. Filter Data Izin sesuai rentang tanggal
-            var izinFiltered = izinData.filter(function(i) {
-                return i.tanggal >= start && i.tanggal <= end && i.status === 'disetujui';
-            });
-
-            // 8. Map Absensi per Karyawan
+            // Map Absensi
             var absensiMap = {};
-            absensiFiltered.forEach(function(a) {
+            absensi.forEach(function(a) {
                 if (!absensiMap[a.karyawan_id]) absensiMap[a.karyawan_id] = {};
                 absensiMap[a.karyawan_id][a.tanggal] = a;
             });
 
-            // 9. Map Izin per Karyawan
+            // Map Izin
             var izinMap = {};
-            izinFiltered.forEach(function(i) {
-                if (!izinMap[i.karyawan_id]) izinMap[i.karyawan_id] = {};
-                izinMap[i.karyawan_id][i.tanggal] = i;
+            (izinData || []).forEach(function(i) {
+                if (i.status === 'disetujui') {
+                    if (!izinMap[i.karyawan_id]) izinMap[i.karyawan_id] = {};
+                    izinMap[i.karyawan_id][i.tanggal] = i;
+                }
             });
 
-            // 10. Map Hari Kerja per Karyawan
+            // Map Hari Kerja
             var hariKerjaMap = {};
             allKaryawan.forEach(function(k) {
                 var workDays = [];
@@ -537,7 +536,7 @@
                 hariKerjaMap[k.id] = workDays;
             });
 
-            // 11. Filter Divisi + Sort
+            // Filter Divisi + Sort
             var karyawanFiltered = allKaryawan.filter(function(k) {
                 if (divisiFilter) return k.divisi === divisiFilter;
                 return true;
@@ -551,15 +550,17 @@
                 return indexA - indexB;
             });
 
-            // 12. Render Header Tabel
+            // Render Header
             var html = '<table><thead><tr>';
             html += '<th style="min-width: 30px;">No</th>';
             html += '<th style="min-width: 150px; text-align: left;">Nama</th>';
             html += '<th style="min-width: 120px; text-align: left;">Divisi</th>';
 
             tanggalList.forEach(function(t) {
-                var day = new Date(t + 'T00:00:00').getDate();
-                var dayName = new Date(t + 'T00:00:00').toLocaleDateString('id-ID', { weekday: 'short' });
+                var p = t.split('-');
+                var dateObj = new Date(parseInt(p[0]), parseInt(p[1]) - 1, parseInt(p[2]));
+                var day = dateObj.getDate();
+                var dayName = dateObj.toLocaleDateString('id-ID', { weekday: 'short' });
                 html += '<th style="min-width: 30px;">' + day + '<br><span style="font-size: 8px; color: #94a3b8;">' + dayName + '</span></th>';
             });
 
@@ -567,7 +568,7 @@
             html += '<th style="min-width: 60px;">Total Izin</th>';
             html += '</tr></thead><tbody>';
 
-            // 13. Render Body Tabel
+            // Render Body
             karyawanFiltered.forEach(function(k, idx) {
                 var nama = k.nama;
                 var divisi = k.divisi || '-';
@@ -587,7 +588,9 @@
                     var isLiburGlobal = hariLiburMap[t + '|__semua'];
                     var isLiburDivisi = hariLiburMap[keyLibur];
 
-                    var dayOfWeek = new Date(t + 'T00:00:00').getDay();
+                    var p = t.split('-');
+                    var dateObj = new Date(parseInt(p[0]), parseInt(p[1]) - 1, parseInt(p[2]));
+                    var dayOfWeek = dateObj.getDay();
                     var dayNames = ['minggu', 'senin', 'selasa', 'rabu', 'kamis', 'jumat', 'sabtu'];
                     var dayName = dayNames[dayOfWeek];
                     var isWorkDay = workDays.indexOf(dayName) !== -1;
@@ -595,30 +598,16 @@
                     var status = 'alfa';
                     var keteranganIzin = '';
 
-                    // LOGIKA:
-                    // 1. Jika BUKAN hari kerja -> Libur
-                    if (!isWorkDay) {
+                    // LOGIKA PENILAIAN
+                    if (absen && (absen.jam_masuk || absen.status === 'hadir')) {
+                        status = 'hadir';
+                    } else if (!isWorkDay) {
                         status = 'libur';
-                    }
-                    // 2. Cek libur by divisi/global dari hari_libur
-                    else if (isLiburGlobal || isLiburDivisi) {
+                    } else if (isLiburGlobal || isLiburDivisi || (absen && absen.status === 'libur')) {
                         status = 'libur';
-                    } 
-                    // 3. Cek izin dari tabel izin (disetujui)
-                    else if (izin) {
+                    } else if (izin || (absen && (absen.status === 'izin' || absen.status === 'sakit'))) {
                         status = 'izin';
-                        keteranganIzin = izin.alasan || 'Izin';
-                    } 
-                    // 4. Cek dari tabel absensi (by name)
-                    else if (absen) {
-                        if (absen.status === 'libur') {
-                            status = 'libur';
-                        } else if (absen.status === 'izin' || absen.status === 'sakit') {
-                            status = 'izin';
-                            keteranganIzin = absen.alasan || 'Sakit';
-                        } else if (absen.jam_masuk) {
-                            status = 'hadir';
-                        }
+                        keteranganIzin = (izin ? izin.alasan : (absen ? absen.alasan : 'Izin')) || 'Izin';
                     }
 
                     if (status === 'hadir') totalHadir++;
@@ -653,7 +642,7 @@
     }
 
     // ============================================================
-    // EXPORT EXCEL (CSV)
+    // EXPORT EXCEL (CSV UTF-8)
     // ============================================================
     function exportExcel() {
         var table = document.querySelector('#tableWrapper table');
@@ -665,7 +654,6 @@
         var csv = [];
         var rows = table.querySelectorAll('tr');
 
-        // Header kop
         csv.push('SATUAN PELAYANAN PEMENUHAN GIZI');
         csv.push('SPPG KEDIRI PARE PELEM 5');
         csv.push('YAYASAN RIHLAH CAHAYA BANGSA');
@@ -676,23 +664,22 @@
         csv.push('Periode: ' + document.getElementById('periodeText').textContent);
         csv.push('');
 
-        // Tabel
         rows.forEach(function(row) {
             var rowData = [];
             var cols = row.querySelectorAll('td, th');
             cols.forEach(function(col) {
-                rowData.push(col.innerText.replace(/,/g, ';'));
+                rowData.push('"' + col.innerText.replace(/"/g, '""') + '"');
             });
-            csv.push(rowData.join(','));
+            csv.push(rowData.join(';'));
         });
 
         csv.push('');
         csv.push('LEGENDA: Hadir (✔), Libur (L), Izin (I), Alfa (A)');
 
-        var blob = new Blob([csv.join('\n')], { type: 'text/csv;charset=utf-8;' });
+        var blob = new Blob(['\ufeff' + csv.join('\n')], { type: 'text/csv;charset=utf-8;' });
         var link = document.createElement('a');
         link.href = URL.createObjectURL(blob);
-        link.download = 'Laporan_Rekap_Absensi.csv';
+        link.download = 'Laporan_Rekap_Absensi_' + getTodayIndonesia() + '.csv';
         link.click();
         alert('Excel berhasil diunduh!');
     }
@@ -708,10 +695,8 @@
     // DRAG & RESIZE LOGO
     // ============================================================
     const logo = document.getElementById('draggableLogo');
-    const kopContainer = document.getElementById('kopContainer');
     const resizeHandle = document.getElementById('resizeHandle');
 
-    // Load dari LocalStorage
     const savedPos = localStorage.getItem('logoPos');
     const savedSize = localStorage.getItem('logoSize');
     if (savedPos) {
