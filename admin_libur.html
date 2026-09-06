@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Manajemen Libur & Hari Kerja • Smart Presence</title>
+    <title>Pengaturan Admin • RelawanTrack</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
@@ -21,24 +21,25 @@
         .btn-logout { background: #ef4444; color: white; } .btn-logout:hover { background: #dc2626; }
         .btn-back { background: #6366f1; color: white; } .btn-back:hover { background: #4f46e5; }
         .btn-theme { background: #1e293b; color: #e2e8f0; } body.light-mode .btn-theme { background: #e2e8f0; color: #1e293b; }
-        .container { max-width: 1100px; margin: 0 auto; }
+        .container { max-width: 1400px; margin: 0 auto; }
 
         .tabs { display: flex; gap: 4px; margin-bottom: 20px; background: rgba(255,255,255,0.04); border-radius: 14px; padding: 4px; border: 1px solid rgba(255,255,255,0.06); }
         body.light-mode .tabs { background: #f1f5f9; border-color: #e2e8f0; }
         .tabs button { flex: 1; padding: 12px 20px; border: none; border-radius: 10px; background: transparent; color: #94a3b8; font-weight: 700; font-size: 14px; cursor: pointer; transition: all 0.3s; font-family: 'Inter', sans-serif; }
         .tabs button:hover { color: white; } body.light-mode .tabs button:hover { color: #1e293b; }
         .tabs button.active { background: #a855f7; color: white; box-shadow: 0 4px 15px rgba(168,85,247,0.3); }
-
         .tab-content { display: none; } .tab-content.active { display: block; }
+
         .form-card { background: rgba(255,255,255,0.04); border-radius: 16px; padding: 24px; border: 1px solid rgba(255,255,255,0.06); margin-bottom: 20px; }
         body.light-mode .form-card { background: white; border-color: rgba(0,0,0,0.06); }
         .form-card h3 { font-size: 16px; font-weight: 700; margin-bottom: 16px; display: flex; align-items: center; gap: 10px; }
         .form-group { margin-bottom: 16px; }
         .form-group label { display: block; font-size: 12px; color: #94a3b8; font-weight: 600; margin-bottom: 4px; }
-        .form-group select, .form-group input { width: 100%; padding: 10px 14px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.1); background: rgba(0,0,0,0.3); color: white; font-family: 'Inter', sans-serif; font-size: 14px; }
-        body.light-mode .form-group select, body.light-mode .form-group input { background: #f1f5f9; color: #1e293b; border-color: #cbd5e1; }
-        .form-group select:focus, .form-group input:focus { outline: none; border-color: #a855f7; box-shadow: 0 0 0 3px rgba(168,85,247,0.2); }
+        .form-group select, .form-group input, .form-group textarea { width: 100%; padding: 10px 14px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.1); background: rgba(0,0,0,0.3); color: white; font-family: 'Inter', sans-serif; font-size: 14px; }
+        body.light-mode .form-group select, body.light-mode .form-group input, body.light-mode .form-group textarea { background: #f1f5f9; color: #1e293b; border-color: #cbd5e1; }
+        .form-group select:focus, .form-group input:focus, .form-group textarea:focus { outline: none; border-color: #a855f7; box-shadow: 0 0 0 3px rgba(168,85,247,0.2); }
         .form-group .form-hint { font-size: 11px; color: #64748b; margin-top: 4px; }
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
 
         .radio-group { display: flex; gap: 16px; flex-wrap: wrap; padding: 8px 0; }
         .radio-group label { display: flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 600; color: #94a3b8; cursor: pointer; }
@@ -48,22 +49,25 @@
         .hari-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px; margin: 8px 0 12px; }
         .hari-grid label { display: flex; flex-direction: column; align-items: center; gap: 4px; font-size: 12px; font-weight: 600; color: #94a3b8; cursor: pointer; padding: 10px 8px; border-radius: 10px; border: 2px solid rgba(255,255,255,0.06); transition: all 0.2s; background: rgba(0,0,0,0.15); }
         body.light-mode .hari-grid label { border-color: #e2e8f0; background: #f8fafc; }
-        .hari-grid label:hover { border-color: #a855f7; }
         .hari-grid label.active { border-color: #10b981; background: rgba(16,185,129,0.12); color: #34d399; }
-        body.light-mode .hari-grid label.active { background: rgba(16,185,129,0.08); }
         .hari-grid label input[type="checkbox"] { display: none; }
         .hari-grid label .icon { font-size: 20px; } .hari-grid label .text { font-size: 10px; text-transform: uppercase; }
 
         .btn-primary { padding: 10px 24px; background: linear-gradient(135deg, #10b981, #059669); border: none; border-radius: 10px; color: white; font-weight: 700; cursor: pointer; font-family: 'Inter', sans-serif; font-size: 14px; transition: all 0.2s; }
-        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 4px 15px rgba(16,185,129,0.4); } .btn-primary:active { transform: scale(0.95); }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 4px 15px rgba(16,185,129,0.4); }
         .btn-danger { padding: 10px 24px; background: #ef4444; border: none; border-radius: 10px; color: white; font-weight: 700; cursor: pointer; font-family: 'Inter', sans-serif; font-size: 14px; transition: all 0.2s; }
-        .btn-danger:hover { background: #dc2626; } .btn-danger:active { transform: scale(0.95); }
+        .btn-danger:hover { background: #dc2626; }
         .btn-refresh { padding: 10px 20px; background: #6366f1; border: none; border-radius: 10px; color: white; font-weight: 700; cursor: pointer; font-family: 'Inter', sans-serif; font-size: 13px; }
         .btn-refresh:hover { background: #4f46e5; }
         .btn-warning { padding: 10px 20px; background: #f59e0b; border: none; border-radius: 10px; color: white; font-weight: 700; cursor: pointer; font-family: 'Inter', sans-serif; font-size: 13px; }
         .btn-warning:hover { background: #d97706; }
+        .btn-save { padding: 12px 32px; background: #10b981; border: none; border-radius: 10px; color: white; font-weight: 700; cursor: pointer; font-family: 'Inter', sans-serif; font-size: 14px; }
+        .btn-save:hover { background: #059669; }
+        .btn-delete { padding: 12px 32px; background: #ef4444; border: none; border-radius: 10px; color: white; font-weight: 700; cursor: pointer; font-family: 'Inter', sans-serif; font-size: 14px; }
+        .btn-delete:hover { background: #dc2626; }
+        .btn-cancel { padding: 12px 32px; background: #1e293b; border: none; border-radius: 10px; color: #94a3b8; font-weight: 700; cursor: pointer; font-family: 'Inter', sans-serif; font-size: 14px; }
+        body.light-mode .btn-cancel { background: #e2e8f0; color: #64748b; }
 
-        .btn-actions { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 8px; }
         .table-container { background: rgba(255,255,255,0.04); border-radius: 16px; padding: 20px; border: 1px solid rgba(255,255,255,0.06); overflow-x: auto; }
         body.light-mode .table-container { background: white; border-color: rgba(0,0,0,0.06); }
         .table-container h3 { font-size: 16px; font-weight: 700; margin-bottom: 16px; display: flex; align-items: center; gap: 10px; }
@@ -72,13 +76,37 @@
         body.light-mode th, body.light-mode td { border-bottom-color: #e2e8f0; }
         th { font-weight: 600; color: #94a3b8; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; position: sticky; top: 0; background: rgba(15,23,42,0.95); }
         body.light-mode th { background: #f8fafc; color: #64748b; }
-        td .btn-delete-small { padding: 4px 12px; background: #ef4444; border: none; border-radius: 8px; color: white; font-size: 11px; font-weight: 600; cursor: pointer; font-family: 'Inter', sans-serif; transition: all 0.2s; }
-        td .btn-delete-small:hover { background: #dc2626; } td .btn-delete-small:active { transform: scale(0.95); }
+
         .badge-divisi { display: inline-block; padding: 2px 10px; border-radius: 12px; font-size: 11px; font-weight: 600; background: rgba(168,85,247,0.15); color: #a855f7; }
         .hari-badge { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 10px; font-weight: 600; margin: 1px 2px; background: rgba(16,185,129,0.15); color: #34d399; }
         .hari-badge.off { background: rgba(100,116,139,0.15); color: #64748b; }
-        .loading-text { text-align: center; color: #64748b; padding: 30px 0; font-size: 14px; }
-        .empty-text { text-align: center; color: #64748b; padding: 30px 0; font-size: 14px; }
+        .status-badge { display: inline-block; padding: 4px 12px; border-radius: 12px; font-size: 12px; font-weight: 600; }
+        .status-badge.hadir { background: rgba(16,185,129,0.2); color: #34d399; }
+        .status-badge.telat { background: rgba(251,146,60,0.2); color: #fb923c; }
+        .status-badge.alfa { background: rgba(239,68,68,0.2); color: #f87171; }
+        .status-badge.izin { background: rgba(96,165,250,0.2); color: #60a5fa; }
+        .status-badge.libur { background: rgba(168,85,247,0.2); color: #a855f7; }
+        .status-badge.pulang { background: rgba(16,185,129,0.15); color: #34d399; }
+        td .btn-delete-small { padding: 4px 12px; background: #ef4444; border: none; border-radius: 8px; color: white; font-size: 11px; font-weight: 600; cursor: pointer; font-family: 'Inter', sans-serif; }
+        td .btn-edit-small { padding: 4px 12px; background: #6366f1; border: none; border-radius: 8px; color: white; font-size: 11px; font-weight: 600; cursor: pointer; font-family: 'Inter', sans-serif; }
+        td .btn-setuju { padding: 4px 12px; background: #10b981; border: none; border-radius: 8px; color: white; font-size: 11px; font-weight: 600; cursor: pointer; font-family: 'Inter', sans-serif; }
+        td .btn-tolak { padding: 4px 12px; background: #ef4444; border: none; border-radius: 8px; color: white; font-size: 11px; font-weight: 600; cursor: pointer; font-family: 'Inter', sans-serif; }
+
+        .empty-state { text-align: center; padding: 40px 20px; color: #64748b; }
+        .empty-state .icon { font-size: 48px; display: block; margin-bottom: 12px; color: #475569; }
+        .empty-state h3 { font-size: 18px; font-weight: 700; color: white; margin-bottom: 4px; }
+        body.light-mode .empty-state h3 { color: #1e293b; }
+        .empty-state p { font-size: 13px; }
+        .loading-text { text-align: center; color: #64748b; padding: 20px 0; font-size: 14px; }
+
+        .filter-card { background: rgba(255,255,255,0.04); border-radius: 16px; padding: 16px 20px; margin-bottom: 20px; border: 1px solid rgba(255,255,255,0.06); display: flex; flex-wrap: wrap; align-items: center; gap: 12px; }
+        body.light-mode .filter-card { background: white; border-color: rgba(0,0,0,0.06); }
+        .filter-card label { font-size: 13px; font-weight: 600; color: #94a3b8; }
+        .filter-card select, .filter-card input { padding: 8px 14px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.1); background: rgba(0,0,0,0.3); color: white; font-family: 'Inter', sans-serif; font-size: 14px; min-width: 150px; }
+        body.light-mode .filter-card select, body.light-mode .filter-card input { background: #f1f5f9; color: #1e293b; border-color: #cbd5e1; }
+        .filter-card .btn-primary { padding: 10px 24px; background: linear-gradient(135deg, #a855f7, #3b82f6); border: none; border-radius: 10px; color: white; font-weight: 700; cursor: pointer; font-family: 'Inter', sans-serif; font-size: 14px; }
+        .filter-card .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 4px 15px rgba(168,85,247,0.4); }
+
         .toast-custom { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); background: #1e293b; color: white; padding: 14px 28px; border-radius: 16px; font-weight: 600; font-size: 14px; z-index: 9999; border-left: 4px solid #10b981; box-shadow: 0 10px 40px rgba(0,0,0,0.5); animation: slideUp 0.3s ease; max-width: 90%; font-family: 'Inter', sans-serif; }
         @keyframes slideUp { from { opacity: 0; transform: translateX(-50%) translateY(30px); } to { opacity: 1; transform: translateX(-50%) translateY(0); } }
         .hidden { display: none; }
@@ -87,11 +115,15 @@
 
         @media (max-width: 768px) {
             .navbar { flex-wrap: wrap; gap: 10px; padding: 12px 16px; }
-            .form-row { grid-template-columns: 1fr; } .form-row-2 { grid-template-columns: 1fr; }
-            .btn-actions { flex-direction: column; } .btn-actions button { width: 100%; }
-            .nav-actions { flex-wrap: wrap; } .tabs { flex-direction: column; } .tabs button { text-align: center; }
+            .tabs { flex-direction: column; }
+            .tabs button { text-align: center; }
+            .form-row { grid-template-columns: 1fr; }
+            .filter-card { flex-direction: column; align-items: stretch; }
+            .filter-card select, .filter-card input { width: 100%; min-width: auto; }
             .hari-grid { grid-template-columns: repeat(7, 1fr); gap: 4px; }
-            .hari-grid label { padding: 6px 4px; } .hari-grid label .icon { font-size: 14px; } .hari-grid label .text { font-size: 8px; }
+            .hari-grid label { padding: 6px 4px; }
+            .btn-actions { flex-direction: column; }
+            .btn-actions button { width: 100%; }
         }
     </style>
 </head>
@@ -100,7 +132,7 @@
 <nav class="navbar">
     <div class="logo">
         <h2>📋 RelawanTrack</h2>
-        <span>Manajemen Libur & Hari Kerja</span>
+        <span>Pengaturan Admin</span>
     </div>
     <div class="nav-actions">
         <button class="btn-back" onclick="window.location.href='admin_dashboard.html'"><i class="fas fa-arrow-left"></i> Dashboard</button>
@@ -114,9 +146,10 @@
     <div class="tabs">
         <button class="active" onclick="switchTab('tabLibur', this)">📅 Atur Libur</button>
         <button onclick="switchTab('tabHariKerja', this)">📋 Atur Hari Kerja</button>
+        <button onclick="switchTab('tabAbsensi', this)">✏️ Edit Absensi</button>
     </div>
 
-    <!-- TAB 1: ATUR LIBUR -->
+    <!-- TAB 1: LIBUR -->
     <div class="tab-content active" id="tabLibur">
         <div class="form-card">
             <h3><i class="fas fa-calendar-plus" style="color:#a855f7;"></i> Tambah Libur</h3>
@@ -137,22 +170,19 @@
                 <div class="form-group"><label>Tanggal</label><input type="date" id="inputTanggal"></div>
             </div>
             <div id="opsiRentang" class="hidden">
-                <div class="form-row-2">
+                <div class="form-row">
                     <div class="form-group"><label>Tanggal Mulai</label><input type="date" id="inputTanggalMulai"></div>
                     <div class="form-group"><label>Tanggal Selesai</label><input type="date" id="inputTanggalSelesai"></div>
                 </div>
             </div>
             <div id="opsiBulan" class="hidden">
-                <div class="form-row-2">
-                    <div class="form-group">
-                        <label>Bulan</label>
-                        <select id="inputBulan">
-                            <option value="1">Januari</option><option value="2">Februari</option><option value="3">Maret</option>
-                            <option value="4">April</option><option value="5">Mei</option><option value="6">Juni</option>
-                            <option value="7">Juli</option><option value="8" selected>Agustus</option><option value="9">September</option>
-                            <option value="10">Oktober</option><option value="11">November</option><option value="12">Desember</option>
-                        </select>
-                    </div>
+                <div class="form-row">
+                    <div class="form-group"><label>Bulan</label><select id="inputBulan">
+                        <option value="1">Januari</option><option value="2">Februari</option><option value="3">Maret</option>
+                        <option value="4">April</option><option value="5">Mei</option><option value="6">Juni</option>
+                        <option value="7">Juli</option><option value="8" selected>Agustus</option><option value="9">September</option>
+                        <option value="10">Oktober</option><option value="11">November</option><option value="12">Desember</option>
+                    </select></div>
                     <div class="form-group"><label>Tahun</label><select id="inputTahun"></select></div>
                 </div>
             </div>
@@ -174,61 +204,57 @@
         </div>
     </div>
 
-    <!-- TAB 2: ATUR HARI KERJA -->
+    <!-- TAB 2: HARI KERJA -->
     <div class="tab-content" id="tabHariKerja">
         <div class="form-card">
             <h3><i class="fas fa-calendar-check" style="color:#10b981;"></i> Atur Hari Kerja Per Divisi</h3>
-            <div class="info-box">
-                💡 <strong>Hari Kerja</strong> adalah hari dimana divisi WAJIB masuk. Hari yang TIDAK dicentang akan dianggap <strong>LIBUR</strong>.
-            </div>
+            <div class="info-box">💡 <strong>Hari Kerja</strong> adalah hari dimana divisi WAJIB masuk.</div>
             <div class="form-group">
                 <label>Pilih Divisi</label>
-                <select id="pilihDivisiHariKerja" onchange="loadHariKerjaDivisi()">
-                    <option value="">-- Pilih Divisi --</option>
-                </select>
-                <div class="form-hint">Pilih divisi untuk mengatur hari kerjanya</div>
+                <select id="pilihDivisiHariKerja" onchange="loadHariKerjaDivisi()"><option value="">-- Pilih Divisi --</option></select>
             </div>
             <div id="hariKerjaContainer">
-                <div class="empty-text" style="padding:20px 0;"><i class="fas fa-arrow-up" style="font-size:24px;display:block;margin-bottom:8px;"></i>Pilih divisi di atas untuk mulai mengatur hari kerja</div>
+                <div class="empty-state"><span class="icon">🕐</span><p>Pilih divisi di atas untuk mengatur hari kerja</p></div>
             </div>
         </div>
-
         <div class="table-container">
             <h3><i class="fas fa-list" style="color:#10b981;"></i> Daftar Hari Kerja Semua Divisi</h3>
             <div id="tableWrapperHariKerja"><div class="loading-text"><i class="fas fa-spinner fa-pulse"></i> Memuat data...</div></div>
         </div>
     </div>
 
+    <!-- TAB 3: EDIT ABSENSI (BY NAME) -->
+    <div class="tab-content" id="tabAbsensi">
+        <div class="filter-card">
+            <label><i class="fas fa-user"></i> Karyawan:</label>
+            <select id="pilihKaryawan"><option value="">-- Pilih Karyawan --</option></select>
+            <label><i class="fas fa-calendar-alt"></i> Tanggal:</label>
+            <input type="date" id="pilihTanggal">
+            <button class="btn-primary" onclick="loadAbsensi()"><i class="fas fa-search"></i> Cari</button>
+        </div>
+        <div id="formContainer">
+            <div class="empty-state"><span class="icon">✏️</span><h3>Pilih Karyawan & Tanggal</h3><p>Pilih karyawan dan tanggal untuk mulai edit absensi</p></div>
+        </div>
+    </div>
 </div>
 
 <script>
-    // ============================================================
-    // KONFIGURASI SUPABASE (SESUAI DENGAN YANG KAMU KASIH)
-    // ============================================================
+    // KONFIGURASI SUPABASE
     var SUPABASE_URL = 'https://zcaqqybonpfishwkmffg.supabase.co';
     var SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpjYXFxeWJvbnBmaXNod2ttZmZnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODc2Mjc2NDgsImV4cCI6MjEwMzIwMzY0OH0.pBk5nwJI3u9n08onTNmvcOFxtCXQvv-ipYIu2f_iAiQ';
 
-    // ============================================================
-    // CEK LOGIN (PENGAMAN TERHADAP ELEMEN YANG TIDAK ADA)
-    // ============================================================
     if (!localStorage.getItem('admin_logged_in')) window.location.href = 'admin_login.html';
-
     var adminNameEl = document.getElementById('adminName');
-    if (adminNameEl) {
-        adminNameEl.textContent = localStorage.getItem('admin_username') || 'Admin';
-    }
+    if (adminNameEl) adminNameEl.textContent = localStorage.getItem('admin_username') || 'Admin';
 
-    // ============================================================
-    // VARIABLES
-    // ============================================================
     var divisiList = [];
+    var allKaryawan = [];
+    var currentData = null;
+    var currentKaryawan = null;
     var hariList = ['senin', 'selasa', 'rabu', 'kamis', 'jumat', 'sabtu', 'minggu'];
     var hariLabel = {'senin':'Sen','selasa':'Sel','rabu':'Rab','kamis':'Kam','jumat':'Jum','sabtu':'Sab','minggu':'Min'};
     var hariIcon = {'senin':'🌙','selasa':'🌙','rabu':'🌙','kamis':'🌙','jumat':'🌙','sabtu':'☀️','minggu':'☀️'};
 
-    // ============================================================
-    // THEME, TOAST, LOGOUT, TABS
-    // ============================================================
     function toggleTheme() { document.body.classList.toggle('light-mode'); document.getElementById('themeIcon').className = document.body.classList.contains('light-mode') ? 'fas fa-sun' : 'fas fa-moon'; }
     function showToast(msg, type) {
         type = type || 'success'; var existing = document.querySelector('.toast-custom'); if (existing) existing.remove();
@@ -245,17 +271,16 @@
         document.querySelectorAll('.tabs button').forEach(function(el) { el.classList.remove('active'); });
         document.getElementById(tabId).classList.add('active'); btn.classList.add('active');
         if (tabId === 'tabHariKerja') loadHariKerjaAll();
+        if (tabId === 'tabAbsensi') loadKaryawan();
     }
 
-    // ============================================================
-    // DATE HELPERS & RADIO PERIODE
-    // ============================================================
     function getDaysInMonth(month, year) { return new Date(year, month, 0).getDate(); }
     function padZero(num) { return String(num).padStart(2, '0'); }
     function formatTanggalDisplay(dateStr) {
         var d = new Date(dateStr + 'T00:00:00'); var bulan = ['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agu','Sep','Okt','Nov','Des'];
         return d.getDate() + ' ' + bulan[d.getMonth()] + ' ' + d.getFullYear();
     }
+
     document.querySelectorAll('input[name="periode"]').forEach(function(radio) {
         radio.addEventListener('change', function() {
             document.querySelectorAll('.radio-group label').forEach(function(label) { label.classList.toggle('active', label.querySelector('input').checked); });
@@ -266,144 +291,144 @@
         });
     });
 
-    // ============================================================
-    // LOAD DIVISI (DARI TABEL KARYAWAN)
-    // ============================================================
-    async function loadDivisi() {
-        try {
-            var response = await fetch(SUPABASE_URL + '/rest/v1/karyawan?select=divisi', {
-                headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': 'Bearer ' + SUPABASE_ANON_KEY }
-            });
-            var data = await response.json();
-
-            if (!Array.isArray(data)) { console.error('Data tidak valid:', data); return; }
-
-            var divisiSet = new Set();
-            data.forEach(function(k) { if (k.divisi) divisiSet.add(k.divisi); });
-            divisiList = Array.from(divisiSet).sort();
-
-            var selectLibur = document.getElementById('pilihDivisiLibur');
-            selectLibur.innerHTML = '<option value="__semua">Semua Divisi</option>';
-            divisiList.forEach(function(d) { selectLibur.innerHTML += '<option value="' + d + '">' + d + '</option>'; });
-
-            var selectHariKerja = document.getElementById('pilihDivisiHariKerja');
-            selectHariKerja.innerHTML = '<option value="">-- Pilih Divisi --</option>';
-            divisiList.forEach(function(d) { selectHariKerja.innerHTML += '<option value="' + d + '">' + d + '</option>'; });
-
-        } catch(e) { console.error('Gagal load divisi:', e); }
-    }
-
-    // ============================================================
-    // POPULATE TAHUN
-    // ============================================================
     function populateTahun() {
         var select = document.getElementById('inputTahun'); var currentYear = new Date().getFullYear();
         for (var y = currentYear - 2; y <= currentYear + 1; y++) select.innerHTML += '<option value="' + y + '" ' + (y === currentYear ? 'selected' : '') + '>' + y + '</option>';
     }
     populateTahun();
 
-    // ============================================================
-    // TAB LIBUR: LOAD, TAMBAH, HAPUS
-    // ============================================================
-    async function loadLibur() {
-        var wrapper = document.getElementById('tableWrapperLibur'); wrapper.innerHTML = '<div class="loading-text"><i class="fas fa-spinner fa-pulse"></i> Memuat data...</div>';
-        var divisi = document.getElementById('pilihDivisiLibur').value;
+    // AMBIL DIVISI DARI TABEL DIVISI
+    async function loadDivisi() {
         try {
-            var query = SUPABASE_URL + '/rest/v1/hari_libur?select=*&order=tanggal.desc';
-            if (divisi !== '__semua') query += '&divisi=eq.' + encodeURIComponent(divisi);
-            var response = await fetch(query, { headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': 'Bearer ' + SUPABASE_ANON_KEY } });
-            var allLibur = await response.json();
-            document.getElementById('divisiLabelLibur').textContent = divisi === '__semua' ? '- Semua Divisi' : '- ' + divisi;
-
-            if (!allLibur || allLibur.length === 0) { wrapper.innerHTML = '<div class="empty-text"><i class="fas fa-calendar-times"></i> Belum ada data libur</div>'; return; }
-            var html = '<table><thead><tr><th>No</th><th>Tanggal</th><th>Divisi</th><th>Keterangan</th><th>Aksi</th></tr></thead><tbody>';
-            allLibur.forEach(function(item, idx) {
-                html += '<tr><td>' + (idx + 1) + '</td><td>' + formatTanggalDisplay(item.tanggal) + '</td><td><span class="badge-divisi">' + item.divisi + '</span></td><td>' + (item.keterangan || '-') + '</td><td><button class="btn-delete-small" onclick="hapusLibur(' + item.id + ')"><i class="fas fa-trash"></i> Hapus</button></td></tr>';
-            });
-            html += '</tbody></table>'; wrapper.innerHTML = html;
-        } catch(e) { console.error('Error:', e); wrapper.innerHTML = '<div class="empty-text">Gagal memuat data</div>'; }
+            var response = await fetch(SUPABASE_URL + '/rest/v1/divisi?select=nama&order=nama', { headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': 'Bearer ' + SUPABASE_ANON_KEY } });
+            var data = await response.json();
+            if (!Array.isArray(data)) return;
+            divisiList = data.map(function(d) { return d.nama; }).sort();
+            var selectLibur = document.getElementById('pilihDivisiLibur');
+            selectLibur.innerHTML = '<option value="__semua">Semua Divisi</option>';
+            divisiList.forEach(function(d) { selectLibur.innerHTML += '<option value="' + d + '">' + d + '</option>'; });
+            var selectHariKerja = document.getElementById('pilihDivisiHariKerja');
+            selectHariKerja.innerHTML = '<option value="">-- Pilih Divisi --</option>';
+            divisiList.forEach(function(d) { selectHariKerja.innerHTML += '<option value="' + d + '">' + d + '</option>'; });
+        } catch(e) { console.error(e); }
     }
 
-    async function tambahLibur() {
-        var divisi = document.getElementById('pilihDivisiLibur').value;
-        var periode = document.querySelector('input[name="periode"]:checked').value;
-        var keterangan = document.getElementById('inputKeterangan').value.trim() || 'Libur';
-        var tanggalList = [];
+    // EDIT ABSENSI
+    async function loadKaryawan() {
+        try {
+            var response = await fetch(SUPABASE_URL + '/rest/v1/karyawan?select=id,nama,divisi,jam_masuk,jam_pulang&order=nama', { headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': 'Bearer ' + SUPABASE_ANON_KEY } });
+            allKaryawan = await response.json();
+            var select = document.getElementById('pilihKaryawan');
+            select.innerHTML = '<option value="">-- Pilih Karyawan --</option>';
+            allKaryawan.forEach(function(k) { select.innerHTML += '<option value="' + k.id + '" data-divisi="' + (k.divisi || '') + '" data-jam_masuk="' + (k.jam_masuk || '08:00') + '" data-jam_pulang="' + (k.jam_pulang || '17:00') + '">' + k.nama + ' (' + (k.divisi || '-') + ')</option>'; });
+        } catch(e) { console.error(e); }
+    }
 
-        if (periode === 'tanggal') {
-            var tanggal = document.getElementById('inputTanggal').value;
-            if (!tanggal) { showToast('Pilih tanggal!', 'error'); return; }
-            tanggalList.push(tanggal);
-        } else if (periode === 'rentang') {
-            var mulai = document.getElementById('inputTanggalMulai').value; var selesai = document.getElementById('inputTanggalSelesai').value;
-            if (!mulai || !selesai) { showToast('Pilih rentang tanggal!', 'error'); return; }
-            if (mulai > selesai) { showToast('Tanggal mulai harus sebelum selesai!', 'error'); return; }
-            var d = new Date(mulai + 'T00:00:00'); var end = new Date(selesai + 'T00:00:00');
-            while (d <= end) { tanggalList.push(d.toISOString().split('T')[0]); d.setDate(d.getDate() + 1); }
-        } else {
-            var bulan = parseInt(document.getElementById('inputBulan').value); var tahun = parseInt(document.getElementById('inputTahun').value);
-            var days = getDaysInMonth(bulan, tahun);
-            for (var i = 1; i <= days; i++) tanggalList.push(tahun + '-' + padZero(bulan) + '-' + padZero(i));
+    async function loadAbsensi() {
+        var karyawanId = document.getElementById('pilihKaryawan').value;
+        var tanggal = document.getElementById('pilihTanggal').value;
+        if (!karyawanId || !tanggal) { showToast('Pilih karyawan dan tanggal!', 'warning'); return; }
+        currentKaryawan = allKaryawan.find(function(k) { return k.id === karyawanId; });
+        var container = document.getElementById('formContainer');
+        container.innerHTML = '<div class="loading-text"><i class="fas fa-spinner fa-pulse"></i> Memuat...</div>';
+        try {
+            var response = await fetch(SUPABASE_URL + '/rest/v1/absensi?select=*&karyawan_id=eq.' + karyawanId + '&tanggal=eq.' + tanggal, { headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': 'Bearer ' + SUPABASE_ANON_KEY } });
+            var data = await response.json();
+            currentData = data[0] || null;
+            renderForm();
+        } catch(e) { container.innerHTML = '<div class="empty-state">Gagal memuat data</div>'; }
+    }
+
+    function renderForm() {
+        var container = document.getElementById('formContainer');
+        var k = currentKaryawan;
+        var d = currentData;
+        var tgl = document.getElementById('pilihTanggal').value;
+        var tglDisplay = formatTanggalDisplay(tgl);
+        var currentStatus = 'alfa';
+        var currentJamMasuk = '';
+        var currentJamPulang = '';
+
+        if (d) {
+            if (d.status === 'libur') { currentStatus = 'libur'; }
+            else if (d.status === 'izin') { currentStatus = 'izin'; }
+            else if (d.jam_masuk && d.jam_pulang) { currentStatus = 'pulang'; }
+            else if (d.jam_masuk) { currentStatus = d.jam_masuk <= (k.jam_masuk || '08:00') ? 'hadir' : 'telat'; }
+            currentJamMasuk = d.jam_masuk || '';
+            currentJamPulang = d.jam_pulang || '';
         }
 
-        var divisiTarget = divisi === '__semua' ? divisiList : [divisi];
-        if (divisiTarget.length === 0) { showToast('Tidak ada divisi yang dipilih!', 'error'); return; }
+        var statusMap = {
+            hadir: { label: '🟢 Tepat Waktu', cls: 'hadir' }, telat: { label: '🟡 Terlambat', cls: 'telat' },
+            alfa: { label: '🔴 Alfa', cls: 'alfa' }, izin: { label: '🔵 Izin', cls: 'izin' },
+            libur: { label: '🟣 Libur', cls: 'libur' }, pulang: { label: '✅ Pulang', cls: 'hadir' }
+        };
+        var info = statusMap[currentStatus];
 
-        var dataToInsert = [];
-        for (var d = 0; d < divisiTarget.length; d++) for (var t = 0; t < tanggalList.length; t++) dataToInsert.push({ tanggal: tanggalList[t], divisi: divisiTarget[d], keterangan: keterangan });
-
-        try {
-            var response = await fetch(SUPABASE_URL + '/rest/v1/hari_libur', {
-                method: 'POST', headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': 'Bearer ' + SUPABASE_ANON_KEY, 'Content-Type': 'application/json', 'Prefer': 'resolution=merge-duplicates' },
-                body: JSON.stringify(dataToInsert)
-            });
-            if (response.ok) { showToast('✅ ' + dataToInsert.length + ' data libur berhasil ditambahkan!', 'success'); loadLibur(); }
-            else { var err = await response.json(); showToast('❌ Gagal menambahkan: ' + (err.message || 'Unknown error'), 'error'); }
-        } catch(e) { showToast('❌ Gagal koneksi!', 'error'); }
+        var html = '<div class="form-card"><div class="info-bar"><div><span class="nama" style="font-weight:700;font-size:18px;">' + k.nama + '</span></div><div><span class="tanggal">📅 ' + tglDisplay + '</span></div><div><span class="status-badge ' + info.cls + '">' + info.label + '</span></div></div>';
+        html += '<div class="form-group"><label>Status Absensi</label><select id="editStatus">';
+        html += '<option value="hadir"' + (currentStatus === 'hadir' ? ' selected' : '') + '>🟢 Tepat Waktu</option>';
+        html += '<option value="telat"' + (currentStatus === 'telat' ? ' selected' : '') + '>🟡 Terlambat</option>';
+        html += '<option value="alfa"' + (currentStatus === 'alfa' ? ' selected' : '') + '>🔴 Alfa</option>';
+        html += '<option value="izin"' + (currentStatus === 'izin' ? ' selected' : '') + '>🔵 Izin</option>';
+        html += '<option value="libur"' + (currentStatus === 'libur' ? ' selected' : '') + '>🟣 Libur</option>';
+        html += '</select></div>';
+        html += '<div class="form-row"><div class="form-group"><label>Jam Masuk</label><input type="time" id="editJamMasuk" value="' + currentJamMasuk + '"></div><div class="form-group"><label>Jam Pulang</label><input type="time" id="editJamPulang" value="' + currentJamPulang + '"></div></div>';
+        html += '<div class="form-actions"><button class="btn-save" onclick="simpanAbsensi()"><i class="fas fa-save"></i> Simpan</button>';
+        if (d) html += '<button class="btn-delete" onclick="hapusAbsensi()"><i class="fas fa-trash"></i> Hapus</button>';
+        html += '<button class="btn-cancel" onclick="clearForm()"><i class="fas fa-times"></i> Batal</button></div></div>';
+        container.innerHTML = html;
     }
 
-    async function hapusLibur(id) {
-        if (!confirm('Yakin ingin menghapus libur ini?')) return;
+    async function simpanAbsensi() {
+        var karyawanId = document.getElementById('pilihKaryawan').value;
+        var tanggal = document.getElementById('pilihTanggal').value;
+        var status = document.getElementById('editStatus').value;
+        var jamMasuk = document.getElementById('editJamMasuk').value || null;
+        var jamPulang = document.getElementById('editJamPulang').value || null;
+
+        if (status === 'libur' || status === 'izin' || status === 'alfa') { jamMasuk = null; jamPulang = null; }
+        if (status === 'hadir' || status === 'telat') { if (!jamMasuk) { showToast('Jam masuk wajib diisi!', 'error'); return; } }
+
+        var payload = { karyawan_id: karyawanId, tanggal: tanggal, jam_masuk: jamMasuk, jam_pulang: jamPulang, status: status };
         try {
-            var response = await fetch(SUPABASE_URL + '/rest/v1/hari_libur?id=eq.' + id, { method: 'DELETE', headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': 'Bearer ' + SUPABASE_ANON_KEY } });
-            if (response.ok) { showToast('🗑️ Libur berhasil dihapus!', 'success'); loadLibur(); }
-        } catch(e) { showToast('❌ Gagal koneksi!', 'error'); }
+            var method = 'POST'; var url = SUPABASE_URL + '/rest/v1/absensi';
+            if (currentData) { method = 'PATCH'; url = SUPABASE_URL + '/rest/v1/absensi?id=eq.' + currentData.id; }
+            var response = await fetch(url, { method: method, headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': 'Bearer ' + SUPABASE_ANON_KEY, 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+            if (response.ok) { showToast('✅ Data disimpan!', 'success'); loadAbsensi(); }
+            else { showToast('❌ Gagal!', 'error'); }
+        } catch(e) { showToast('❌ Koneksi gagal!', 'error'); }
     }
 
-    async function hapusSemuaLibur() {
-        var divisi = document.getElementById('pilihDivisiLibur').value; var divisiLabel = divisi === '__semua' ? 'Semua Divisi' : divisi;
-        if (!confirm('Yakin ingin menghapus SEMUA data libur untuk ' + divisiLabel + '?')) return;
+    async function hapusAbsensi() {
+        if (!currentData) return;
+        if (!confirm('Hapus data ini?')) return;
         try {
-            var query = SUPABASE_URL + '/rest/v1/hari_libur'; if (divisi !== '__semua') query += '?divisi=eq.' + encodeURIComponent(divisi);
-            var response = await fetch(query, { method: 'DELETE', headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': 'Bearer ' + SUPABASE_ANON_KEY } });
-            if (response.ok) { showToast('🗑️ Semua libur untuk ' + divisiLabel + ' berhasil dihapus!', 'success'); loadLibur(); }
-        } catch(e) { showToast('❌ Gagal koneksi!', 'error'); }
+            var response = await fetch(SUPABASE_URL + '/rest/v1/absensi?id=eq.' + currentData.id, { method: 'DELETE', headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': 'Bearer ' + SUPABASE_ANON_KEY } });
+            if (response.ok) { showToast('🗑️ Dihapus!', 'success'); currentData = null; loadAbsensi(); }
+        } catch(e) { showToast('❌ Gagal!', 'error'); }
     }
 
-    // ============================================================
-    // TAB HARI KERJA
-    // ============================================================
+    function clearForm() {
+        var container = document.getElementById('formContainer');
+        container.innerHTML = '<div class="empty-state"><span class="icon">✏️</span><h3>Pilih Karyawan & Tanggal</h3></div>';
+        currentData = null; currentKaryawan = null;
+    }
+
+    // HARI KERJA (DARI TABEL DIVISI)
     async function loadHariKerjaDivisi() {
         var divisi = document.getElementById('pilihDivisiHariKerja').value;
-        if (!divisi) {
-            document.getElementById('hariKerjaContainer').innerHTML = '<div class="empty-text"><i class="fas fa-arrow-up" style="font-size:24px;display:block;margin-bottom:8px;"></i>Pilih divisi di atas untuk mulai mengatur hari kerja</div>';
-            return;
-        }
-
+        if (!divisi) { document.getElementById('hariKerjaContainer').innerHTML = '<div class="empty-state"><span class="icon">🕐</span><p>Pilih divisi</p></div>'; return; }
         try {
-            var response = await fetch(SUPABASE_URL + '/rest/v1/karyawan?select=hari_masuk&divisi=eq.' + encodeURIComponent(divisi) + '&limit=1', {
-                headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': 'Bearer ' + SUPABASE_ANON_KEY }
-            });
+            var response = await fetch(SUPABASE_URL + '/rest/v1/divisi?select=hari_masuk&nama=eq.' + encodeURIComponent(divisi), { headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': 'Bearer ' + SUPABASE_ANON_KEY } });
             var data = await response.json();
-
             var hariArray = [];
             if (data && data.length > 0 && data[0].hari_masuk) {
                 try { hariArray = typeof data[0].hari_masuk === 'string' ? JSON.parse(data[0].hari_masuk) : data[0].hari_masuk; } catch(e) { hariArray = []; }
             }
             if (!Array.isArray(hariArray) || hariArray.length === 0) hariArray = ['senin', 'selasa', 'rabu', 'kamis', 'jumat', 'sabtu', 'minggu'];
-
             renderHariKerjaForm(divisi, hariArray);
-        } catch(e) { showToast('Gagal memuat data hari kerja!', 'error'); }
+        } catch(e) { showToast('Gagal memuat!', 'error'); }
     }
 
     function renderHariKerjaForm(divisi, hariArray) {
@@ -413,112 +438,135 @@
             var isChecked = hariArray.indexOf(h) !== -1;
             html += '<label class="' + (isChecked ? 'active' : '') + '" data-hari="' + h + '"><input type="checkbox" ' + (isChecked ? 'checked' : '') + '><span class="icon">' + hariIcon[h] + '</span><span class="text">' + hariLabel[h] + '</span></label>';
         });
-        html += '</div><div class="form-hint">Centang hari kerja untuk divisi ' + divisi + '</div></div>';
-        html += '<div class="btn-actions"><button class="btn-primary" onclick="simpanHariKerja()"><i class="fas fa-save"></i> Simpan</button><button class="btn-warning" onclick="resetHariKerja()"><i class="fas fa-undo"></i> Reset ke Default (7 hari)</button></div>';
+        html += '</div></div>';
+        html += '<div class="btn-actions"><button class="btn-primary" onclick="simpanHariKerja()"><i class="fas fa-save"></i> Simpan</button><button class="btn-warning" onclick="resetHariKerja()"><i class="fas fa-undo"></i> Reset</button></div>';
         container.innerHTML = html;
-
         document.querySelectorAll('#hariKerjaGrid label').forEach(function(label) {
-            label.addEventListener('click', function(e) {
-                var checkbox = this.querySelector('input[type="checkbox"]'); checkbox.checked = !checkbox.checked; this.classList.toggle('active', checkbox.checked);
-            });
+            label.addEventListener('click', function() { var checkbox = this.querySelector('input[type="checkbox"]'); checkbox.checked = !checkbox.checked; this.classList.toggle('active', checkbox.checked); });
         });
     }
 
     async function simpanHariKerja() {
         var divisi = document.getElementById('pilihDivisiHariKerja').value;
-        if (!divisi) { showToast('Pilih divisi dulu!', 'warning'); return; }
-
+        if (!divisi) { showToast('Pilih divisi!', 'warning'); return; }
         var labels = document.querySelectorAll('#hariKerjaGrid label');
         var hariArray = [];
-        labels.forEach(function(label) {
-            var checkbox = label.querySelector('input[type="checkbox"]');
-            if (checkbox && checkbox.checked) hariArray.push(label.dataset.hari);
-        });
-        if (hariArray.length === 0) { showToast('Minimal 1 hari kerja harus dipilih!', 'error'); return; }
-
+        labels.forEach(function(label) { var checkbox = label.querySelector('input[type="checkbox"]'); if (checkbox && checkbox.checked) hariArray.push(label.dataset.hari); });
+        if (hariArray.length === 0) { showToast('Minimal 1 hari!', 'error'); return; }
         try {
-            var response = await fetch(SUPABASE_URL + '/rest/v1/karyawan?divisi=eq.' + encodeURIComponent(divisi), {
+            var response = await fetch(SUPABASE_URL + '/rest/v1/divisi?nama=eq.' + encodeURIComponent(divisi), {
                 method: 'PATCH', headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': 'Bearer ' + SUPABASE_ANON_KEY, 'Content-Type': 'application/json' },
                 body: JSON.stringify({ hari_masuk: hariArray })
             });
-            if (response.ok) { showToast('✅ Hari kerja untuk ' + divisi + ' berhasil disimpan!', 'success'); loadHariKerjaAll(); loadHariKerjaDivisi(); }
-            else { showToast('❌ Gagal menyimpan!', 'error'); }
-        } catch(e) { showToast('❌ Gagal koneksi!', 'error'); }
+            if (response.ok) { showToast('✅ Tersimpan!', 'success'); loadHariKerjaAll(); loadHariKerjaDivisi(); }
+        } catch(e) { showToast('❌ Gagal!', 'error'); }
     }
 
     async function resetHariKerja() {
         var divisi = document.getElementById('pilihDivisiHariKerja').value;
-        if (!divisi) { showToast('Pilih divisi dulu!', 'warning'); return; }
-        if (!confirm('Reset hari kerja untuk ' + divisi + ' ke default (Senin-Minggu)?')) return;
-
+        if (!divisi) { showToast('Pilih divisi!', 'warning'); return; }
+        if (!confirm('Reset?')) return;
         var defaultHari = ['senin', 'selasa', 'rabu', 'kamis', 'jumat', 'sabtu', 'minggu'];
         try {
-            var response = await fetch(SUPABASE_URL + '/rest/v1/karyawan?divisi=eq.' + encodeURIComponent(divisi), {
+            var response = await fetch(SUPABASE_URL + '/rest/v1/divisi?nama=eq.' + encodeURIComponent(divisi), {
                 method: 'PATCH', headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': 'Bearer ' + SUPABASE_ANON_KEY, 'Content-Type': 'application/json' },
                 body: JSON.stringify({ hari_masuk: defaultHari })
             });
-            if (response.ok) { showToast('🔄 Hari kerja untuk ' + divisi + ' direset!', 'success'); loadHariKerjaAll(); loadHariKerjaDivisi(); }
-        } catch(e) { showToast('❌ Gagal koneksi!', 'error'); }
+            if (response.ok) { showToast('🔄 Direset!', 'success'); loadHariKerjaAll(); loadHariKerjaDivisi(); }
+        } catch(e) { showToast('❌ Gagal!', 'error'); }
     }
 
     async function loadHariKerjaAll() {
         var wrapper = document.getElementById('tableWrapperHariKerja');
-        wrapper.innerHTML = '<div class="loading-text"><i class="fas fa-spinner fa-pulse"></i> Memuat data...</div>';
-
+        wrapper.innerHTML = '<div class="loading-text"><i class="fas fa-spinner fa-pulse"></i> Memuat...</div>';
         try {
-            var response = await fetch(SUPABASE_URL + '/rest/v1/karyawan?select=divisi,hari_masuk', {
-                headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': 'Bearer ' + SUPABASE_ANON_KEY }
-            });
+            var response = await fetch(SUPABASE_URL + '/rest/v1/divisi?select=nama,hari_masuk', { headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': 'Bearer ' + SUPABASE_ANON_KEY } });
             var data = await response.json();
-
-            if (!Array.isArray(data) || data.length === 0) { wrapper.innerHTML = '<div class="empty-text">Belum ada data divisi</div>'; return; }
-
-            var divisiMap = {};
-            data.forEach(function(k) {
-                if (!k.divisi) return;
-                if (!divisiMap[k.divisi]) divisiMap[k.divisi] = [];
+            if (!data || data.length === 0) { wrapper.innerHTML = '<div class="empty-state">Belum ada data</div>'; return; }
+            var html = '<table><thead><tr><th>No</th><th>Divisi</th><th>Hari Kerja</th><th>Jumlah</th></tr></thead><tbody>';
+            data.forEach(function(divisi, idx) {
                 var hariArray = [];
-                try { hariArray = typeof k.hari_masuk === 'string' ? JSON.parse(k.hari_masuk) : (k.hari_masuk || []); } catch(e) { hariArray = []; }
-                divisiMap[k.divisi].push(hariArray);
-            });
-
-            var html = '<table><thead><tr><th>No</th><th>Divisi</th><th>Hari Kerja</th><th>Jumlah Karyawan</th></tr></thead><tbody>';
-            var keys = Object.keys(divisiMap).sort();
-            if (keys.length === 0) { html += '<tr><td colspan="4" style="text-align:center;padding:20px;">Belum ada data</td></tr>'; }
-
-            keys.forEach(function(divisi, idx) {
-                var hariCount = {};
-                divisiMap[divisi].forEach(function(arr) {
-                    arr.forEach(function(h) { hariCount[h] = (hariCount[h] || 0) + 1; });
-                });
-
-                var totalKaryawan = divisiMap[divisi].length;
-                var hariKerja = [];
-                hariList.forEach(function(h) {
-                    var count = hariCount[h] || 0;
-                    var pct = Math.round((count / totalKaryawan) * 100);
-                    if (pct > 50) hariKerja.push(h);
-                });
-
-                if (hariKerja.length === 0) hariKerja = ['senin', 'selasa', 'rabu', 'kamis', 'jumat', 'sabtu', 'minggu'];
-
+                try { hariArray = typeof divisi.hari_masuk === 'string' ? JSON.parse(divisi.hari_masuk) : (divisi.hari_masuk || []); } catch(e) { hariArray = []; }
+                if (!Array.isArray(hariArray) || hariArray.length === 0) hariArray = ['senin', 'selasa', 'rabu', 'kamis', 'jumat', 'sabtu', 'minggu'];
                 var hariHtml = '';
-                hariList.forEach(function(h) {
-                    var active = hariKerja.indexOf(h) !== -1;
-                    hariHtml += '<span class="hari-badge' + (active ? '' : ' off') + '">' + hariLabel[h] + '</span>';
-                });
-
-                html += '<tr><td>' + (idx + 1) + '</td><td><span class="badge-divisi">' + divisi + '</span></td><td style="font-size:11px;">' + hariHtml + '</td><td>' + totalKaryawan + ' karyawan</td></tr>';
+                hariList.forEach(function(h) { var active = hariArray.indexOf(h) !== -1; hariHtml += '<span class="hari-badge' + (active ? '' : ' off') + '">' + hariLabel[h] + '</span>'; });
+                html += '<tr><td>' + (idx + 1) + '</td><td><span class="badge-divisi">' + divisi.nama + '</span></td><td style="font-size:11px;">' + hariHtml + '</td><td>' + (hariArray.length === 7 ? 'Full Time' : 'Part Time') + '</td></tr>';
             });
-
-            html += '</tbody></table>';
-            wrapper.innerHTML = html;
-        } catch(e) { console.error('Error:', e); wrapper.innerHTML = '<div class="empty-text">Gagal memuat data</div>'; }
+            html += '</tbody></table>'; wrapper.innerHTML = html;
+        } catch(e) { wrapper.innerHTML = '<div class="empty-state">Gagal memuat</div>'; }
     }
 
-    // ============================================================
+    // LIBUR
+    async function loadLibur() {
+        var wrapper = document.getElementById('tableWrapperLibur'); wrapper.innerHTML = '<div class="loading-text"><i class="fas fa-spinner fa-pulse"></i> Memuat...</div>';
+        var divisi = document.getElementById('pilihDivisiLibur').value;
+        try {
+            var query = SUPABASE_URL + '/rest/v1/hari_libur?select=*&order=tanggal.desc';
+            if (divisi !== '__semua') query += '&divisi=eq.' + encodeURIComponent(divisi);
+            var response = await fetch(query, { headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': 'Bearer ' + SUPABASE_ANON_KEY } });
+            var allLibur = await response.json();
+            document.getElementById('divisiLabelLibur').textContent = divisi === '__semua' ? '- Semua Divisi' : '- ' + divisi;
+            if (!allLibur || allLibur.length === 0) { wrapper.innerHTML = '<div class="empty-state">Belum ada data</div>'; return; }
+            var html = '<table><thead><tr><th>No</th><th>Tanggal</th><th>Divisi</th><th>Keterangan</th><th>Aksi</th></tr></thead><tbody>';
+            allLibur.forEach(function(item, idx) {
+                html += '<tr><td>' + (idx + 1) + '</td><td>' + formatTanggalDisplay(item.tanggal) + '</td><td><span class="badge-divisi">' + item.divisi + '</span></td><td>' + (item.keterangan || '-') + '</td><td><button class="btn-delete-small" onclick="hapusLibur(' + item.id + ')"><i class="fas fa-trash"></i> Hapus</button></td></tr>';
+            });
+            html += '</tbody></table>'; wrapper.innerHTML = html;
+        } catch(e) { wrapper.innerHTML = '<div class="empty-state">Gagal memuat</div>'; }
+    }
+
+    async function tambahLibur() {
+        var divisi = document.getElementById('pilihDivisiLibur').value;
+        var periode = document.querySelector('input[name="periode"]:checked').value;
+        var keterangan = document.getElementById('inputKeterangan').value.trim() || 'Libur';
+        var tanggalList = [];
+        if (periode === 'tanggal') {
+            var tanggal = document.getElementById('inputTanggal').value;
+            if (!tanggal) { showToast('Pilih tanggal!', 'error'); return; }
+            tanggalList.push(tanggal);
+        } else if (periode === 'rentang') {
+            var mulai = document.getElementById('inputTanggalMulai').value; var selesai = document.getElementById('inputTanggalSelesai').value;
+            if (!mulai || !selesai) { showToast('Pilih rentang!', 'error'); return; }
+            if (mulai > selesai) { showToast('Tanggal salah!', 'error'); return; }
+            var d = new Date(mulai + 'T00:00:00'); var end = new Date(selesai + 'T00:00:00');
+            while (d <= end) { tanggalList.push(d.toISOString().split('T')[0]); d.setDate(d.getDate() + 1); }
+        } else {
+            var bulan = parseInt(document.getElementById('inputBulan').value); var tahun = parseInt(document.getElementById('inputTahun').value);
+            var days = getDaysInMonth(bulan, tahun);
+            for (var i = 1; i <= days; i++) tanggalList.push(tahun + '-' + padZero(bulan) + '-' + padZero(i));
+        }
+        var divisiTarget = divisi === '__semua' ? divisiList : [divisi];
+        if (divisiTarget.length === 0) { showToast('Tidak ada divisi!', 'error'); return; }
+        var dataToInsert = [];
+        for (var d = 0; d < divisiTarget.length; d++) for (var t = 0; t < tanggalList.length; t++) dataToInsert.push({ tanggal: tanggalList[t], divisi: divisiTarget[d], keterangan: keterangan });
+        try {
+            var response = await fetch(SUPABASE_URL + '/rest/v1/hari_libur', {
+                method: 'POST', headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': 'Bearer ' + SUPABASE_ANON_KEY, 'Content-Type': 'application/json', 'Prefer': 'resolution=merge-duplicates' },
+                body: JSON.stringify(dataToInsert)
+            });
+            if (response.ok) { showToast('✅ ' + dataToInsert.length + ' libur ditambahkan!', 'success'); loadLibur(); }
+        } catch(e) { showToast('❌ Gagal!', 'error'); }
+    }
+
+    async function hapusLibur(id) {
+        if (!confirm('Hapus?')) return;
+        try {
+            var response = await fetch(SUPABASE_URL + '/rest/v1/hari_libur?id=eq.' + id, { method: 'DELETE', headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': 'Bearer ' + SUPABASE_ANON_KEY } });
+            if (response.ok) { showToast('🗑️ Dihapus!', 'success'); loadLibur(); }
+        } catch(e) { showToast('❌ Gagal!', 'error'); }
+    }
+
+    async function hapusSemuaLibur() {
+        var divisi = document.getElementById('pilihDivisiLibur').value;
+        if (!confirm('Hapus semua?')) return;
+        try {
+            var query = SUPABASE_URL + '/rest/v1/hari_libur'; if (divisi !== '__semua') query += '?divisi=eq.' + encodeURIComponent(divisi);
+            var response = await fetch(query, { method: 'DELETE', headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': 'Bearer ' + SUPABASE_ANON_KEY } });
+            if (response.ok) { showToast('🗑️ Semua dihapus!', 'success'); loadLibur(); }
+        } catch(e) { showToast('❌ Gagal!', 'error'); }
+    }
+
     // INIT
-    // ============================================================
     loadDivisi();
     setTimeout(function() { loadLibur(); loadHariKerjaAll(); }, 300);
 </script>
