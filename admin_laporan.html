@@ -338,7 +338,7 @@
     <div class="legenda">
         <span><div class="swatch" style="background: #10b981;"></div> Hadir</span>
         <span><div class="swatch" style="background: #a855f7;"></div> Libur</span>
-        <span><div class="swatch" style="background: #3b82f6;"></div> Izin</span>
+        <span><div class="swatch" style="background: #3b82f6;"></div> Izin (termasuk Sakit)</span>
         <span><div class="swatch" style="background: #ef4444;"></div> Alfa</span>
     </div>
 
@@ -367,6 +367,7 @@
     // VARIABLES & FUNGSI TANGGAL
     // ============================================================
     var divisiUrutan = [
+        'ASSISTEN LAPANGAN 1',
         'ASSISTEN LAPANGAN 2',
         'KEPALA CHEF',
         'PENGOLAHAN',
@@ -437,7 +438,7 @@
     }
 
     // ============================================================
-    // LOAD LAPORAN (MATRIX) - LOGIKA HARI KERJA DINAMIS
+    // LOAD LAPORAN (MATRIX) - IZIN & SAKIT TERCOVER
     // ============================================================
     async function loadLaporan() {
         var start = document.getElementById('startDate').value;
@@ -456,13 +457,13 @@
         wrapper.innerHTML = '<div class="loading-text" style="padding: 40px; text-align: center; color: #64748b;"><i class="fas fa-spinner fa-pulse"></i> Memuat laporan...</div>';
 
         try {
-            // 1. Ambil Karyawan (termasuk hari_masuk)
-            var kRes = await fetch(SUPABASE_URL + '/rest/v1/karyawan?select=id,nama,divisi,hari_masuk', {
+            // 1. Ambil Karyawan
+            var kRes = await fetch(SUPABASE_URL + '/rest/v1/karyawan?select=id,nama,divisi', {
                 headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': 'Bearer ' + SUPABASE_ANON_KEY }
             });
             var allKaryawan = await kRes.json();
 
-            // 2. Ambil Absensi
+            // 2. Ambil Absensi (termasuk status izin/sakit)
             var absenQuery = SUPABASE_URL + '/rest/v1/absensi?select=*&tanggal=gte.' + start + '&tanggal=lte.' + end;
             var absenRes = await fetch(absenQuery, {
                 headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': 'Bearer ' + SUPABASE_ANON_KEY }
@@ -496,22 +497,6 @@
             absensi.forEach(function(a) {
                 if (!absensiMap[a.karyawan_id]) absensiMap[a.karyawan_id] = {};
                 absensiMap[a.karyawan_id][a.tanggal] = a;
-            });
-
-            // 5. Map Hari Kerja per Karyawan
-            var hariKerjaMap = {};
-            allKaryawan.forEach(function(k) {
-                var workDays = [];
-                if (k.hari_masuk) {
-                    try {
-                        workDays = typeof k.hari_masuk === 'string' ? JSON.parse(k.hari_masuk) : k.hari_masuk;
-                    } catch(e) { workDays = []; }
-                }
-                // Default: Senin-Jumat jika tidak ada data
-                if (!Array.isArray(workDays) || workDays.length === 0) {
-                    workDays = ['senin', 'selasa', 'rabu', 'kamis', 'jumat'];
-                }
-                hariKerjaMap[k.id] = workDays;
             });
 
             // Filter Divisi + Sort
@@ -548,7 +533,6 @@
             karyawanFiltered.forEach(function(k, idx) {
                 var nama = k.nama;
                 var divisi = k.divisi || '-';
-                var workDays = hariKerjaMap[k.id] || ['senin', 'selasa', 'rabu', 'kamis', 'jumat'];
                 var totalHadir = 0;
                 var totalIzin = 0;
 
@@ -562,32 +546,22 @@
                     var keyLibur = t + '|' + divisi;
                     var isLiburGlobal = hariLiburMap[t + '|__semua'];
                     var isLiburDivisi = hariLiburMap[keyLibur];
-
-                    // Cek hari kerja dari data karyawan
-                    var dayOfWeek = new Date(t + 'T00:00:00').getDay();
-                    var dayNames = ['minggu', 'senin', 'selasa', 'rabu', 'kamis', 'jumat', 'sabtu'];
-                    var dayName = dayNames[dayOfWeek];
-                    var isWorkDay = workDays.indexOf(dayName) !== -1;
-
+                    
                     var status = 'alfa';
                     var keteranganIzin = '';
 
-                    // LOGIKA UTAMA:
-                    // 1. Cek apakah hari tersebut HARI KERJA untuk karyawan ini
-                    if (!isWorkDay) {
-                        status = 'libur'; // Hari non-kerja -> Libur
-                    } 
-                    // 2. Cek libur by divisi/global dari hari_libur
-                    else if (isLiburGlobal || isLiburDivisi) {
+                    // LOGIKA:
+                    // 1. Cek libur by divisi/global dari hari_libur
+                    if (isLiburGlobal || isLiburDivisi) {
                         status = 'libur';
                     } 
-                    // 3. Cek dari tabel absensi (by name)
+                    // 2. Cek dari tabel absensi (by name) - IZIN & SAKIT TERCOVER
                     else if (absen) {
                         if (absen.status === 'libur') {
                             status = 'libur';
-                        } else if (absen.status === 'izin') {
+                        } else if (absen.status === 'izin' || absen.status === 'sakit') {
                             status = 'izin';
-                            keteranganIzin = absen.alasan || 'Izin';
+                            keteranganIzin = absen.alasan || (absen.status === 'sakit' ? 'Sakit' : 'Izin');
                         } else if (absen.jam_masuk) {
                             status = 'hadir';
                         }
