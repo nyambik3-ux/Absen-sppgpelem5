@@ -56,15 +56,45 @@
             align-items: center;
             gap: 24px;
             box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            position: relative;
         }
-        .kop img {
-            width: 100px; /* Bisa diubah ukurannya */
+        .logo-drag {
+            position: absolute;
+            cursor: move;
+            border: 2px dashed transparent;
+            z-index: 10;
+            transition: border-color 0.2s;
+        }
+        .logo-drag:hover, .logo-drag.active {
+            border-color: #a855f7;
+        }
+        .logo-drag img {
+            width: 100%;
             height: auto;
             object-fit: contain;
+            pointer-events: none; /* agar drag tidak ganggu gambar */
         }
+        .logo-drag .resize-handle {
+            position: absolute;
+            bottom: -10px;
+            right: -10px;
+            width: 20px;
+            height: 20px;
+            background: #a855f7;
+            border-radius: 50%;
+            cursor: nwse-resize;
+            z-index: 20;
+            display: none;
+            border: 2px solid white;
+        }
+        .logo-drag.active .resize-handle {
+            display: block;
+        }
+        
         .kop .text-kop {
             flex: 1;
             text-align: center;
+            margin-left: 120px; /* default margin untuk logo di kiri */
         }
         .kop .text-kop h1 {
             font-size: 18px;
@@ -80,6 +110,9 @@
             text-transform: uppercase;
             line-height: 1.3;
             color: #1e293b;
+        }
+        .kop .text-kop h2.tiga {
+            font-size: 14px;
         }
         .kop .text-kop p {
             font-size: 13px;
@@ -161,7 +194,6 @@
 
         /* Status Warna */
         .status-hadir { background: #10b981; color: white; font-weight: 700; border-radius: 4px; }
-        .status-telat { background: #f59e0b; color: white; font-weight: 700; border-radius: 4px; }
         .status-libur { background: #a855f7; color: white; font-weight: 700; border-radius: 4px; }
         .status-izin { background: #3b82f6; color: white; font-weight: 700; border-radius: 4px; }
         .status-alfa { background: #ef4444; color: white; font-weight: 700; border-radius: 4px; }
@@ -173,9 +205,6 @@
             min-width: 60px;
         }
         .col-total-hadir { color: #059669; }
-        .col-total-izin { color: #2563eb; }
-        .col-total-alfa { color: #dc2626; }
-        .col-persentase { color: #7c3aed; }
 
         /* ===== LEGENDA ===== */
         .legenda {
@@ -235,12 +264,22 @@
                 margin-bottom: 0;
                 padding: 10px;
             }
+            .logo-drag {
+                position: absolute !important;
+                top: 10px !important;
+                left: 10px !important;
+                width: 100px !important; /* Reset ke ukuran default saat cetak */
+                border: none !important;
+            }
+            .logo-drag .resize-handle { display: none !important; }
+            .kop .text-kop { margin-left: 130px; }
             .ttd { margin-top: 60px; }
         }
 
         @media (max-width: 768px) {
             .filter-bar { flex-direction: column; align-items: stretch; }
             .kop { flex-direction: column; text-align: center; }
+            .kop .text-kop { margin-left: 0; }
             .ttd { flex-direction: column; gap: 24px; }
         }
     </style>
@@ -266,12 +305,15 @@
     </div>
 
     <!-- KOP LAPORAN -->
-    <div class="kop">
-        <img src="https://zcaqqybonpfishwkmffg.supabase.co/storage/v1/object/public/logo/Logo_Badan_Gizi_Nasional_(2024)%20(1).png" alt="Logo">
+    <div class="kop" id="kopContainer">
+        <div class="logo-drag" id="draggableLogo">
+            <img src="https://zcaqqybonpfishwkmffg.supabase.co/storage/v1/object/public/logo/Logo_Badan_Gizi_Nasional_(2024)%20(1).png" alt="Logo">
+            <div class="resize-handle" id="resizeHandle"></div>
+        </div>
         <div class="text-kop">
             <h1>SATUAN PELAYANAN PEMENUHAN GIZI</h1>
             <h2>SPPG KEDIRI PARE PELEM 5</h2>
-            <h2 style="font-size: 14px;">YAYASAN RIHLAH CAHAYA BANGSA</h2>
+            <h2 class="tiga">YAYASAN RIHLAH CAHAYA BANGSA</h2>
             <p>Alamat: Jl Langkat, Singgahan, Pelem Kec. Pare, Kab Kediri, Prov. Jawa Timur 64213</p>
             <p>Email: sppgpelem10@gmail.com</p>
             <div class="garis-tebal"></div>
@@ -295,7 +337,6 @@
     <!-- LEGENDA -->
     <div class="legenda">
         <span><div class="swatch" style="background: #10b981;"></div> Hadir</span>
-        <span><div class="swatch" style="background: #f59e0b;"></div> Telat</span>
         <span><div class="swatch" style="background: #a855f7;"></div> Libur</span>
         <span><div class="swatch" style="background: #3b82f6;"></div> Izin</span>
         <span><div class="swatch" style="background: #ef4444;"></div> Alfa</span>
@@ -326,7 +367,6 @@
     // VARIABLES & FUNGSI TANGGAL
     // ============================================================
     var divisiList = [];
-    var hariList = ['senin', 'selasa', 'rabu', 'kamis', 'jumat', 'sabtu', 'minggu'];
     
     function getTodayIndonesia() {
         var now = new Date();
@@ -336,7 +376,7 @@
 
     function formatTanggalLengkap(dateStr) {
         var d = new Date(dateStr + 'T00:00:00');
-        var bulan = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
+        var bulan = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'Novemebr', 'Desember'];
         return d.getDate() + ' ' + bulan[d.getMonth()] + ' ' + d.getFullYear();
     }
 
@@ -354,8 +394,20 @@
     setDefaultDates();
 
     // ============================================================
-    // LOAD DIVISI
+    // LOAD DIVISI (Urutan Manual)
     // ============================================================
+    var divisiUrutan = [
+        'ASSISTEN LAPANGAN 2',
+        'KEPALA CHEF',
+        'PENGOLAHAN',
+        'PERSIAPAN',
+        'PEMORSIAN',
+        'CUCI FOODTRAY',
+        'DISTRIBUSI',
+        'SATPAM',
+        'KEBERSIHAN'
+    ];
+
     async function loadDivisi() {
         try {
             var response = await fetch(SUPABASE_URL + '/rest/v1/karyawan?select=divisi', {
@@ -365,7 +417,16 @@
             
             var divisiSet = new Set();
             data.forEach(function(k) { if (k.divisi) divisiSet.add(k.divisi); });
-            divisiList = Array.from(divisiSet).sort();
+            divisiList = Array.from(divisiSet);
+
+            // Urutkan sesuai urutan manual
+            divisiList.sort(function(a, b) {
+                var indexA = divisiUrutan.indexOf(a);
+                var indexB = divisiUrutan.indexOf(b);
+                if (indexA === -1) indexA = 999;
+                if (indexB === -1) indexB = 999;
+                return indexA - indexB;
+            });
 
             var select = document.getElementById('filterDivisi');
             select.innerHTML = '<option value="">Semua Divisi</option>';
@@ -420,16 +481,6 @@
                 current.setDate(current.getDate() + 1);
             }
 
-            // Hitung jumlah hari kerja berdasarkan hari kerja divisi (default Senin-Jumat)
-            var totalHariKerja = 0;
-            tanggalList.forEach(function(t) {
-                var day = new Date(t + 'T00:00:00').getDay();
-                var dayNames = ['minggu', 'senin', 'selasa', 'rabu', 'kamis', 'jumat', 'sabtu'];
-                if (dayNames[day] !== 'minggu' && dayNames[day] !== 'sabtu') {
-                    totalHariKerja++;
-                }
-            });
-
             // Map absensi per karyawan
             var absensiMap = {};
             absensi.forEach(function(a) {
@@ -437,10 +488,18 @@
                 absensiMap[a.karyawan_id][a.tanggal] = a;
             });
 
-            // Filter divisi
+            // Filter divisi + Sort sesuai urutan
             var karyawanFiltered = allKaryawan.filter(function(k) {
                 if (divisiFilter) return k.divisi === divisiFilter;
                 return true;
+            });
+
+            karyawanFiltered.sort(function(a, b) {
+                var indexA = divisiUrutan.indexOf(a.divisi);
+                var indexB = divisiUrutan.indexOf(b.divisi);
+                if (indexA === -1) indexA = 999;
+                if (indexB === -1) indexB = 999;
+                return indexA - indexB;
             });
 
             // Render tabel
@@ -456,17 +515,12 @@
             });
 
             html += '<th style="min-width: 60px;">Total Masuk</th>';
-            html += '<th style="min-width: 50px;">Total Izin</th>';
-            html += '<th style="min-width: 50px;">Total Alfa</th>';
-            html += '<th style="min-width: 70px;">% Hadir</th>';
             html += '</tr></thead><tbody>';
 
             karyawanFiltered.forEach(function(k, idx) {
                 var nama = k.nama;
                 var divisi = k.divisi || '-';
                 var totalHadir = 0;
-                var totalIzin = 0;
-                var totalAlfa = 0;
 
                 html += '<tr>';
                 html += '<td>' + (idx + 1) + '</td>';
@@ -478,24 +532,16 @@
                     var status = 'alfa';
                     
                     if (absen) {
-                        // Cek status dari database
                         if (absen.status === 'libur') status = 'libur';
                         else if (absen.status === 'izin') status = 'izin';
                         else if (absen.jam_masuk && absen.jam_pulang) status = 'hadir';
-                        else if (absen.jam_masuk) {
-                            var targetJam = k.jam_masuk || '08:00';
-                            status = absen.jam_masuk <= targetJam ? 'hadir' : 'telat';
-                        }
+                        else if (absen.jam_masuk) status = 'hadir';
                     }
 
-                    // Hitung total
-                    if (status === 'hadir' || status === 'telat') totalHadir++;
-                    else if (status === 'izin') totalIzin++;
-                    else if (status === 'alfa') totalAlfa++;
+                    if (status === 'hadir') totalHadir++;
 
                     var badge = '';
                     if (status === 'hadir') badge = '<div class="status-hadir">✔</div>';
-                    else if (status === 'telat') badge = '<div class="status-telat">T</div>';
                     else if (status === 'libur') badge = '<div class="status-libur">L</div>';
                     else if (status === 'izin') badge = '<div class="status-izin">I</div>';
                     else if (status === 'alfa') badge = '<div class="status-alfa">A</div>';
@@ -503,12 +549,7 @@
                     html += '<td>' + badge + '</td>';
                 });
 
-                var persentase = totalHariKerja > 0 ? Math.round((totalHadir / totalHariKerja) * 100) : 0;
-
                 html += '<td class="col-akumulasi col-total-hadir">' + totalHadir + '</td>';
-                html += '<td class="col-akumulasi col-total-izin">' + totalIzin + '</td>';
-                html += '<td class="col-akumulasi col-total-alfa">' + totalAlfa + '</td>';
-                html += '<td class="col-akumulasi col-persentase">' + persentase + '%</td>';
                 html += '</tr>';
             });
 
@@ -556,7 +597,7 @@
         });
 
         csv.push('');
-        csv.push('LEGENDA: Hadir (✔), Telat (T), Libur (L), Izin (I), Alfa (A)');
+        csv.push('LEGENDA: Hadir (✔), Libur (L), Izin (I), Alfa (A)');
 
         var blob = new Blob([csv.join('\n')], { type: 'text/csv;charset=utf-8;' });
         var link = document.createElement('a');
@@ -572,6 +613,87 @@
     function exportPDF() {
         window.print();
     }
+
+    // ============================================================
+    // DRAG & RESIZE LOGO
+    // ============================================================
+    const logo = document.getElementById('draggableLogo');
+    const kopContainer = document.getElementById('kopContainer');
+    const resizeHandle = document.getElementById('resizeHandle');
+
+    // Load dari LocalStorage
+    const savedPos = localStorage.getItem('logoPos');
+    const savedSize = localStorage.getItem('logoSize');
+    if (savedPos) {
+        const pos = JSON.parse(savedPos);
+        logo.style.left = pos.left + 'px';
+        logo.style.top = pos.top + 'px';
+    }
+    if (savedSize) {
+        logo.style.width = savedSize + 'px';
+    }
+
+    let isDragging = false;
+    let isResizing = false;
+    let startX, startY, startLeft, startTop, startWidth;
+
+    logo.addEventListener('mousedown', function(e) {
+        if (e.target === resizeHandle) return;
+        isDragging = true;
+        logo.classList.add('active');
+        startX = e.clientX;
+        startY = e.clientY;
+        startLeft = logo.offsetLeft;
+        startTop = logo.offsetTop;
+        e.preventDefault();
+    });
+
+    logo.addEventListener('click', function() {
+        logo.classList.add('active');
+    });
+
+    document.addEventListener('click', function(e) {
+        if (!logo.contains(e.target)) {
+            logo.classList.remove('active');
+        }
+    });
+
+    resizeHandle.addEventListener('mousedown', function(e) {
+        isResizing = true;
+        startX = e.clientX;
+        startWidth = logo.offsetWidth;
+        e.preventDefault();
+        e.stopPropagation();
+    });
+
+    document.addEventListener('mousemove', function(e) {
+        if (isDragging) {
+            let newLeft = startLeft + (e.clientX - startX);
+            let newTop = startTop + (e.clientY - startY);
+            logo.style.left = newLeft + 'px';
+            logo.style.top = newTop + 'px';
+        }
+        if (isResizing) {
+            let newWidth = startWidth + (e.clientX - startX);
+            if (newWidth > 30) {
+                logo.style.width = newWidth + 'px';
+            }
+        }
+    });
+
+    document.addEventListener('mouseup', function() {
+        if (isDragging) {
+            isDragging = false;
+            localStorage.setItem('logoPos', JSON.stringify({
+                left: logo.offsetLeft,
+                top: logo.offsetTop
+            }));
+        }
+        if (isResizing) {
+            isResizing = false;
+            localStorage.setItem('logoSize', logo.offsetWidth);
+        }
+    });
 
     // ============================================================
     // INIT
