@@ -1,1038 +1,207 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Laporan Formal • Smart Presence</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body {
-            font-family: 'Inter', sans-serif;
-            background: #0f172a;
-            min-height: 100vh;
-            color: #e2e8f0;
-            padding: 20px;
-        }
-        body.light-mode { background: #f1f5f9; color: #1e293b; }
-        
-        .navbar {
-            background: rgba(15, 23, 42, 0.85);
-            backdrop-filter: blur(20px);
-            padding: 12px 24px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-radius: 16px;
-            max-width: 1400px;
-            margin: 0 auto 20px;
-            border: 1px solid rgba(255,255,255,0.06);
-        }
-        body.light-mode .navbar { background: rgba(255,255,255,0.85); border-color: rgba(0,0,0,0.06); }
-        
-        .logo h2 {
-            font-size: 20px;
-            background: linear-gradient(135deg, #a855f7, #3b82f6);
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
-        }
-        .logo span { font-size: 12px; color: #64748b; }
-        
-        .nav-actions { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
-        .nav-actions button {
-            padding: 8px 16px;
-            border: none;
-            border-radius: 12px;
-            cursor: pointer;
-            font-size: 13px;
-            font-weight: 600;
-            transition: all 0.2s;
-            font-family: 'Inter', sans-serif;
-        }
-        .nav-actions button:active { transform: scale(0.95); }
-        .btn-logout { background: #ef4444; color: white; }
-        .btn-logout:hover { background: #dc2626; }
-        .btn-back { background: #6366f1; color: white; }
-        .btn-back:hover { background: #4f46e5; }
-        .btn-theme { background: #1e293b; color: #e2e8f0; }
-        body.light-mode .btn-theme { background: #e2e8f0; color: #1e293b; }
-        
-        .container { max-width: 1200px; margin: 0 auto; }
-        
-        .filter-card {
-            background: rgba(255,255,255,0.04);
-            border-radius: 16px;
-            padding: 20px 24px;
-            margin-bottom: 20px;
-            border: 1px solid rgba(255,255,255,0.06);
-            display: flex;
-            flex-wrap: wrap;
-            align-items: center;
-            gap: 14px;
-        }
-        body.light-mode .filter-card { background: white; border-color: rgba(0,0,0,0.06); }
-        
-        .filter-card label { font-size: 13px; font-weight: 600; color: #94a3b8; }
-        .filter-card input[type="date"],
-        .filter-card input[type="text"],
-        .filter-card input[type="range"],
-        .filter-card select {
-            padding: 10px 14px;
-            border-radius: 10px;
-            border: 1px solid rgba(255,255,255,0.1);
-            background: rgba(0,0,0,0.3);
-            color: white;
-            font-family: 'Inter', sans-serif;
-            font-size: 14px;
-        }
-        body.light-mode .filter-card input[type="date"],
-        body.light-mode .filter-card input[type="text"],
-        body.light-mode .filter-card select { background: #f1f5f9; color: #1e293b; border-color: #cbd5e1; }
-        .filter-card input:focus, .filter-card select:focus {
-            outline: none;
-            border-color: #a855f7;
-        }
-        
-        .logo-setting-box {
-            width: 100%;
-            display: grid;
-            grid-template-columns: 1fr 1fr 1fr;
-            gap: 15px;
-            align-items: center;
-            background: rgba(0,0,0,0.15);
-            padding: 14px;
-            border-radius: 10px;
-            border: 1px dashed rgba(255,255,255,0.2);
-            margin-top: 5px;
-        }
-        body.light-mode .logo-setting-box { background: #f8fafc; border-color: #cbd5e1; }
-        
-        .control-group {
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-        }
-        .control-group label {
-            font-size: 11px;
-            color: #94a3b8;
-        }
-
-        .filter-card .btn-primary {
-            padding: 10px 24px;
-            background: linear-gradient(135deg, #a855f7, #3b82f6);
-            border: none;
-            border-radius: 10px;
-            color: white;
-            font-weight: 700;
-            cursor: pointer;
-            font-family: 'Inter', sans-serif;
-            font-size: 14px;
-        }
-        .filter-card .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 4px 15px rgba(168,85,247,0.4); }
-        .filter-card .btn-print {
-            padding: 10px 20px;
-            background: #f59e0b;
-            border: none;
-            border-radius: 10px;
-            color: white;
-            font-weight: 700;
-            cursor: pointer;
-            font-family: 'Inter', sans-serif;
-            font-size: 13px;
-        }
-        .filter-card .btn-print:hover { background: #d97706; }
-        .filter-card .btn-refresh {
-            padding: 10px 20px;
-            background: #6366f1;
-            border: none;
-            border-radius: 10px;
-            color: white;
-            font-weight: 700;
-            cursor: pointer;
-            font-family: 'Inter', sans-serif;
-            font-size: 13px;
-        }
-        .filter-card .btn-refresh:hover { background: #4f46e5; }
-        
-        /* ===== LAPORAN PREVIEW ===== */
-        .laporan-preview {
-            background: white;
-            color: #1e293b;
-            border-radius: 16px;
-            padding: 40px;
-            max-width: 1100px;
-            margin: 0 auto;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
-            font-family: 'Times New Roman', Times, serif;
-        }
-        body.light-mode .laporan-preview { box-shadow: 0 10px 40px rgba(0,0,0,0.1); }
-        
-        /* ===== KOP SURAT ===== */
-        .laporan-preview .kop {
-            text-align: center;
-            padding-bottom: 0px;
-            margin-bottom: 0px;
-        }
-        
-        .laporan-preview .kop .header-wrapper {
-            display: flex;
-            align-items: center;
-            justify-content: flex-start;
-            gap: 20px;
-            margin-bottom: 4px;
-            position: relative;
-            min-height: 75px;
-        }
-        
-        .laporan-preview .kop .header-wrapper .logo-container {
-            position: absolute;
-            left: 10px; /* Default pos */
-            top: 50%;
-            transform: translateY(-50%);
-            z-index: 5;
-        }
-
-        .laporan-preview .kop .header-wrapper .logo-img {
-            height: 65px; /* Default size */
-            width: auto;
-            object-fit: contain;
-            display: block;
-        }
-
-        .laporan-preview .kop .header-wrapper .teks {
-            text-align: center;
-            width: 100%;
-        }
-        
-        .laporan-preview .kop .header-wrapper .teks .instansi {
-            font-size: 13px;
-            font-weight: 700;
-            letter-spacing: 0.5px;
-            color: #0f172a;
-            line-height: 1.2;
-        }
-        
-        .laporan-preview .kop .header-wrapper .teks .instansi-2 {
-            font-size: 15px;
-            font-weight: 800;
-            letter-spacing: 1px;
-            color: #0f172a;
-            margin-top: 1px;
-            line-height: 1.2;
-        }
-
-        .laporan-preview .kop .header-wrapper .teks .yayasan-sub {
-            font-size: 12px;
-            font-weight: 700;
-            color: #334155;
-            margin-top: 1px;
-            line-height: 1.2;
-        }
-        
-        .laporan-preview .kop .header-wrapper .teks .alamat {
-            font-size: 11px;
-            color: #334155;
-            margin-top: 2px;
-            line-height: 1.2;
-        }
-        
-        .laporan-preview .kop .header-wrapper .teks .email {
-            font-size: 11px;
-            color: #334155;
-            margin-top: 1px;
-            line-height: 1.2;
-        }
-        
-        .laporan-preview .kop .garis-kop {
-            border-bottom: 3px double #1e293b;
-            margin-top: 12px;
-            margin-bottom: 16px;
-        }
-        
-        .laporan-preview .kop .judul {
-            font-size: 20px;
-            font-weight: 800;
-            letter-spacing: 2px;
-            color: #0f172a;
-            margin-top: 4px;
-        }
-        
-        .laporan-preview .kop .periode {
-            font-size: 13px;
-            color: #475569;
-            margin-top: 4px;
-        }
-        
-        .laporan-preview .kop .tgl-cetak {
-            font-size: 11px;
-            color: #94a3b8;
-            margin-top: 2px;
-        }
-        
-        /* ===== SUMMARY ===== */
-        .laporan-preview .summary {
-            display: flex;
-            gap: 16px;
-            justify-content: center;
-            margin: 16px 0 20px;
-            flex-wrap: wrap;
-        }
-        .laporan-preview .summary-item {
-            padding: 8px 16px;
-            border: 1px solid #cbd5e1;
-            border-radius: 6px;
-            text-align: center;
-            min-width: 80px;
-            background: #f8fafc;
-        }
-        .laporan-preview .summary-item .num {
-            font-size: 20px;
-            font-weight: 700;
-        }
-        .laporan-preview .summary-item .label {
-            font-size: 10px;
-            color: #64748b;
-        }
-        .laporan-preview .summary-item .num.hadir { color: #059669; }
-        .laporan-preview .summary-item .num.alfa { color: #b91c1c; }
-        .laporan-preview .summary-item .num.libur { color: #2563eb; }
-        .laporan-preview .summary-item .num.izin { color: #7c3aed; }
-        .laporan-preview .summary-item .num.total { color: #0f172a; }
-        
-        /* ===== TABLE ===== */
-        .laporan-preview table {
-            width: 100%;
-            border-collapse: collapse;
-            margin: 12px 0 16px;
-            font-size: 11px;
-        }
-        .laporan-preview th, .laporan-preview td {
-            padding: 4px 6px;
-            border: 1px solid #cbd5e1;
-            text-align: center;
-            vertical-align: middle;
-        }
-        .laporan-preview th {
-            background: #f1f5f9;
-            font-weight: 700;
-            font-size: 10px;
-            text-transform: uppercase;
-            letter-spacing: 0.3px;
-        }
-        
-        .laporan-preview td .status-label {
-            display: inline-block;
-            padding: 1px 6px;
-            border-radius: 3px;
-            font-weight: 600;
-            font-size: 9px;
-            min-width: 22px;
-        }
-        .laporan-preview td .status-label.hadir { background: #d1fae5; color: #059669; }
-        .laporan-preview td .status-label.alfa { background: #fee2e2; color: #b91c1c; }
-        .laporan-preview td .status-label.izin { background: #ede9fe; color: #7c3aed; }
-        .laporan-preview td .status-label.libur { background: #dbeafe; color: #2563eb; }
-        
-        .laporan-preview .legenda {
-            display: flex;
-            gap: 16px;
-            justify-content: center;
-            margin: 10px 0 16px;
-            flex-wrap: wrap;
-            padding: 8px 14px;
-            background: #f8fafc;
-            border-radius: 6px;
-            border: 1px solid #e2e8f0;
-        }
-        .laporan-preview .legenda-item {
-            display: flex;
-            align-items: center;
-            gap: 4px;
-            font-size: 10px;
-            font-weight: 600;
-        }
-        .laporan-preview .legenda-item .dot {
-            display: inline-block;
-            width: 12px;
-            height: 12px;
-            border-radius: 3px;
-        }
-        .laporan-preview .legenda-item .dot.hadir { background: #059669; }
-        .laporan-preview .legenda-item .dot.alfa { background: #b91c1c; }
-        .laporan-preview .legenda-item .dot.izin { background: #7c3aed; }
-        .laporan-preview .legenda-item .dot.libur { background: #2563eb; }
-        
-        .laporan-preview .ttd {
-            display: flex;
-            justify-content: space-between;
-            margin-top: 24px;
-            padding-top: 16px;
-            border-top: 1px solid #cbd5e1;
-        }
-        .laporan-preview .ttd-box {
-            text-align: center;
-            width: 45%;
-        }
-        .laporan-preview .ttd-box .label {
-            font-size: 10px;
-            color: #64748b;
-            margin-bottom: 2px;
-        }
-        .laporan-preview .ttd-box .nama {
-            font-size: 12px;
-            font-weight: 700;
-            margin-top: 2px;
-        }
-        .laporan-preview .ttd-box .jabatan {
-            font-size: 10px;
-            color: #475569;
-        }
-        .laporan-preview .ttd-box .line {
-            width: 180px;
-            border-bottom: 1px solid #1e293b;
-            margin: 32px auto 2px;
-            max-width: 100%;
-        }
-        
-        .laporan-preview .footer {
-            text-align: center;
-            font-size: 9px;
-            color: #94a3b8;
-            margin-top: 12px;
-            padding-top: 10px;
-            border-top: 1px solid #e2e8f0;
-        }
-        
-        .loading-text { text-align: center; color: #64748b; padding: 40px 0; font-size: 14px; }
-        .empty-text { text-align: center; color: #64748b; padding: 30px 0; font-size: 14px; }
-        
-        .toast-custom {
-            position: fixed;
-            bottom: 30px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: #1e293b;
-            color: white;
-            padding: 14px 28px;
-            border-radius: 16px;
-            font-weight: 600;
-            font-size: 14px;
-            z-index: 9999;
-            border-left: 4px solid #10b981;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
-            animation: slideUp 0.3s ease;
-            max-width: 90%;
-            font-family: 'Inter', sans-serif;
-        }
-        @keyframes slideUp {
-            from { opacity: 0; transform: translateX(-50%) translateY(30px); }
-            to { opacity: 1; transform: translateX(-50%) translateY(0); }
-        }
-        
-        @media (max-width: 768px) {
-            .navbar { flex-wrap: wrap; gap: 10px; padding: 12px 16px; }
-            .filter-card { flex-direction: column; align-items: stretch; }
-            .filter-card input[type="date"], .filter-card input[type="text"], .filter-card select { width: 100%; min-width: auto; }
-            .laporan-preview { padding: 20px; }
-            .laporan-preview table { font-size: 9px; }
-            .laporan-preview th, .laporan-preview td { padding: 2px 3px; }
-            .laporan-preview .kop .header-wrapper { position: static; display: flex; flex-direction: column; align-items: center; }
-            .laporan-preview .kop .header-wrapper .logo-container { position: static; transform: none; margin-bottom: 10px; text-align: center; }
-            .laporan-preview .kop .header-wrapper .logo-img { margin: 0 auto; }
-            .laporan-preview .kop .judul { font-size: 16px; }
-            .laporan-preview .summary-item { min-width: 60px; padding: 4px 10px; }
-            .laporan-preview .summary-item .num { font-size: 16px; }
-            .nav-actions { flex-wrap: wrap; }
-            .laporan-preview .ttd { flex-direction: column; gap: 20px; align-items: center; }
-            .laporan-preview .ttd-box { width: 100%; }
-        }
-        
-        @media print {
-            body { background: white; padding: 0; }
-            .navbar { display: none; }
-            .filter-card { display: none; }
-            .laporan-preview { box-shadow: none; padding: 20px 30px; border-radius: 0; }
-            .laporan-preview .ttd-box .line { margin: 32px auto 2px; }
-            .toast-custom { display: none; }
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cetak Laporan - RelawanTrack</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    /* Styling khusus untuk cetak kertas A4 */
+    @media print {
+      body { background-color: white; margin: 0; padding: 0; }
+      .no-print { display: none !important; }
+      .print-area { width: 100%; box-shadow: none; border: none; padding: 0; }
+    }
+  </style>
 </head>
-<body>
+<body class="bg-slate-100 text-slate-800 antialiased min-h-screen">
 
-<!-- NAVBAR -->
-<nav class="navbar">
-    <div class="logo">
-        <h2>📋 RelawanTrack</h2>
-        <span>Laporan Formal</span>
+  <!-- Control Panel (Tidak ikut ter-print) -->
+  <div class="no-print max-w-4xl mx-auto p-4 my-6 bg-white rounded-xl shadow-sm border border-slate-200">
+    <div class="flex flex-col md:flex-row justify-between items-center gap-4">
+      <div>
+        <h1 class="text-xl font-bold text-slate-900">Generator Laporan Cetak</h1>
+        <p class="text-sm text-slate-500">Pilih periode untuk mencetak laporan absensi</p>
+      </div>
+      <a href="admin_dashboard.html" class="px-4 py-2 bg-slate-200 hover:bg-slate-300 text-slate-700 rounded-lg text-sm font-medium transition">
+        Kembali
+      </a>
     </div>
-    <div class="nav-actions">
-        <button class="btn-back" onclick="window.location.href='admin_dashboard.html'">
-            <i class="fas fa-arrow-left"></i> Dashboard
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
+      <div>
+        <label class="block text-xs font-semibold text-slate-600 mb-1">Mulai Tanggal</label>
+        <input type="date" id="tglMulai" class="w-full px-3 py-2 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+      </div>
+      <div>
+        <label class="block text-xs font-semibold text-slate-600 mb-1">Sampai Tanggal</label>
+        <input type="date" id="tglSelesai" class="w-full px-3 py-2 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+      </div>
+      <div class="flex items-end">
+        <button onclick="generateLaporan()" class="w-full py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg text-sm transition">
+          Tarik Data
         </button>
-        <button class="btn-theme" onclick="toggleTheme()">
-            <i class="fas fa-moon" id="themeIcon"></i>
-        </button>
-        <span id="adminName" style="font-weight:600;font-size:14px;">Admin</span>
-        <button class="btn-logout" onclick="doLogout()">
-            <i class="fas fa-sign-out-alt"></i> Keluar
-        </button>
+      </div>
     </div>
-</nav>
+    
+    <div class="mt-4 flex justify-end border-t pt-4">
+      <button onclick="window.print()" class="px-6 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-sm font-bold shadow transition flex items-center gap-2">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
+        Cetak Dokumen
+      </button>
+    </div>
+  </div>
 
-<div class="container">
-
-    <!-- FILTER -->
-    <div class="filter-card">
-        <div style="display: flex; gap: 10px; flex-wrap: wrap; width: 100%; align-items: center;">
-            <div>
-                <label style="display:block; margin-bottom:4px;"><i class="fas fa-calendar-alt"></i> Periode:</label>
-                <input type="date" id="startDate">
-            </div>
-            <div>
-                <label style="display:block; margin-bottom:4px; opacity:0;">s/d</label>
-                <input type="date" id="endDate">
-            </div>
-            <div>
-                <label style="display:block; margin-bottom:4px;"><i class="fas fa-users"></i> Divisi:</label>
-                <select id="filterDivisi">
-                    <option value="">Semua Divisi</option>
-                </select>
-            </div>
-            <div style="margin-top: 18px;">
-                <button class="btn-primary" onclick="loadLaporan()">
-                    <i class="fas fa-search"></i> Tampilkan
-                </button>
-                <button class="btn-print" onclick="cetakLaporan()">
-                    <i class="fas fa-print"></i> Cetak / PDF
-                </button>
-                <button class="btn-refresh" onclick="refreshData()">
-                    <i class="fas fa-sync-alt"></i>
-                </button>
-            </div>
-        </div>
-
-        <!-- Panel Kontrol Posisi & Ukuran Logo -->
-        <div class="logo-setting-box">
-            <div class="control-group" style="grid-column: span 3;">
-                <label><i class="fas fa-link"></i> URL Logo Supabase:</label>
-                <input type="text" id="logoUrlInput" value="https://zcaqqybonpfishwkmffg.supabase.co/storage/v1/object/public/logo/Logo_Badan_Gizi_Nasional_(2024)%20(1).png" oninput="updateLogoStyle()">
-            </div>
-            <div class="control-group">
-                <label><i class="fas fa-expand"></i> Ukuran Tinggi Logo (<span id="sizeVal">65</span>px):</label>
-                <input type="range" id="logoSizeRange" min="30" max="110" value="65" oninput="updateLogoStyle()">
-            </div>
-            <div class="control-group">
-                <label><i class="fas fa-arrows-alt-h"></i> Geser Kiri / Kanan (<span id="posVal">25</span>px):</label>
-                <input type="range" id="logoPosRange" min="0" max="150" value="25" oninput="updateLogoStyle()">
-            </div>
-            <div class="control-group" style="justify-content: flex-end;">
-                <button type="button" onclick="resetLogoConfig()" style="padding: 8px; background: #334155; color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 12px; font-weight: 600;">
-                    <i class="fas fa-undo"></i> Reset Posisi Default
-                </button>
-            </div>
-        </div>
+  <!-- Area Cetak Laporan Kertas -->
+  <div class="max-w-4xl mx-auto bg-white p-10 shadow-lg border border-slate-200 print-area mb-10">
+    
+    <!-- KOP Surat -->
+    <div class="flex items-center justify-between border-b-4 border-slate-900 pb-4 mb-6">
+      <div class="flex-shrink-0 w-24">
+        <!-- Pastikan URL logo KOP Surat sudah benar -->
+        <img src="https://via.placeholder.com/100" alt="Logo" class="w-full h-auto object-contain">
+      </div>
+      <div class="text-center flex-1 px-4">
+        <h2 class="text-xl font-bold uppercase tracking-wide">Yayasan Rihlah Cahaya Bangsa</h2>
+        <h3 class="text-lg font-semibold uppercase">SPPG Kediri Pare Pelem 5</h3>
+        <p class="text-xs mt-1 text-slate-700">Jl. Pahlawan No. 123, Pare, Kediri, Jawa Timur</p>
+        <p class="text-xs text-slate-700">Email: info@yayasanrcb.org | Telp: (0354) XXXXXX</p>
+      </div>
+      <div class="w-24"></div> <!-- Spacer biar teks rapi di tengah -->
     </div>
 
-    <!-- PREVIEW LAPORAN -->
-    <div id="laporanContainer">
-        <div class="loading-text"><i class="fas fa-spinner fa-pulse"></i> Silakan pilih periode dan klik Tampilkan</div>
+    <!-- Judul Dokumen -->
+    <div class="text-center mb-6">
+      <h4 class="text-lg font-bold underline">REKAPITULASI PRESENSI RELAWAN</h4>
+      <p class="text-sm font-medium mt-1" id="labelPeriode">Periode: -</p>
     </div>
 
-</div>
+    <!-- Tabel Laporan -->
+    <table class="w-full text-sm border-collapse border border-slate-400 mb-8">
+      <thead>
+        <tr class="bg-slate-100">
+          <th class="border border-slate-400 p-2 text-center w-12">No</th>
+          <th class="border border-slate-400 p-2 text-left">Nama Relawan</th>
+          <th class="border border-slate-400 p-2 text-center">Divisi</th>
+          <th class="border border-slate-400 p-2 text-center w-16">Hadir</th>
+          <th class="border border-slate-400 p-2 text-center w-16">Izin</th>
+          <th class="border border-slate-400 p-2 text-center w-16">Sakit</th>
+          <th class="border border-slate-400 p-2 text-center w-16">Alpha</th>
+        </tr>
+      </thead>
+      <tbody id="tabelLaporan">
+        <tr><td colspan="7" class="text-center p-4 text-slate-500">Silakan tarik data terlebih dahulu.</td></tr>
+      </tbody>
+    </table>
 
-<script>
-    // ============================================================
-    // KONFIGURASI SUPABASE
-    // ============================================================
-    var SUPABASE_URL = 'https://zcaqqybonpfishwkmffg.supabase.co';
-    var SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpjYXFxeWJvbnBmaXNod2ttZmZnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODc2Mjc2NDgsImV4cCI6MjEwMzIwMzY0OH0.pBk5nwJI3u9n08onTNmvcOFxtCXQvv-ipYIu2f_iAiQ';
+    <!-- Tanda Tangan -->
+    <div class="flex justify-end mt-12 text-sm">
+      <div class="text-center">
+        <p class="mb-1">Kediri, <span id="tglCetak">...</span></p>
+        <p class="mb-16 font-semibold">Mengetahui,<br>Kepala Operasional</p>
+        <p class="font-bold underline">Nama Pimpinan</p>
+        <p>NIP. -</p>
+      </div>
+    </div>
 
-    // ============================================================
-    // CEK LOGIN
-    // ============================================================
-    if (!localStorage.getItem('admin_logged_in')) {
-        window.location.href = 'admin_login.html';
-    }
-    document.getElementById('adminName').textContent = localStorage.getItem('admin_username') || 'Admin';
+  </div>
 
-    // ============================================================
-    // VARIABLES
-    // ============================================================
-    var allData = [];
-    var dateList = [];
-    var hariLiburMap = {};
-    var urutanDivisi = [
-        'Aslap',
-        'Kepala Chef',
-        'Pengolahan',
-        'Persiapan',
-        'Pemorsian',
-        'Distribusi',
-        'Cuci Foodtray',
-        'Satpam',
-        'Kebersihan'
-    ];
+  <script>
+    const SUPABASE_URL = "YOUR_SUPABASE_URL";
+    const SUPABASE_ANON_KEY = "YOUR_SUPABASE_ANON_KEY";
+    const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-    // ============================================================
-    // FUNGSI TANGGAL
-    // ============================================================
-    function getTodayIndonesia() {
-        var now = new Date();
-        var offset = 7 * 60 * 60 * 1000;
-        return new Date(now.getTime() + offset).toISOString().split('T')[0];
-    }
+    // Set tanggal cetak otomatis
+    const today = new Date();
+    document.getElementById('tglCetak').innerText = `${today.getDate()} ${today.toLocaleString('id-ID', { month: 'long' })} ${today.getFullYear()}`;
 
-    function getDateIndonesia(date) {
-        var offset = 7 * 60 * 60 * 1000;
-        return new Date(date.getTime() + offset).toISOString().split('T')[0];
-    }
+    // Set default input periode awal bulan sampai hari ini
+    const firstDay = new Date(today.getFullYear(), today.getMonth(), 1).toISOString().split('T')[0];
+    const todayStr = today.toISOString().split('T')[0];
+    document.getElementById('tglMulai').value = firstDay;
+    document.getElementById('tglSelesai').value = todayStr;
 
-    function parseDateIndonesia(dateStr) {
-        var parts = dateStr.split('-');
-        return new Date(parts[0], parts[1] - 1, parts[2]);
-    }
+    async function generateLaporan() {
+      const tglMulai = document.getElementById('tglMulai').value;
+      const tglSelesai = document.getElementById('tglSelesai').value;
+      
+      if (!tglMulai || !tglSelesai) return alert("Pilih periode tanggal dengan benar!");
 
-    function setDefaultDates() {
-        var todayStr = getTodayIndonesia();
-        var end = todayStr;
-        var today = new Date();
-        var offset = 7 * 60 * 60 * 1000;
-        var localToday = new Date(today.getTime() + offset);
-        var startDate = new Date(localToday);
-        startDate.setDate(startDate.getDate() - 29);
-        var start = getDateIndonesia(startDate);
-        document.getElementById('startDate').value = start;
-        document.getElementById('endDate').value = end;
-    }
-    setDefaultDates();
+      document.getElementById('labelPeriode').innerText = `Periode: ${tglMulai} s/d ${tglSelesai}`;
+      document.getElementById('tabelLaporan').innerHTML = `<tr><td colspan="7" class="text-center p-4">Memuat data...</td></tr>`;
 
-    // ============================================================
-    // UPDATE LIVE LOGO STYLE (UKURAN & POSISI)
-    // ============================================================
-    function updateLogoStyle() {
-        var url = document.getElementById('logoUrlInput').value.trim();
-        var size = document.getElementById('logoSizeRange').value;
-        var pos = document.getElementById('logoPosRange').value;
+      // 1. Ambil data semua karyawan
+      const { data: listKaryawan, error: errK } = await supabase.from('karyawan').select('id, nama, divisi').order('nama');
+      if (errK) return alert("Gagal memuat karyawan.");
 
-        document.getElementById('sizeVal').textContent = size;
-        document.getElementById('posVal').textContent = pos;
+      // 2. Ambil data absensi sesuai range tanggal
+      const { data: listAbsen, error: errA } = await supabase
+        .from('absensi')
+        .select('karyawan_id, status, is_verified')
+        .gte('tanggal', tglMulai)
+        .lte('tanggal', tglSelesai);
+      if (errA) return alert("Gagal memuat absensi.");
 
-        var logoContainers = document.querySelectorAll('.logo-container');
-        var logoImgs = document.querySelectorAll('.logo-img');
+      // 3. Setup objek rekap dengan struktur 0
+      const rekap = {};
+      listKaryawan.forEach(k => {
+        rekap[k.id] = {
+          nama: k.nama,
+          divisi: k.divisi || '-',
+          hadir: 0,
+          izin: 0,
+          sakit: 0,
+          alpha: 0
+        };
+      });
 
-        logoContainers.forEach(function(container) {
-            container.style.left = pos + 'px';
-        });
+      // 4. PENYELESAIAN BUG: Looping data absensi dan kelompokkan sesuai status
+      listAbsen.forEach(absen => {
+        if (rekap[absen.karyawan_id]) {
+          // Normalisasi teks jadi huruf kecil semua untuk keamanan
+          const status = (absen.status || '').toLowerCase(); 
 
-        logoImgs.forEach(function(img) {
-            img.style.height = size + 'px';
-            if (url) {
-                img.style.display = 'block';
-                img.src = url;
-            } else {
-                img.style.display = 'none';
-            }
-        });
-    }
-
-    function resetLogoConfig() {
-        document.getElementById('logoSizeRange').value = 65;
-        document.getElementById('logoPosRange').value = 25;
-        updateLogoStyle();
-    }
-
-    // ============================================================
-    // THEME
-    // ============================================================
-    function toggleTheme() {
-        document.body.classList.toggle('light-mode');
-        var icon = document.getElementById('themeIcon');
-        icon.className = document.body.classList.contains('light-mode') ? 'fas fa-sun' : 'fas fa-moon';
-    }
-
-    // ============================================================
-    // TOAST
-    // ============================================================
-    function showToast(msg, type) {
-        type = type || 'success';
-        var existing = document.querySelector('.toast-custom');
-        if (existing) existing.remove();
-        var toast = document.createElement('div');
-        toast.className = 'toast-custom';
-        var colors = { success: '#10b981', error: '#ef4444', warning: '#f59e0b', info: '#3b82f6' };
-        toast.style.borderLeftColor = colors[type] || '#10b981';
-        var icons = { success: '✅', error: '❌', warning: '⚠️', info: 'ℹ️' };
-        toast.innerHTML = (icons[type] || 'ℹ️') + ' ' + msg;
-        document.body.appendChild(toast);
-        setTimeout(function() {
-            toast.style.opacity = '0';
-            toast.style.transform = 'translateX(-50%) translateY(20px)';
-            setTimeout(function() { toast.remove(); }, 300);
-        }, 3000);
-    }
-
-    // ============================================================
-    // LOGOUT
-    // ============================================================
-    function doLogout() {
-        if (confirm('Yakin ingin keluar?')) {
-            localStorage.removeItem('admin_logged_in');
-            localStorage.removeItem('admin_username');
-            window.location.href = 'admin_login.html';
+          if (status === 'hadir') {
+            rekap[absen.karyawan_id].hadir++;
+          } 
+          else if (status === 'izin') {
+            rekap[absen.karyawan_id].izin++;
+          } 
+          else if (status === 'sakit') {
+            rekap[absen.karyawan_id].sakit++;
+          } 
+          else if (status === 'alpha') {
+            rekap[absen.karyawan_id].alpha++;
+          }
         }
-    }
+      });
 
-    // ============================================================
-    // LOAD HARI LIBUR
-    // ============================================================
-    async function loadHariLibur() {
-        try {
-            var response = await fetch(
-                SUPABASE_URL + '/rest/v1/hari_libur?select=tanggal,divisi',
-                {
-                    headers: {
-                        'apikey': SUPABASE_ANON_KEY,
-                        'Authorization': 'Bearer ' + SUPABASE_ANON_KEY
-                    }
-                }
-            );
-            var data = await response.json();
-            hariLiburMap = {};
-            data.forEach(function(item) {
-                var key = item.tanggal + '|' + item.divisi;
-                hariLiburMap[key] = true;
-            });
-        } catch(e) {
-            hariLiburMap = {};
-        }
-    }
-
-    function isTanggalLibur(tanggal, divisi) {
-        var key = tanggal + '|' + divisi;
-        return hariLiburMap[key] || false;
-    }
-
-    // ============================================================
-    // LOAD FILTER OPTIONS
-    // ============================================================
-    async function loadFilterOptions() {
-        try {
-            var response = await fetch(SUPABASE_URL + '/rest/v1/karyawan?select=divisi', {
-                headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': 'Bearer ' + SUPABASE_ANON_KEY }
-            });
-            var karyawan = await response.json();
-
-            var divisiSet = new Set();
-            karyawan.forEach(function(k) {
-                if (k.divisi) divisiSet.add(k.divisi);
-            });
-
-            var sortedDivisi = [];
-            urutanDivisi.forEach(function(d) {
-                if (divisiSet.has(d)) {
-                    sortedDivisi.push(d);
-                    divisiSet.delete(d);
-                }
-            });
-            divisiSet.forEach(function(d) {
-                sortedDivisi.push(d);
-            });
-
-            var select = document.getElementById('filterDivisi');
-            select.innerHTML = '<option value="">Semua Divisi</option>';
-            sortedDivisi.forEach(function(d) {
-                select.innerHTML += '<option value="' + d + '">' + d + '</option>';
-            });
-
-        } catch(e) {
-            console.error('Gagal load filter:', e);
-        }
-    }
-    loadFilterOptions();
-
-    // ============================================================
-    // LOAD LAPORAN
-    // ============================================================
-    async function loadLaporan() {
-        var start = document.getElementById('startDate').value;
-        var end = document.getElementById('endDate').value;
-        var divisiFilter = document.getElementById('filterDivisi').value;
-
-        if (!start || !end) {
-            showToast('Pilih tanggal dulu!', 'warning');
-            return;
-        }
-
-        var container = document.getElementById('laporanContainer');
-        container.innerHTML = '<div class="loading-text"><i class="fas fa-spinner fa-pulse"></i> Memuat data...</div>';
-
-        try {
-            await loadHariLibur();
-
-            var karyawanQuery = SUPABASE_URL + '/rest/v1/karyawan?select=id,nama,divisi,jam_masuk,jam_pulang';
-            if (divisiFilter) {
-                karyawanQuery += '&divisi=eq.' + encodeURIComponent(divisiFilter);
-            }
-            karyawanQuery += '&order=nama';
-
-            var karyawanRes = await fetch(karyawanQuery, {
-                headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': 'Bearer ' + SUPABASE_ANON_KEY }
-            });
-            var karyawan = await karyawanRes.json();
-
-            if (!karyawan || karyawan.length === 0) {
-                container.innerHTML = '<div class="empty-text"><i class="fas fa-inbox"></i> Tidak ada karyawan</div>';
-                return;
-            }
-
-            var absenRes = await fetch(
-                SUPABASE_URL + '/rest/v1/absensi?select=*&tanggal=gte.' + start + '&tanggal=lte.' + end,
-                {
-                    headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': 'Bearer ' + SUPABASE_ANON_KEY }
-                }
-            );
-            var absensi = await absenRes.json();
-
-            var absenMap = {};
-            absensi.forEach(function(a) {
-                var key = a.karyawan_id + '|' + a.tanggal;
-                absenMap[key] = a;
-            });
-
-            dateList = [];
-            var dStart = parseDateIndonesia(start);
-            var dEnd = parseDateIndonesia(end);
-            for (var d = new Date(dStart); d <= dEnd; d.setDate(d.getDate() + 1)) {
-                dateList.push(getDateIndonesia(d));
-            }
-
-            allData = [];
-            var totalMasuk = 0, totalAlfa = 0, totalIzin = 0;
-
-            karyawan.forEach(function(k) {
-                var row = {
-                    id: k.id,
-                    nama: k.nama || k.id,
-                    divisi: k.divisi || '-',
-                    targetMasuk: k.jam_masuk || '08:00',
-                    targetPulang: k.jam_pulang || '17:00',
-                    dates: [],
-                    masuk: 0,
-                    alfa: 0,
-                    izin: 0
-                };
-
-                dateList.forEach(function(tgl) {
-                    var isLibur = isTanggalLibur(tgl, row.divisi);
-                    var key = k.id + '|' + tgl;
-                    var abs = absenMap[key];
-                    
-                    var status = 'alfa';
-                    var statusLabel = '❌';
-                    var jamMasuk = '-';
-                    var jamPulang = '-';
-
-                    if (isLibur) {
-                        status = 'libur';
-                        statusLabel = '🔵';
-                    } else if (abs) {
-                        jamMasuk = abs.jam_masuk || '-';
-                        jamPulang = abs.jam_pulang || '-';
-                        
-                        if (abs.status === 'izin') {
-                            status = 'izin';
-                            statusLabel = '📝';
-                            row.izin++;
-                            totalIzin++;
-                        } else if (jamMasuk !== '-') {
-                            status = 'hadir';
-                            statusLabel = '✅';
-                            row.masuk++;
-                            totalMasuk++;
-                        } else {
-                            status = 'alfa';
-                            statusLabel = '❌';
-                            row.alfa++;
-                            totalAlfa++;
-                        }
-                    } else {
-                        status = 'alfa';
-                        statusLabel = '❌';
-                        row.alfa++;
-                        totalAlfa++;
-                    }
-                    
-                    row.dates.push({
-                        tanggal: tgl,
-                        status: status,
-                        statusLabel: statusLabel,
-                        jamMasuk: jamMasuk,
-                        jamPulang: jamPulang,
-                        isLibur: isLibur
-                    });
-                });
-
-                allData.push(row);
-            });
-
-            allData.sort(function(a, b) {
-                var indexA = urutanDivisi.indexOf(a.divisi);
-                var indexB = urutanDivisi.indexOf(b.divisi);
-                if (indexA === -1) indexA = 999;
-                if (indexB === -1) indexB = 999;
-                return indexA - indexB;
-            });
-
-            renderLaporan(totalMasuk, totalAlfa, totalIzin);
-
-        } catch(e) {
-            console.error('Error:', e);
-            container.innerHTML = '<div class="empty-text"><i class="fas fa-exclamation-triangle"></i> Gagal memuat data</div>';
-            showToast('Gagal memuat data!', 'error');
-        }
-    }
-
-    // ============================================================
-    // RENDER LAPORAN
-    // ============================================================
-    function renderLaporan(totalMasuk, totalAlfa, totalIzin) {
-        var container = document.getElementById('laporanContainer');
-
-        var start = document.getElementById('startDate').value;
-        var end = document.getElementById('endDate').value;
-        var divisiFilter = document.getElementById('filterDivisi').value;
-        var logoUrl = document.getElementById('logoUrlInput').value.trim();
-        var logoSize = document.getElementById('logoSizeRange').value;
-        var logoPos = document.getElementById('logoPosRange').value;
-
-        var dStart = parseDateIndonesia(start);
-        var dEnd = parseDateIndonesia(end);
-        var bulan = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
-        var periode = dStart.getDate() + ' ' + bulan[dStart.getMonth()] + ' ' + dStart.getFullYear() + ' - ' + dEnd.getDate() + ' ' + bulan[dEnd.getMonth()] + ' ' + dEnd.getFullYear();
-
-        var now = new Date();
-        var tglCetak = now.getDate() + ' ' + bulan[now.getMonth()] + ' ' + now.getFullYear();
-
-        var totalKaryawan = allData.length;
-
-        // Build table HTML
-        var tableHtml = '<table><thead><tr>';
-        tableHtml += '<th>No</th><th>Nama</th><th>Divisi</th>';
-
-        dateList.forEach(function(tgl) {
-            var d = parseDateIndonesia(tgl);
-            tableHtml += '<th>' + d.getDate() + '/' + (d.getMonth()+1) + '</th>';
-        });
-
-        tableHtml += '<th>Total</th></tr></thead><tbody>';
-
-        allData.forEach(function(row, idx) {
-            tableHtml += '<tr>';
-            tableHtml += '<td>' + (idx + 1) + '</td>';
-            tableHtml += '<td style="text-align:left;font-weight:600;">' + row.nama + '</td>';
-            tableHtml += '<td>' + row.divisi + '</td>';
-
-            row.dates.forEach(function(d) {
-                var cls = d.status;
-                var label = d.statusLabel;
-                tableHtml += '<td><span class="status-label ' + cls + '">' + label + '</span></td>';
-            });
-
-            var total = row.masuk + row.izin;
-            tableHtml += '<td><strong>' + total + '</strong></td>';
-            tableHtml += '</tr>';
-        });
-
-        tableHtml += '</tbody></table>';
-
-        var html = '';
-        html += '<div class="laporan-preview" id="laporanContent">';
-
-        html += '<div class="kop">';
-        html += '<div class="header-wrapper">';
+      // 5. Render ke tabel
+      const tbody = document.getElementById('tabelLaporan');
+      tbody.innerHTML = '';
+      
+      let no = 1;
+      for (const id in rekap) {
+        const row = rekap[id];
         
-        // Logo dengan posisi dan ukuran dinamis sesuai slider
-        html += '<div class="logo-container" style="left: ' + logoPos + 'px;">';
-        if (logoUrl) {
-            html += '<img src="' + logoUrl + '" alt="Logo" class="logo-img" style="height: ' + logoSize + 'px;" onerror="this.style.display=\'none\'">';
-        } else {
-            html += '<img src="" alt="" class="logo-img" style="display:none; height: ' + logoSize + 'px;">';
-        }
-        html += '</div>';
+        // (Opsional) Kamu bisa nambahin logika perhitungan alpha manual di sini
+        // Misalnya jika total hari kerja periode ini = X, dan jumlah (hadir+izin+sakit) < X, maka sisanya = alpha.
+        // Tapi jika Alpha sudah murni tercatat di database, script di atas sudah cukup.
 
-        // Teks Kop Surat di tengah
-        html += '<div class="teks">';
-        html += '<div class="instansi">SATUAN PELAYANAN PEMENUHAN GIZI</div>';
-        html += '<div class="instansi-2">SPPG KEDIRI PARE PELEM 5</div>';
-        html += '<div class="yayasan-sub">YAYASAN RIHLAH CAHAYA BANGSA</div>';
-        html += '<div class="alamat">Jl Langkat, Singgahan Pelem Kec. Pare, Kab. Kediri, Prov. Jatim 64212</div>';
-        html += '<div class="email">Email : sppgpelem10@gmail.com</div>';
-        html += '</div>';
-
-        html += '</div>'; // end header-wrapper
-        
-        html += '<div class="garis-kop"></div>';
-        html += '<div class="judul">LAPORAN REKAPITULASI ABSENSI</div>';
-        html += '<div class="periode">Periode: ' + periode + '</div>';
-        html += '<div class="tgl-cetak">Dicetak pada: ' + tglCetak + (divisiFilter ? ' | Divisi: ' + divisiFilter : '') + '</div>';
-        html += '</div>';
-
-        // Summary items
-        html += '<div class="summary">';
-        html += '<div class="summary-item"><div class="num total">' + totalKaryawan + '</div><div class="label">Relawan</div></div>';
-        html += '<div class="summary-item"><div class="num hadir">' + totalMasuk + '</div><div class="label">Masuk</div></div>';
-        html += '<div class="summary-item"><div class="num izin">' + totalIzin + '</div><div class="label">Izin</div></div>';
-        html += '<div class="summary-item"><div class="num alfa">' + totalAlfa + '</div><div class="label">Alfa</div></div>';
-        html += '</div>';
-
-        // Legenda
-        html += '<div class="legenda">';
-        html += '<div class="legenda-item"><span class="dot hadir"></span> Masuk</div>';
-        html += '<div class="legenda-item"><span class="dot izin"></span> Izin</div>';
-        html += '<div class="legenda-item"><span class="dot alfa"></span> Alfa</div>';
-        html += '<div class="legenda-item"><span class="dot libur"></span> Libur</div>';
-        html += '</div>';
-
-        html += tableHtml;
-
-        // TTD
-        html += '<div class="ttd">';
-        html += '<div class="ttd-box">';
-        html += '<div class="label">Mengetahui,</div>';
-        html += '<div class="jabatan">Kepala SPPG Pelem 5</div>';
-        html += '<div class="line"></div>';
-        html += '<div class="nama"> Faisal Eko Cahyono </div>';
-        html += '</div>';
-        html += '<div class="ttd-box">';
-        html += '<div class="label">Dibuat Oleh,</div>';
-        html += '<div class="jabatan">ASisten Lapangan 2</div>';
-        html += '<div class="line"></div>';
-        html += '<div class="nama">' + (localStorage.getItem('admin_username') || 'Ikhwanul Muchlisin') + '</div>';
-        html += '</div>';
-        html += '</div>';
-
-        html += '<div class="footer">Pencatatan dilakukan secara realtime</div>';
-        html += '</div>';
-
-        container.innerHTML = html;
+        tbody.innerHTML += `
+          <tr>
+            <td class="border border-slate-400 p-2 text-center">${no++}</td>
+            <td class="border border-slate-400 p-2 font-medium">${row.nama}</td>
+            <td class="border border-slate-400 p-2 text-center text-xs">${row.divisi}</td>
+            <td class="border border-slate-400 p-2 text-center font-semibold text-emerald-700">${row.hadir}</td>
+            <td class="border border-slate-400 p-2 text-center font-semibold text-blue-700">${row.izin}</td>
+            <td class="border border-slate-400 p-2 text-center font-semibold text-amber-700">${row.sakit}</td>
+            <td class="border border-slate-400 p-2 text-center font-semibold text-rose-700">${row.alpha}</td>
+          </tr>
+        `;
+      }
     }
-
-    function cetakLaporan() {
-        if (allData.length === 0) {
-            showToast('Tampilkan laporan terlebih dahulu sebelum mencetak!', 'warning');
-            return;
-        }
-        window.print();
-    }
-
-    function refreshData() {
-        setDefaultDates();
-        loadFilterOptions();
-        document.getElementById('laporanContainer').innerHTML = '<div class="loading-text"><i class="fas fa-spinner fa-pulse"></i> Silakan pilih periode dan klik Tampilkan</div>';
-        showToast('Data di-refresh', 'info');
-    }
-</script>
+  </script>
 </body>
 </html>
