@@ -563,16 +563,66 @@
     var allData = [];
     var dateList = [];
     var hariLiburMap = {};
-    var urutanDivisi = [
-        'Aslap',
-        'Kepala Chef',
-        'Pengolahan',
-        'Persiapan',
-        'Pemorsian',
-        'Distribusi',
-        'Cuci Foodtray',
-        'Satpam',
-        'Kebersihan'
+    var urutanDivisiDanNama = [
+    // ASISTEN LAPANGAN (Luki dulu, baru Ikhwanul)
+    { nama: 'LUKI TRI PRASETYA', divisi: 'ASISTEN LAPANGAN' },
+    { nama: 'IKHWANUL MUCHLISIN', divisi: 'ASISTEN LAPANGAN' },
+    
+    // KEPALA CHEF
+    { nama: 'IKA ROHAMTUL HANIFAH', divisi: 'KEPALA CHEF' },
+    
+    // PENGOLAHAN
+    { nama: 'AHMAD HAIDIR RAHMAN', divisi: 'PENGOLAHAN' },
+    { nama: 'MUHAMMAD NUR KHOLIS', divisi: 'PENGOLAHAN' },
+    { nama: 'MUHAMMAD FUAD AL-MUTAKHIN', divisi: 'PENGOLAHAN' },
+    { nama: 'DUMYATI', divisi: 'PENGOLAHAN' },
+    { nama: 'WINDARTI ANJARSARI', divisi: 'PENGOLAHAN' },
+    { nama: 'PRIMA DUANA WIBIANTI', divisi: 'PENGOLAHAN' },
+    { nama: 'YENI', divisi: 'PENGOLAHAN' },
+    
+    // TIM PERSIAPAN BAHAN
+    { nama: 'SULASINATUN', divisi: 'TIM PERSIAPAN BAHAN' },
+    { nama: 'SITI FATIMAH', divisi: 'TIM PERSIAPAN BAHAN' },
+    { nama: 'FEBRIYANI YASIN', divisi: 'TIM PERSIAPAN BAHAN' },
+    { nama: 'MOCHAMAD HARIS ALVAN ROZIKI', divisi: 'TIM PERSIAPAN BAHAN' },
+    { nama: 'ANDY PRIANSA', divisi: 'TIM PERSIAPAN BAHAN' },
+    { nama: 'NUR ROSYIDAH', divisi: 'TIM PERSIAPAN BAHAN' },
+    { nama: 'ERVINA RAHAYU', divisi: 'TIM PERSIAPAN BAHAN' },
+    { nama: 'TAQQIYUDIN MUSYAFA H', divisi: 'TIM PERSIAPAN BAHAN' },
+    { nama: 'LAILA NUUR AZIZI', divisi: 'TIM PERSIAPAN BAHAN' },
+    
+    // PEMORSIAN MAKANAN
+    { nama: 'VITA YULIANA', divisi: 'PEMORSIAN MAKANAN' },
+    { nama: 'CHATERINA GITA HAPSARI', divisi: 'PEMORSIAN MAKANAN' },
+    { nama: 'IKA YULIANA SARI', divisi: 'PEMORSIAN MAKANAN' },
+    { nama: 'ALFIAN IQBAL RAMADHAN', divisi: 'PEMORSIAN MAKANAN' },
+    { nama: 'HERVINA ARUM SARI', divisi: 'PEMORSIAN MAKANAN' },
+    { nama: 'LIA WAHYUNI', divisi: 'PEMORSIAN MAKANAN' },
+    { nama: 'GIO RIFKI EKA A. P.', divisi: 'PEMORSIAN MAKANAN' },
+    
+    // CUCI ALAT MAKAN
+    { nama: 'MOCH. ARIF MAULANA', divisi: 'CUCI ALAT MAKAN' },
+    { nama: 'ALFIYAN WAHID AMIRUDDIN', divisi: 'CUCI ALAT MAKAN' },
+    { nama: 'TIFLUN SETIANIDA FIRDAUS', divisi: 'CUCI ALAT MAKAN' },
+    { nama: 'EKA LESTARI', divisi: 'CUCI ALAT MAKAN' },
+    { nama: 'SITI KHOTIMAH', divisi: 'CUCI ALAT MAKAN' },
+    { nama: 'LINDA', divisi: 'CUCI ALAT MAKAN' },
+    { nama: 'AFRIZAL ZAYYAN GHOZYUDIN', divisi: 'CUCI ALAT MAKAN' },
+    { nama: 'AHMAD MAULANA IBRAHIM', divisi: 'CUCI ALAT MAKAN' },
+    { nama: 'ANDY KURNIAWAN', divisi: 'CUCI ALAT MAKAN' },
+    
+    // DISTRIBUSI
+    { nama: 'IMAM SYAIFUL ARIFIN', divisi: 'DISTRIBUSI' },
+    { nama: 'MUCHAMAD ERI', divisi: 'DISTRIBUSI' },
+    { nama: 'ADE AGUNG T ASIK', divisi: 'DISTRIBUSI' },
+    { nama: 'DWIKY KURNIA ARDHANI', divisi: 'DISTRIBUSI' },
+    
+    // KEBERSIHAN
+    { nama: 'NAVIT KHOIRUL HANAFI', divisi: 'KEBERSIHAN' },
+    
+    // SATPAM
+    { nama: 'KUSEN', divisi: 'SATPAM' },
+    { nama: 'SUKO WAHYUDI', divisi: 'SATPAM' }
     ];
 
     // ============================================================
