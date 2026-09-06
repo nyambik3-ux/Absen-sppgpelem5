@@ -787,18 +787,36 @@
                 return;
             }
 
+            // Fetch Data dari Tabel Absensi
             var absenRes = await fetch(
                 SUPABASE_URL + '/rest/v1/absensi?select=*&tanggal=gte.' + start + '&tanggal=lte.' + end,
-                {
-                    headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': 'Bearer ' + SUPABASE_ANON_KEY }
-                }
+                { headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': 'Bearer ' + SUPABASE_ANON_KEY } }
             );
             var absensi = await absenRes.json();
+
+            // Fetch Data dari Tabel Izin Secara Terpisah
+            var izinRes = await fetch(
+                SUPABASE_URL + '/rest/v1/izin?select=*&tanggal=gte.' + start + '&tanggal=lte.' + end,
+                { headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': 'Bearer ' + SUPABASE_ANON_KEY } }
+            );
+            var listIzin = await izinRes.json();
 
             var absenMap = {};
             absensi.forEach(function(a) {
                 var key = a.karyawan_id + '|' + a.tanggal;
                 absenMap[key] = a;
+            });
+
+            // Gabungkan data dari tabel izin ke dalam map
+            listIzin.forEach(function(i) {
+                var key = i.karyawan_id + '|' + i.tanggal;
+                absenMap[key] = {
+                    karyawan_id: i.karyawan_id,
+                    tanggal: i.tanggal,
+                    status: 'izin',
+                    jam_masuk: '-',
+                    jam_pulang: '-'
+                };
             });
 
             dateList = [];
@@ -841,8 +859,6 @@
                         jamMasuk = abs.jam_masuk || '-';
                         jamPulang = abs.jam_pulang || '-';
                         
-                        // ===== PERBAIKAN LOGIKA IZIN DENGAN TRIM & STRING =====
-                        // Memastikan tidak ada spasi sisa dari database yang bikin error
                         var statusDb = String(abs.status || '').toLowerCase().trim();
                         
                         if (statusDb === 'izin' || statusDb === 'sakit' || statusDb === 'dinas') {
@@ -861,7 +877,6 @@
                             row.alfa++;
                             totalAlfa++;
                         }
-                        // =========================================================
                     } else {
                         status = 'alfa';
                         statusLabel = '❌';
@@ -1002,7 +1017,7 @@
 
         html += tableHtml;
 
-        // TTD (SUDAH DIPERBAIKI JABATAN DAN NAMANYA)
+        // TTD
         html += '<div class="ttd">';
         html += '<div class="ttd-box">';
         html += '<div class="label">Mengetahui,</div>';
