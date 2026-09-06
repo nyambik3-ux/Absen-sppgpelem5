@@ -437,7 +437,7 @@
     }
 
     // ============================================================
-    // LOAD LAPORAN (MATRIX) - BACA ID TEXT
+    // LOAD LAPORAN (MATRIX) - BACA HARI KERJA DARI hari_masuk
     // ============================================================
     async function loadLaporan() {
         var start = document.getElementById('startDate').value;
@@ -456,14 +456,11 @@
         wrapper.innerHTML = '<div class="loading-text" style="padding: 40px; text-align: center; color: #64748b;"><i class="fas fa-spinner fa-pulse"></i> Memuat laporan...</div>';
 
         try {
-            // 1. Ambil Karyawan (termasuk ID text)
-            var kRes = await fetch(SUPABASE_URL + '/rest/v1/karyawan?select=id,nama,divisi', {
+            // 1. Ambil Karyawan (termasuk hari_masuk)
+            var kRes = await fetch(SUPABASE_URL + '/rest/v1/karyawan?select=id,nama,divisi,hari_masuk', {
                 headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': 'Bearer ' + SUPABASE_ANON_KEY }
             });
             var allKaryawan = await kRes.json();
-            
-            var karyawanMap = {};
-            allKaryawan.forEach(function(k) { karyawanMap[k.id] = k; });
 
             // 2. Ambil Absensi
             var absenQuery = SUPABASE_URL + '/rest/v1/absensi?select=*&tanggal=gte.' + start + '&tanggal=lte.' + end;
@@ -517,6 +514,22 @@
                 }
             });
 
+            // 6. Map Hari Kerja per Karyawan
+            var hariKerjaMap = {};
+            allKaryawan.forEach(function(k) {
+                var workDays = [];
+                if (k.hari_masuk) {
+                    try {
+                        workDays = typeof k.hari_masuk === 'string' ? JSON.parse(k.hari_masuk) : k.hari_masuk;
+                    } catch(e) { workDays = []; }
+                }
+                // Default jika tidak ada data: Minggu-Jumat
+                if (!Array.isArray(workDays) || workDays.length === 0) {
+                    workDays = ['minggu', 'senin', 'selasa', 'rabu', 'kamis', 'jumat'];
+                }
+                hariKerjaMap[k.id] = workDays;
+            });
+
             // Filter Divisi + Sort
             var karyawanFiltered = allKaryawan.filter(function(k) {
                 if (divisiFilter) return k.divisi === divisiFilter;
@@ -551,6 +564,7 @@
             karyawanFiltered.forEach(function(k, idx) {
                 var nama = k.nama;
                 var divisi = k.divisi || '-';
+                var workDays = hariKerjaMap[k.id] || ['minggu', 'senin', 'selasa', 'rabu', 'kamis', 'jumat'];
                 var totalHadir = 0;
                 var totalIzin = 0;
 
@@ -565,21 +579,31 @@
                     var keyLibur = t + '|' + divisi;
                     var isLiburGlobal = hariLiburMap[t + '|__semua'];
                     var isLiburDivisi = hariLiburMap[keyLibur];
-                    
+
+                    // Cek hari kerja dari hari_masuk
+                    var dayOfWeek = new Date(t + 'T00:00:00').getDay();
+                    var dayNames = ['minggu', 'senin', 'selasa', 'rabu', 'kamis', 'jumat', 'sabtu'];
+                    var dayName = dayNames[dayOfWeek];
+                    var isWorkDay = workDays.indexOf(dayName) !== -1;
+
                     var status = 'alfa';
                     var keteranganIzin = '';
 
                     // LOGIKA:
-                    // 1. Cek libur by divisi/global dari hari_libur
-                    if (isLiburGlobal || isLiburDivisi) {
+                    // 1. Jika BUKAN hari kerja -> Libur
+                    if (!isWorkDay) {
+                        status = 'libur';
+                    }
+                    // 2. Cek libur by divisi/global dari hari_libur
+                    else if (isLiburGlobal || isLiburDivisi) {
                         status = 'libur';
                     } 
-                    // 2. Cek izin dari tabel izin (disetujui)
+                    // 3. Cek izin dari tabel izin (disetujui)
                     else if (izin) {
                         status = 'izin';
                         keteranganIzin = izin.alasan || 'Izin';
                     } 
-                    // 3. Cek dari tabel absensi (by name)
+                    // 4. Cek dari tabel absensi (by name)
                     else if (absen) {
                         if (absen.status === 'libur') {
                             status = 'libur';
