@@ -102,6 +102,12 @@
             font-size: 14px;
         }
         .filter-card .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 4px 15px rgba(168,85,247,0.4); }
+        .filter-card .btn-success { padding: 10px 20px; background: #10b981; border: none; border-radius: 10px; color: white; font-weight: 700; cursor: pointer; font-family: 'Inter', sans-serif; font-size: 13px; }
+        .filter-card .btn-success:hover { background: #059669; }
+        .filter-card .btn-danger { padding: 10px 20px; background: #ef4444; border: none; border-radius: 10px; color: white; font-weight: 700; cursor: pointer; font-family: 'Inter', sans-serif; font-size: 13px; }
+        .filter-card .btn-danger:hover { background: #dc2626; }
+        .filter-card .btn-refresh { padding: 10px 20px; background: #6366f1; border: none; border-radius: 10px; color: white; font-weight: 700; cursor: pointer; font-family: 'Inter', sans-serif; font-size: 13px; }
+        .filter-card .btn-refresh:hover { background: #4f46e5; }
 
         /* CARD STATISTIK */
         .stats-grid {
@@ -189,11 +195,26 @@
             to { opacity: 1; transform: translateX(-50%) translateY(0); }
         }
 
+        /* PRINT STYLES */
+        @media print {
+            body { background: white; color: black; padding: 0; }
+            .navbar, .filter-card { display: none !important; }
+            .table-container { border: none; padding: 0; background: white; }
+            table, th, td { border-color: #000 !important; color: black !important; }
+            th { background: #ddd !important; color: black !important; }
+            .stats-grid { display: none; }
+            .stat-card { display: none; }
+            .badge-divisi { background: #ddd; color: black; }
+            .toast-custom { display: none; }
+        }
+
         @media (max-width: 768px) {
             .navbar { flex-wrap: wrap; gap: 10px; padding: 12px 16px; }
             .filter-card { flex-direction: column; align-items: stretch; }
             .filter-card select, .filter-card input[type="date"] { width: 100%; min-width: auto; }
             .stats-grid { grid-template-columns: repeat(2, 1fr); }
+            .nav-actions { flex-wrap: wrap; }
+            .filter-card .btn-success, .filter-card .btn-danger, .filter-card .btn-refresh { width: 100%; }
         }
     </style>
 </head>
@@ -235,6 +256,15 @@
 
         <button class="btn-primary" onclick="loadLaporan()">
             <i class="fas fa-chart-bar"></i> Hitung Laporan
+        </button>
+        <button class="btn-success" onclick="exportExcel()">
+            <i class="fas fa-file-excel"></i> Excel
+        </button>
+        <button class="btn-danger" onclick="exportPDF()">
+            <i class="fas fa-file-pdf"></i> PDF
+        </button>
+        <button class="btn-refresh" onclick="refreshData()">
+            <i class="fas fa-sync-alt"></i>
         </button>
     </div>
 
@@ -290,6 +320,7 @@
     // ============================================================
     var allKaryawan = [];
     var divisiList = [];
+    var currentTableHtml = '';
 
     // ============================================================
     // FUNGSI TANGGAL
@@ -479,12 +510,50 @@
 
             html += '</tbody></table>';
             wrapper.innerHTML = html;
+            currentTableHtml = html;
 
         } catch(e) {
             console.error('Error:', e);
             wrapper.innerHTML = '<div class="empty-text">Gagal memuat laporan</div>';
             showToast('Gagal memuat laporan!', 'error');
         }
+    }
+
+    // ============================================================
+    // EXPORT EXCEL (CSV)
+    // ============================================================
+    function exportExcel() {
+        if (!currentTableHtml) { showToast('Tidak ada data', 'warning'); return; }
+
+        var start = document.getElementById('startDate').value;
+        var end = document.getElementById('endDate').value;
+
+        var csv = 'Rekapitulasi Absensi ' + start + ' - ' + end + '\n\n';
+        csv += 'No,Divisi,Karyawan,Hadir,Telat,Izin,Libur,Alfa,Total Absensi\n';
+
+        // Ambil data dari tabel yang sudah dirender
+        var table = document.querySelector('#tableWrapper table');
+        var rows = table.querySelectorAll('tr');
+        for (var i = 1; i < rows.length; i++) { // Skip header
+            var cols = rows[i].querySelectorAll('td');
+            if (cols.length === 0) continue;
+            csv += cols[0].innerText + ',' + cols[1].innerText + ',' + cols[2].innerText + ',' + cols[3].innerText + ',' + cols[4].innerText + ',' + cols[5].innerText + ',' + cols[6].innerText + ',' + cols[7].innerText + ',' + cols[8].innerText + '\n';
+        }
+
+        var blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+        var link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = 'Laporan_Absensi_' + start + '_' + end + '.csv';
+        link.click();
+        showToast('📥 Excel berhasil didownload!', 'success');
+    }
+
+    // ============================================================
+    // EXPORT PDF (PRINT)
+    // ============================================================
+    function exportPDF() {
+        if (!currentTableHtml) { showToast('Tidak ada data', 'warning'); return; }
+        window.print();
     }
 
     // ============================================================
