@@ -557,12 +557,25 @@
     }
     document.getElementById('adminName').textContent = localStorage.getItem('admin_username') || 'Admin';
 
-    // ============================================================
-    // VARIABLES & URUTAN DIVISI UTAMA
-    // ============================================================
-    var allData = [];
-    var dateList = [];
-    var hariLiburMap = {};
+   // ============================================================
+// VARIABLES & URUTAN DIVISI UTAMA
+// ============================================================
+var allData = [];
+var dateList = [];
+var hariLiburMap = {};
+
+// TAMBAHKAN INI:
+var urutanDivisi = [
+    'ASISTEN LAPANGAN',
+    'KEPALA CHEF',
+    'PENGOLAHAN',
+    'TIM PERSIAPAN BAHAN',
+    'PEMORSIAN MAKANAN',
+    'CUCI ALAT MAKAN',
+    'DISTRIBUSI',
+    'KEBERSIHAN',
+    'SATPAM'
+];
     var urutanDivisiDanNama = [
     // ASISTEN LAPANGAN (Luki dulu, baru Ikhwanul)
     { nama: 'LUKI TRI PRASETYA', divisi: 'ASISTEN LAPANGAN' },
