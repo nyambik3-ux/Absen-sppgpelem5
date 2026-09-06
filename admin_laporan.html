@@ -366,6 +366,18 @@
     // ============================================================
     // VARIABLES & FUNGSI TANGGAL
     // ============================================================
+    var divisiUrutan = [
+        'ASSISTEN LAPANGAN 2',
+        'KEPALA CHEF',
+        'PENGOLAHAN',
+        'PERSIAPAN',
+        'PEMORSIAN',
+        'CUCI FOODTRAY',
+        'DISTRIBUSI',
+        'SATPAM',
+        'KEBERSIHAN'
+    ];
+
     var divisiList = [];
     
     function getTodayIndonesia() {
@@ -376,7 +388,7 @@
 
     function formatTanggalLengkap(dateStr) {
         var d = new Date(dateStr + 'T00:00:00');
-        var bulan = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'Novemebr', 'Desember'];
+        var bulan = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
         return d.getDate() + ' ' + bulan[d.getMonth()] + ' ' + d.getFullYear();
     }
 
@@ -396,18 +408,6 @@
     // ============================================================
     // LOAD DIVISI (Urutan Manual)
     // ============================================================
-    var divisiUrutan = [
-        'ASSISTEN LAPANGAN 2',
-        'KEPALA CHEF',
-        'PENGOLAHAN',
-        'PERSIAPAN',
-        'PEMORSIAN',
-        'CUCI FOODTRAY',
-        'DISTRIBUSI',
-        'SATPAM',
-        'KEBERSIHAN'
-    ];
-
     async function loadDivisi() {
         try {
             var response = await fetch(SUPABASE_URL + '/rest/v1/karyawan?select=divisi', {
@@ -437,7 +437,7 @@
     }
 
     // ============================================================
-    // LOAD LAPORAN (MATRIX)
+    // LOAD LAPORAN (MATRIX) - DENGAN TOTAL IZIN & KETERANGAN
     // ============================================================
     async function loadLaporan() {
         var start = document.getElementById('startDate').value;
@@ -449,7 +449,6 @@
             return;
         }
 
-        // Update periode text & tanggal cetak
         document.getElementById('periodeText').textContent = 'Periode: ' + formatTanggalLengkap(start) + ' – ' + formatTanggalLengkap(end);
         document.getElementById('tanggalCetak').textContent = formatTanggalLengkap(getTodayIndonesia());
 
@@ -457,22 +456,33 @@
         wrapper.innerHTML = '<div class="loading-text" style="padding: 40px; text-align: center; color: #64748b;"><i class="fas fa-spinner fa-pulse"></i> Memuat laporan...</div>';
 
         try {
-            // Ambil karyawan
+            // 1. Ambil Karyawan
             var kRes = await fetch(SUPABASE_URL + '/rest/v1/karyawan?select=id,nama,divisi', {
                 headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': 'Bearer ' + SUPABASE_ANON_KEY }
             });
             var allKaryawan = await kRes.json();
-            var karyawanMap = {};
-            allKaryawan.forEach(function(k) { karyawanMap[k.id] = k; });
 
-            // Ambil absensi
+            // 2. Ambil Absensi
             var absenQuery = SUPABASE_URL + '/rest/v1/absensi?select=*&tanggal=gte.' + start + '&tanggal=lte.' + end;
             var absenRes = await fetch(absenQuery, {
                 headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': 'Bearer ' + SUPABASE_ANON_KEY }
             });
             var absensi = await absenRes.json();
 
-            // Generate array tanggal
+            // 3. Ambil Data Hari Libur
+            var liburQuery = SUPABASE_URL + '/rest/v1/hari_libur?select=tanggal,divisi&tanggal=gte.' + start + '&tanggal=lte.' + end;
+            var liburRes = await fetch(liburQuery, {
+                headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': 'Bearer ' + SUPABASE_ANON_KEY }
+            });
+            var hariLiburData = await liburRes.json();
+            
+            var hariLiburMap = {};
+            (hariLiburData || []).forEach(function(item) {
+                var key = item.tanggal + '|' + item.divisi;
+                hariLiburMap[key] = true;
+            });
+
+            // 4. Generate Array Tanggal
             var tanggalList = [];
             var current = new Date(start + 'T00:00:00');
             var endDate = new Date(end + 'T00:00:00');
@@ -481,14 +491,14 @@
                 current.setDate(current.getDate() + 1);
             }
 
-            // Map absensi per karyawan
+            // Map Absensi per Karyawan
             var absensiMap = {};
             absensi.forEach(function(a) {
                 if (!absensiMap[a.karyawan_id]) absensiMap[a.karyawan_id] = {};
                 absensiMap[a.karyawan_id][a.tanggal] = a;
             });
 
-            // Filter divisi + Sort sesuai urutan
+            // Filter Divisi + Sort
             var karyawanFiltered = allKaryawan.filter(function(k) {
                 if (divisiFilter) return k.divisi === divisiFilter;
                 return true;
@@ -502,7 +512,7 @@
                 return indexA - indexB;
             });
 
-            // Render tabel
+            // Render Header Tabel
             var html = '<table><thead><tr>';
             html += '<th style="min-width: 30px;">No</th>';
             html += '<th style="min-width: 150px; text-align: left;">Nama</th>';
@@ -515,12 +525,15 @@
             });
 
             html += '<th style="min-width: 60px;">Total Masuk</th>';
+            html += '<th style="min-width: 60px;">Total Izin</th>'; // Tambahan Header Total Izin
             html += '</tr></thead><tbody>';
 
+            // Render Body Tabel
             karyawanFiltered.forEach(function(k, idx) {
                 var nama = k.nama;
                 var divisi = k.divisi || '-';
                 var totalHadir = 0;
+                var totalIzin = 0; // Inisialisasi Total Izin
 
                 html += '<tr>';
                 html += '<td>' + (idx + 1) + '</td>';
@@ -529,27 +542,45 @@
 
                 tanggalList.forEach(function(t) {
                     var absen = absensiMap[k.id] ? absensiMap[k.id][t] : null;
-                    var status = 'alfa';
+                    var keyLibur = t + '|' + divisi;
+                    var isLiburGlobalOrDivisi = hariLiburMap[keyLibur] || false;
                     
-                    if (absen) {
-                        if (absen.status === 'libur') status = 'libur';
-                        else if (absen.status === 'izin') status = 'izin';
-                        else if (absen.jam_masuk && absen.jam_pulang) status = 'hadir';
-                        else if (absen.jam_masuk) status = 'hadir';
+                    var status = 'alfa';
+                    var keteranganIzin = ''; // Variabel penampung alasan izin
+
+                    if (isLiburGlobalOrDivisi) {
+                        status = 'libur';
+                    } else if (absen) {
+                        if (absen.status === 'libur') {
+                            status = 'libur';
+                        } else if (absen.status === 'izin') {
+                            status = 'izin';
+                            keteranganIzin = absen.alasan || 'Izin'; // Ambil keterangan alasan dari DB
+                        } else if (absen.jam_masuk) {
+                            status = 'hadir';
+                        }
                     }
 
                     if (status === 'hadir') totalHadir++;
+                    if (status === 'izin') totalIzin++; // Tambah counter izin
 
                     var badge = '';
-                    if (status === 'hadir') badge = '<div class="status-hadir">✔</div>';
-                    else if (status === 'libur') badge = '<div class="status-libur">L</div>';
-                    else if (status === 'izin') badge = '<div class="status-izin">I</div>';
-                    else if (status === 'alfa') badge = '<div class="status-alfa">A</div>';
+                    if (status === 'hadir') {
+                        badge = '<div class="status-hadir">✔</div>';
+                    } else if (status === 'libur') {
+                        badge = '<div class="status-libur">L</div>';
+                    } else if (status === 'izin') {
+                        // Ditambahkan atribut title agar alasan muncul saat kursor diarahkan (hover)
+                        badge = '<div class="status-izin" title="' + keteranganIzin + '">I</div>';
+                    } else if (status === 'alfa') {
+                        badge = '<div class="status-alfa">A</div>';
+                    }
 
                     html += '<td>' + badge + '</td>';
                 });
 
                 html += '<td class="col-akumulasi col-total-hadir">' + totalHadir + '</td>';
+                html += '<td class="col-akumulasi" style="color: #2563eb;">' + totalIzin + '</td>'; // Kolom Total Izin
                 html += '</tr>';
             });
 
