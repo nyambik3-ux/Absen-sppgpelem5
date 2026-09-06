@@ -338,7 +338,7 @@
     <div class="legenda">
         <span><div class="swatch" style="background: #10b981;"></div> Hadir</span>
         <span><div class="swatch" style="background: #a855f7;"></div> Libur</span>
-        <span><div class="swatch" style="background: #3b82f6;"></div> Izin (termasuk Sakit)</span>
+        <span><div class="swatch" style="background: #3b82f6;"></div> Izin / Sakit</span>
         <span><div class="swatch" style="background: #ef4444;"></div> Alfa</span>
     </div>
 
@@ -367,8 +367,7 @@
     // VARIABLES & FUNGSI TANGGAL
     // ============================================================
     var divisiUrutan = [
-        'ASSISTEN LAPANGAN 1',
-        'ASSISTEN LAPANGAN 2',
+        'ASISTEN LAPANGAN',
         'KEPALA CHEF',
         'PENGOLAHAN',
         'PERSIAPAN',
@@ -438,7 +437,7 @@
     }
 
     // ============================================================
-    // LOAD LAPORAN (MATRIX) - IZIN & SAKIT TERCOVER
+    // LOAD LAPORAN (MATRIX) - BACA DARI TABEL IZIN
     // ============================================================
     async function loadLaporan() {
         var start = document.getElementById('startDate').value;
@@ -463,14 +462,21 @@
             });
             var allKaryawan = await kRes.json();
 
-            // 2. Ambil Absensi (termasuk status izin/sakit)
+            // 2. Ambil Absensi
             var absenQuery = SUPABASE_URL + '/rest/v1/absensi?select=*&tanggal=gte.' + start + '&tanggal=lte.' + end;
             var absenRes = await fetch(absenQuery, {
                 headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': 'Bearer ' + SUPABASE_ANON_KEY }
             });
             var absensi = await absenRes.json();
 
-            // 3. Ambil Data Hari Libur
+            // 3. Ambil Data Izin (dari tabel izin)
+            var izinQuery = SUPABASE_URL + '/rest/v1/izin?select=*&tanggal=gte.' + start + '&tanggal=lte.' + end;
+            var izinRes = await fetch(izinQuery, {
+                headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': 'Bearer ' + SUPABASE_ANON_KEY }
+            });
+            var izinData = await izinRes.json();
+
+            // 4. Ambil Data Hari Libur
             var liburQuery = SUPABASE_URL + '/rest/v1/hari_libur?select=tanggal,divisi&tanggal=gte.' + start + '&tanggal=lte.' + end;
             var liburRes = await fetch(liburQuery, {
                 headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': 'Bearer ' + SUPABASE_ANON_KEY }
@@ -483,7 +489,7 @@
                 hariLiburMap[key] = true;
             });
 
-            // 4. Generate Array Tanggal
+            // 5. Generate Array Tanggal
             var tanggalList = [];
             var current = new Date(start + 'T00:00:00');
             var endDate = new Date(end + 'T00:00:00');
@@ -497,6 +503,16 @@
             absensi.forEach(function(a) {
                 if (!absensiMap[a.karyawan_id]) absensiMap[a.karyawan_id] = {};
                 absensiMap[a.karyawan_id][a.tanggal] = a;
+            });
+
+            // Map Izin per Karyawan (hanya yang disetujui)
+            var izinMap = {};
+            (izinData || []).forEach(function(i) {
+                // Hanya proses izin yang sudah disetujui
+                if (i.status === 'disetujui') {
+                    if (!izinMap[i.karyawan_id]) izinMap[i.karyawan_id] = {};
+                    izinMap[i.karyawan_id][i.tanggal] = i;
+                }
             });
 
             // Filter Divisi + Sort
@@ -543,6 +559,7 @@
 
                 tanggalList.forEach(function(t) {
                     var absen = absensiMap[k.id] ? absensiMap[k.id][t] : null;
+                    var izin = izinMap[k.id] ? izinMap[k.id][t] : null;
                     var keyLibur = t + '|' + divisi;
                     var isLiburGlobal = hariLiburMap[t + '|__semua'];
                     var isLiburDivisi = hariLiburMap[keyLibur];
@@ -555,13 +572,18 @@
                     if (isLiburGlobal || isLiburDivisi) {
                         status = 'libur';
                     } 
-                    // 2. Cek dari tabel absensi (by name) - IZIN & SAKIT TERCOVER
+                    // 2. Cek izin dari tabel izin (disetujui)
+                    else if (izin) {
+                        status = 'izin';
+                        keteranganIzin = izin.alasan || 'Izin';
+                    } 
+                    // 3. Cek dari tabel absensi (by name)
                     else if (absen) {
                         if (absen.status === 'libur') {
                             status = 'libur';
                         } else if (absen.status === 'izin' || absen.status === 'sakit') {
                             status = 'izin';
-                            keteranganIzin = absen.alasan || (absen.status === 'sakit' ? 'Sakit' : 'Izin');
+                            keteranganIzin = absen.alasan || 'Sakit';
                         } else if (absen.jam_masuk) {
                             status = 'hadir';
                         }
