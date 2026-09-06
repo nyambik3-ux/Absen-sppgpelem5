@@ -109,38 +109,6 @@
         .filter-card .btn-refresh { padding: 10px 20px; background: #6366f1; border: none; border-radius: 10px; color: white; font-weight: 700; cursor: pointer; font-family: 'Inter', sans-serif; font-size: 13px; }
         .filter-card .btn-refresh:hover { background: #4f46e5; }
 
-        /* CARD STATISTIK */
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 12px;
-            margin-bottom: 20px;
-        }
-        .stat-card {
-            background: rgba(255,255,255,0.04);
-            border-radius: 14px;
-            padding: 16px;
-            text-align: center;
-            border: 1px solid rgba(255,255,255,0.06);
-            font-size: 13px;
-            font-weight: 600;
-            color: #94a3b8;
-        }
-        body.light-mode .stat-card { background: white; border-color: rgba(0,0,0,0.06); }
-        .stat-card .number {
-            display: block;
-            font-size: 26px;
-            font-weight: 800;
-            color: white;
-            margin-top: 6px;
-        }
-        body.light-mode .stat-card .number { color: #1e293b; }
-        .stat-card.hadir .number { color: #34d399; }
-        .stat-card.telat .number { color: #fb923c; }
-        .stat-card.alfa .number { color: #f87171; }
-        .stat-card.izin .number { color: #60a5fa; }
-        .stat-card.libur .number { color: #a855f7; }
-
         /* TABLE */
         .table-container {
             background: rgba(255,255,255,0.04);
@@ -167,8 +135,20 @@
         }
         body.light-mode th { background: #f8fafc; color: #64748b; }
 
+        .status-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        .status-badge.hadir { background: rgba(16,185,129,0.2); color: #34d399; }
+        .status-badge.telat { background: rgba(251,146,60,0.2); color: #fb923c; }
+        .status-badge.alfa { background: rgba(239,68,68,0.2); color: #f87171; }
+        .status-badge.izin { background: rgba(96,165,250,0.2); color: #60a5fa; }
+        .status-badge.libur { background: rgba(168,85,247,0.2); color: #a855f7; }
+
         .badge-divisi { display: inline-block; padding: 2px 10px; border-radius: 12px; font-size: 11px; font-weight: 600; background: rgba(168,85,247,0.15); color: #a855f7; }
-        .badge-nama { display: inline-block; padding: 2px 10px; border-radius: 12px; font-size: 11px; font-weight: 600; background: rgba(59,130,246,0.15); color: #60a5fa; }
 
         .loading-text { text-align: center; color: #64748b; padding: 40px 0; font-size: 14px; }
         .empty-text { text-align: center; color: #64748b; padding: 30px 0; font-size: 14px; }
@@ -203,9 +183,7 @@
             .table-container { border: none; padding: 0; background: white; }
             table, th, td { border-color: #000 !important; color: black !important; }
             th { background: #ddd !important; color: black !important; }
-            .stats-grid { display: none; }
             .badge-divisi { background: #ddd; color: black; }
-            .badge-nama { background: #ddd; color: black; }
             .toast-custom { display: none; }
         }
 
@@ -213,9 +191,9 @@
             .navbar { flex-wrap: wrap; gap: 10px; padding: 12px 16px; }
             .filter-card { flex-direction: column; align-items: stretch; }
             .filter-card select, .filter-card input[type="date"] { width: 100%; min-width: auto; }
-            .stats-grid { grid-template-columns: repeat(2, 1fr); }
             .nav-actions { flex-wrap: wrap; }
             .filter-card .btn-success, .filter-card .btn-danger, .filter-card .btn-refresh { width: 100%; }
+            .table-container { font-size: 11px; }
         }
     </style>
 </head>
@@ -255,6 +233,16 @@
             <option value="">Semua Divisi</option>
         </select>
 
+        <label><i class="fas fa-tag"></i> Status:</label>
+        <select id="filterStatus">
+            <option value="">Semua Status</option>
+            <option value="hadir">🟢 Hadir</option>
+            <option value="telat">🟡 Telat</option>
+            <option value="alfa">🔴 Alfa</option>
+            <option value="izin">🔵 Izin</option>
+            <option value="libur">🟣 Libur</option>
+        </select>
+
         <button class="btn-primary" onclick="loadLaporan()">
             <i class="fas fa-chart-bar"></i> Hitung Laporan
         </button>
@@ -269,42 +257,18 @@
         </button>
     </div>
 
-    <!-- STATISTIK -->
-    <div class="stats-grid">
-        <div class="stat-card hadir">
-            <span>🟢 Hadir</span>
-            <span class="number" id="statHadir">0</span>
-        </div>
-        <div class="stat-card telat">
-            <span>🟡 Telat</span>
-            <span class="number" id="statTelat">0</span>
-        </div>
-        <div class="stat-card izin">
-            <span>🔵 Izin</span>
-            <span class="number" id="statIzin">0</span>
-        </div>
-        <div class="stat-card libur">
-            <span>🟣 Libur</span>
-            <span class="number" id="statLibur">0</span>
-        </div>
-        <div class="stat-card alfa">
-            <span>🔴 Alfa</span>
-            <span class="number" id="statAlfa">0</span>
-        </div>
-    </div>
-
-    <!-- TABLE 1: REKAP PER DIVISI -->
+    <!-- TABLE 1: LAPORAN DETAIL PER KARYAWAN (BY NAME) -->
     <div class="table-container" style="margin-bottom: 24px;">
-        <h3><i class="fas fa-building" style="color:#a855f7;"></i> Rekapitulasi Absensi per Divisi</h3>
-        <div id="tableWrapperDivisi">
+        <h3><i class="fas fa-list" style="color:#a855f7;"></i> Laporan Detail Absensi Per Karyawan</h3>
+        <div id="tableWrapperDetail">
             <div class="loading-text"><i class="fas fa-spinner fa-pulse"></i> Memuat laporan...</div>
         </div>
     </div>
 
-    <!-- TABLE 2: REKAP PER KARYAWAN (BY NAME) -->
+    <!-- TABLE 2: LAMPIRAN REKAP PER DIVISI -->
     <div class="table-container">
-        <h3><i class="fas fa-users" style="color:#60a5fa;"></i> Rekapitulasi Absensi per Karyawan</h3>
-        <div id="tableWrapperKaryawan">
+        <h3><i class="fas fa-building" style="color:#10b981;"></i> Lampiran: Rekapitulasi Absensi per Divisi</h3>
+        <div id="tableWrapperDivisi">
             <div class="loading-text"><i class="fas fa-spinner fa-pulse"></i> Memuat laporan...</div>
         </div>
     </div>
@@ -329,8 +293,8 @@
     // ============================================================
     var allKaryawan = [];
     var divisiList = [];
+    var currentTableDetailHtml = '';
     var currentTableDivisiHtml = '';
-    var currentTableKaryawanHtml = '';
 
     // ============================================================
     // FUNGSI TANGGAL
@@ -344,6 +308,12 @@
     function getDateIndonesia(date) {
         var offset = 7 * 60 * 60 * 1000;
         return new Date(date.getTime() + offset).toISOString().split('T')[0];
+    }
+
+    function formatTanggalDisplay(dateStr) {
+        var d = new Date(dateStr + 'T00:00:00');
+        var bulan = ['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agu','Sep','Okt','Nov','Des'];
+        return d.getDate() + ' ' + bulan[d.getMonth()] + ' ' + d.getFullYear();
     }
 
     function setDefaultDates() {
@@ -401,31 +371,42 @@
             if (!Array.isArray(data)) return;
             divisiList = data.map(function(d) { return d.nama; }).sort();
 
+            // Dropdown divisi di filter
             var select = document.getElementById('filterDivisi');
             select.innerHTML = '<option value="">Semua Divisi</option>';
             divisiList.forEach(function(d) {
                 select.innerHTML += '<option value="' + d + '">' + d + '</option>';
             });
+
+            // Dropdown divisi di karyawan
+            var selectKaryawan = document.getElementById('pilihDivisiKaryawan');
+            if (selectKaryawan) {
+                selectKaryawan.innerHTML = '<option value="">Semua Divisi</option>';
+                divisiList.forEach(function(d) {
+                    selectKaryawan.innerHTML += '<option value="' + d + '">' + d + '</option>';
+                });
+            }
         } catch(e) { console.error(e); }
     }
 
     // ============================================================
-    // LOAD LAPORAN (REKAP PER DIVISI + PER KARYAWAN)
+    // LOAD LAPORAN (DETAIL PER KARYAWAN + LAMPIRAN PER DIVISI)
     // ============================================================
     async function loadLaporan() {
         var start = document.getElementById('startDate').value;
         var end = document.getElementById('endDate').value;
         var divisiFilter = document.getElementById('filterDivisi').value;
+        var statusFilter = document.getElementById('filterStatus').value;
 
         if (!start || !end) {
             showToast('Pilih periode dulu!', 'warning');
             return;
         }
 
+        var wrapperDetail = document.getElementById('tableWrapperDetail');
         var wrapperDivisi = document.getElementById('tableWrapperDivisi');
-        var wrapperKaryawan = document.getElementById('tableWrapperKaryawan');
+        wrapperDetail.innerHTML = '<div class="loading-text"><i class="fas fa-spinner fa-pulse"></i> Memuat laporan...</div>';
         wrapperDivisi.innerHTML = '<div class="loading-text"><i class="fas fa-spinner fa-pulse"></i> Memuat laporan...</div>';
-        wrapperKaryawan.innerHTML = '<div class="loading-text"><i class="fas fa-spinner fa-pulse"></i> Memuat laporan...</div>';
 
         try {
             // Ambil semua karyawan
@@ -450,18 +431,12 @@
             var divisiMap = {};
             divisiList.forEach(function(d) { divisiMap[d] = { hadir: 0, telat: 0, izin: 0, libur: 0, alfa: 0, jumlahKaryawan: 0 }; });
 
-            // Grouping per karyawan (by name)
-            var karyawanMapRekap = {};
-            allKaryawan.forEach(function(k) {
-                karyawanMapRekap[k.id] = { nama: k.nama, divisi: k.divisi, hadir: 0, telat: 0, izin: 0, libur: 0, alfa: 0, totalAbsensi: 0 };
-            });
-
             // Hitung jumlah karyawan per divisi
             allKaryawan.forEach(function(k) {
                 if (k.divisi && divisiMap[k.divisi]) divisiMap[k.divisi].jumlahKaryawan++;
             });
 
-            // Proses setiap absensi (Logika Baru dengan status)
+            // Proses setiap absensi
             absensi.forEach(function(a) {
                 var k = karyawanMap[a.karyawan_id];
                 var divisi = k ? k.divisi : '-';
@@ -469,11 +444,7 @@
 
                 if (!divisiMap[divisi]) divisiMap[divisi] = { hadir: 0, telat: 0, izin: 0, libur: 0, alfa: 0, jumlahKaryawan: 0 };
 
-                // Buat untuk per karyawan
-                if (!karyawanMapRekap[a.karyawan_id]) karyawanMapRekap[a.karyawan_id] = { nama: a.karyawan_id, divisi: divisi, hadir: 0, telat: 0, izin: 0, libur: 0, alfa: 0, totalAbsensi: 0 };
-
                 var status = 'alfa';
-                // LOGIKA PENTING: BACA STATUS DARI DATABASE
                 if (a.status === 'libur') {
                     status = 'libur';
                 } else if (a.status === 'izin') {
@@ -485,24 +456,80 @@
                     status = a.jam_masuk <= targetJam ? 'hadir' : 'telat';
                 }
 
-                // Tambahkan ke total & divisi & karyawan
-                if (status === 'hadir') { totalHadir++; divisiMap[divisi].hadir++; karyawanMapRekap[a.karyawan_id].hadir++; }
-                else if (status === 'telat') { totalTelat++; divisiMap[divisi].telat++; karyawanMapRekap[a.karyawan_id].telat++; }
-                else if (status === 'izin') { totalIzin++; divisiMap[divisi].izin++; karyawanMapRekap[a.karyawan_id].izin++; }
-                else if (status === 'libur') { totalLibur++; divisiMap[divisi].libur++; karyawanMapRekap[a.karyawan_id].libur++; }
-                else { totalAlfa++; divisiMap[divisi].alfa++; karyawanMapRekap[a.karyawan_id].alfa++; }
+                // Filter status jika dipilih
+                if (statusFilter && status !== statusFilter) return;
 
-                karyawanMapRekap[a.karyawan_id].totalAbsensi++;
+                // Tambahkan ke total & divisi
+                if (status === 'hadir') { totalHadir++; divisiMap[divisi].hadir++; }
+                else if (status === 'telat') { totalTelat++; divisiMap[divisi].telat++; }
+                else if (status === 'izin') { totalIzin++; divisiMap[divisi].izin++; }
+                else if (status === 'libur') { totalLibur++; divisiMap[divisi].libur++; }
+                else { totalAlfa++; divisiMap[divisi].alfa++; }
             });
 
-            // Update stats
-            document.getElementById('statHadir').textContent = totalHadir;
-            document.getElementById('statTelat').textContent = totalTelat;
-            document.getElementById('statIzin').textContent = totalIzin;
-            document.getElementById('statLibur').textContent = totalLibur;
-            document.getElementById('statAlfa').textContent = totalAlfa;
+            // Render Tabel Detail Per Karyawan
+            var htmlDetail = '<table><thead><tr>';
+            htmlDetail += '<th>No</th><th>Nama</th><th>Divisi</th><th>Tanggal</th><th>Jam Masuk</th><th>Jam Pulang</th><th>Status</th>';
+            htmlDetail += '</tr></thead><tbody>';
 
-            // Render Tabel Rekap Per Divisi
+            var detailData = [];
+            absensi.forEach(function(a) {
+                var k = karyawanMap[a.karyawan_id];
+                var nama = k ? k.nama : a.karyawan_id;
+                var divisi = k ? k.divisi : '-';
+                if (divisiFilter && divisi !== divisiFilter) return;
+
+                var status = 'alfa';
+                var statusLabel = '🔴 Alfa';
+                if (a.status === 'libur') {
+                    status = 'libur'; statusLabel = '🟣 Libur';
+                } else if (a.status === 'izin') {
+                    status = 'izin'; statusLabel = '🔵 Izin';
+                } else if (a.jam_masuk && a.jam_pulang) {
+                    status = 'hadir'; statusLabel = '🟢 Hadir';
+                } else if (a.jam_masuk) {
+                    var targetJam = k ? (k.jam_masuk || '08:00') : '08:00';
+                    status = a.jam_masuk <= targetJam ? 'hadir' : 'telat';
+                    statusLabel = a.jam_masuk <= targetJam ? '🟢 Hadir' : '🟡 Telat';
+                }
+
+                if (statusFilter && status !== statusFilter) return;
+
+                detailData.push({
+                    nama: nama,
+                    divisi: divisi,
+                    tanggal: formatTanggalDisplay(a.tanggal),
+                    jam_masuk: a.jam_masuk || '-',
+                    jam_pulang: a.jam_pulang || '-',
+                    status: status,
+                    statusLabel: statusLabel
+                });
+            });
+
+            detailData.sort(function(a, b) { return a.nama.localeCompare(b.nama); });
+
+            if (detailData.length === 0) {
+                htmlDetail += '<tr><td colspan="7" style="text-align:center;padding:20px;">Tidak ada data</td></tr>';
+            }
+
+            detailData.forEach(function(d, idx) {
+                var statusClass = d.status;
+                htmlDetail += '<tr>';
+                htmlDetail += '<td>' + (idx + 1) + '</td>';
+                htmlDetail += '<td><strong>' + d.nama + '</strong></td>';
+                htmlDetail += '<td>' + d.divisi + '</td>';
+                htmlDetail += '<td>' + d.tanggal + '</td>';
+                htmlDetail += '<td>' + d.jam_masuk + '</td>';
+                htmlDetail += '<td>' + d.jam_pulang + '</td>';
+                htmlDetail += '<td><span class="status-badge ' + statusClass + '">' + d.statusLabel + '</span></td>';
+                htmlDetail += '</tr>';
+            });
+
+            htmlDetail += '</tbody></table>';
+            wrapperDetail.innerHTML = htmlDetail;
+            currentTableDetailHtml = htmlDetail;
+
+            // Render Tabel Lampiran Rekap Per Divisi
             var htmlDivisi = '<table><thead><tr>';
             htmlDivisi += '<th>No</th><th>Divisi</th><th>Karyawan</th><th>Hadir</th><th>Telat</th><th>Izin</th><th>Libur</th><th>Alfa</th><th>Total Absensi</th>';
             htmlDivisi += '</tr></thead><tbody>';
@@ -535,73 +562,41 @@
             wrapperDivisi.innerHTML = htmlDivisi;
             currentTableDivisiHtml = htmlDivisi;
 
-            // Render Tabel Rekap Per Karyawan (By Name)
-            var htmlKaryawan = '<table><thead><tr>';
-            htmlKaryawan += '<th>No</th><th>Nama</th><th>Divisi</th><th>Hadir</th><th>Telat</th><th>Izin</th><th>Libur</th><th>Alfa</th><th>Total</th>';
-            htmlKaryawan += '</tr></thead><tbody>';
-
-            var karyawanKeys = Object.keys(karyawanMapRekap).sort(function(a, b) {
-                return karyawanMapRekap[a].nama.localeCompare(karyawanMapRekap[b].nama);
-            });
-
-            if (karyawanKeys.length === 0) {
-                htmlKaryawan += '<tr><td colspan="9" style="text-align:center;padding:20px;">Belum ada data karyawan</td></tr>';
-            }
-
-            karyawanKeys.forEach(function(id, idx) {
-                var data = karyawanMapRekap[id];
-                if (!data) return;
-                var total = data.hadir + data.telat + data.izin + data.libur + data.alfa;
-
-                htmlKaryawan += '<tr>';
-                htmlKaryawan += '<td>' + (idx + 1) + '</td>';
-                htmlKaryawan += '<td><span class="badge-nama">' + data.nama + '</span></td>';
-                htmlKaryawan += '<td>' + (data.divisi || '-') + '</td>';
-                htmlKaryawan += '<td style="color:#34d399;font-weight:700;">' + data.hadir + '</td>';
-                htmlKaryawan += '<td style="color:#fb923c;font-weight:700;">' + data.telat + '</td>';
-                htmlKaryawan += '<td style="color:#60a5fa;font-weight:700;">' + data.izin + '</td>';
-                htmlKaryawan += '<td style="color:#a855f7;font-weight:700;">' + data.libur + '</td>';
-                htmlKaryawan += '<td style="color:#f87171;font-weight:700;">' + data.alfa + '</td>';
-                htmlKaryawan += '<td>' + total + '</td>';
-                htmlKaryawan += '</tr>';
-            });
-
-            htmlKaryawan += '</tbody></table>';
-            wrapperKaryawan.innerHTML = htmlKaryawan;
-            currentTableKaryawanHtml = htmlKaryawan;
+            // Update total info
+            document.getElementById('totalInfo').innerHTML = 'Total: <strong>' + detailData.length + '</strong> data';
 
         } catch(e) {
             console.error('Error:', e);
+            wrapperDetail.innerHTML = '<div class="empty-text">Gagal memuat laporan</div>';
             wrapperDivisi.innerHTML = '<div class="empty-text">Gagal memuat laporan</div>';
-            wrapperKaryawan.innerHTML = '<div class="empty-text">Gagal memuat laporan</div>';
             showToast('Gagal memuat laporan!', 'error');
         }
     }
 
     // ============================================================
-    // EXPORT EXCEL (CSV)
+    // EXPORT EXCEL (CSV) - Termasuk detail & divisi
     // ============================================================
     function exportExcel() {
         var start = document.getElementById('startDate').value;
         var end = document.getElementById('endDate').value;
 
         var csv = 'Laporan Absensi ' + start + ' - ' + end + '\n\n';
-        csv += '=== REKAP PER DIVISI ===\n';
-        csv += 'No,Divisi,Karyawan,Hadir,Telat,Izin,Libur,Alfa,Total Absensi\n';
-        if (currentTableDivisiHtml) {
-            var table1 = document.querySelector('#tableWrapperDivisi table');
+        csv += '=== DETAIL PER KARYAWAN ===\n';
+        csv += 'No,Nama,Divisi,Tanggal,Jam Masuk,Jam Pulang,Status\n';
+        if (currentTableDetailHtml) {
+            var table1 = document.querySelector('#tableWrapperDetail table');
             var rows1 = table1.querySelectorAll('tr');
             for (var i = 1; i < rows1.length; i++) {
                 var cols = rows1[i].querySelectorAll('td');
                 if (cols.length === 0) continue;
-                csv += cols[0].innerText + ',' + cols[1].innerText + ',' + cols[2].innerText + ',' + cols[3].innerText + ',' + cols[4].innerText + ',' + cols[5].innerText + ',' + cols[6].innerText + ',' + cols[7].innerText + ',' + cols[8].innerText + '\n';
+                csv += cols[0].innerText + ',' + cols[1].innerText + ',' + cols[2].innerText + ',' + cols[3].innerText + ',' + cols[4].innerText + ',' + cols[5].innerText + ',' + cols[6].innerText + '\n';
             }
         }
 
-        csv += '\n\n=== REKAP PER KARYAWAN ===\n';
-        csv += 'No,Nama,Divisi,Hadir,Telat,Izin,Libur,Alfa,Total\n';
-        if (currentTableKaryawanHtml) {
-            var table2 = document.querySelector('#tableWrapperKaryawan table');
+        csv += '\n\n=== LAMPIRAN REKAP PER DIVISI ===\n';
+        csv += 'No,Divisi,Karyawan,Hadir,Telat,Izin,Libur,Alfa,Total Absensi\n';
+        if (currentTableDivisiHtml) {
+            var table2 = document.querySelector('#tableWrapperDivisi table');
             var rows2 = table2.querySelectorAll('tr');
             for (var i = 1; i < rows2.length; i++) {
                 var cols = rows2[i].querySelectorAll('td');
@@ -622,7 +617,7 @@
     // EXPORT PDF (PRINT)
     // ============================================================
     function exportPDF() {
-        if (!currentTableDivisiHtml && !currentTableKaryawanHtml) { showToast('Tidak ada data', 'warning'); return; }
+        if (!currentTableDetailHtml && !currentTableDivisiHtml) { showToast('Tidak ada data', 'warning'); return; }
         window.print();
     }
 
