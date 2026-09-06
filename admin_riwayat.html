@@ -581,7 +581,11 @@
                 var status = 'alfa';
                 var statusLabel = '🔴 Alfa';
 
-                if (a.status === 'izin') {
+                // CEK STATUS LIBUR DULU!
+                if (a.status === 'libur') {
+                    status = 'libur';
+                    statusLabel = '🟣 Libur';
+                } else if (a.status === 'izin') {
                     status = 'izin';
                     statusLabel = '🔵 Izin';
                 } else if (a.jam_masuk && a.jam_pulang) {
