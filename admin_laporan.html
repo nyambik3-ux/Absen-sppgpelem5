@@ -558,7 +558,7 @@
     document.getElementById('adminName').textContent = localStorage.getItem('admin_username') || 'Admin';
 
     // ============================================================
-    // VARIABLES & URUTAN DIVISI SESUAI PERMINTAAN
+    // VARIABLES & URUTAN DIVISI UTAMA
     // ============================================================
     var allData = [];
     var dateList = [];
@@ -771,11 +771,11 @@
         try {
             await loadHariLibur();
 
+            // PERBAIKAN: Hapus '&order=nama' dari query agar urutan tidak langsung abjad nama
             var karyawanQuery = SUPABASE_URL + '/rest/v1/karyawan?select=id,nama,divisi,jam_masuk,jam_pulang';
             if (divisiFilter) {
                 karyawanQuery += '&divisi=eq.' + encodeURIComponent(divisiFilter);
             }
-            karyawanQuery += '&order=nama';
 
             var karyawanRes = await fetch(karyawanQuery, {
                 headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': 'Bearer ' + SUPABASE_ANON_KEY }
@@ -897,12 +897,20 @@
                 allData.push(row);
             });
 
+            // PERBAIKAN SORTING: Urutkan berdasarkan Divisi sesuai urutan custom, lalu urutkan nama A-Z di dalam divisi yang sama
             allData.sort(function(a, b) {
                 var indexA = urutanDivisi.indexOf(a.divisi);
                 var indexB = urutanDivisi.indexOf(b.divisi);
                 if (indexA === -1) indexA = 999;
                 if (indexB === -1) indexB = 999;
-                return indexA - indexB;
+
+                // Jika divisinya berbeda, urutkan berdasarkan urutan divisi
+                if (indexA !== indexB) {
+                    return indexA - indexB;
+                }
+
+                // Jika divisinya sama, urutkan berdasarkan nama karyawan (A-Z)
+                return a.nama.localeCompare(b.nama);
             });
 
             renderLaporan(totalMasuk, totalAlfa, totalIzin);
