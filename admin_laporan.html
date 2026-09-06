@@ -371,21 +371,11 @@
             if (!Array.isArray(data)) return;
             divisiList = data.map(function(d) { return d.nama; }).sort();
 
-            // Dropdown divisi di filter
             var select = document.getElementById('filterDivisi');
             select.innerHTML = '<option value="">Semua Divisi</option>';
             divisiList.forEach(function(d) {
                 select.innerHTML += '<option value="' + d + '">' + d + '</option>';
             });
-
-            // Dropdown divisi di karyawan
-            var selectKaryawan = document.getElementById('pilihDivisiKaryawan');
-            if (selectKaryawan) {
-                selectKaryawan.innerHTML = '<option value="">Semua Divisi</option>';
-                divisiList.forEach(function(d) {
-                    selectKaryawan.innerHTML += '<option value="' + d + '">' + d + '</option>';
-                });
-            }
         } catch(e) { console.error(e); }
     }
 
@@ -561,9 +551,6 @@
             htmlDivisi += '</tbody></table>';
             wrapperDivisi.innerHTML = htmlDivisi;
             currentTableDivisiHtml = htmlDivisi;
-
-            // Update total info
-            document.getElementById('totalInfo').innerHTML = 'Total: <strong>' + detailData.length + '</strong> data';
 
         } catch(e) {
             console.error('Error:', e);
