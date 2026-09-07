@@ -118,11 +118,13 @@
 
   <!-- SCRIPT UTAMA DI SINI -->
   <script>
-    // Inisialisasi Supabase
+    // Inisialisasi Supabase (Cukup gunakan assignment tanpa 'const' jika sudah ter-load dari CDN)
     const SUPABASE_URL = 'https://zcaqqybonpfishwkmffg.supabase.co';
     const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpjYXFxeWJvbnBmaXNod2ttZmZnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODc2Mjc2NDgsImV4cCI6MjEwMzIwMzY0OH0.pBk5nwJI3u9n08onTNmvcOFxtCXQvv-ipYIu2f_iAiQ';
-    const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
+    
+    // Perbaikan di sini (tanpa kata const di depan supabase)
+    window.supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    const db = window.supabaseClient; // Atau gunakan variabel lain
     let listKaryawan = [];
 
     document.addEventListener("DOMContentLoaded", fetchKaryawan);
