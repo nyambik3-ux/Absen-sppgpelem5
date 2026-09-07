@@ -126,10 +126,13 @@
 
     document.addEventListener("DOMContentLoaded", fetchKaryawan);
 
-    // Fungsi helper untuk memperbaiki URL Google Drive agar bisa dirender tag <img>
-    function formatFotoUrl(url) {
-      if (!url) return 'https://via.placeholder.com/40';
-      // Jika link Google Drive, ubah ke format direct thumbnail/view
+    // Fungsi helper untuk memperbaiki URL Google Drive atau menampilkan inisial teks jika kosong
+    function formatFotoUrl(url, nama) {
+      if (!url) {
+        // Buat avatar warna-warni otomatis berdasarkan huruf pertama nama
+        const initial = nama ? nama.charAt(0).toUpperCase() : 'U';
+        return `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 40 40"><rect width="40" height="40" fill="%23cbd5e1"/><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" font-family="sans-serif" font-size="16" font-weight="bold" fill="%23475569">${initial}</text></svg>`;
+      }
       if (url.includes('drive.google.com')) {
         let match = url.match(/\/d\/([a-zA-Z0-9_-]+)/) || url.match(/id=([a-zA-Z0-9_-]+)/);
         if (match && match[1]) {
@@ -181,7 +184,7 @@
       tbody.innerHTML = filtered.map(k => {
         const hariArr = Array.isArray(k.hari_masuk) ? k.hari_masuk : [];
         const hariBadges = hariArr.map(h => `<span class="inline-block bg-slate-100 text-slate-700 text-[10px] px-1.5 py-0.5 rounded capitalize mr-1">${h}</span>`).join('');
-        const fotoFinal = formatFotoUrl(k.foto);
+       const fotoFinal = formatFotoUrl(k.foto, k.nama);
 
         return `
           <tr class="hover:bg-slate-50 transition">
