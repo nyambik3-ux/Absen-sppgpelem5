@@ -116,20 +116,30 @@
     </div>
   </div>
 
-  <!-- SCRIPT UTAMA DI SINI -->
   <script>
-    // Inisialisasi Supabase dengan variabel 'db' agar tidak bentrok
+    // Inisialisasi Supabase menggunakan variabel 'db' agar tidak bentrok dengan library global
     const SUPABASE_URL = 'https://zcaqqybonpfishwkmffg.supabase.co';
     const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpjYXFxeWJvbnBmaXNod2ttZmZnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODc2Mjc2NDgsImV4cCI6MjEwMzIwMzY0OH0.pBk5nwJI3u9n08onTNmvcOFxtCXQvv-ipYIu2f_iAiQ';
-    
-    // Gunakan window.supabase.createClient dan tampung ke variabel 'db'
     const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
     let listKaryawan = [];
 
     document.addEventListener("DOMContentLoaded", fetchKaryawan);
 
-    // Fetch Data (Ganti semua 'supabase.' menjadi 'db.')
+    // Fungsi helper untuk memperbaiki URL Google Drive agar bisa dirender tag <img>
+    function formatFotoUrl(url) {
+      if (!url) return 'https://via.placeholder.com/40';
+      // Jika link Google Drive, ubah ke format direct thumbnail/view
+      if (url.includes('drive.google.com')) {
+        let match = url.match(/\/d\/([a-zA-Z0-9_-]+)/) || url.match(/id=([a-zA-Z0-9_-]+)/);
+        if (match && match[1]) {
+          return `https://lh3.googleusercontent.com/d/${match[1]}=s220`;
+        }
+      }
+      return url;
+    }
+
+    // Fetch Data
     async function fetchKaryawan() {
       const { data, error } = await db.from('karyawan').select('*').order('nama', { ascending: true });
       if (error) {
@@ -169,14 +179,14 @@
       }
 
       tbody.innerHTML = filtered.map(k => {
-        // Parse JSONB hari_masuk
         const hariArr = Array.isArray(k.hari_masuk) ? k.hari_masuk : [];
         const hariBadges = hariArr.map(h => `<span class="inline-block bg-slate-100 text-slate-700 text-[10px] px-1.5 py-0.5 rounded capitalize mr-1">${h}</span>`).join('');
+        const fotoFinal = formatFotoUrl(k.foto);
 
         return `
           <tr class="hover:bg-slate-50 transition">
             <td class="p-4 font-medium flex items-center gap-3">
-              <img src="${k.foto || 'https://via.placeholder.com/40'}" class="w-8 h-8 rounded-full object-cover border">
+              <img src="${fotoFinal}" class="w-8 h-8 rounded-full object-cover border" onerror="this.src='https://via.placeholder.com/40'">
               <span>${k.nama}</span>
             </td>
             <td class="p-4 text-slate-600">${k.divisi || '-'}</td>
@@ -205,7 +215,7 @@
       document.getElementById('modalForm').classList.add('hidden');
     }
 
-    // Simpan Data (Insert/Update)
+    // Simpan Data (Insert/Update) - Menggunakan db.from
     async function saveKaryawan(e) {
       e.preventDefault();
       const id = document.getElementById('empId').value;
@@ -216,7 +226,6 @@
       const pin = document.getElementById('empPin').value || '1234';
       const foto = document.getElementById('empFoto').value;
 
-      // Tangkap Checkbox Hari (Format Array untuk JSONB)
       const checkedHari = Array.from(document.querySelectorAll('input[name="hari_masuk"]:checked'))
                                .map(cb => cb.value.toLowerCase());
 
@@ -225,16 +234,16 @@
         divisi,
         jam_masuk,
         jam_pulang,
-        hari_masuk: checkedHari, // Masuk ke kolom jsonb Supabase
+        hari_masuk: checkedHari,
         pin,
         foto
       };
 
       let error;
       if (id) {
-        ({ error } = await supabase.from('karyawan').update(payload).eq('id', id));
+        ({ error } = await db.from('karyawan').update(payload).eq('id', id));
       } else {
-        ({ error } = await supabase.from('karyawan').insert([payload]));
+        ({ error } = await db.from('karyawan').insert([payload]));
       }
 
       if (error) {
@@ -258,7 +267,6 @@
       document.getElementById('empPin').value = k.pin || '';
       document.getElementById('empFoto').value = k.foto || '';
 
-      // Populate Hari Checkboxes
       const hariArr = Array.isArray(k.hari_masuk) ? k.hari_masuk : [];
       document.querySelectorAll('input[name="hari_masuk"]').forEach(cb => {
         cb.checked = hariArr.includes(cb.value.toLowerCase());
@@ -268,19 +276,19 @@
       document.getElementById('modalForm').classList.remove('hidden');
     }
 
-    // Reset PIN default (1234)
+    // Reset PIN default - Menggunakan db.from
     async function resetPin(id) {
       if (confirm("Reset PIN karyawan ini ke standar '1234'?")) {
-        const { error } = await supabase.from('karyawan').update({ pin: '1234' }).eq('id', id);
+        const { error } = await db.from('karyawan').update({ pin: '1234' }).eq('id', id);
         if (error) alert("Gagal reset PIN: " + error.message);
         else fetchKaryawan();
       }
     }
 
-    // Hapus Karyawan
+    // Hapus Karyawan - Menggunakan db.from
     async function deleteKaryawan(id, nama) {
       if (confirm(`Yakin ingin menghapus karyawan "${nama}"?`)) {
-        const { error } = await supabase.from('karyawan').delete().eq('id', id);
+        const { error } = await db.from('karyawan').delete().eq('id', id);
         if (error) alert("Gagal menghapus: " + error.message);
         else fetchKaryawan();
       }
