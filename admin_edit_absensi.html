@@ -105,21 +105,16 @@
   </div>
 
   <script>
-    // Config Supabase
-// Config Supabase
+    // Config Supabase menggunakan variabel 'db' agar aman dari konflik objek global
     const SUPABASE_URL = 'https://zcaqqybonpfishwkmffg.supabase.co';
     const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpjYXFxeWJvbnBmaXNod2ttZmZnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODc2Mjc2NDgsImV4cCI6MjEwMzIwMzY0OH0.pBk5nwJI3u9n08onTNmvcOFxtCXQvv-ipYIu2f_iAiQ';
-    
-    // Ganti 'supabase' menjadi 'db'
     const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
     let listKaryawan = [];
 
     document.addEventListener("DOMContentLoaded", () => {
-      // Set default input tanggal ke hari ini
       const today = new Date().toISOString().split('T')[0];
       document.getElementById('inputTanggal').value = today;
-
       initData();
     });
 
@@ -128,9 +123,9 @@
       await fetchDaftarIzin();
     }
 
-    // Load Dropdown Karyawan
+    // Load Dropdown Karyawan - Menggunakan db
     async function fetchKaryawanOptions() {
-      const { data, error } = await supabase.from('karyawan').select('id, nama, divisi').order('nama');
+      const { data, error } = await db.from('karyawan').select('id, nama, divisi').order('nama');
       if (error) return alert("Gagal memuat karyawan: " + error.message);
       
       listKaryawan = data || [];
@@ -151,7 +146,7 @@
       }
     }
 
-    // Simpan data izin / edit absensi ke tabel 'absensi'
+    // Simpan data izin / edit absensi - Menggunakan db
     async function simpanIzinManual(e) {
       e.preventDefault();
       const karyawan_id = document.getElementById('selectKaryawan').value;
@@ -161,19 +156,33 @@
       const jam_pulang = document.getElementById('inputJamPulang').value || null;
       const keterangan = document.getElementById('inputKeterangan').value;
 
-      const payload = {
-        karyawan_id,
-        tanggal,
-        status,
-        jam_masuk: status === 'Hadir' ? jam_masuk : null,
-        jam_pulang: status === 'Hadir' ? jam_pulang : null,
-        keterangan,
-        is_verified: true // Otomatis terverifikasi jika diinput oleh admin
-      };
+      let targetTable = 'absensi';
+      let payload = {};
 
-      // Upsert data ke tabel absensi (update jika tanggal & karyawan_id sudah ada)
-      const { error } = await supabase
-        .from('absensi')
+      if (status === 'Hadir') {
+        targetTable = 'absensi';
+        payload = {
+          karyawan_id,
+          tanggal,
+          status,
+          jam_masuk,
+          jam_pulang,
+          keterangan,
+          is_verified: true
+        };
+      } else {
+        targetTable = 'izin';
+        payload = {
+          karyawan_id,
+          tanggal,
+          status,
+          keterangan,
+          is_verified: true
+        };
+      }
+
+      const { error } = await db
+        .from(targetTable)
         .upsert([payload], { onConflict: 'karyawan_id, tanggal' });
 
       if (error) {
@@ -186,12 +195,12 @@
       }
     }
 
-    // Fetch Daftar Absensi/Izin
+    // Fetch Daftar Absensi/Izin - Menggunakan db
     async function fetchDaftarIzin() {
       const filterTgl = document.getElementById('filterTanggal').value;
       const tbody = document.getElementById('tabelIzinBody');
 
-      let query = supabase
+      let query = db
         .from('absensi')
         .select(`
           id,
@@ -253,9 +262,9 @@
       }).join('');
     }
 
-    // Verifikasi cepat pengajuan izin karyawan
+    // Verifikasi cepat pengajuan izin karyawan - Menggunakan db
     async function verifikasiLanjut(absensiId) {
-      const { error } = await supabase
+      const { error } = await db
         .from('absensi')
         .update({ is_verified: true })
         .eq('id', absensiId);
