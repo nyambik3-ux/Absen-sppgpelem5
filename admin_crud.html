@@ -118,20 +118,20 @@
 
   <!-- SCRIPT UTAMA DI SINI -->
   <script>
-    // Inisialisasi Supabase (Cukup gunakan assignment tanpa 'const' jika sudah ter-load dari CDN)
+    // Inisialisasi Supabase dengan variabel 'db' agar tidak bentrok
     const SUPABASE_URL = 'https://zcaqqybonpfishwkmffg.supabase.co';
     const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpjYXFxeWJvbnBmaXNod2ttZmZnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODc2Mjc2NDgsImV4cCI6MjEwMzIwMzY0OH0.pBk5nwJI3u9n08onTNmvcOFxtCXQvv-ipYIu2f_iAiQ';
     
-    // Perbaikan di sini (tanpa kata const di depan supabase)
-    window.supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-    const db = window.supabaseClient; // Atau gunakan variabel lain
+    // Gunakan window.supabase.createClient dan tampung ke variabel 'db'
+    const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
     let listKaryawan = [];
 
     document.addEventListener("DOMContentLoaded", fetchKaryawan);
 
-    // Fetch Data
+    // Fetch Data (Ganti semua 'supabase.' menjadi 'db.')
     async function fetchKaryawan() {
-      const { data, error } = await supabase.from('karyawan').select('*').order('nama', { ascending: true });
+      const { data, error } = await db.from('karyawan').select('*').order('nama', { ascending: true });
       if (error) {
         alert("Gagal mengambil data karyawan: " + error.message);
         return;
