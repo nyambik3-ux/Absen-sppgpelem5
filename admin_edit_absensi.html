@@ -146,70 +146,63 @@
       }
     }
 
-    // Simpan data izin / edit absensi - Menggunakan db
+   // Simpan data izin / edit absensi
     async function simpanIzinManual(e) {
       e.preventDefault();
       const karyawan_id = document.getElementById('selectKaryawan').value;
       const tanggal = document.getElementById('inputTanggal').value;
-      const status = document.getElementById('selectStatus').value;
+      const statusInput = document.getElementById('selectStatus').value; // 'Izin', 'Sakit', 'Dinas', atau 'Hadir'
       const jam_masuk = document.getElementById('inputJamMasuk').value || null;
       const jam_pulang = document.getElementById('inputJamPulang').value || null;
-      const keterangan = document.getElementById('inputKeterangan').value;
+      const alasanText = document.getElementById('inputKeterangan').value;
 
-      let targetTable = 'absensi';
-      let payload = {};
+      let error;
 
-      if (status === 'Hadir') {
-        targetTable = 'absensi';
-        payload = {
+      if (statusInput === 'Hadir') {
+        // Jika Hadir Manual, simpan ke tabel 'absensi'
+        const payloadAbsen = {
           karyawan_id,
           tanggal,
-          status,
+          status: 'Hadir',
           jam_masuk,
           jam_pulang,
-          keterangan,
           is_verified: true
         };
+        ({ error } = await db.from('absensi').upsert([payloadAbsen], { onConflict: 'karyawan_id, tanggal' }));
       } else {
-        targetTable = 'izin';
-        payload = {
+        // Jika Izin / Sakit / Dinas, simpan ke tabel 'izin' sesuai kolom di database
+        const payloadIzin = {
           karyawan_id,
           tanggal,
-          status,
-          keterangan,
-          is_verified: true
+          alasan: alasanText,          // Sesuai kolom 'alasan' di tabel izin
+          status: 'disetujui'          // Karena diinput admin, langsung setujui
         };
+        ({ error } = await db.from('izin').insert([payloadIzin]));
       }
-
-      const { error } = await db
-        .from(targetTable)
-        .upsert([payload], { onConflict: 'karyawan_id, tanggal' });
 
       if (error) {
         alert("Gagal menyimpan data: " + error.message);
       } else {
-        alert("Data persetujuan/edit absensi berhasil disimpan!");
+        alert("Data berhasil disimpan!");
         document.getElementById('formIzin').reset();
         document.getElementById('sectionJam').classList.add('hidden');
         fetchDaftarIzin();
       }
     }
 
-    // Fetch Daftar Absensi/Izin - Menggunakan db
+    // Fetch Daftar Pengajuan / Izin & Absensi
     async function fetchDaftarIzin() {
       const filterTgl = document.getElementById('filterTanggal').value;
       const tbody = document.getElementById('tabelIzinBody');
 
+      // Ambil data dari tabel izin beserta relasi ke karyawan
       let query = db
-        .from('absensi')
+        .from('izin')
         .select(`
           id,
           tanggal,
+          alasan,
           status,
-          jam_masuk,
-          jam_pulang,
-          keterangan,
-          is_verified,
           karyawan ( nama, divisi )
         `)
         .order('tanggal', { ascending: false });
@@ -226,42 +219,32 @@
       }
 
       if (!data || data.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="6" class="p-4 text-center text-slate-400">Belum ada catatan pengajuan/absensi.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="6" class="p-4 text-center text-slate-400">Belum ada catatan izin.</td></tr>`;
         return;
       }
 
       tbody.innerHTML = data.map(row => {
         const namaKaryawan = row.karyawan?.nama || 'N/A';
         const divisi = row.karyawan?.divisi || '-';
-        const badgeColor = 
-          row.status === 'Hadir' ? 'bg-emerald-100 text-emerald-700' :
-          row.status === 'Sakit' ? 'bg-amber-100 text-amber-700' :
-          row.status === 'Izin' ? 'bg-blue-100 text-blue-700' : 'bg-purple-100 text-purple-700';
 
         return `
           <tr class="hover:bg-slate-50 transition">
             <td class="p-4 text-xs text-slate-600">${row.tanggal}</td>
             <td class="p-4 font-medium">${namaKaryawan} <span class="text-xs font-normal text-slate-400">(${divisi})</span></td>
             <td class="p-4">
-              <span class="inline-block px-2 py-0.5 rounded text-xs font-semibold ${badgeColor}">
-                ${row.status}
+              <span class="inline-block px-2 py-0.5 rounded text-xs font-semibold bg-purple-100 text-purple-700">
+                Izin / Sakit
               </span>
             </td>
-            <td class="p-4 text-xs text-slate-600">
-              ${row.jam_masuk || '--:--'} - ${row.jam_pulang || '--:--'}
-            </td>
-            <td class="p-4 text-xs text-slate-500 max-w-xs truncate">${row.keterangan || '-'}</td>
+            <td class="p-4 text-xs text-slate-600">-</td>
+            <td class="p-4 text-xs text-slate-500 max-w-xs truncate">${row.alasan || '-'}</td>
             <td class="p-4 text-center">
-              ${row.is_verified 
-                ? '<span class="text-xs font-semibold text-emerald-600">✓ Disetujui</span>' 
-                : `<button onclick="verifikasiLanjut('${row.id}')" class="px-2 py-1 bg-blue-600 text-white text-xs rounded hover:bg-blue-700">Setujui</button>`
-              }
+              <span class="text-xs font-semibold text-emerald-600">✓ ${row.status}</span>
             </td>
           </tr>
         `;
       }).join('');
     }
-
     // Verifikasi cepat pengajuan izin karyawan - Menggunakan db
     async function verifikasiLanjut(absensiId) {
       const { error } = await db
