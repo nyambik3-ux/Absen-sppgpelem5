@@ -557,86 +557,23 @@
     }
     document.getElementById('adminName').textContent = localStorage.getItem('admin_username') || 'Admin';
 
-   // ============================================================
-// VARIABLES & URUTAN DIVISI UTAMA
-// ============================================================
-var allData = [];
-var dateList = [];
-var hariLiburMap = {};
+    // ============================================================
+    // VARIABLES & URUTAN DIVISI UTAMA
+    // ============================================================
+    var allData = [];
+    var dateList = [];
+    var hariLiburMap = {};
 
-// TAMBAHKAN INI:
-var urutanDivisi = [
-    'ASISTEN LAPANGAN',
-    'KEPALA CHEF',
-    'PENGOLAHAN',
-    'TIM PERSIAPAN BAHAN',
-    'PEMORSIAN MAKANAN',
-    'CUCI ALAT MAKAN',
-    'DISTRIBUSI',
-    'KEBERSIHAN',
-    'SATPAM'
-];
-    var urutanDivisiDanNama = [
-    // ASISTEN LAPANGAN (Luki dulu, baru Ikhwanul)
-    { nama: 'LUKI TRI PRASETYA', divisi: 'ASISTEN LAPANGAN' },
-    { nama: 'IKHWANUL MUCHLISIN', divisi: 'ASISTEN LAPANGAN' },
-    
-    // KEPALA CHEF
-    { nama: 'IKA ROHAMTUL HANIFAH', divisi: 'KEPALA CHEF' },
-    
-    // PENGOLAHAN
-    { nama: 'AHMAD HAIDIR RAHMAN', divisi: 'PENGOLAHAN' },
-    { nama: 'MUHAMMAD NUR KHOLIS', divisi: 'PENGOLAHAN' },
-    { nama: 'MUHAMMAD FUAD AL-MUTAKHIN', divisi: 'PENGOLAHAN' },
-    { nama: 'DUMYATI', divisi: 'PENGOLAHAN' },
-    { nama: 'WINDARTI ANJARSARI', divisi: 'PENGOLAHAN' },
-    { nama: 'PRIMA DUANA WIBIANTI', divisi: 'PENGOLAHAN' },
-    { nama: 'YENI', divisi: 'PENGOLAHAN' },
-    
-    // TIM PERSIAPAN BAHAN
-    { nama: 'SULASINATUN', divisi: 'TIM PERSIAPAN BAHAN' },
-    { nama: 'SITI FATIMAH', divisi: 'TIM PERSIAPAN BAHAN' },
-    { nama: 'FEBRIYANI YASIN', divisi: 'TIM PERSIAPAN BAHAN' },
-    { nama: 'MOCHAMAD HARIS ALVAN ROZIKI', divisi: 'TIM PERSIAPAN BAHAN' },
-    { nama: 'ANDY PRIANSA', divisi: 'TIM PERSIAPAN BAHAN' },
-    { nama: 'NUR ROSYIDAH', divisi: 'TIM PERSIAPAN BAHAN' },
-    { nama: 'ERVINA RAHAYU', divisi: 'TIM PERSIAPAN BAHAN' },
-    { nama: 'TAQQIYUDIN MUSYAFA H', divisi: 'TIM PERSIAPAN BAHAN' },
-    { nama: 'LAILA NUUR AZIZI', divisi: 'TIM PERSIAPAN BAHAN' },
-    
-    // PEMORSIAN MAKANAN
-    { nama: 'VITA YULIANA', divisi: 'PEMORSIAN MAKANAN' },
-    { nama: 'CHATERINA GITA HAPSARI', divisi: 'PEMORSIAN MAKANAN' },
-    { nama: 'IKA YULIANA SARI', divisi: 'PEMORSIAN MAKANAN' },
-    { nama: 'ALFIAN IQBAL RAMADHAN', divisi: 'PEMORSIAN MAKANAN' },
-    { nama: 'HERVINA ARUM SARI', divisi: 'PEMORSIAN MAKANAN' },
-    { nama: 'LIA WAHYUNI', divisi: 'PEMORSIAN MAKANAN' },
-    { nama: 'GIO RIFKI EKA A. P.', divisi: 'PEMORSIAN MAKANAN' },
-    
-    // CUCI ALAT MAKAN
-    { nama: 'MOCH. ARIF MAULANA', divisi: 'CUCI ALAT MAKAN' },
-    { nama: 'ALFIYAN WAHID AMIRUDDIN', divisi: 'CUCI ALAT MAKAN' },
-    { nama: 'TIFLUN SETIANIDA FIRDAUS', divisi: 'CUCI ALAT MAKAN' },
-    { nama: 'EKA LESTARI', divisi: 'CUCI ALAT MAKAN' },
-    { nama: 'SITI KHOTIMAH', divisi: 'CUCI ALAT MAKAN' },
-    { nama: 'LINDA', divisi: 'CUCI ALAT MAKAN' },
-    { nama: 'AFRIZAL ZAYYAN GHOZYUDIN', divisi: 'CUCI ALAT MAKAN' },
-    { nama: 'AHMAD MAULANA IBRAHIM', divisi: 'CUCI ALAT MAKAN' },
-    { nama: 'ANDY KURNIAWAN', divisi: 'CUCI ALAT MAKAN' },
-    
-    // DISTRIBUSI
-    { nama: 'IMAM SYAIFUL ARIFIN', divisi: 'DISTRIBUSI' },
-    { nama: 'MUCHAMAD ERI', divisi: 'DISTRIBUSI' },
-    { nama: 'ADE AGUNG T ASIK', divisi: 'DISTRIBUSI' },
-    { nama: 'DWIKY KURNIA ARDHANI', divisi: 'DISTRIBUSI' },
-    
-    // KEBERSIHAN
-    { nama: 'NAVIT KHOIRUL HANAFI', divisi: 'KEBERSIHAN' },
-    
-    // SATPAM
-    { nama: 'KUSEN', divisi: 'SATPAM' },
-    { nama: 'SUKO WAHYUDI', divisi: 'SATPAM' }
-        
+    var urutanDivisi = [
+        'ASISTEN LAPANGAN',
+        'KEPALA CHEF',
+        'PENGOLAHAN',
+        'TIM PERSIAPAN BAHAN',
+        'PEMORSIAN MAKANAN',
+        'CUCI ALAT MAKAN',
+        'DISTRIBUSI',
+        'KEBERSIHAN',
+        'SATPAM'
     ];
 
     // ============================================================
@@ -835,7 +772,6 @@ var urutanDivisi = [
         try {
             await loadHariLibur();
 
-            // PERBAIKAN: Hapus '&order=nama' dari query agar urutan tidak langsung abjad nama
             var karyawanQuery = SUPABASE_URL + '/rest/v1/karyawan?select=id,nama,divisi,jam_masuk,jam_pulang';
             if (divisiFilter) {
                 karyawanQuery += '&divisi=eq.' + encodeURIComponent(divisiFilter);
@@ -961,19 +897,17 @@ var urutanDivisi = [
                 allData.push(row);
             });
 
-            // PERBAIKAN SORTING: Urutkan berdasarkan Divisi sesuai urutan custom, lalu urutkan nama A-Z di dalam divisi yang sama
+            // SORTING: Urutkan berdasarkan Divisi sesuai urutan custom, lalu urutkan nama A-Z di dalam divisi yang sama
             allData.sort(function(a, b) {
                 var indexA = urutanDivisi.indexOf(a.divisi);
                 var indexB = urutanDivisi.indexOf(b.divisi);
                 if (indexA === -1) indexA = 999;
                 if (indexB === -1) indexB = 999;
 
-                // Jika divisinya berbeda, urutkan berdasarkan urutan divisi
                 if (indexA !== indexB) {
                     return indexA - indexB;
                 }
 
-                // Jika divisinya sama, urutkan berdasarkan nama karyawan (A-Z)
                 return a.nama.localeCompare(b.nama);
             });
 
@@ -1032,8 +966,9 @@ var urutanDivisi = [
                 tableHtml += '<td><span class="status-label ' + cls + '">' + label + '</span></td>';
             });
 
-            var total = row.masuk + row.izin;
-            tableHtml += '<td><strong>' + total + '</strong></td>';
+            // PERBAIKAN: Total di ujung kanan HANYA menghitung masuk murni (row.masuk), tidak bercampur dengan izin
+            var totalMasukMurni = row.masuk;
+            tableHtml += '<td><strong>' + totalMasukMurni + '</strong>' + (row.izin > 0 ? ' <span style="font-size:9px; color:#7c3aed;">(I:'+row.izin+')</span>' : '') + '</td>';
             tableHtml += '</tr>';
         });
 
