@@ -123,7 +123,7 @@
       await fetchDaftarIzin();
     }
 
-    // Load Dropdown Karyawan - Menggunakan db
+    // Load Dropdown Karyawan
     async function fetchKaryawanOptions() {
       const { data, error } = await db.from('karyawan').select('id, nama, divisi').order('nama');
       if (error) return alert("Gagal memuat karyawan: " + error.message);
@@ -146,12 +146,12 @@
       }
     }
 
-   // Simpan data izin / edit absensi
+    // Simpan data izin / edit absensi
     async function simpanIzinManual(e) {
       e.preventDefault();
       const karyawan_id = document.getElementById('selectKaryawan').value;
       const tanggal = document.getElementById('inputTanggal').value;
-      const statusInput = document.getElementById('selectStatus').value; // 'Izin', 'Sakit', 'Dinas', atau 'Hadir'
+      const statusInput = document.getElementById('selectStatus').value;
       const jam_masuk = document.getElementById('inputJamMasuk').value || null;
       const jam_pulang = document.getElementById('inputJamPulang').value || null;
       const alasanText = document.getElementById('inputKeterangan').value;
@@ -159,7 +159,6 @@
       let error;
 
       if (statusInput === 'Hadir') {
-        // Jika Hadir Manual, simpan ke tabel 'absensi'
         const payloadAbsen = {
           karyawan_id,
           tanggal,
@@ -170,12 +169,11 @@
         };
         ({ error } = await db.from('absensi').upsert([payloadAbsen], { onConflict: 'karyawan_id, tanggal' }));
       } else {
-        // Jika Izin / Sakit / Dinas, simpan ke tabel 'izin' sesuai kolom di database
         const payloadIzin = {
           karyawan_id,
           tanggal,
-          alasan: alasanText,          // Sesuai kolom 'alasan' di tabel izin
-          status: 'disetujui'          // Karena diinput admin, langsung setujui
+          alasan: alasanText,
+          status: 'disetujui'
         };
         ({ error } = await db.from('izin').insert([payloadIzin]));
       }
@@ -195,7 +193,6 @@
       const filterTgl = document.getElementById('filterTanggal').value;
       const tbody = document.getElementById('tabelIzinBody');
 
-      // Ambil data dari tabel izin beserta relasi ke karyawan
       let query = db
         .from('izin')
         .select(`
@@ -244,16 +241,6 @@
           </tr>
         `;
       }).join('');
-    }
-    // Verifikasi cepat pengajuan izin karyawan - Menggunakan db
-    async function verifikasiLanjut(absensiId) {
-      const { error } = await db
-        .from('absensi')
-        .update({ is_verified: true })
-        .eq('id', absensiId);
-
-      if (error) alert("Gagal memperbarui verifikasi: " + error.message);
-      else fetchDaftarIzin();
     }
   </script>
 </body>
