@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Verifikasi Izin & Edit Absensi - RelawanTrack</title>
+  <title>Kelola Izin & Edit Presensi - RelawanTrack</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
@@ -11,76 +11,65 @@
 
   <div class="max-w-7xl mx-auto px-4 py-8">
     <!-- Header -->
-    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
       <div>
         <h1 class="text-2xl font-bold text-slate-900">Kelola Izin & Edit Presensi</h1>
-        <p class="text-slate-500 text-sm">Verifikasi pengajuan izin karyawan atau sesuaikan rekaman jam hadir secara manual</p>
+        <p class="text-slate-500 text-sm">Verifikasi pengajuan izin atau edit rentang tanggal presensi karyawan secara massal</p>
       </div>
       <a href="admin_dashboard.html" class="px-4 py-2 bg-slate-200 hover:bg-slate-300 text-slate-700 rounded-lg text-sm font-medium transition w-fit">
         ← Kembali ke Dashboard
       </a>
     </div>
 
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-      
-      <!-- Form Pengajuan / Edit Manual -->
+    <!-- Tab Navigation -->
+    <div class="flex gap-2 mb-6 border-b border-slate-200 pb-3">
+      <button onclick="switchTab('izin')" id="tabBtnIzin" class="px-5 py-2.5 rounded-lg text-sm font-bold bg-blue-600 text-white shadow-sm transition">
+        📋 Menu Verifikasi Izin / Sakit
+      </button>
+      <button onclick="switchTab('editMassal')" id="tabBtnEditMassal" class="px-5 py-2.5 rounded-lg text-sm font-bold bg-white text-slate-600 border border-slate-200 hover:bg-slate-100 transition">
+        ✏️ Menu Edit Absen Massal (Periode)
+      </button>
+    </div>
+
+    <!-- ================= SECTION 1: MENU IZIN ================= -->
+    <div id="sectionIzin" class="grid grid-cols-1 lg:grid-cols-3 gap-8">
       <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200 h-fit">
-        <h2 class="text-base font-bold text-slate-900 mb-4 pb-2 border-b">Form Input Izin / Edit Presensi</h2>
-        
+        <h2 class="text-base font-bold text-slate-900 mb-4 pb-2 border-b">Form Input Izin / Sakit Manual</h2>
         <form id="formIzin" onsubmit="simpanIzinManual(event)" class="space-y-4">
           <div>
             <label class="block text-xs font-semibold text-slate-600 mb-1">Pilih Karyawan</label>
-            <select id="selectKaryawan" required class="w-full px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+            <select id="selectKaryawanIzin" required class="w-full px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-blue-500 outline-none">
               <option value="">-- Pilih Karyawan --</option>
             </select>
           </div>
-
           <div>
             <label class="block text-xs font-semibold text-slate-600 mb-1">Tanggal</label>
-            <input type="date" id="inputTanggal" required class="w-full px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+            <input type="date" id="inputTanggalIzin" required class="w-full px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-blue-500 outline-none">
           </div>
-
           <div>
             <label class="block text-xs font-semibold text-slate-600 mb-1">Kategori Status</label>
-            <select id="selectStatus" onchange="toggleJamInput()" required class="w-full px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+            <select id="selectStatusIzin" required class="w-full px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-blue-500 outline-none">
               <option value="Izin">Izin</option>
               <option value="Sakit">Sakit</option>
               <option value="Dinas">Dinas Luar</option>
-              <option value="Hadir">Hadir Manual (Edit Jam)</option>
             </select>
           </div>
-
-          <!-- Section Input Jam (Opsional jika pilih Hadir Manual) -->
-          <div id="sectionJam" class="hidden grid grid-cols-2 gap-4">
-            <div>
-              <label class="block text-xs font-semibold text-slate-600 mb-1">Jam Masuk</label>
-              <input type="time" id="inputJamMasuk" class="w-full px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-blue-500 outline-none">
-            </div>
-            <div>
-              <label class="block text-xs font-semibold text-slate-600 mb-1">Jam Pulang</label>
-              <input type="time" id="inputJamPulang" class="w-full px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-blue-500 outline-none">
-            </div>
-          </div>
-
           <div>
             <label class="block text-xs font-semibold text-slate-600 mb-1">Keterangan / Alasan</label>
-            <textarea id="inputKeterangan" rows="3" placeholder="Alasan izin / catatan penyesuaian..." class="w-full px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-blue-500 outline-none"></textarea>
+            <textarea id="inputAlasanIzin" rows="3" placeholder="Alasan izin / sakit..." class="w-full px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-blue-500 outline-none"></textarea>
           </div>
-
           <button type="submit" class="w-full py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg text-sm transition">
-            Simpan & Verifikasi
+            Simpan & Catat Izin
           </button>
         </form>
       </div>
 
-      <!-- Tabel Daftar Pengajuan & Riwayat Izin -->
       <div class="lg:col-span-2 space-y-6">
         <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
           <div class="p-4 border-b border-slate-100 flex justify-between items-center bg-slate-50">
-            <h2 class="text-sm font-bold text-slate-800">Daftar Pengajuan & Verifikasi Presensi</h2>
-            <input type="date" id="filterTanggal" onchange="fetchDaftarIzin()" class="px-3 py-1.5 border rounded-lg text-xs outline-none focus:ring-2 focus:ring-blue-500">
+            <h2 class="text-sm font-bold text-slate-800">Daftar Pengajuan Izin / Sakit</h2>
+            <input type="date" id="filterTanggalIzin" onchange="fetchDaftarIzin()" class="px-3 py-1.5 border rounded-lg text-xs outline-none">
           </div>
-
           <div class="overflow-x-auto">
             <table class="w-full text-left text-sm">
               <thead class="bg-slate-100 border-b border-slate-200 text-slate-600 font-semibold uppercase text-xs">
@@ -88,33 +77,90 @@
                   <th class="p-4">Tanggal</th>
                   <th class="p-4">Karyawan</th>
                   <th class="p-4">Status</th>
-                  <th class="p-4">Jam</th>
-                  <th class="p-4">Keterangan</th>
-                  <th class="p-4 text-center">Persetujuan</th>
+                  <th class="p-4">Alasan</th>
+                  <th class="p-4 text-center">Aksi</th>
                 </tr>
               </thead>
               <tbody id="tabelIzinBody" class="divide-y divide-slate-100">
-                <tr><td colspan="6" class="p-4 text-center text-slate-400">Memuat data...</td></tr>
+                <tr><td colspan="5" class="p-4 text-center text-slate-400">Memuat data...</td></tr>
               </tbody>
             </table>
           </div>
         </div>
       </div>
-
     </div>
+
+    <!-- ================= SECTION 2: EDIT ABSEN MASSAL (PERIODE) ================= -->
+    <div id="sectionEditMassal" class="hidden space-y-6">
+      <!-- Filter Card -->
+      <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200 flex flex-wrap items-end gap-4">
+        <div class="flex-1 min-w-[220px]">
+          <label class="block text-xs font-semibold text-slate-600 mb-1">Pilih Karyawan</label>
+          <select id="selectKaryawanMassal" class="w-full px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+            <option value="">-- Pilih Karyawan --</option>
+          </select>
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-slate-600 mb-1">Dari Tanggal</label>
+          <input type="date" id="massalStart" class="px-3 py-2 border rounded-lg text-sm outline-none">
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-slate-600 mb-1">Sampai Tanggal</label>
+          <input type="date" id="massalEnd" class="px-3 py-2 border rounded-lg text-sm outline-none">
+        </div>
+        <button onclick="loadMassalAbsen()" class="px-5 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg text-sm transition">
+          🔍 Tampilkan History
+        </button>
+      </div>
+
+      <!-- Tabel History Rentang Tanggal untuk Diedit Massal -->
+      <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+        <div class="p-4 border-b border-slate-100 bg-slate-50 font-bold text-sm text-slate-800">
+          Form Edit History Presensi (Multi-Update)
+        </div>
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-sm">
+            <thead class="bg-slate-100 border-b border-slate-200 text-slate-600 font-semibold uppercase text-xs">
+              <tr>
+                <th class="p-4">Tanggal</th>
+                <th class="p-4">Status Kehadiran</th>
+                <th class="p-4">Jam Masuk</th>
+                <th class="p-4">Jam Pulang</th>
+              </tr>
+            </thead>
+            <tbody id="tabelMassalBody" class="divide-y divide-slate-100">
+              <tr><td colspan="4" class="p-4 text-center text-slate-400">Silakan pilih karyawan dan rentang tanggal lalu klik "Tampilkan History".</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Tombol Validasi Bawah (Cancel & Simpan Sekaligus) -->
+        <div id="massalFooterActions" class="hidden p-4 bg-slate-50 border-t border-slate-200 flex justify-end gap-3">
+          <button onclick="cancelMassalEdit()" class="px-5 py-2.5 bg-slate-200 hover:bg-slate-300 text-slate-700 font-medium rounded-lg text-sm transition">
+            ❌ Cancel
+          </button>
+          <button onclick="simpanMassalAbsen()" class="px-6 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-medium rounded-lg text-sm transition">
+            💾 Simpan Absen Fix
+          </button>
+        </div>
+      </div>
+    </div>
+
   </div>
 
   <script>
-    // Config Supabase menggunakan variabel 'db' agar aman dari konflik objek global
     const SUPABASE_URL = 'https://zcaqqybonpfishwkmffg.supabase.co';
     const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpjYXFxeWJvbnBmaXNod2ttZmZnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODc2Mjc2NDgsImV4cCI6MjEwMzIwMzY0OH0.pBk5nwJI3u9n08onTNmvcOFxtCXQvv-ipYIu2f_iAiQ';
     const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
     let listKaryawan = [];
+    let currentMassalData = [];
 
     document.addEventListener("DOMContentLoaded", () => {
       const today = new Date().toISOString().split('T')[0];
-      document.getElementById('inputTanggal').value = today;
+      document.getElementById('inputTanggalIzin').value = today;
+      document.getElementById('massalStart').value = today;
+      document.getElementById('massalEnd').value = today;
       initData();
     });
 
@@ -123,124 +169,208 @@
       await fetchDaftarIzin();
     }
 
-    // Load Dropdown Karyawan
+    // Tab Switcher
+    function switchTab(tab) {
+      const btnIzin = document.getElementById('tabBtnIzin');
+      const btnEdit = document.getElementById('tabBtnEditMassal');
+      const secIzin = document.getElementById('sectionIzin');
+      const secEdit = document.getElementById('sectionEditMassal');
+
+      if (tab === 'izin') {
+        btnIzin.className = "px-5 py-2.5 rounded-lg text-sm font-bold bg-blue-600 text-white shadow-sm transition";
+        btnEdit.className = "px-5 py-2.5 rounded-lg text-sm font-bold bg-white text-slate-600 border border-slate-200 hover:bg-slate-100 transition";
+        secIzin.classList.remove('hidden');
+        secEdit.classList.add('hidden');
+      } else {
+        btnEdit.className = "px-5 py-2.5 rounded-lg text-sm font-bold bg-blue-600 text-white shadow-sm transition";
+        btnIzin.className = "px-5 py-2.5 rounded-lg text-sm font-bold bg-white text-slate-600 border border-slate-200 hover:bg-slate-100 transition";
+        secEdit.classList.remove('hidden');
+        secIzin.classList.add('hidden');
+      }
+    }
+
+    // Load Dropdown Karyawan untuk kedua menu
     async function fetchKaryawanOptions() {
       const { data, error } = await db.from('karyawan').select('id, nama, divisi').order('nama');
       if (error) return alert("Gagal memuat karyawan: " + error.message);
       
       listKaryawan = data || [];
-      const select = document.getElementById('selectKaryawan');
-      select.innerHTML = '<option value="">-- Pilih Karyawan --</option>';
+      const selIzin = document.getElementById('selectKaryawanIzin');
+      const selMassal = document.getElementById('selectKaryawanMassal');
+      
+      selIzin.innerHTML = '<option value="">-- Pilih Karyawan --</option>';
+      selMassal.innerHTML = '<option value="">-- Pilih Karyawan --</option>';
+
       listKaryawan.forEach(k => {
-        select.innerHTML += `<option value="${k.id}">${k.nama} (${k.divisi || '-'})</option>`;
+        const opt = `<option value="${k.id}">${k.nama} (${k.divisi || '-'})</option>`;
+        selIzin.innerHTML += opt;
+        selMassal.innerHTML += opt;
       });
     }
 
-    function toggleJamInput() {
-      const status = document.getElementById('selectStatus').value;
-      const sectionJam = document.getElementById('sectionJam');
-      if (status === 'Hadir') {
-        sectionJam.classList.remove('hidden');
-      } else {
-        sectionJam.classList.add('hidden');
-      }
-    }
-
-    // Simpan data izin / edit absensi
+    // ================= LOGIC MENU IZIN =================
     async function simpanIzinManual(e) {
       e.preventDefault();
-      const karyawan_id = document.getElementById('selectKaryawan').value;
-      const tanggal = document.getElementById('inputTanggal').value;
-      const statusInput = document.getElementById('selectStatus').value;
-      const jam_masuk = document.getElementById('inputJamMasuk').value || null;
-      const jam_pulang = document.getElementById('inputJamPulang').value || null;
-      const alasanText = document.getElementById('inputKeterangan').value;
+      const payload = {
+        karyawan_id: document.getElementById('selectKaryawanIzin').value,
+        tanggal: document.getElementById('inputTanggalIzin').value,
+        status: document.getElementById('selectStatusIzin').value,
+        alasan: document.getElementById('inputAlasanIzin').value
+      };
 
-      let error;
-
-      if (statusInput === 'Hadir') {
-        const payloadAbsen = {
-          karyawan_id,
-          tanggal,
-          status: 'Hadir',
-          jam_masuk,
-          jam_pulang,
-          is_verified: true
-        };
-        ({ error } = await db.from('absensi').upsert([payloadAbsen], { onConflict: 'karyawan_id, tanggal' }));
-      } else {
-        const payloadIzin = {
-          karyawan_id,
-          tanggal,
-          alasan: alasanText,
-          status: 'disetujui'
-        };
-        ({ error } = await db.from('izin').insert([payloadIzin]));
-      }
-
-      if (error) {
-        alert("Gagal menyimpan data: " + error.message);
-      } else {
-        alert("Data berhasil disimpan!");
+      const { error } = await db.from('izin').insert([payload]);
+      if (error) alert("Gagal menyimpan izin: " + error.message);
+      else {
+        alert("Izin berhasil dicatat!");
         document.getElementById('formIzin').reset();
-        document.getElementById('sectionJam').classList.add('hidden');
         fetchDaftarIzin();
       }
     }
 
-    // Fetch Daftar Pengajuan / Izin & Absensi
     async function fetchDaftarIzin() {
-      const filterTgl = document.getElementById('filterTanggal').value;
+      const filterTgl = document.getElementById('filterTanggalIzin').value;
       const tbody = document.getElementById('tabelIzinBody');
+      let query = db.from('izin').select(`id, tanggal, alasan, status, karyawan ( nama, divisi )`).order('tanggal', { ascending: false });
 
-      let query = db
-        .from('izin')
-        .select(`
-          id,
-          tanggal,
-          alasan,
-          status,
-          karyawan ( nama, divisi )
-        `)
-        .order('tanggal', { ascending: false });
-
-      if (filterTgl) {
-        query = query.eq('tanggal', filterTgl);
-      }
+      if (filterTgl) query = query.eq('tanggal', filterTgl);
 
       const { data, error } = await query.limit(30);
+      if (error) { tbody.innerHTML = `<tr><td colspan="5" class="p-4 text-center text-rose-500">Error: ${error.message}</td></tr>`; return; }
+      if (!data || data.length === 0) { tbody.innerHTML = `<tr><td colspan="5" class="p-4 text-center text-slate-400">Belum ada data izin.</td></tr>`; return; }
+
+      tbody.innerHTML = data.map(row => `
+        <tr class="hover:bg-slate-50 transition">
+          <td class="p-4 text-xs text-slate-600">${row.tanggal}</td>
+          <td class="p-4 font-medium">${row.karyawan?.nama || 'N/A'} <span class="text-xs text-slate-400">(${row.karyawan?.divisi || '-'})</span></td>
+          <td class="p-4"><span class="px-2 py-0.5 rounded text-xs font-semibold bg-purple-100 text-purple-700">${row.status}</span></td>
+          <td class="p-4 text-xs text-slate-500">${row.alasan || '-'}</td>
+          <td class="p-4 text-center">
+            <button onclick="hapusIzin('${row.id}')" class="text-rose-600 hover:text-rose-800 text-xs font-semibold">Hapus</button>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    async function hapusIzin(id) {
+      if (confirm("Yakin ingin menghapus catatan izin ini?")) {
+        const { error } = await db.from('izin').delete().eq('id', id);
+        if (error) alert("Gagal hapus: " + error.message);
+        else fetchDaftarIzin();
+      }
+    }
+
+    // ================= LOGIC EDIT ABSEN MASSAL (PERIODE) =================
+    async function loadMassalAbsen() {
+      const karyawan_id = document.getElementById('selectKaryawanMassal').value;
+      const startDate = document.getElementById('massalStart').value;
+      const endDate = document.getElementById('massalEnd').value;
+      const tbody = document.getElementById('tabelMassalBody');
+
+      if (!karyawan_id || !startDate || !endDate) {
+        alert("Pilih karyawan, tanggal mulai, dan tanggal selesai terlebih dahulu!");
+        return;
+      }
+
+      tbody.innerHTML = `<tr><td colspan="4" class="p-4 text-center text-slate-400">Memuat history absensi...</td></tr>`;
+
+      // 1. Ambil data eksisting dari tabel absensi pada rentang tanggal tersebut
+      const { data: absenData, error } = await db
+        .from('absensi')
+        .select('*')
+        .eq('karyawan_id', karyawan_id)
+        .gte('tanggal', startDate)
+        .lte('tanggal', endDate);
 
       if (error) {
-        tbody.innerHTML = `<tr><td colspan="6" class="p-4 text-center text-rose-500">Error: ${error.message}</td></tr>`;
+        alert("Gagal memuat history: " + error.message);
         return;
       }
 
-      if (!data || data.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="6" class="p-4 text-center text-slate-400">Belum ada catatan izin.</td></tr>`;
+      // Buat map dari data absensi yang sudah ada
+      const absenMap = {};
+      (absenData || []).forEach(a => { absenMap[a.tanggal] = a; });
+
+      // 2. Generate list semua tanggal dari startDate sampai endDate
+      currentMassalData = [];
+      let curr = new Date(startDate);
+      const end = new Date(endDate);
+
+      while (curr <= end) {
+        const tglStr = curr.toISOString().split('T')[0];
+        const existing = absenMap[tglStr] || {};
+
+        currentMassalData.push({
+          karyawan_id: karyawan_id,
+          tanggal: tglStr,
+          status: existing.status || 'Hadir',
+          jam_masuk: existing.jam_masuk || '',
+          jam_pulang: existing.jam_pulang || ''
+        });
+
+        curr.setDate(curr.getDate() + 1);
+      }
+
+      renderMassalTable();
+      document.getElementById('massalFooterActions').classList.remove('hidden');
+    }
+
+    function renderMassalTable() {
+      const tbody = document.getElementById('tabelMassalBody');
+      if (currentMassalData.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="4" class="p-4 text-center text-slate-400">Tidak ada data pada rentang tanggal tersebut.</td></tr>`;
         return;
       }
 
-      tbody.innerHTML = data.map(row => {
-        const namaKaryawan = row.karyawan?.nama || 'N/A';
-        const divisi = row.karyawan?.divisi || '-';
+      tbody.innerHTML = currentMassalData.map((item, idx) => `
+        <tr class="hover:bg-slate-50 transition">
+          <td class="p-4 text-xs font-semibold text-slate-700">${item.tanggal}</td>
+          <td class="p-4">
+            <select onchange="updateMassalField(${idx}, 'status', this.value)" class="px-3 py-1.5 border rounded-lg text-xs outline-none">
+              <option value="Hadir" ${item.status === 'Hadir' ? 'selected' : ''}>Hadir</option>
+              <option value="Izin" ${item.status === 'Izin' ? 'selected' : ''}>Izin</option>
+              <option value="Sakit" ${item.status === 'Sakit' ? 'selected' : ''}>Sakit</option>
+              <option value="Alpha" ${item.status === 'Alpha' ? 'selected' : ''}>Alpha</option>
+            </select>
+          </td>
+          <td class="p-4">
+            <input type="time" value="${item.jam_masuk || ''}" onchange="updateMassalField(${idx}, 'jam_masuk', this.value)" class="px-3 py-1.5 border rounded-lg text-xs outline-none">
+          </td>
+          <td class="p-4">
+            <input type="time" value="${item.jam_pulang || ''}" onchange="updateMassalField(${idx}, 'jam_pulang', this.value)" class="px-3 py-1.5 border rounded-lg text-xs outline-none">
+          </td>
+        </tr>
+      `).join('');
+    }
 
-        return `
-          <tr class="hover:bg-slate-50 transition">
-            <td class="p-4 text-xs text-slate-600">${row.tanggal}</td>
-            <td class="p-4 font-medium">${namaKaryawan} <span class="text-xs font-normal text-slate-400">(${divisi})</span></td>
-            <td class="p-4">
-              <span class="inline-block px-2 py-0.5 rounded text-xs font-semibold bg-purple-100 text-purple-700">
-                Izin / Sakit
-              </span>
-            </td>
-            <td class="p-4 text-xs text-slate-600">-</td>
-            <td class="p-4 text-xs text-slate-500 max-w-xs truncate">${row.alasan || '-'}</td>
-            <td class="p-4 text-center">
-              <span class="text-xs font-semibold text-emerald-600">✓ ${row.status}</span>
-            </td>
-          </tr>
-        `;
-      }).join('');
+    function updateMassalField(index, field, val) {
+      currentMassalData[index][field] = val;
+    }
+
+    function cancelMassalEdit() {
+      if (confirm("Batalkan perubahan dan reset tampilan?")) {
+        currentMassalData = [];
+        document.getElementById('tabelMassalBody').innerHTML = `<tr><td colspan="4" class="p-4 text-center text-slate-400">Silakan pilih karyawan dan rentang tanggal lalu klik "Tampilkan History".</td></tr>`;
+        document.getElementById('massalFooterActions').classList.add('hidden');
+      }
+    }
+
+    // Tombol Simpan Sekaligus (Simpan Fix)
+    async function simpanMassalAbsen() {
+      if (currentMassalData.length === 0) return;
+
+      if (!confirm(`Simpan dan fix-kan perubahan untuk ${currentMassalData.length} tanggal terpilih?`)) return;
+
+      // Upsert seluruh array data ke tabel absensi Supabase
+      const { error } = await db
+        .from('absensi')
+        .upsert(currentMassalData, { onConflict: 'karyawan_id, tanggal' });
+
+      if (error) {
+        alert("Gagal menyimpan data massal: " + error.message);
+      } else {
+        alert("History presensi berhasil disimpan dan difix-kan secara massal!");
+        loadMassalAbsen(); // Refresh history
+      }
     }
   </script>
 </body>
