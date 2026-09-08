@@ -866,6 +866,9 @@
                             statusLabel = '📝';
                             row.izin++;
                             totalIzin++;
+                        } else if (statusDb === 'libur') {
+                            status = 'libur';
+                            statusLabel = '🔵';
                         } else if (statusDb === 'hadir' || jamMasuk !== '-') {
                             status = 'hadir';
                             statusLabel = '✅';
