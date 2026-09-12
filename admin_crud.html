@@ -230,7 +230,7 @@
       const checkedHari = Array.from(document.querySelectorAll('input[name="hari_masuk"]:checked'))
                                .map(cb => cb.value.toLowerCase());
 
-      const payload = {
+      let payload = {
         nama,
         divisi,
         jam_masuk,
@@ -242,8 +242,10 @@
 
       let error;
       if (id) {
+        // Jika sedang edit, update berdasarkan id
         ({ error } = await db.from('karyawan').update(payload).eq('id', id));
       } else {
+        // Jika tambah baru, pastikan id tidak ikut terkirim agar Supabase men-generate otomatis (atau auto-increment)
         ({ error } = await db.from('karyawan').insert([payload]));
       }
 
@@ -253,8 +255,6 @@
         closeModal();
         fetchKaryawan();
       }
-    }
-
     // Edit Karyawan
     function editKaryawan(id) {
       const k = listKaryawan.find(item => item.id == id);
