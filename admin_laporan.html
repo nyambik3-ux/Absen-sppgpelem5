@@ -64,14 +64,16 @@
         body.light-mode .filter-card { background: white; border-color: rgba(0,0,0,0.06); }
         
         .filter-card label { font-size: 13px; font-weight: 600; color: #94a3b8; display: block; margin-bottom: 4px; }
+        .filter-card input[type="date"],
         .filter-card select {
             padding: 10px 14px; border-radius: 10px;
             border: 1px solid rgba(255,255,255,0.1);
             background: rgba(0,0,0,0.3); color: white;
-            font-family: 'Inter', sans-serif; font-size: 14px; min-width: 200px;
+            font-family: 'Inter', sans-serif; font-size: 14px; min-width: 180px;
         }
+        body.light-mode .filter-card input[type="date"],
         body.light-mode .filter-card select { background: #f1f5f9; color: #1e293b; border-color: #cbd5e1; }
-        .filter-card select:focus { outline: none; border-color: #a855f7; }
+        .filter-card input:focus, .filter-card select:focus { outline: none; border-color: #a855f7; }
         
         .filter-card .btn-primary {
             padding: 10px 24px;
@@ -128,18 +130,11 @@
         .laporan-preview .kop .periode { font-size: 13px; color: #475569; margin-top: 4px; }
         .laporan-preview .kop .tgl-cetak { font-size: 11px; color: #94a3b8; margin-top: 2px; }
         
-        .hari-section { margin-top: 22px; page-break-inside: avoid; }
-        .hari-section .hari-header {
-            background: #1e293b; color: white;
-            padding: 8px 14px; font-weight: 700; font-size: 13px;
-            border-radius: 6px 6px 0 0;
-        }
-        
         .laporan-preview table {
-            width: 100%; border-collapse: collapse; margin: 0 0 8px; font-size: 11px;
+            width: 100%; border-collapse: collapse; margin: 16px 0 8px; font-size: 11px;
         }
         .laporan-preview th, .laporan-preview td {
-            padding: 5px 6px; border: 1px solid #cbd5e1;
+            padding: 6px 8px; border: 1px solid #cbd5e1;
             text-align: center; vertical-align: middle;
         }
         .laporan-preview th {
@@ -151,8 +146,8 @@
         .laporan-preview td.hari-tanggal { text-align: left; font-size: 11px; }
         
         .laporan-preview td .status-label {
-            display: inline-block; padding: 1px 6px; border-radius: 3px;
-            font-weight: 600; font-size: 9px; min-width: 40px;
+            display: inline-block; padding: 2px 8px; border-radius: 3px;
+            font-weight: 600; font-size: 9px; min-width: 45px;
         }
         .laporan-preview td .status-label.hadir { background: #d1fae5; color: #059669; }
         .laporan-preview td .status-label.alfa { background: #fee2e2; color: #b91c1c; }
@@ -195,10 +190,10 @@
         @media (max-width: 768px) {
             .navbar { flex-wrap: wrap; gap: 10px; padding: 12px 16px; }
             .filter-card { flex-direction: column; align-items: stretch; }
-            .filter-card select { width: 100%; }
+            .filter-card input[type="date"], .filter-card select { width: 100%; }
             .laporan-preview { padding: 20px; }
             .laporan-preview table { font-size: 9px; }
-            .laporan-preview th, .laporan-preview td { padding: 2px 3px; }
+            .laporan-preview th, .laporan-preview td { padding: 3px 4px; }
             .laporan-preview .kop .header-wrapper { position: static; display: flex; flex-direction: column; align-items: center; }
             .laporan-preview .kop .header-wrapper .logo-container { position: static; transform: none; margin-bottom: 10px; text-align: center; }
             .laporan-preview .kop .header-wrapper .logo-img { margin: 0 auto; }
@@ -215,7 +210,6 @@
             .laporan-preview { box-shadow: none; padding: 20px 30px; border-radius: 0; }
             .laporan-preview .ttd-box .line { margin: 32px auto 2px; }
             .toast-custom { display: none; }
-            .hari-section { page-break-inside: avoid; }
         }
     </style>
 </head>
@@ -243,8 +237,20 @@
 <div class="container">
     <div class="filter-card">
         <div>
-            <label><i class="fas fa-calendar-alt"></i> Bulan:</label>
-            <select id="filterBulan"></select>
+            <label><i class="fas fa-calendar-alt"></i> Tanggal Mulai Minggu:</label>
+            <input type="date" id="tanggalMulai">
+        </div>
+        <div>
+            <label><i class="fas fa-list-ol"></i> Hari Ke:</label>
+            <select id="filterHariKe">
+                <option value="1">Hari Ke-1</option>
+                <option value="2">Hari Ke-2</option>
+                <option value="3">Hari Ke-3</option>
+                <option value="4">Hari Ke-4</option>
+                <option value="5">Hari Ke-5</option>
+                <option value="6">Hari Ke-6</option>
+                <option value="7">Hari Ke-7</option>
+            </select>
         </div>
         <div>
             <label><i class="fas fa-users"></i> Divisi:</label>
@@ -263,7 +269,7 @@
     </div>
 
     <div id="laporanContainer">
-        <div class="loading-text"><i class="fas fa-spinner fa-pulse"></i> Silakan pilih bulan & divisi, lalu klik Tampilkan</div>
+        <div class="loading-text"><i class="fas fa-spinner fa-pulse"></i> Silakan pilih tanggal mulai minggu & hari ke-, lalu klik Tampilkan</div>
     </div>
 </div>
 
@@ -289,8 +295,6 @@
         'PEMORSIAN MAKANAN', 'CUCI ALAT MAKAN', 'DISTRIBUSI', 'KEBERSIHAN', 'SATPAM'
     ];
 
-    function pad2(n) { return n < 10 ? '0' + n : '' + n; }
-
     function getDateIndonesia(date) {
         var offset = 7 * 60 * 60 * 1000;
         return new Date(date.getTime() + offset).toISOString().split('T')[0];
@@ -300,25 +304,17 @@
         return new Date(parts[0], parts[1] - 1, parts[2]);
     }
 
-    // Init dropdown bulan
-    function initBulanDropdown() {
-        var select = document.getElementById('filterBulan');
+    // Default tanggal mulai = Minggu terakhir (minggu ini)
+    function setDefaultTanggal() {
         var now = new Date();
-        var options = [];
-        for (var i = -6; i <= 1; i++) {
-            var d = new Date(now.getFullYear(), now.getMonth() + i, 1);
-            var val = d.getFullYear() + '-' + pad2(d.getMonth() + 1);
-            var label = bulanNama[d.getMonth()] + ' ' + d.getFullYear();
-            options.push({ val: val, label: label });
-        }
-        var nowVal = now.getFullYear() + '-' + pad2(now.getMonth() + 1);
-        select.innerHTML = '';
-        options.forEach(function(o) {
-            var sel = (o.val === nowVal) ? ' selected' : '';
-            select.innerHTML += '<option value="' + o.val + '"' + sel + '>' + o.label + '</option>';
-        });
+        var offset = 7 * 60 * 60 * 1000;
+        var localNow = new Date(now.getTime() + offset);
+        var dayOfWeek = localNow.getDay(); // 0 = Minggu
+        var minggu = new Date(localNow);
+        minggu.setDate(minggu.getDate() - dayOfWeek);
+        document.getElementById('tanggalMulai').value = getDateIndonesia(minggu);
     }
-    initBulanDropdown();
+    setDefaultTanggal();
 
     function toggleTheme() {
         document.body.classList.toggle('light-mode');
@@ -395,9 +391,7 @@
         return list;
     }
 
-    // ============================================================
-    // CARI HARI 1 (hari paling awal di kalender yang ada di hari_masuk)
-    // ============================================================
+    // Cari Hari 1 (hari paling awal di kalender yang ada di hari_masuk)
     function cariHari1(hariMasukList) {
         for (var i = 0; i < urutanHariKalender.length; i++) {
             if (hariMasukList.indexOf(urutanHariKalender[i]) !== -1) {
@@ -408,69 +402,19 @@
     }
 
     // ============================================================
-    // HITUNG 7 HARI KERJA DARI HARI 1
-    // ============================================================
-    // Return: array of { hariKe, namaHari }
-    function hitungUrutan7Hari(hari1, hariMasukList) {
-        var hasil = [];
-        var idx = urutanHariKalender.indexOf(hari1);
-        if (idx === -1) return hasil;
-        var counter = 1;
-        var maxLoop = 30;
-        while (hasil.length < 7 && maxLoop-- > 0) {
-            var h = urutanHariKalender[idx % 7];
-            if (hariMasukList.indexOf(h) !== -1) {
-                hasil.push({ hariKe: counter, namaHari: h });
-                counter++;
-            }
-            idx++;
-        }
-        return hasil;
-    }
-
-    // ============================================================
-    // CARI TANGGAL HARI KE-N DI BULAN TERTENTU
-    // ============================================================
-    // Cari tanggal pertama di bulan tsb yang harinya = namaHariTarget
-    function cariTanggalPertamaDiBulan(tahun, bulan, namaHariTarget) {
-        // Cari dari tgl 1 s/d akhir bulan
-        var lastDay = new Date(tahun, bulan, 0).getDate();
-        for (var d = 1; d <= lastDay; d++) {
-            var dt = new Date(tahun, bulan - 1, d);
-            var namaHari = hariNamaLower[dt.getDay()];
-            if (namaHari === namaHariTarget) {
-                return dt;
-            }
-        }
-        return null;
-    }
-
-    // Hitung tanggal Hari ke-N berdasarkan urutan 7 hari
-    // urutan7 = array of { hariKe, namaHari }
-    // N = 1-7
-    // Return: Date
-    function hitungTanggalHariKe(tahun, bulan, urutan7, N) {
-        var item = urutan7.find(function(x) { return x.hariKe === N; });
-        if (!item) return null;
-        return cariTanggalPertamaDiBulan(tahun, bulan, item.namaHari);
-    }
-
-    // ============================================================
     // LOAD LAPORAN
     // ============================================================
     async function loadLaporan() {
-        var bulanVal = document.getElementById('filterBulan').value;
+        var tanggalMulaiStr = document.getElementById('tanggalMulai').value;
+        var N = parseInt(document.getElementById('filterHariKe').value);
         var divisiFilter = document.getElementById('filterDivisi').value;
 
-        if (!bulanVal) { showToast('Pilih bulan dulu!', 'warning'); return; }
+        if (!tanggalMulaiStr) { showToast('Pilih tanggal mulai dulu!', 'warning'); return; }
 
-        var parts = bulanVal.split('-');
-        var tahun = parseInt(parts[0]);
-        var bulan = parseInt(parts[1]);
-        var startBulan = new Date(tahun, bulan - 1, 1);
-        var endBulan = new Date(tahun, bulan, 0);
-        var startBulanStr = getDateIndonesia(startBulan);
-        var endBulanStr = getDateIndonesia(endBulan);
+        var tanggalMulaiDate = parseDateIndonesia(tanggalMulaiStr);
+        // Range minggu: tanggalMulai s/d tanggalMulai + 6 hari
+        var tanggalAkhirDate = new Date(tanggalMulaiDate);
+        tanggalAkhirDate.setDate(tanggalAkhirDate.getDate() + 6);
 
         var container = document.getElementById('laporanContainer');
         container.innerHTML = '<div class="loading-text"><i class="fas fa-spinner fa-pulse"></i> Memuat data...</div>';
@@ -493,20 +437,22 @@
                 return;
             }
 
-            // 2. Fetch absensi & izin di bulan tsb
+            // 2. Fetch absensi & izin di minggu tsb
+            var startStr = getDateIndonesia(tanggalMulaiDate);
+            var endStr = getDateIndonesia(tanggalAkhirDate);
+
             var absenRes = await fetch(
-                SUPABASE_URL + '/rest/v1/absensi?select=*&tanggal=gte.' + startBulanStr + '&tanggal=lte.' + endBulanStr,
+                SUPABASE_URL + '/rest/v1/absensi?select=*&tanggal=gte.' + startStr + '&tanggal=lte.' + endStr,
                 { headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': 'Bearer ' + SUPABASE_ANON_KEY } }
             );
             var absensi = await absenRes.json();
 
             var izinRes = await fetch(
-                SUPABASE_URL + '/rest/v1/izin?select=*&tanggal=gte.' + startBulanStr + '&tanggal=lte.' + endBulanStr,
+                SUPABASE_URL + '/rest/v1/izin?select=*&tanggal=gte.' + startStr + '&tanggal=lte.' + endStr,
                 { headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': 'Bearer ' + SUPABASE_ANON_KEY } }
             );
             var listIzin = await izinRes.json();
 
-            // Map absensi & izin
             var absenMap = {};
             absensi.forEach(function(a) { absenMap[a.karyawan_id + '|' + a.tanggal] = a; });
             listIzin.forEach(function(i) {
@@ -517,106 +463,93 @@
                 };
             });
 
-            // 3. Hitung urutan 7 hari per karyawan
-            //    Karena tiap karyawan bisa beda hari_masuk, kita hitung per karyawan
-            //    Tapi kita kelompokkan dulu per kombinasi hari_masuk
-            var karyawanData = [];
+            // 3. Untuk setiap karyawan, hitung urutan 7 hari (berdasarkan hari_masuk)
+            //    Lalu ambil Hari ke-N
+            var resultRows = [];
             karyawan.forEach(function(k) {
                 var hariMasukList = getHariMasukList(k.hari_masuk);
                 var hari1 = cariHari1(hariMasukList);
                 if (!hari1) return;
 
-                var urutan7 = hitungUrutan7Hari(hari1, hariMasukList);
-
-                // Hitung tanggal untuk tiap Hari 1-7
-                var tanggalPerHari = {};
-                urutan7.forEach(function(item) {
-                    var tgl = hitungTanggalHariKe(tahun, bulan, [item], 1);
-                    // Perbaikan: hitung tanggal dari namaHari
-                    var tglDate = cariTanggalPertamaDiBulan(tahun, bulan, item.namaHari);
-                    if (tglDate) {
-                        tanggalPerHari[item.hariKe] = tglDate;
+                // Urutan 7 hari dari Hari 1
+                var urutan7 = [];
+                var idx = urutanHariKalender.indexOf(hari1);
+                var counter = 1;
+                var maxLoop = 30;
+                while (urutan7.length < 7 && maxLoop-- > 0) {
+                    var h = urutanHariKalender[idx % 7];
+                    if (hariMasukList.indexOf(h) !== -1) {
+                        urutan7.push({ hariKe: counter, namaHari: h });
+                        counter++;
                     }
-                });
+                    idx++;
+                }
 
-                karyawanData.push({
-                    karyawan: k,
-                    urutan7: urutan7,
-                    tanggalPerHari: tanggalPerHari
-                });
-            });
+                // Ambil item Hari ke-N
+                var itemN = urutan7.find(function(x) { return x.hariKe === N; });
+                if (!itemN) return;
 
-            // 4. Build 7 hari sections
-            var hariSections = [];
-            for (var h = 1; h <= 7; h++) {
-                hariSections.push({
-                    hariKe: h,
-                    karyawan: []
-                });
-            }
+                // Cari tanggal di minggu ini yang harinya = itemN.namaHari
+                var targetDate = null;
+                for (var i = 0; i < 7; i++) {
+                    var d = new Date(tanggalMulaiDate);
+                    d.setDate(d.getDate() + i);
+                    var namaHariD = hariNamaLower[d.getDay()];
+                    if (namaHariD === itemN.namaHari) {
+                        targetDate = d;
+                        break;
+                    }
+                }
+                if (!targetDate) return;
 
-            // 5. Untuk tiap karyawan, ambil data Hari 1-7
-            karyawanData.forEach(function(kd) {
-                var k = kd.karyawan;
+                var tglStr = getDateIndonesia(targetDate);
+                var tglFormatted = hariNama[targetDate.getDay()] + ', ' + targetDate.getDate() + ' ' + bulanNama[targetDate.getMonth()] + ' ' + targetDate.getFullYear();
 
-                kd.urutan7.forEach(function(item) {
-                    var tglDate = kd.tanggalPerHari[item.hariKe];
-                    if (!tglDate) return;
+                var abs = absenMap[k.id + '|' + tglStr];
+                var isLibur = isTanggalLibur(tglStr, k.divisi);
 
-                    var tglStr = getDateIndonesia(tglDate);
-                    // Pastiin masih dalam bulan
-                    if (tglStr < startBulanStr || tglStr > endBulanStr) return;
+                var status = 'alfa', statusText = 'Alfa';
+                var jamMasuk = '-', jamPulang = '-';
 
-                    var tglFormatted = hariNama[tglDate.getDay()] + ', ' + tglDate.getDate() + ' ' + bulanNama[tglDate.getMonth()] + ' ' + tglDate.getFullYear();
-
-                    var abs = absenMap[k.id + '|' + tglStr];
-                    var isLibur = isTanggalLibur(tglStr, k.divisi);
-
-                    var status = 'alfa', statusText = 'Alfa';
-                    var jamMasuk = '-', jamPulang = '-';
-
-                    if (isLibur) {
+                if (isLibur) {
+                    status = 'libur'; statusText = 'Libur';
+                } else if (abs) {
+                    jamMasuk = abs.jam_masuk || '-';
+                    jamPulang = abs.jam_pulang || '-';
+                    var sDb = String(abs.status || '').toLowerCase().trim();
+                    if (sDb === 'izin' || sDb === 'sakit' || sDb === 'dinas') {
+                        status = 'izin'; statusText = 'Izin';
+                    } else if (sDb === 'libur') {
                         status = 'libur'; statusText = 'Libur';
-                    } else if (abs) {
-                        jamMasuk = abs.jam_masuk || '-';
-                        jamPulang = abs.jam_pulang || '-';
-                        var sDb = String(abs.status || '').toLowerCase().trim();
-                        if (sDb === 'izin' || sDb === 'sakit' || sDb === 'dinas') {
-                            status = 'izin'; statusText = 'Izin';
-                        } else if (sDb === 'libur') {
-                            status = 'libur'; statusText = 'Libur';
-                        } else if (sDb === 'telat') {
-                            status = 'telat'; statusText = 'Telat';
-                        } else if (sDb === 'hadir' || sDb === 'pulang' || jamMasuk !== '-') {
-                            status = 'hadir'; statusText = 'Hadir';
-                        }
+                    } else if (sDb === 'telat') {
+                        status = 'telat'; statusText = 'Telat';
+                    } else if (sDb === 'hadir' || sDb === 'pulang' || jamMasuk !== '-') {
+                        status = 'hadir'; statusText = 'Hadir';
                     }
+                }
 
-                    hariSections[item.hariKe - 1].karyawan.push({
-                        nama: k.nama || k.id,
-                        divisi: k.divisi || '-',
-                        hariTanggal: tglFormatted,
-                        jamMasuk: jamMasuk,
-                        jamPulang: jamPulang,
-                        status: status,
-                        statusText: statusText
-                    });
+                resultRows.push({
+                    nama: k.nama || k.id,
+                    divisi: k.divisi || '-',
+                    hariTanggal: tglFormatted,
+                    jamMasuk: jamMasuk,
+                    jamPulang: jamPulang,
+                    status: status,
+                    statusText: statusText
                 });
             });
 
-            // 6. Sort per section (urutan divisi + nama A-Z)
-            hariSections.forEach(function(sec) {
-                sec.karyawan.sort(function(a, b) {
-                    var iA = urutanDivisi.indexOf(a.divisi); if (iA === -1) iA = 999;
-                    var iB = urutanDivisi.indexOf(b.divisi); if (iB === -1) iB = 999;
-                    if (iA !== iB) return iA - iB;
-                    return (a.nama || '').localeCompare(b.nama || '');
-                });
+            // 4. Sort
+            resultRows.sort(function(a, b) {
+                var iA = urutanDivisi.indexOf(a.divisi); if (iA === -1) iA = 999;
+                var iB = urutanDivisi.indexOf(b.divisi); if (iB === -1) iB = 999;
+                if (iA !== iB) return iA - iB;
+                return (a.nama || '').localeCompare(b.nama || '');
             });
 
-            // 7. Render
-            var periodeLabel = 'Bulan: ' + bulanNama[bulan - 1] + ' ' + tahun + (divisiFilter ? ' | Divisi: ' + divisiFilter : '');
-            renderLaporan(hariSections, periodeLabel);
+            // 5. Render
+            var periodeLabel = 'Minggu: ' + startStr + ' s/d ' + endStr + ' | Hari Ke-' + N + (divisiFilter ? ' | Divisi: ' + divisiFilter : '');
+            renderLaporan(resultRows, N, periodeLabel, divisiFilter);
 
         } catch(e) {
             console.error('Error:', e);
@@ -625,7 +558,7 @@
         }
     }
 
-    function renderLaporan(hariSections, periodeLabel) {
+    function renderLaporan(rows, N, periodeLabel, divisiFilter) {
         var container = document.getElementById('laporanContainer');
         var logoUrl = 'https://zcaqqybonpfishwkmffg.supabase.co/storage/v1/object/public/logo/Logo_Badan_Gizi_Nasional_(2024)%20(1).png';
 
@@ -653,43 +586,35 @@
         html += '<div class="tgl-cetak">Dicetak pada: ' + tglCetak + '</div>';
         html += '</div>';
 
-        // 7 hari sections
-        hariSections.forEach(function(sec) {
-            html += '<div class="hari-section">';
-            html += '<div class="hari-header">PENGGAJIAN HARI ' + sec.hariKe + '</div>';
+        html += '<table>';
+        html += '<thead><tr>';
+        html += '<th style="width:30px;">No</th>';
+        html += '<th style="width:150px;">Nama</th>';
+        html += '<th style="width:110px;">Divisi</th>';
+        html += '<th style="width:170px;">Hari/Tanggal</th>';
+        html += '<th style="width:60px;">Jam Masuk</th>';
+        html += '<th style="width:60px;">Jam Pulang</th>';
+        html += '<th style="width:60px;">Status</th>';
+        html += '</tr></thead><tbody>';
 
-            html += '<table>';
-            html += '<thead><tr>';
-            html += '<th style="width:30px;">No</th>';
-            html += '<th style="width:150px;">Nama</th>';
-            html += '<th style="width:110px;">Divisi</th>';
-            html += '<th style="width:170px;">Hari/Tanggal</th>';
-            html += '<th style="width:60px;">Jam Masuk</th>';
-            html += '<th style="width:60px;">Jam Pulang</th>';
-            html += '<th style="width:60px;">Status</th>';
-            html += '</tr></thead><tbody>';
+        if (rows.length === 0) {
+            html += '<tr><td colspan="7" style="padding: 20px; color: #94a3b8;">Tidak ada data</td></tr>';
+        } else {
+            rows.forEach(function(r, idx) {
+                html += '<tr>';
+                html += '<td>' + (idx + 1) + '</td>';
+                html += '<td class="nama">' + r.nama + '</td>';
+                html += '<td class="divisi">' + r.divisi + '</td>';
+                html += '<td class="hari-tanggal">' + r.hariTanggal + '</td>';
+                html += '<td>' + r.jamMasuk + '</td>';
+                html += '<td>' + r.jamPulang + '</td>';
+                html += '<td><span class="status-label ' + r.status + '">' + r.statusText + '</span></td>';
+                html += '</tr>';
+            });
+        }
 
-            if (sec.karyawan.length === 0) {
-                html += '<tr><td colspan="7" style="padding: 15px; color: #94a3b8;">Tidak ada data</td></tr>';
-            } else {
-                sec.karyawan.forEach(function(k, idx) {
-                    html += '<tr>';
-                    html += '<td>' + (idx + 1) + '</td>';
-                    html += '<td class="nama">' + k.nama + '</td>';
-                    html += '<td class="divisi">' + k.divisi + '</td>';
-                    html += '<td class="hari-tanggal">' + k.hariTanggal + '</td>';
-                    html += '<td>' + k.jamMasuk + '</td>';
-                    html += '<td>' + k.jamPulang + '</td>';
-                    html += '<td><span class="status-label ' + k.status + '">' + k.statusText + '</span></td>';
-                    html += '</tr>';
-                });
-            }
+        html += '</tbody></table>';
 
-            html += '</tbody></table>';
-            html += '</div>';
-        });
-
-        // TTD
         html += '<div class="ttd">';
         html += '<div class="ttd-box">';
         html += '<div class="label">Mengetahui,</div>';
