@@ -63,28 +63,28 @@
         }
         body.light-mode .filter-card { background: white; border-color: rgba(0,0,0,0.06); }
         
-        .filter-card label { font-size: 13px; font-weight: 600; color: #94a3b8; }
-        .filter-card input[type="date"],
+        .filter-card label { font-size: 13px; font-weight: 600; color: #94a3b8; display: block; margin-bottom: 4px; }
         .filter-card select {
             padding: 10px 14px; border-radius: 10px;
             border: 1px solid rgba(255,255,255,0.1);
             background: rgba(0,0,0,0.3); color: white;
-            font-family: 'Inter', sans-serif; font-size: 14px;
+            font-family: 'Inter', sans-serif; font-size: 14px; min-width: 180px;
         }
-        body.light-mode .filter-card input[type="date"],
         body.light-mode .filter-card select { background: #f1f5f9; color: #1e293b; border-color: #cbd5e1; }
-        .filter-card input:focus, .filter-card select:focus { outline: none; border-color: #a855f7; }
+        .filter-card select:focus { outline: none; border-color: #a855f7; }
         
         .filter-card .btn-primary {
             padding: 10px 24px;
             background: linear-gradient(135deg, #a855f7, #3b82f6);
             border: none; border-radius: 10px; color: white;
             font-weight: 700; cursor: pointer; font-family: 'Inter', sans-serif; font-size: 14px;
+            margin-top: 18px;
         }
         .filter-card .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 4px 15px rgba(168,85,247,0.4); }
         .filter-card .btn-print {
             padding: 10px 20px; background: #f59e0b; border: none; border-radius: 10px;
             color: white; font-weight: 700; cursor: pointer; font-family: 'Inter', sans-serif; font-size: 13px;
+            margin-top: 18px;
         }
         .filter-card .btn-print:hover { background: #d97706; }
         
@@ -130,22 +130,11 @@
         .laporan-preview .kop .periode { font-size: 13px; color: #475569; margin-top: 4px; }
         .laporan-preview .kop .tgl-cetak { font-size: 11px; color: #94a3b8; margin-top: 2px; }
         
-        .hari-section { margin-top: 22px; }
-        .hari-section .hari-header {
-            background: #1e293b; color: white;
-            padding: 8px 14px; font-weight: 700; font-size: 13px;
-            border-radius: 6px 6px 0 0;
-            display: flex; justify-content: space-between; align-items: center;
-        }
-        .hari-section .hari-header .hari-label {
-            font-size: 11px; font-weight: 500; opacity: 0.85;
-        }
-        
         .laporan-preview table {
-            width: 100%; border-collapse: collapse; margin: 0 0 8px; font-size: 11px;
+            width: 100%; border-collapse: collapse; margin: 16px 0 8px; font-size: 11px;
         }
         .laporan-preview th, .laporan-preview td {
-            padding: 5px 6px; border: 1px solid #cbd5e1;
+            padding: 6px 8px; border: 1px solid #cbd5e1;
             text-align: center; vertical-align: middle;
         }
         .laporan-preview th {
@@ -154,11 +143,11 @@
         }
         .laporan-preview td.nama { text-align: left; font-weight: 600; }
         .laporan-preview td.divisi { font-size: 10px; }
-        .laporan-preview td.gaji { font-family: 'Courier New', monospace; letter-spacing: 1px; font-size: 12px; }
+        .laporan-preview td.hari-tanggal { text-align: left; font-size: 11px; }
         
         .laporan-preview td .status-label {
-            display: inline-block; padding: 1px 6px; border-radius: 3px;
-            font-weight: 600; font-size: 9px; min-width: 40px;
+            display: inline-block; padding: 2px 8px; border-radius: 3px;
+            font-weight: 600; font-size: 9px; min-width: 45px;
         }
         .laporan-preview td .status-label.hadir { background: #d1fae5; color: #059669; }
         .laporan-preview td .status-label.alfa { background: #fee2e2; color: #b91c1c; }
@@ -200,10 +189,10 @@
         @media (max-width: 768px) {
             .navbar { flex-wrap: wrap; gap: 10px; padding: 12px 16px; }
             .filter-card { flex-direction: column; align-items: stretch; }
-            .filter-card input[type="date"], .filter-card select { width: 100%; }
+            .filter-card select { width: 100%; }
             .laporan-preview { padding: 20px; }
             .laporan-preview table { font-size: 9px; }
-            .laporan-preview th, .laporan-preview td { padding: 2px 3px; }
+            .laporan-preview th, .laporan-preview td { padding: 3px 4px; }
             .laporan-preview .kop .header-wrapper { position: static; display: flex; flex-direction: column; align-items: center; }
             .laporan-preview .kop .header-wrapper .logo-container { position: static; transform: none; margin-bottom: 10px; text-align: center; }
             .laporan-preview .kop .header-wrapper .logo-img { margin: 0 auto; }
@@ -220,7 +209,6 @@
             .laporan-preview { box-shadow: none; padding: 20px 30px; border-radius: 0; }
             .laporan-preview .ttd-box .line { margin: 32px auto 2px; }
             .toast-custom { display: none; }
-            .hari-section { page-break-inside: avoid; }
         }
     </style>
 </head>
@@ -247,37 +235,40 @@
 
 <div class="container">
     <div class="filter-card">
-        <div style="display: flex; gap: 10px; flex-wrap: wrap; width: 100%; align-items: center;">
-            <div>
-                <label style="display:block; margin-bottom:4px;"><i class="fas fa-calendar-alt"></i> Mulai Tanggal (7 Hari):</label>
-                <input type="date" id="startDate">
-            </div>
-            <div>
-                <label style="display:block; margin-bottom:4px;"><i class="fas fa-users"></i> Divisi:</label>
-                <select id="filterDivisi">
-                    <option value="">Semua Divisi</option>
-                </select>
-            </div>
-            <div style="margin-top: 18px;">
-                <button class="btn-primary" onclick="loadLaporan()">
-                    <i class="fas fa-search"></i> Tampilkan
-                </button>
-                <button class="btn-print" onclick="cetakLaporan()">
-                    <i class="fas fa-print"></i> Cetak / PDF
-                </button>
-            </div>
+        <div>
+            <label><i class="fas fa-list-ol"></i> Penggajian Ke:</label>
+            <select id="filterPenggajian">
+                <option value="1">Penggajian Ke-1</option>
+                <option value="2">Penggajian Ke-2</option>
+                <option value="3">Penggajian Ke-3</option>
+                <option value="4">Penggajian Ke-4</option>
+                <option value="5">Penggajian Ke-5</option>
+                <option value="6">Penggajian Ke-6</option>
+                <option value="7">Penggajian Ke-7</option>
+            </select>
+        </div>
+        <div>
+            <label><i class="fas fa-users"></i> Divisi:</label>
+            <select id="filterDivisi">
+                <option value="">Semua Divisi</option>
+            </select>
+        </div>
+        <div>
+            <button class="btn-primary" onclick="loadLaporan()">
+                <i class="fas fa-search"></i> Tampilkan
+            </button>
+            <button class="btn-print" onclick="cetakLaporan()">
+                <i class="fas fa-print"></i> Cetak / PDF
+            </button>
         </div>
     </div>
 
     <div id="laporanContainer">
-        <div class="loading-text"><i class="fas fa-spinner fa-pulse"></i> Silakan pilih tanggal mulai dan klik Tampilkan</div>
+        <div class="loading-text"><i class="fas fa-spinner fa-pulse"></i> Silakan pilih Penggajian Ke- dan klik Tampilkan</div>
     </div>
 </div>
 
 <script>
-    // ============================================================
-    // KONFIGURASI SUPABASE
-    // ============================================================
     var SUPABASE_URL = 'https://zcaqqybonpfishwkmffg.supabase.co';
     var SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpjYXFxeWJvbnBmaXNod2ttZmZnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODc2Mjc2NDgsImV4cCI6MjEwMzIwMzY0OH0.pBk5nwJI3u9n08onTNmvcOFxtCXQvv-ipYIu2f_iAiQ';
 
@@ -286,9 +277,6 @@
     }
     document.getElementById('adminName').textContent = localStorage.getItem('admin_username') || 'Admin';
 
-    // ============================================================
-    // VARIABLES
-    // ============================================================
     var hariLiburMap = {};
     var hariNama = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
     var hariNamaLower = ['minggu', 'senin', 'selasa', 'rabu', 'kamis', 'jumat', 'sabtu'];
@@ -299,14 +287,6 @@
         'PEMORSIAN MAKANAN', 'CUCI ALAT MAKAN', 'DISTRIBUSI', 'KEBERSIHAN', 'SATPAM'
     ];
 
-    // ============================================================
-    // FUNGSI TANGGAL
-    // ============================================================
-    function getTodayIndonesia() {
-        var now = new Date();
-        var offset = 7 * 60 * 60 * 1000;
-        return new Date(now.getTime() + offset).toISOString().split('T')[0];
-    }
     function getDateIndonesia(date) {
         var offset = 7 * 60 * 60 * 1000;
         return new Date(date.getTime() + offset).toISOString().split('T')[0];
@@ -315,14 +295,7 @@
         var parts = dateStr.split('-');
         return new Date(parts[0], parts[1] - 1, parts[2]);
     }
-    function setDefaultDates() {
-        document.getElementById('startDate').value = getTodayIndonesia();
-    }
-    setDefaultDates();
 
-    // ============================================================
-    // THEME, TOAST, LOGOUT
-    // ============================================================
     function toggleTheme() {
         document.body.classList.toggle('light-mode');
         var icon = document.getElementById('themeIcon');
@@ -353,9 +326,6 @@
         }
     }
 
-    // ============================================================
-    // LOAD HARI LIBUR
-    // ============================================================
     async function loadHariLibur() {
         try {
             var response = await fetch(
@@ -373,9 +343,6 @@
         return hariLiburMap[tanggal + '|' + divisi] || false;
     }
 
-    // ============================================================
-    // LOAD FILTER OPTIONS
-    // ============================================================
     async function loadFilterOptions() {
         try {
             var response = await fetch(SUPABASE_URL + '/rest/v1/karyawan?select=divisi', {
@@ -399,47 +366,65 @@
     loadFilterOptions();
 
     // ============================================================
-    // HITUNG 7 HARI KERJA BERDASARKAN hari_masuk
+    // HITUNG HARI KE-N BERDASARKAN hari_masuk & TANGGAL AWAL ABSEN
     // ============================================================
-    function getHariKerja7(hariMasukArr) {
-        // Normalisasi ke lowercase
+    function getHariMasukList(hariMasukArr) {
         var list = (hariMasukArr || []).map(function(h) { return String(h).toLowerCase().trim(); });
         if (list.length === 0) list = ['senin','selasa','rabu','kamis','jumat','sabtu'];
         return list;
     }
 
-    function hitungTanggal7Hari(hari1Tanggal, hariMasukArr) {
-        // hari1Tanggal: Date object
-        // Return: array of { hariKe: 1..7, tanggal: Date }
-        var listHari = getHariKerja7(hariMasukArr);
-        var hasil = [];
-        var current = new Date(hari1Tanggal);
-        var counter = 1;
-        var maxLoop = 60; // safety
+    // Cari tanggal pertama (Hari 1) untuk divisi tertentu
+    // = tanggal MIN di absensi, yang harinya ada di hari_masuk
+    function cariHari1Divisi(absensiDivisi, hariMasukList) {
+        // absensiDivisi = array of { tanggal, ... }
+        // Cari tanggal MIN, lalu cek apakah hari-nya ada di hari_masuk
+        // Kalau gak ada, maju 1 hari sampai ketemu
+        if (absensiDivisi.length === 0) return null;
+        
+        // Sort ascending
+        var sorted = absensiDivisi.slice().sort(function(a, b) {
+            return a.tanggal.localeCompare(b.tanggal);
+        });
+        
+        var tglMin = sorted[0].tanggal;
+        var d = parseDateIndonesia(tglMin);
+        
+        // Maju terus sampai dapet hari yang ada di hari_masuk
+        var maxLoop = 14;
+        while (maxLoop-- > 0) {
+            var namaHari = hariNamaLower[d.getDay()];
+            if (hariMasukList.indexOf(namaHari) !== -1) {
+                return new Date(d);
+            }
+            d.setDate(d.getDate() + 1);
+        }
+        return null;
+    }
 
-        while (hasil.length < 7 && maxLoop-- > 0) {
+    // Hitung tanggal untuk Hari ke-N
+    function hitungTanggalHariKe(hari1Date, hariMasukList, N) {
+        // Mulai dari hari1Date, iterasi sampai dapet N hari kerja
+        var current = new Date(hari1Date);
+        var counter = 1;
+        var maxLoop = 90;
+        while (maxLoop-- > 0) {
             var namaHari = hariNamaLower[current.getDay()];
-            if (listHari.indexOf(namaHari) !== -1) {
-                hasil.push({
-                    hariKe: counter,
-                    tanggal: new Date(current),
-                    namaHari: hariNama[current.getDay()]
-                });
+            if (hariMasukList.indexOf(namaHari) !== -1) {
+                if (counter === N) return new Date(current);
                 counter++;
             }
             current.setDate(current.getDate() + 1);
         }
-        return hasil;
+        return null;
     }
 
     // ============================================================
     // LOAD LAPORAN
     // ============================================================
     async function loadLaporan() {
-        var start = document.getElementById('startDate').value;
+        var N = parseInt(document.getElementById('filterPenggajian').value);
         var divisiFilter = document.getElementById('filterDivisi').value;
-
-        if (!start) { showToast('Pilih tanggal mulai dulu!', 'warning'); return; }
 
         var container = document.getElementById('laporanContainer');
         container.innerHTML = '<div class="loading-text"><i class="fas fa-spinner fa-pulse"></i> Memuat data...</div>';
@@ -462,54 +447,28 @@
                 return;
             }
 
-            // 2. Cari "Hari 1" = MIN tanggal absensi untuk divisi yang paling awal absen
-            var absenQuery = SUPABASE_URL + '/rest/v1/absensi?select=tanggal,karyawan_id&order=tanggal.asc';
-            if (divisiFilter) {
-                // Filter per divisi: ambil karyawan_id di divisi itu dulu
-                var ids = karyawan.map(function(k) { return k.id; });
-                absenQuery += '&karyawan_id=in.(' + ids.join(',') + ')';
-            }
-            var absenAllRes = await fetch(absenQuery, {
-                headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': 'Bearer ' + SUPABASE_ANON_KEY }
-            });
+            // 2. Fetch semua absensi (buat cari Hari 1 tiap divisi)
+            var absenAllRes = await fetch(
+                SUPABASE_URL + '/rest/v1/absensi?select=*&order=tanggal.asc',
+                { headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': 'Bearer ' + SUPABASE_ANON_KEY } }
+            );
             var absenAll = await absenAllRes.json();
+
+            var izinAllRes = await fetch(
+                SUPABASE_URL + '/rest/v1/izin?select=*&order=tanggal.asc',
+                { headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': 'Bearer ' + SUPABASE_ANON_KEY } }
+            );
+            var izinAll = await izinAllRes.json();
 
             if (!absenAll || absenAll.length === 0) {
                 container.innerHTML = '<div class="empty-text"><i class="fas fa-inbox"></i> Belum ada data absensi</div>';
                 return;
             }
 
-            // Cari tanggal MIN
-            var tglMin = absenAll[0].tanggal;
-            absenAll.forEach(function(a) {
-                if (a.tanggal < tglMin) tglMin = a.tanggal;
-            });
-
-            var hari1Date = parseDateIndonesia(tglMin);
-            var periode7 = hitungTanggal7Hari(hari1Date, ['senin','selasa','rabu','kamis','jumat','sabtu','minggu']);
-
-            // 3. Fetch absensi & izin dalam range 7 hari (pakai tanggal min s/d max dari periode7)
-            var tglAkhir = getDateIndonesia(periode7[periode7.length - 1].tanggal);
-            // Extend range biar aman (karena per orang bisa beda tanggal akhir)
-            var extendEnd = new Date(periode7[periode7.length - 1].tanggal);
-            extendEnd.setDate(extendEnd.getDate() + 14);
-            var tglAkhirExtended = getDateIndonesia(extendEnd);
-
-            var absenRes = await fetch(
-                SUPABASE_URL + '/rest/v1/absensi?select=*&tanggal=gte.' + tglMin + '&tanggal=lte.' + tglAkhirExtended,
-                { headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': 'Bearer ' + SUPABASE_ANON_KEY } }
-            );
-            var absensi = await absenRes.json();
-
-            var izinRes = await fetch(
-                SUPABASE_URL + '/rest/v1/izin?select=*&tanggal=gte.' + tglMin + '&tanggal=lte.' + tglAkhirExtended,
-                { headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': 'Bearer ' + SUPABASE_ANON_KEY } }
-            );
-            var listIzin = await izinRes.json();
-
+            // Build map absensi & izin
             var absenMap = {};
-            absensi.forEach(function(a) { absenMap[a.karyawan_id + '|' + a.tanggal] = a; });
-            listIzin.forEach(function(i) {
+            absenAll.forEach(function(a) { absenMap[a.karyawan_id + '|' + a.tanggal] = a; });
+            izinAll.forEach(function(i) {
                 absenMap[i.karyawan_id + '|' + i.tanggal] = {
                     karyawan_id: i.karyawan_id, tanggal: i.tanggal,
                     status: 'izin', jam_masuk: '-', jam_pulang: '-',
@@ -517,73 +476,81 @@
                 };
             });
 
-            // 4. Sort karyawan
-            karyawan.sort(function(a, b) {
+            // 3. Group karyawan per divisi
+            var karyawanPerDivisi = {};
+            karyawan.forEach(function(k) {
+                if (!karyawanPerDivisi[k.divisi]) karyawanPerDivisi[k.divisi] = [];
+                karyawanPerDivisi[k.divisi].push(k);
+            });
+
+            // 4. Cari Hari 1 per divisi
+            var hari1PerDivisi = {}; // { divisi: Date }
+            Object.keys(karyawanPerDivisi).forEach(function(div) {
+                var listKaryawan = karyawanPerDivisi[div];
+                // Ambil hari_masuk dari karyawan pertama (asumsi 1 divisi sama)
+                var hariMasukList = getHariMasukList(listKaryawan[0].hari_masuk);
+                // Ambil absensi untuk divisi ini
+                var ids = listKaryawan.map(function(k) { return k.id; });
+                var absensiDiv = absenAll.filter(function(a) { return ids.indexOf(a.karyawan_id) !== -1; });
+                var hari1 = cariHari1Divisi(absensiDiv, hariMasukList);
+                if (hari1) hari1PerDivisi[div] = hari1;
+            });
+
+            // 5. Build data: untuk setiap karyawan, hitung tanggal Hari ke-N
+            var resultRows = [];
+            karyawan.forEach(function(k) {
+                var hariMasukList = getHariMasukList(k.hari_masuk);
+                var hari1 = hari1PerDivisi[k.divisi];
+                if (!hari1) return;
+
+                var tanggalHariKeN = hitungTanggalHariKe(hari1, hariMasukList, N);
+                if (!tanggalHariKeN) return;
+
+                var tglStr = getDateIndonesia(tanggalHariKeN);
+                var namaHari = hariNama[tanggalHariKeN.getDay()];
+                var tglFormatted = namaHari + ', ' + tanggalHariKeN.getDate() + ' ' + bulanNama[tanggalHariKeN.getMonth()] + ' ' + tanggalHariKeN.getFullYear();
+
+                var abs = absenMap[k.id + '|' + tglStr];
+                var isLibur = isTanggalLibur(tglStr, k.divisi);
+
+                var status = 'alfa', statusText = 'Alfa';
+                var jamMasuk = '-', jamPulang = '-';
+
+                if (isLibur) {
+                    status = 'libur'; statusText = 'Libur';
+                } else if (abs) {
+                    jamMasuk = abs.jam_masuk || '-';
+                    jamPulang = abs.jam_pulang || '-';
+                    var sDb = String(abs.status || '').toLowerCase().trim();
+                    if (sDb === 'izin' || sDb === 'sakit' || sDb === 'dinas') {
+                        status = 'izin'; statusText = 'Izin';
+                    } else if (sDb === 'libur') {
+                        status = 'libur'; statusText = 'Libur';
+                    } else if (sDb === 'hadir' || jamMasuk !== '-') {
+                        status = 'hadir'; statusText = 'Hadir';
+                    }
+                }
+
+                resultRows.push({
+                    nama: k.nama || k.id,
+                    divisi: k.divisi || '-',
+                    hariTanggal: tglFormatted,
+                    jamMasuk: jamMasuk,
+                    jamPulang: jamPulang,
+                    status: status,
+                    statusText: statusText
+                });
+            });
+
+            // 6. Sort
+            resultRows.sort(function(a, b) {
                 var iA = urutanDivisi.indexOf(a.divisi); if (iA === -1) iA = 999;
                 var iB = urutanDivisi.indexOf(b.divisi); if (iB === -1) iB = 999;
                 if (iA !== iB) return iA - iB;
                 return (a.nama || '').localeCompare(b.nama || '');
             });
 
-            // 5. Build data per hari (Hari 1 s/d Hari 7)
-            //    Untuk setiap karyawan, hitung tanggal masing-masing Hari 1-7 berdasarkan hari_masuk-nya
-            var hariSections = [];
-            for (var h = 1; h <= 7; h++) {
-                hariSections.push({
-                    hariKe: h,
-                    namaHari: '',
-                    tanggal: null,
-                    karyawan: []
-                });
-            }
-
-            karyawan.forEach(function(k) {
-                var hariMasukArr = k.hari_masuk || ['senin','selasa','rabu','kamis','jumat','sabtu'];
-                var list7 = hitungTanggal7Hari(hari1Date, hariMasukArr);
-
-                list7.forEach(function(item, idx) {
-                    var tglStr = getDateIndonesia(item.tanggal);
-                    var abs = absenMap[k.id + '|' + tglStr];
-                    var isLibur = isTanggalLibur(tglStr, k.divisi);
-
-                    var status = 'alfa', statusText = 'Alfa';
-                    var jamMasuk = '-', jamPulang = '-', keterangan = '-';
-
-                    if (isLibur) {
-                        status = 'libur'; statusText = 'Libur';
-                    } else if (abs) {
-                        jamMasuk = abs.jam_masuk || '-';
-                        jamPulang = abs.jam_pulang || '-';
-                        keterangan = abs.keterangan || '-';
-                        var sDb = String(abs.status || '').toLowerCase().trim();
-                        if (sDb === 'izin' || sDb === 'sakit' || sDb === 'dinas') {
-                            status = 'izin'; statusText = 'Izin';
-                        } else if (sDb === 'libur') {
-                            status = 'libur'; statusText = 'Libur';
-                        } else if (sDb === 'hadir' || jamMasuk !== '-') {
-                            status = 'hadir'; statusText = 'Hadir';
-                        }
-                    }
-
-                    // Simpan info hari (untuk header)
-                    if (!hariSections[idx].tanggal) {
-                        hariSections[idx].namaHari = item.namaHari;
-                        hariSections[idx].tanggal = item.tanggal;
-                    }
-
-                    hariSections[idx].karyawan.push({
-                        nama: k.nama || k.id,
-                        divisi: k.divisi || '-',
-                        jamMasuk: jamMasuk,
-                        jamPulang: jamPulang,
-                        status: status,
-                        statusText: statusText,
-                        keterangan: keterangan
-                    });
-                });
-            });
-
-            renderLaporan(hariSections, tglMin, getDateIndonesia(periode7[periode7.length - 1].tanggal), divisiFilter);
+            renderLaporan(resultRows, N, divisiFilter);
 
         } catch(e) {
             console.error('Error:', e);
@@ -595,14 +562,9 @@
     // ============================================================
     // RENDER LAPORAN
     // ============================================================
-    function renderLaporan(hariSections, tglMulai, tglSelesai, divisiFilter) {
+    function renderLaporan(rows, N, divisiFilter) {
         var container = document.getElementById('laporanContainer');
         var logoUrl = 'https://zcaqqybonpfishwkmffg.supabase.co/storage/v1/object/public/logo/Logo_Badan_Gizi_Nasional_(2024)%20(1).png';
-
-        var dStart = parseDateIndonesia(tglMulai);
-        var dEnd = parseDateIndonesia(tglSelesai);
-        var periode = dStart.getDate() + ' ' + bulanNama[dStart.getMonth()] + ' ' + dStart.getFullYear() +
-                      ' - ' + dEnd.getDate() + ' ' + bulanNama[dEnd.getMonth()] + ' ' + dEnd.getFullYear();
 
         var now = new Date();
         var tglCetak = now.getDate() + ' ' + bulanNama[now.getMonth()] + ' ' + now.getFullYear();
@@ -625,47 +587,39 @@
         html += '</div>';
         html += '<div class="garis-kop"></div>';
         html += '<div class="judul">LAPORAN PENGGAJIAN HARIAN</div>';
-        html += '<div class="periode">Periode: ' + periode + ' (7 Hari)</div>';
+        html += '<div class="periode">Penggajian Ke-' + N + '</div>';
         html += '<div class="tgl-cetak">Dicetak pada: ' + tglCetak + (divisiFilter ? ' | Divisi: ' + divisiFilter : '') + '</div>';
         html += '</div>';
 
-        // 7 Hari Sections
-        hariSections.forEach(function(sec) {
-            var tglStr = sec.tanggal ? (sec.tanggal.getDate() + ' ' + bulanNama[sec.tanggal.getMonth()] + ' ' + sec.tanggal.getFullYear()) : '-';
-            var hariLabel = sec.namaHari ? (sec.namaHari + ', ' + tglStr) : tglStr;
+        // Tabel
+        html += '<table>';
+        html += '<thead><tr>';
+        html += '<th style="width:30px;">No</th>';
+        html += '<th style="width:140px;">Nama</th>';
+        html += '<th style="width:120px;">Divisi</th>';
+        html += '<th style="width:180px;">Hari/Tanggal</th>';
+        html += '<th style="width:70px;">Jam Masuk</th>';
+        html += '<th style="width:70px;">Jam Pulang</th>';
+        html += '<th style="width:70px;">Status</th>';
+        html += '</tr></thead><tbody>';
 
-            html += '<div class="hari-section">';
-            html += '<div class="hari-header">';
-            html += '<span>PENGGAJIAN HARI ' + sec.hariKe + '</span>';
-            html += '<span class="hari-label">' + hariLabel + '</span>';
-            html += '</div>';
-
-            html += '<table>';
-            html += '<thead><tr>';
-            html += '<th style="width:30px;">No</th>';
-            html += '<th style="width:140px;">Nama</th>';
-            html += '<th style="width:110px;">Divisi</th>';
-            html += '<th style="width:70px;">Jam Masuk</th>';
-            html += '<th style="width:70px;">Jam Pulang</th>';
-            html += '<th style="width:70px;">Status</th>';
-            html += '<th>Gaji Harian</th>';
-            html += '</tr></thead><tbody>';
-
-            sec.karyawan.forEach(function(k, idx) {
+        if (rows.length === 0) {
+            html += '<tr><td colspan="7" style="padding: 20px; color: #94a3b8;">Tidak ada data untuk Penggajian Ke-' + N + '</td></tr>';
+        } else {
+            rows.forEach(function(r, idx) {
                 html += '<tr>';
                 html += '<td>' + (idx + 1) + '</td>';
-                html += '<td class="nama">' + k.nama + '</td>';
-                html += '<td class="divisi">' + k.divisi + '</td>';
-                html += '<td>' + k.jamMasuk + '</td>';
-                html += '<td>' + k.jamPulang + '</td>';
-                html += '<td><span class="status-label ' + k.status + '">' + k.statusText + '</span></td>';
-                html += '<td class="gaji">___________</td>';
+                html += '<td class="nama">' + r.nama + '</td>';
+                html += '<td class="divisi">' + r.divisi + '</td>';
+                html += '<td class="hari-tanggal">' + r.hariTanggal + '</td>';
+                html += '<td>' + r.jamMasuk + '</td>';
+                html += '<td>' + r.jamPulang + '</td>';
+                html += '<td><span class="status-label ' + r.status + '">' + r.statusText + '</span></td>';
                 html += '</tr>';
             });
+        }
 
-            html += '</tbody></table>';
-            html += '</div>';
-        });
+        html += '</tbody></table>';
 
         // TTD
         html += '<div class="ttd">';
