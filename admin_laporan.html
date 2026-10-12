@@ -281,6 +281,9 @@
     var hariNamaLower = ['minggu', 'senin', 'selasa', 'rabu', 'kamis', 'jumat', 'sabtu'];
     var bulanNama = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
 
+    // Urutan hari untuk nentuin "Hari 1" (paling awal di kalender)
+    var urutanHariKalender = ['minggu', 'senin', 'selasa', 'rabu', 'kamis', 'jumat', 'sabtu'];
+
     var urutanDivisi = [
         'ASISTEN LAPANGAN', 'KEPALA CHEF', 'PENGOLAHAN', 'TIM PERSIAPAN BAHAN',
         'PEMORSIAN MAKANAN', 'CUCI ALAT MAKAN', 'DISTRIBUSI', 'KEBERSIHAN', 'SATPAM'
@@ -297,7 +300,7 @@
         return new Date(parts[0], parts[1] - 1, parts[2]);
     }
 
-    // Init dropdown bulan (6 bulan ke belakang s/d 1 bulan ke depan)
+    // Init dropdown bulan
     function initBulanDropdown() {
         var select = document.getElementById('filterBulan');
         var now = new Date();
@@ -392,25 +395,64 @@
         return list;
     }
 
-    // Hitung 7 hari kerja dari tanggal Hari 1
-    function hitungTujuhHari(hari1Date, hariMasukList) {
+    // ============================================================
+    // CARI HARI 1 (hari paling awal di kalender yang ada di hari_masuk)
+    // ============================================================
+    function cariHari1(hariMasukList) {
+        for (var i = 0; i < urutanHariKalender.length; i++) {
+            if (hariMasukList.indexOf(urutanHariKalender[i]) !== -1) {
+                return urutanHariKalender[i];
+            }
+        }
+        return null;
+    }
+
+    // ============================================================
+    // HITUNG 7 HARI KERJA DARI HARI 1
+    // ============================================================
+    // Return: array of { hariKe, namaHari }
+    function hitungUrutan7Hari(hari1, hariMasukList) {
         var hasil = [];
-        var current = new Date(hari1Date);
+        var idx = urutanHariKalender.indexOf(hari1);
+        if (idx === -1) return hasil;
         var counter = 1;
-        var maxLoop = 120;
+        var maxLoop = 30;
         while (hasil.length < 7 && maxLoop-- > 0) {
-            var namaHari = hariNamaLower[current.getDay()];
-            if (hariMasukList.indexOf(namaHari) !== -1) {
-                hasil.push({
-                    hariKe: counter,
-                    tanggal: new Date(current),
-                    namaHari: hariNama[current.getDay()]
-                });
+            var h = urutanHariKalender[idx % 7];
+            if (hariMasukList.indexOf(h) !== -1) {
+                hasil.push({ hariKe: counter, namaHari: h });
                 counter++;
             }
-            current.setDate(current.getDate() + 1);
+            idx++;
         }
         return hasil;
+    }
+
+    // ============================================================
+    // CARI TANGGAL HARI KE-N DI BULAN TERTENTU
+    // ============================================================
+    // Cari tanggal pertama di bulan tsb yang harinya = namaHariTarget
+    function cariTanggalPertamaDiBulan(tahun, bulan, namaHariTarget) {
+        // Cari dari tgl 1 s/d akhir bulan
+        var lastDay = new Date(tahun, bulan, 0).getDate();
+        for (var d = 1; d <= lastDay; d++) {
+            var dt = new Date(tahun, bulan - 1, d);
+            var namaHari = hariNamaLower[dt.getDay()];
+            if (namaHari === namaHariTarget) {
+                return dt;
+            }
+        }
+        return null;
+    }
+
+    // Hitung tanggal Hari ke-N berdasarkan urutan 7 hari
+    // urutan7 = array of { hariKe, namaHari }
+    // N = 1-7
+    // Return: Date
+    function hitungTanggalHariKe(tahun, bulan, urutan7, N) {
+        var item = urutan7.find(function(x) { return x.hariKe === N; });
+        if (!item) return null;
+        return cariTanggalPertamaDiBulan(tahun, bulan, item.namaHari);
     }
 
     // ============================================================
@@ -426,7 +468,9 @@
         var tahun = parseInt(parts[0]);
         var bulan = parseInt(parts[1]);
         var startBulan = new Date(tahun, bulan - 1, 1);
-        var endBulan = new Date(tahun, bulan, 0, 23, 59, 59);
+        var endBulan = new Date(tahun, bulan, 0);
+        var startBulanStr = getDateIndonesia(startBulan);
+        var endBulanStr = getDateIndonesia(endBulan);
 
         var container = document.getElementById('laporanContainer');
         container.innerHTML = '<div class="loading-text"><i class="fas fa-spinner fa-pulse"></i> Memuat data...</div>';
@@ -449,26 +493,20 @@
                 return;
             }
 
-            // 2. Group karyawan per divisi
-            var karyawanPerDivisi = {};
-            karyawan.forEach(function(k) {
-                if (!karyawanPerDivisi[k.divisi]) karyawanPerDivisi[k.divisi] = [];
-                karyawanPerDivisi[k.divisi].push(k);
-            });
-
-            // 3. Fetch SEMUA absensi & izin
+            // 2. Fetch absensi & izin di bulan tsb
             var absenRes = await fetch(
-                SUPABASE_URL + '/rest/v1/absensi?select=*&order=tanggal.asc',
+                SUPABASE_URL + '/rest/v1/absensi?select=*&tanggal=gte.' + startBulanStr + '&tanggal=lte.' + endBulanStr,
                 { headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': 'Bearer ' + SUPABASE_ANON_KEY } }
             );
             var absensi = await absenRes.json();
 
             var izinRes = await fetch(
-                SUPABASE_URL + '/rest/v1/izin?select=*&order=tanggal.asc',
+                SUPABASE_URL + '/rest/v1/izin?select=*&tanggal=gte.' + startBulanStr + '&tanggal=lte.' + endBulanStr,
                 { headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': 'Bearer ' + SUPABASE_ANON_KEY } }
             );
             var listIzin = await izinRes.json();
 
+            // Map absensi & izin
             var absenMap = {};
             absensi.forEach(function(a) { absenMap[a.karyawan_id + '|' + a.tanggal] = a; });
             listIzin.forEach(function(i) {
@@ -479,46 +517,36 @@
                 };
             });
 
-            // 4. Cari Hari 1 per divisi (di bulan yang dipilih)
-            //    Hari 1 = tanggal MIN absensi divisi di bulan tsb yang harinya ada di hari_masuk
-            var hari1PerDivisi = {};
-            Object.keys(karyawanPerDivisi).forEach(function(div) {
-                var listKaryawan = karyawanPerDivisi[div];
-                var hariMasukList = getHariMasukList(listKaryawan[0].hari_masuk);
-                var ids = listKaryawan.map(function(k) { return k.id; });
+            // 3. Hitung urutan 7 hari per karyawan
+            //    Karena tiap karyawan bisa beda hari_masuk, kita hitung per karyawan
+            //    Tapi kita kelompokkan dulu per kombinasi hari_masuk
+            var karyawanData = [];
+            karyawan.forEach(function(k) {
+                var hariMasukList = getHariMasukList(k.hari_masuk);
+                var hari1 = cariHari1(hariMasukList);
+                if (!hari1) return;
 
-                // Filter absensi divisi di bulan tsb
-                var startBulanStr = getDateIndonesia(startBulan);
-                var endBulanStr = getDateIndonesia(endBulan);
-                var absensiDiv = absensi.filter(function(a) {
-                    return ids.indexOf(a.karyawan_id) !== -1 &&
-                           a.tanggal >= startBulanStr &&
-                           a.tanggal <= endBulanStr;
+                var urutan7 = hitungUrutan7Hari(hari1, hariMasukList);
+
+                // Hitung tanggal untuk tiap Hari 1-7
+                var tanggalPerHari = {};
+                urutan7.forEach(function(item) {
+                    var tgl = hitungTanggalHariKe(tahun, bulan, [item], 1);
+                    // Perbaikan: hitung tanggal dari namaHari
+                    var tglDate = cariTanggalPertamaDiBulan(tahun, bulan, item.namaHari);
+                    if (tglDate) {
+                        tanggalPerHari[item.hariKe] = tglDate;
+                    }
                 });
 
-                // Cari tanggal MIN
-                var tglMinDiv = null;
-                if (absensiDiv.length > 0) {
-                    var sorted = absensiDiv.slice().sort(function(a, b) { return a.tanggal.localeCompare(b.tanggal); });
-                    tglMinDiv = sorted[0].tanggal;
-                }
-
-                if (tglMinDiv) {
-                    // Mulai dari tglMinDiv, cari hari yang ada di hari_masuk
-                    var d = parseDateIndonesia(tglMinDiv);
-                    var maxLoop = 14;
-                    while (maxLoop-- > 0) {
-                        var namaHari = hariNamaLower[d.getDay()];
-                        if (hariMasukList.indexOf(namaHari) !== -1) {
-                            hari1PerDivisi[div] = new Date(d);
-                            break;
-                        }
-                        d.setDate(d.getDate() + 1);
-                    }
-                }
+                karyawanData.push({
+                    karyawan: k,
+                    urutan7: urutan7,
+                    tanggalPerHari: tanggalPerHari
+                });
             });
 
-            // 5. Build 7 tabel (Hari 1 s/d Hari 7)
+            // 4. Build 7 hari sections
             var hariSections = [];
             for (var h = 1; h <= 7; h++) {
                 hariSections.push({
@@ -527,25 +555,19 @@
                 });
             }
 
-            // Sort karyawan per divisi (urutan divisi custom + nama A-Z)
-            karyawan.sort(function(a, b) {
-                var iA = urutanDivisi.indexOf(a.divisi); if (iA === -1) iA = 999;
-                var iB = urutanDivisi.indexOf(b.divisi); if (iB === -1) iB = 999;
-                if (iA !== iB) return iA - iB;
-                return (a.nama || '').localeCompare(b.nama || '');
-            });
+            // 5. Untuk tiap karyawan, ambil data Hari 1-7
+            karyawanData.forEach(function(kd) {
+                var k = kd.karyawan;
 
-            // Untuk setiap karyawan, hitung tanggal Hari 1 s/d Hari 7
-            karyawan.forEach(function(k) {
-                var hariMasukList = getHariMasukList(k.hari_masuk);
-                var hari1 = hari1PerDivisi[k.divisi];
-                if (!hari1) return;
+                kd.urutan7.forEach(function(item) {
+                    var tglDate = kd.tanggalPerHari[item.hariKe];
+                    if (!tglDate) return;
 
-                var tujuhHari = hitungTujuhHari(hari1, hariMasukList);
+                    var tglStr = getDateIndonesia(tglDate);
+                    // Pastiin masih dalam bulan
+                    if (tglStr < startBulanStr || tglStr > endBulanStr) return;
 
-                tujuhHari.forEach(function(item, idx) {
-                    var tglStr = getDateIndonesia(item.tanggal);
-                    var tglFormatted = item.namaHari + ', ' + item.tanggal.getDate() + ' ' + bulanNama[item.tanggal.getMonth()] + ' ' + item.tanggal.getFullYear();
+                    var tglFormatted = hariNama[tglDate.getDay()] + ', ' + tglDate.getDate() + ' ' + bulanNama[tglDate.getMonth()] + ' ' + tglDate.getFullYear();
 
                     var abs = absenMap[k.id + '|' + tglStr];
                     var isLibur = isTanggalLibur(tglStr, k.divisi);
@@ -570,7 +592,7 @@
                         }
                     }
 
-                    hariSections[idx].karyawan.push({
+                    hariSections[item.hariKe - 1].karyawan.push({
                         nama: k.nama || k.id,
                         divisi: k.divisi || '-',
                         hariTanggal: tglFormatted,
@@ -582,7 +604,17 @@
                 });
             });
 
-            // 6. Render
+            // 6. Sort per section (urutan divisi + nama A-Z)
+            hariSections.forEach(function(sec) {
+                sec.karyawan.sort(function(a, b) {
+                    var iA = urutanDivisi.indexOf(a.divisi); if (iA === -1) iA = 999;
+                    var iB = urutanDivisi.indexOf(b.divisi); if (iB === -1) iB = 999;
+                    if (iA !== iB) return iA - iB;
+                    return (a.nama || '').localeCompare(b.nama || '');
+                });
+            });
+
+            // 7. Render
             var periodeLabel = 'Bulan: ' + bulanNama[bulan - 1] + ' ' + tahun + (divisiFilter ? ' | Divisi: ' + divisiFilter : '');
             renderLaporan(hariSections, periodeLabel);
 
