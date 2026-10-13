@@ -78,6 +78,7 @@
             font-weight: 700;
             color: white;
         }
+        body.light-mode .date-display .hari { color: #1e293b; }
         .date-display .hari .tgl {
             font-size: 14px;
             font-weight: 400;
@@ -366,11 +367,11 @@
             <span class="icon">👥</span>
             <div class="title">Kelola Karyawan</div>
             <div class="desc">Tambah, edit, hapus karyawan</div>
-            <a href="admin_kpi.html" class="menu-card">
-    <span class="icon">📊</span>
-    <div class="title">KPI Karyawan</div>
-    <div class="desc">Penilaian kinerja + rekomendasi AI</div>
-</a>
+        </a>
+        <a href="admin_kpi.html" class="menu-card">
+            <span class="icon">📊</span>
+            <div class="title">KPI Karyawan</div>
+            <div class="desc">Penilaian kinerja + rekomendasi AI</div>
         </a>
         <a href="admin_rekap.html" class="menu-card">
             <span class="icon">📊</span>
@@ -388,19 +389,28 @@
             <div class="desc">Lihat riwayat semua karyawan</div>
         </a>
         <a href="admin_laporan.html" class="menu-card">
-    <span class="icon">📄</span>
-    <div class="title">Laporan Formal</div>
-    <div class="desc">Cetak laporan resmi dengan kop surat</div>
-</a>
+            <span class="icon">📄</span>
+            <div class="title">Laporan Formal</div>
+            <div class="desc">Cetak laporan resmi dengan kop surat</div>
+        </a>
         <a href="admin_libur.html" class="menu-card">
-    <span class="icon">📅</span>
-    <div class="title">Manajemen Libur & Hari Kerja</div>
-    <div class="desc">Atur libur & hari kerja per divisi</div>
-</a>
+            <span class="icon">📅</span>
+            <div class="title">Manajemen Libur & Hari Kerja</div>
+            <div class="desc">Atur libur & hari kerja per divisi</div>
+        </a>
+        <a href="admin_penggajian_harian.html" class="menu-card">
+            <span class="icon">💰</span>
+            <div class="title">Penggajian Harian</div>
+            <div class="desc">Rekap absensi 7 hari kerja per divisi</div>
+        </a>
+        <a href="admin_satpam.html" class="menu-card">
+            <span class="icon">🛡️</span>
+            <div class="title">Rekap SATPAM</div>
+            <div class="desc">Absensi & total jam kerja satpam (Sabtu-Jumat)</div>
+        </a>
     </div>
 
 </div>
-    
 
 <script>
     // ============================================================
@@ -434,7 +444,7 @@
 
     function getDayIndex(dateStr) {
         var d = new Date(dateStr + 'T00:00:00');
-        return d.getDay(); // 0=Minggu, 1=Senin, dst
+        return d.getDay();
     }
 
     function formatTanggal(dateStr) {
@@ -503,12 +513,10 @@
         var dayName = getDayName(today);
         var dayKey = hariMap[dayIndex];
 
-        // Update header
         document.getElementById('hariNama').textContent = dayName;
         document.getElementById('hariTanggal').textContent = formatTanggal(today);
 
         try {
-            // 1. Get all karyawan
             var karyawanRes = await fetch(SUPABASE_URL + '/rest/v1/karyawan?select=id,nama,divisi,jam_masuk,hari_masuk', {
                 headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': 'Bearer ' + SUPABASE_ANON_KEY }
             });
@@ -520,28 +528,20 @@
                 return;
             }
 
-            // 2. Get today's absensi
             var absenRes = await fetch(
                 SUPABASE_URL + '/rest/v1/absensi?select=*&tanggal=eq.' + today,
-                {
-                    headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': 'Bearer ' + SUPABASE_ANON_KEY }
-                }
+                { headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': 'Bearer ' + SUPABASE_ANON_KEY } }
             );
             var absensi = await absenRes.json();
 
-            // Map absensi by karyawan_id
             var absenMap = {};
-            absensi.forEach(function(a) {
-                absenMap[a.karyawan_id] = a;
-            });
+            absensi.forEach(function(a) { absenMap[a.karyawan_id] = a; });
 
-            // 3. Process data
             var totalKaryawan = karyawan.length;
             var totalHadir = 0;
             var totalTelat = 0;
             var totalAlfa = 0;
             var totalLibur = 0;
-
             var divisiData = {};
 
             karyawan.forEach(function(k) {
@@ -551,7 +551,6 @@
                 }
                 divisiData[divisi].total++;
 
-                // Cek hari masuk
                 var hariMasuk = k.hari_masuk;
                 var isMasukHariIni = true;
 
@@ -561,9 +560,7 @@
                         if (Array.isArray(hariArray) && hariArray.length > 0) {
                             isMasukHariIni = hariArray.indexOf(dayKey) !== -1;
                         }
-                    } catch(e) {
-                        // Jika gagal parse, anggap masuk
-                    }
+                    } catch(e) {}
                 }
 
                 if (!isMasukHariIni) {
@@ -589,13 +586,11 @@
                 }
             });
 
-            // Update summary
             document.getElementById('totalKaryawan').textContent = totalKaryawan;
             document.getElementById('totalHadir').textContent = totalHadir;
             document.getElementById('totalTelat').textContent = totalTelat;
             document.getElementById('totalAlfa').textContent = totalAlfa;
 
-            // Update badge hari
             var badge = document.getElementById('badgeHari');
             if (totalLibur === totalKaryawan) {
                 badge.textContent = '🔵 Hari Libur (Semua Divisi)';
@@ -607,7 +602,6 @@
                 document.getElementById('hariStatus').textContent = '(Hari Kerja)';
             }
 
-            // Render divisi
             renderDivisi(divisiData);
 
         } catch(e) {
