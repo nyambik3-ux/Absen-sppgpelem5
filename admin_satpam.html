@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rekap SATPAM • Smart Presence</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #0f172a;
+            min-height: 100vh;
+            color: #e2e8f0;
+            padding: 20px;
+        }
+        body.light-mode { background: #f1f5f9; color: #1e293b; }
+        
+        .navbar {
+            background: rgba(15, 23, 42, 0.85);
+            backdrop-filter: blur(20px);
+            padding: 12px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-radius: 16px;
+            max-width: 1400px;
+            margin: 0 auto 20px;
+            border: 1px solid rgba(255,255,255,0.06);
+        }
+        body.light-mode .navbar { background: rgba(255,255,255,0.85); border-color: rgba(0,0,0,0.06); }
+        
+        .logo h2 {
+            font-size: 20px;
+            background: linear-gradient(135deg, #a855f7, #3b82f6);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        .logo span { font-size: 12px; color: #64748b; }
+        
+        .nav-actions { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+        .nav-actions button {
+            padding: 8px 16px; border: none; border-radius: 12px; cursor: pointer;
+            font-size: 13px; font-weight: 600; transition: all 0.2s; font-family: 'Inter', sans-serif;
+        }
+        .nav-actions button:active { transform: scale(0.95); }
+        .btn-logout { background: #ef4444; color: white; }
+        .btn-logout:hover { background: #dc2626; }
+        .btn-back { background: #6366f1; color: white; }
+        .btn-back:hover { background: #4f46e5; }
+        .btn-theme { background: #1e293b; color: #e2e8f0; }
+        body.light-mode .btn-theme { background: #e2e8f0; color: #1e293b; }
+        
+        .container { max-width: 1200px; margin: 0 auto; }
+        
+        .filter-card {
+            background: rgba(255,255,255,0.04);
+            border-radius: 16px; padding: 20px 24px; margin-bottom: 20px;
+            border: 1px solid rgba(255,255,255,0.06);
+            display: flex; flex-wrap: wrap; align-items: flex-end; gap: 14px;
+        }
+        body.light-mode .filter-card { background: white; border-color: rgba(0,0,0,0.06); }
+        
+        .filter-card label { font-size: 13px; font-weight: 600; color: #94a3b8; display: block; margin-bottom: 4px; }
+        .filter-card select {
+            padding: 10px 14px; border-radius: 10px;
+            border: 1px solid rgba(255,255,255,0.1);
+            background: rgba(0,0,0,0.3); color: white;
+            font-family: 'Inter', sans-serif; font-size: 14px; min-width: 220px;
+        }
+        body.light-mode .filter-card select { background: #f1f5f9; color: #1e293b; border-color: #cbd5e1; }
+        .filter-card select:focus { outline: none; border-color: #a855f7; }
+        
+        .filter-card .btn-primary {
+            padding: 10px 24px;
+            background: linear-gradient(135deg, #a855f7, #3b82f6);
+            border: none; border-radius: 10px; color: white;
+            font-weight: 700; cursor: pointer; font-family: 'Inter', sans-serif; font-size: 14px;
+        }
+        .filter-card .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 4px 15px rgba(168,85,247,0.4); }
+        .filter-card .btn-print {
+            padding: 10px 20px; background: #f59e0b; border: none; border-radius: 10px;
+            color: white; font-weight: 700; cursor: pointer; font-family: 'Inter', sans-serif; font-size: 13px;
+        }
+        .filter-card .btn-print:hover { background: #d97706; }
+        
+        .laporan-preview {
+            background: white; color: #1e293b; border-radius: 16px;
+            padding: 40px; max-width: 1100px; margin: 0 auto;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+            font-family: 'Times New Roman', Times, serif;
+        }
+        body.light-mode .laporan-preview { box-shadow: 0 10px 40px rgba(0,0,0,0.1); }
+        
+        .laporan-preview .kop { text-align: center; }
+        .laporan-preview .kop .header-wrapper {
+            display: flex; align-items: center; justify-content: flex-start;
+            gap: 20px; margin-bottom: 4px; position: relative; min-height: 75px;
+        }
+        .laporan-preview .kop .header-wrapper .logo-container {
+            position: absolute; left: 10px; top: 50%; transform: translateY(-50%); z-index: 5;
+        }
+        .laporan-preview .kop .header-wrapper .logo-img {
+            height: 65px; width: auto; object-fit: contain; display: block;
+        }
+        .laporan-preview .kop .header-wrapper .teks { text-align: center; width: 100%; }
+        .laporan-preview .kop .header-wrapper .teks .instansi {
+            font-size: 13px; font-weight: 700; letter-spacing: 0.5px; color: #0f172a; line-height: 1.2;
+        }
+        .laporan-preview .kop .header-wrapper .teks .instansi-2 {
+            font-size: 15px; font-weight: 800; letter-spacing: 1px; color: #0f172a; margin-top: 1px; line-height: 1.2;
+        }
+        .laporan-preview .kop .header-wrapper .teks .yayasan-sub {
+            font-size: 12px; font-weight: 700; color: #334155; margin-top: 1px; line-height: 1.2;
+        }
+        .laporan-preview .kop .header-wrapper .teks .alamat {
+            font-size: 11px; color: #334155; margin-top: 2px; line-height: 1.2;
+        }
+        .laporan-preview .kop .header-wrapper .teks .email {
+            font-size: 11px; color: #334155; margin-top: 1px; line-height: 1.2;
+        }
+        .laporan-preview .kop .garis-kop { border-bottom: 3px double #1e293b; margin-top: 12px; margin-bottom: 16px; }
+        .laporan-preview .kop .judul {
+            font-size: 20px; font-weight: 800; letter-spacing: 2px; color: #0f172a; margin-top: 4px;
+        }
+        .laporan-preview .kop .periode { font-size: 13px; color: #475569; margin-top: 4px; }
+        .laporan-preview .kop .tgl-cetak { font-size: 11px; color: #94a3b8; margin-top: 2px; }
+        
+        .laporan-preview table {
+            width: 100%; border-collapse: collapse; margin: 16px 0 8px; font-size: 11px;
+        }
+        .laporan-preview th, .laporan-preview td {
+            padding: 6px 8px; border: 1px solid #cbd5e1;
+            text-align: center; vertical-align: middle;
+        }
+        .laporan-preview th {
+            background: #f1f5f9; font-weight: 700; font-size: 10px;
+            text-transform: uppercase; letter-spacing: 0.3px;
+        }
+        .laporan-preview td.nama { text-align: left; font-weight: 600; }
+        .laporan-preview td.hari-tanggal { text-align: left; font-size: 11px; }
+        
+        .laporan-preview td .status-label {
+            display: inline-block; padding: 2px 8px; border-radius: 3px;
+            font-weight: 600; font-size: 9px; min-width: 45px;
+        }
+        .laporan-preview td .status-label.hadir { background: #d1fae5; color: #059669; }
+        .laporan-preview td .status-label.alfa { background: #fee2e2; color: #b91c1c; }
+        .laporan-preview td .status-label.izin { background: #ede9fe; color: #7c3aed; }
+        .laporan-preview td .status-label.libur { background: #dbeafe; color: #2563eb; }
+        .laporan-preview td .status-label.telat { background: #fef3c7; color: #d97706; }
+        
+        .laporan-preview .ttd {
+            display: flex; justify-content: space-between; margin-top: 30px;
+            padding-top: 16px; border-top: 1px solid #cbd5e1;
+        }
+        .laporan-preview .ttd-box { text-align: center; width: 45%; }
+        .laporan-preview .ttd-box .label { font-size: 10px; color: #64748b; margin-bottom: 2px; }
+        .laporan-preview .ttd-box .nama { font-size: 12px; font-weight: 700; margin-top: 2px; }
+        .laporan-preview .ttd-box .jabatan { font-size: 10px; color: #475569; }
+        .laporan-preview .ttd-box .line {
+            width: 180px; border-bottom: 1px solid #1e293b;
+            margin: 32px auto 2px; max-width: 100%;
+        }
+        .laporan-preview .footer {
+            text-align: center; font-size: 9px; color: #94a3b8;
+            margin-top: 12px; padding-top: 10px; border-top: 1px solid #e2e8f0;
+        }
+        
+        .loading-text { text-align: center; color: #64748b; padding: 40px 0; font-size: 14px; }
+        .empty-text { text-align: center; color: #64748b; padding: 30px 0; font-size: 14px; }
+        
+        .toast-custom {
+            position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%);
+            background: #1e293b; color: white; padding: 14px 28px; border-radius: 16px;
+            font-weight: 600; font-size: 14px; z-index: 9999;
+            border-left: 4px solid #10b981; box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+            animation: slideUp 0.3s ease; max-width: 90%; font-family: 'Inter', sans-serif;
+        }
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateX(-50%) translateY(30px); }
+            to { opacity: 1; transform: translateX(-50%) translateY(0); }
+        }
+        
+        @media (max-width: 768px) {
+            .navbar { flex-wrap: wrap; gap: 10px; padding: 12px 16px; }
+            .filter-card { flex-direction: column; align-items: stretch; }
+            .filter-card select { width: 100%; }
+            .laporan-preview { padding: 20px; }
+            .laporan-preview table { font-size: 9px; }
+            .laporan-preview th, .laporan-preview td { padding: 3px 4px; }
+            .laporan-preview .kop .header-wrapper { position: static; display: flex; flex-direction: column; align-items: center; }
+            .laporan-preview .kop .header-wrapper .logo-container { position: static; transform: none; margin-bottom: 10px; text-align: center; }
+            .laporan-preview .kop .header-wrapper .logo-img { margin: 0 auto; }
+            .laporan-preview .kop .judul { font-size: 16px; }
+            .nav-actions { flex-wrap: wrap; }
+            .laporan-preview .ttd { flex-direction: column; gap: 20px; align-items: center; }
+            .laporan-preview .ttd-box { width: 100%; }
+        }
+        
+        @media print {
+            body { background: white; padding: 0; }
+            .navbar { display: none; }
+            .filter-card { display: none; }
+            .laporan-preview { box-shadow: none; padding: 20px 30px; border-radius: 0; }
+            .laporan-preview .ttd-box .line { margin: 32px auto 2px; }
+            .toast-custom { display: none; }
+        }
+    </style>
+</head>
+<body>
+
+<nav class="navbar">
+    <div class="logo">
+        <h2>📋 RelawanTrack</h2>
+        <span>Rekap SATPAM</span>
+    </div>
+    <div class="nav-actions">
+        <button class="btn-back" onclick="window.location.href='admin_dashboard.html'">
+            <i class="fas fa-arrow-left"></i> Dashboard
+        </button>
+        <button class="btn-theme" onclick="toggleTheme()">
+            <i class="fas fa-moon" id="themeIcon"></i>
+        </button>
+        <span id="adminName" style="font-weight:600;font-size:14px;">Admin</span>
+        <button class="btn-logout" onclick="doLogout()">
+            <i class="fas fa-sign-out-alt"></i> Keluar
+        </button>
+    </div>
+</nav>
+
+<div class="container">
+    <div class="filter-card">
+        <div>
+            <label><i class="fas fa-list-ol"></i> Periode:</label>
+            <select id="filterPeriode">
+                <option value="0">Minggu Ini (Sabtu - Jumat)</option>
+                <option value="1">Minggu Lalu (Sabtu - Jumat)</option>
+                <option value="2">2 Minggu Lalu</option>
+            </select>
+        </div>
+        <div>
+            <label><i class="fas fa-user-shield"></i> Satpam:</label>
+            <select id="filterSatpam">
+                <option value="">-- Pilih Satpam --</option>
+            </select>
+        </div>
+        <div>
+            <button class="btn-primary" onclick="loadRekap()">
+                <i class="fas fa-search"></i> Tampilkan
+            </button>
+            <button class="btn-print" onclick="cetakLaporan()">
+                <i class="fas fa-print"></i> Cetak / PDF
+            </button>
+        </div>
+    </div>
+
+    <div id="laporanContainer">
+        <div class="loading-text"><i class="fas fa-spinner fa-pulse"></i> Silakan pilih periode & satpam, lalu klik Tampilkan</div>
+    </div>
+</div>
+
+<script>
+    var SUPABASE_URL = 'https://zcaqqybonpfishwkmffg.supabase.co';
+    var SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpjYXFxeWJvbnBmaXNod2ttZmZnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODc2Mjc2NDgsImV4cCI6MjEwMzIwMzY0OH0.pBk5nwJI3u9n08onTNmvcOFxtCXQvv-ipYIu2f_iAiQ';
+
+    if (!localStorage.getItem('admin_logged_in')) {
+        window.location.href = 'admin_login.html';
+    }
+    document.getElementById('adminName').textContent = localStorage.getItem('admin_username') || 'Admin';
+
+    var hariNama = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
+    var hariNamaLower = ['minggu', 'senin', 'selasa', 'rabu', 'kamis', 'jumat', 'sabtu'];
+    var bulanNama = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
+
+    function getDateIndonesia(date) {
+        var offset = 7 * 60 * 60 * 1000;
+        return new Date(date.getTime() + offset).toISOString().split('T')[0];
+    }
+    function parseDateIndonesia(dateStr) {
+        var parts = dateStr.split('-');
+        return new Date(parts[0], parts[1] - 1, parts[2]);
+    }
+
+    function toggleTheme() {
+        document.body.classList.toggle('light-mode');
+        var icon = document.getElementById('themeIcon');
+        icon.className = document.body.classList.contains('light-mode') ? 'fas fa-sun' : 'fas fa-moon';
+    }
+    function showToast(msg, type) {
+        type = type || 'success';
+        var existing = document.querySelector('.toast-custom');
+        if (existing) existing.remove();
+        var toast = document.createElement('div');
+        toast.className = 'toast-custom';
+        var colors = { success: '#10b981', error: '#ef4444', warning: '#f59e0b', info: '#3b82f6' };
+        toast.style.borderLeftColor = colors[type] || '#10b981';
+        var icons = { success: '✅', error: '❌', warning: '⚠️', info: 'ℹ️' };
+        toast.innerHTML = (icons[type] || 'ℹ️') + ' ' + msg;
+        document.body.appendChild(toast);
+        setTimeout(function() {
+            toast.style.opacity = '0';
+            toast.style.transform = 'translateX(-50%) translateY(20px)';
+            setTimeout(function() { toast.remove(); }, 300);
+        }, 3000);
+    }
+    function doLogout() {
+        if (confirm('Yakin ingin keluar?')) {
+            localStorage.removeItem('admin_logged_in');
+            localStorage.removeItem('admin_username');
+            window.location.href = 'admin_login.html';
+        }
+    }
+
+    // Hitung range Sabtu s/d Jumat
+    function getRangeSabtuJumat(mingguOffset) {
+        var now = new Date();
+        var offset = 7 * 60 * 60 * 1000;
+        var localNow = new Date(now.getTime() + offset);
+        var dayOfWeek = localNow.getDay(); // 0=Minggu, 6=Sabtu
+        
+        // Cari Sabtu terakhir
+        var sabtu = new Date(localNow);
+        var selisih = (dayOfWeek - 6 + 7) % 7;
+        sabtu.setDate(sabtu.getDate() - selisih);
+        
+        // Mundur sesuai mingguOffset
+        sabtu.setDate(sabtu.getDate() - (mingguOffset * 7));
+        
+        var jumat = new Date(sabtu);
+        jumat.setDate(jumat.getDate() + 6);
+        
+        return { sabtu: sabtu, jumat: jumat };
+    }
+
+    async function loadFilterSatpam() {
+        try {
+            var response = await fetch(
+                SUPABASE_URL + '/rest/v1/karyawan?select=id,nama,divisi&divisi=eq.SATPAM&order=nama.asc',
+                { headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': 'Bearer ' + SUPABASE_ANON_KEY } }
+            );
+            var data = await response.json();
+            var select = document.getElementById('filterSatpam');
+            select.innerHTML = '<option value="">-- Pilih Satpam --</option>';
+            data.forEach(function(k) {
+                select.innerHTML += '<option value="' + k.id + '">' + k.nama + '</option>';
+            });
+        } catch(e) { console.error('Gagal load satpam:', e); }
+    }
+    loadFilterSatpam();
+
+    function hitungTotalJam(jamMasuk, jamPulang) {
+        if (!jamMasuk || !jamPulang || jamMasuk === '-' || jamPulang === '-') return '-';
+        // Format: "HH:MM" atau "HH.MM"
+        var masuk = jamMasuk.replace('.', ':');
+        var pulang = jamPulang.replace('.', ':');
+        var partsM = masuk.split(':');
+        var partsP = pulang.split(':');
+        if (partsM.length !== 2 || partsP.length !== 2) return '-';
+        
+        var mMenit = parseInt(partsM[0]) * 60 + parseInt(partsM[1]);
+        var pMenit = parseInt(partsP[0]) * 60 + parseInt(partsP[1]);
+        
+        // Kalau pulang < masuk, berarti lewat tengah malam (shift malam)
+        if (pMenit < mMenit) pMenit += 24 * 60;
+        
+        var totalMenit = pMenit - mMenit;
+        var jam = Math.floor(totalMenit / 60);
+        var menit = totalMenit % 60;
+        return jam + ' jam ' + menit + ' mnt';
+    }
+
+    async function loadRekap() {
+        var mingguOffset = parseInt(document.getElementById('filterPeriode').value);
+        var satpamId = document.getElementById('filterSatpam').value;
+
+        if (!satpamId) { showToast('Pilih satpam dulu!', 'warning'); return; }
+
+        var range = getRangeSabtuJumat(mingguOffset);
+        var startStr = getDateIndonesia(range.sabtu);
+        var endStr = getDateIndonesia(range.jumat);
+
+        var container = document.getElementById('laporanContainer');
+        container.innerHTML = '<div class="loading-text"><i class="fas fa-spinner fa-pulse"></i> Memuat data...</div>';
+
+        try {
+            // Fetch info satpam
+            var satpamRes = await fetch(
+                SUPABASE_URL + '/rest/v1/karyawan?select=id,nama,divisi&id=eq.' + encodeURIComponent(satpamId),
+                { headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': 'Bearer ' + SUPABASE_ANON_KEY } }
+            );
+            var satpamData = await satpamRes.json();
+            if (!satpamData || satpamData.length === 0) {
+                container.innerHTML = '<div class="empty-text">Satpam tidak ditemukan</div>';
+                return;
+            }
+            var satpam = satpamData[0];
+
+            // Fetch absensi di range
+            var absenRes = await fetch(
+                SUPABASE_URL + '/rest/v1/absensi?select=*&karyawan_id=eq.' + encodeURIComponent(satpamId) + '&tanggal=gte.' + startStr + '&tanggal=lte.' + endStr + '&order=tanggal.asc',
+                { headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': 'Bearer ' + SUPABASE_ANON_KEY } }
+            );
+            var absensi = await absenRes.json();
+
+            var absenMap = {};
+            absensi.forEach(function(a) { absenMap[a.tanggal] = a; });
+
+            // Build 7 hari (Sabtu s/d Jumat)
+            var rows = [];
+            for (var i = 0; i < 7; i++) {
+                var d = new Date(range.sabtu);
+                d.setDate(d.getDate() + i);
+                var tglStr = getDateIndonesia(d);
+                var tglFormatted = hariNama[d.getDay()] + ', ' + d.getDate() + ' ' + bulanNama[d.getMonth()] + ' ' + d.getFullYear();
+
+                var abs = absenMap[tglStr];
+                var jamMasuk = '-', jamPulang = '-', status = 'alfa', statusText = 'Alfa', totalJam = '-';
+
+                if (abs) {
+                    jamMasuk = abs.jam_masuk || '-';
+                    jamPulang = abs.jam_pulang || '-';
+                    var sDb = String(abs.status || '').toLowerCase().trim();
+                    if (sDb === 'izin' || sDb === 'sakit' || sDb === 'dinas') {
+                        status = 'izin'; statusText = 'Izin';
+                    } else if (sDb === 'telat') {
+                        status = 'telat'; statusText = 'Telat';
+                    } else if (sDb === 'hadir' || sDb === 'pulang' || jamMasuk !== '-') {
+                        status = 'hadir'; statusText = 'Hadir';
+                    }
+                    totalJam = hitungTotalJam(jamMasuk, jamPulang);
+                }
+
+                rows.push({
+                    hariTanggal: tglFormatted,
+                    jamMasuk: jamMasuk,
+                    jamPulang: jamPulang,
+                    totalJam: totalJam,
+                    status: status,
+                    statusText: statusText
+                });
+            }
+
+            var periodeLabel = 'Periode: ' + startStr + ' s/d ' + endStr;
+            renderLaporan(rows, satpam, periodeLabel);
+
+        } catch(e) {
+            console.error('Error:', e);
+            container.innerHTML = '<div class="empty-text">Gagal memuat data</div>';
+            showToast('Gagal memuat data!', 'error');
+        }
+    }
+
+    function renderLaporan(rows, satpam, periodeLabel) {
+        var container = document.getElementById('laporanContainer');
+        var logoUrl = 'https://zcaqqybonpfishwkmffg.supabase.co/storage/v1/object/public/logo/Logo_Badan_Gizi_Nasional_(2024)%20(1).png';
+
+        var now = new Date();
+        var tglCetak = now.getDate() + ' ' + bulanNama[now.getMonth()] + ' ' + now.getFullYear();
+
+        var html = '<div class="laporan-preview" id="laporanContent">';
+
+        html += '<div class="kop">';
+        html += '<div class="header-wrapper">';
+        html += '<div class="logo-container">';
+        html += '<img src="' + logoUrl + '" alt="Logo" class="logo-img" onerror="this.style.display=\'none\'">';
+        html += '</div>';
+        html += '<div class="teks">';
+        html += '<div class="instansi">SATUAN PELAYANAN PEMENUHAN GIZI</div>';
+        html += '<div class="instansi-2">SPPG KEDIRI PARE PELEM 5</div>';
+        html += '<div class="yayasan-sub">YAYASAN RIHLAH CAHAYA BANGSA</div>';
+        html += '<div class="alamat">Jl Langkat, Singgahan Pelem Kec. Pare, Kab. Kediri, Prov. Jatim 64212</div>';
+        html += '<div class="email">Email : sppgpelem10@gmail.com</div>';
+        html += '</div>';
+        html += '</div>';
+        html += '<div class="garis-kop"></div>';
+        html += '<div class="judul">REKAP KERJA SATPAM</div>';
+        html += '<div class="periode">' + periodeLabel + '</div>';
+        html += '<div class="tgl-cetak">Nama: ' + satpam.nama + ' | Dicetak pada: ' + tglCetak + '</div>';
+        html += '</div>';
+
+        html += '<table>';
+        html += '<thead><tr>';
+        html += '<th style="width:30px;">No</th>';
+        html += '<th style="width:220px;">Hari/Tanggal</th>';
+        html += '<th style="width:80px;">Jam Masuk</th>';
+        html += '<th style="width:80px;">Jam Pulang</th>';
+        html += '<th style="width:110px;">Total Jam Kerja</th>';
+        html += '<th style="width:80px;">Status</th>';
+        html += '</tr></thead><tbody>';
+
+        rows.forEach(function(r, idx) {
+            html += '<tr>';
+            html += '<td>' + (idx + 1) + '</td>';
+            html += '<td class="hari-tanggal">' + r.hariTanggal + '</td>';
+            html += '<td>' + r.jamMasuk + '</td>';
+            html += '<td>' + r.jamPulang + '</td>';
+            html += '<td>' + r.totalJam + '</td>';
+            html += '<td><span class="status-label ' + r.status + '">' + r.statusText + '</span></td>';
+            html += '</tr>';
+        });
+
+        html += '</tbody></table>';
+
+        html += '<div class="ttd">';
+        html += '<div class="ttd-box">';
+        html += '<div class="label">Mengetahui,</div>';
+        html += '<div class="jabatan">Kepala SPPG Pelem 5</div>';
+        html += '<div class="line"></div>';
+        html += '<div class="nama">Daryanto Hasan</div>';
+        html += '</div>';
+        html += '<div class="ttd-box">';
+        html += '<div class="label">Dibuat Oleh,</div>';
+        html += '<div class="jabatan">Asisten Lapangan 2</div>';
+        html += '<div class="line"></div>';
+        html += '<div class="nama">Ikhwanul Muchlisin</div>';
+        html += '</div>';
+        html += '</div>';
+
+        html += '<div class="footer">Pencatatan dilakukan secara realtime</div>';
+        html += '</div>';
+
+        container.innerHTML = html;
+    }
+
+    function cetakLaporan() {
+        if (!document.getElementById('laporanContent')) {
+            showToast('Tampilkan laporan terlebih dahulu sebelum mencetak!', 'warning');
+            return;
+        }
+        window.print();
+    }
+</script>
+</body>
+</html>
